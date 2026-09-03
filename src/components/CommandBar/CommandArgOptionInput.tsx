@@ -7,7 +7,7 @@ import type { AnyStateMachine, StateFrom } from 'xstate'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type {
-  CommandArgument,
+  CommandArgumentWithName,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
 
@@ -21,7 +21,7 @@ function CommandArgOptionInput({
   onSubmit,
   placeholder,
 }: {
-  arg: CommandArgument<unknown> & { inputType: 'options' }
+  arg: CommandArgumentWithName<unknown> & { inputType: 'options' }
   argName: string
   stepBack: () => void
   onSubmit: (data: unknown) => void
@@ -36,15 +36,15 @@ function CommandArgOptionInput({
         ? arg.options(commandBarState.context, actorContext)
         : arg.options,
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [argName, arg, commandBarState.context, actorContext]
+    [arg.name, arg, commandBarState.context, actorContext]
   )
   // The initial current option is either an already-input value or the configured default
   const currentOption = useMemo(
     () =>
       resolvedOptions.find(
-        (o) => o.value === commandBarState.context.argumentsToSubmit[argName]
+        (o) => o.value === commandBarState.context.argumentsToSubmit[arg.name]
       ) || resolvedOptions.find((o) => o.isCurrent),
-    [commandBarState.context.argumentsToSubmit, argName, resolvedOptions]
+    [commandBarState.context.argumentsToSubmit, arg.name, resolvedOptions]
   )
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -53,7 +53,7 @@ function CommandArgOptionInput({
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
   // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  const initialQuery = useMemo(() => '', [arg.options, argName])
+  const initialQuery = useMemo(() => '', [arg.options, arg.name])
   const [query, setQuery] = useState(initialQuery)
   const [filteredOptions, setFilteredOptions] =
     useState<typeof resolvedOptions>()
@@ -66,15 +66,15 @@ function CommandArgOptionInput({
         threshold: 0.3,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [argName, resolvedOptions]
+    [arg.name, resolvedOptions]
   )
 
-  // Reset the query and selected option when the argName changes
+  // Reset when the argument key changes, including fields with the same label.
   useEffect(() => {
     setQuery(initialQuery)
     setSelectedOption(currentOption || resolvedOptions[0])
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [argName])
+  }, [arg.name])
 
   // Auto focus and select the input when the component mounts
   useEffect(() => {
@@ -192,15 +192,20 @@ function CommandArgOptionInput({
                 disabled={option.disabled}
                 className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
               >
-                <p
+                <div
                   className={`flex-grow ${
                     (option.disabled &&
                       'text-chalkboard-70 dark:text-chalkboard-50 cursor-not-allowed') ||
                     ''
                   }`}
                 >
-                  {option.name}
-                </p>
+                  <p>{option.name}</p>
+                  {option.description && (
+                    <p className="text-xs text-chalkboard-70 dark:text-chalkboard-50">
+                      {option.description}
+                    </p>
+                  )}
+                </div>
                 {option.value === currentOption?.value && (
                   <small className="text-chalkboard-70 dark:text-chalkboard-50">
                     current
@@ -212,6 +217,11 @@ function CommandArgOptionInput({
         ) : (
           <p className="px-4 pt-2 text-chalkboard-60 dark:text-chalkboard-50">
             No results found
+          </p>
+        )}
+        {arg.description && (
+          <p className="mx-4 mb-4 mt-2 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40">
+            {arg.description}
           </p>
         )}
       </Combobox>

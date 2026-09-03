@@ -171,7 +171,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000008466667362968474,
+            "x": 0.0000000000846666729720085,
             "y": 0.0
           },
           "radius": 15.875000000296332,
@@ -191,12 +191,13 @@ description: Artifact commands counterdrilled-weldment.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 80.00999999999999,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -563,7 +564,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -843,7 +845,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1052,7 +1055,6 @@ description: Artifact commands counterdrilled-weldment.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "use_legacy": true,
         "tolerance": 0.0000001
       }
     },
@@ -1071,7 +1073,6 @@ description: Artifact commands counterdrilled-weldment.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "use_legacy": true,
         "tolerance": 0.0000001
       }
     },
@@ -1186,7 +1187,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1418,12 +1420,13 @@ description: Artifact commands counterdrilled-weldment.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 17.3355,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1683,7 +1686,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1949,7 +1953,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

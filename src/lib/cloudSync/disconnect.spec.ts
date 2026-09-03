@@ -8,7 +8,7 @@ import {
   getCloudSyncProjectMetadata,
   notifyCloudSyncWriteLikeMutation,
   retryCloudSync,
-  setCloudSyncProjectScope,
+  setCloudSyncOpenedProject,
 } from '@src/lib/cloudSync'
 import {
   appendOutboxEntry,
@@ -26,6 +26,7 @@ import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const projectDirectory = '/documents/Projects'
@@ -83,7 +84,7 @@ describe('disconnectCloudSyncProject', () => {
       enabled: true,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
   })
 
@@ -225,7 +226,7 @@ describe('cloud sync upload failures', () => {
   })
 
   afterEach(async () => {
-    setCloudSyncProjectScope(undefined)
+    setCloudSyncOpenedProject(undefined)
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
@@ -257,6 +258,8 @@ describe('cloud sync upload failures', () => {
         return jsonResponse({
           id: remoteProjectId,
           title: 'Bracket',
+          description: 'Existing description',
+          category_ids: ['existing-category'],
           revision: remoteRevision,
         })
       }
@@ -284,9 +287,13 @@ describe('cloud sync upload failures', () => {
       enabled: false,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
-    setCloudSyncProjectScope(projectPath)
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
     configureCloudSyncEngine({ enabled: true })
     retryCloudSync()
     await vi.waitFor(() => {
@@ -320,7 +327,7 @@ describe('cloud sync upload failures', () => {
       enabled: true,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
 
     expect(cloudSyncStatus.value).toMatchObject({

@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_directed_zero_direction.kcl
+---
+// Pins the strict-error decision for view::directed: a zero direction
+// vector does not name a direction, so the call errors instead of applying
+// a fallback.
+@settings(experimentalFeatures = allow)
+
+bad = view::directed([0, 0, 0])

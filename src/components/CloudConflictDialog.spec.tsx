@@ -1,6 +1,11 @@
-import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
+import {
+  CloudConflictDialog,
+  CloudSyncErrorDialogHost,
+  openCloudSyncErrorDialog,
+} from '@src/components/CloudConflictDialog'
 import {
   loadCloudSyncProjectConflictInspection,
+  retryCloudSync,
   resolveCloudSyncProjectConflict,
 } from '@src/lib/cloudSync'
 import { Themes } from '@src/lib/theme'
@@ -24,16 +29,6 @@ const cloudConflictDialogSpecMocks = vi.hoisted(() => {
       modifiedAtMs,
       relativePath,
       size: data.byteLength,
-    }
-  }
-
-  function inspectedBinaryFile(relativePath: string, modifiedAtMs: number) {
-    return {
-      absolutePath: relativePath,
-      data: new Uint8Array([0, 1, 2]),
-      modifiedAtMs,
-      relativePath,
-      size: 3,
     }
   }
 
@@ -66,13 +61,6 @@ const cloudConflictDialogSpecMocks = vi.hoisted(() => {
           cloud: inspectedFile('cloud-only.txt', 'cloud\n', cloudSavedAtMs),
           localText: '',
           cloudText: 'cloud\n',
-        },
-        {
-          status: 'changed',
-          relativePath: 'thumbnail.png',
-          local: inspectedBinaryFile('thumbnail.png', localSavedAtMs),
-          cloud: inspectedBinaryFile('thumbnail.png', cloudSavedAtMs),
-          textUnavailableReason: 'Binary or non-UTF-8 file.',
         },
       ],
     },
@@ -123,6 +111,7 @@ vi.mock('@src/lib/cloudSync', async () => {
     loadCloudSyncProjectConflictInspection: vi
       .fn()
       .mockResolvedValue(cloudConflictDialogSpecMocks.inspection),
+    retryCloudSync: vi.fn(),
     resolveCloudSyncProjectConflict: vi.fn().mockResolvedValue(undefined),
   }
 })
@@ -168,29 +157,32 @@ describe('CloudConflictDialog', () => {
     expect(await screen.findByText('main.kcl')).toBeInTheDocument()
     const intro = screen.getByText(/Local and cloud data both changed for/)
     expect(intro).toHaveTextContent('"User-facing project title"')
-    expect(intro).toHaveTextContent('(cloud ID: remote-123)')
+    expect(screen.getByText('cloud ID: remote-123')).toBeInTheDocument()
     expect(intro).not.toHaveTextContent('local-folder')
     expect(screen.getAllByText('main.kcl')).not.toHaveLength(0)
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
     expect(screen.getAllByText('cloud-only.txt')).not.toHaveLength(0)
-    expect(screen.getByText('thumbnail.png')).toBeInTheDocument()
+    expect(screen.queryByText('thumbnail.png')).not.toBeInTheDocument()
     expect(screen.queryByText('.git')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(3)
     expect(
       screen.queryByText('Diff unavailable: Binary or non-UTF-8 file.')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Local version')).toBeInTheDocument()
-    expect(screen.getByText('Cloud version')).toBeInTheDocument()
+    expect(screen.getByText(/Upload local project/)).toBeInTheDocument()
+    expect(screen.getByText(/Replace local project/)).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId('use-local-data')
+        .querySelector('svg[aria-label="folder"]')
+    ).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId('use-cloud-data')
+        .querySelector('svg[aria-label="cloud"]')
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('cloud-conflict-file-toggle-main.kcl'))
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(2)
-
-    fireEvent.click(
-      screen.getByTestId('cloud-conflict-file-toggle-thumbnail.png')
-    )
-    expect(
-      screen.getByText('Diff unavailable: Binary or non-UTF-8 file.')
-    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('cloud-conflict-close-button'))
     expect(onDismiss).toHaveBeenCalledTimes(1)
@@ -206,6 +198,41 @@ describe('CloudConflictDialog', () => {
 
     expect(loadCloudSyncProjectConflictInspection).toHaveBeenCalledWith(
       '/projects/local'
+    )
+  })
+
+  test('shows cloud sync error details with one retry action', async () => {
+    openCloudSyncErrorDialog({
+      title: 'Cloud sync failed',
+      message: 'Cloud sync cannot upload local changes.',
+      projectName: 'Demo project',
+      occurredAt: '2026-07-17T12:00:00.000Z',
+    })
+
+    render(<CloudSyncErrorDialogHost />)
+
+    expect(screen.getByTestId('cloud-sync-error-dialog')).toHaveTextContent(
+      'Cloud sync failed'
+    )
+    expect(screen.getByText(/Demo project/)).toBeInTheDocument()
+    expect(screen.getByText(/Last reported/)).toBeInTheDocument()
+    expect(
+      screen.getByText('Cloud sync cannot upload local changes.')
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Close')).not.toBeInTheDocument()
+
+    const retryButton = screen.getByTestId('cloud-sync-error-retry-button')
+    expect(
+      retryButton.querySelector('svg[aria-label="refresh"]')
+    ).not.toBeNull()
+
+    fireEvent.click(retryButton)
+
+    expect(retryCloudSync).toHaveBeenCalledTimes(1)
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('cloud-sync-error-dialog')
+      ).not.toBeInTheDocument()
     )
   })
 })

@@ -7,6 +7,8 @@ import {
 import { useApp } from '@src/lib/boot'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
   SKETCH_DEFAULT_PLANE_XY,
   SKETCH_DEFAULT_PLANE_XZ,
   SKETCH_DEFAULT_PLANE_YZ,
@@ -23,6 +25,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { constraintToolMetadata } from '@src/machines/sketchSolve/constraints/constraintMetadata'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import {
@@ -116,7 +119,8 @@ export type ToolbarItem = {
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   disabled?: (
     state: StateFrom<typeof modelingMachine>,
-    wasmInstance: ModuleType
+    wasmInstance: ModuleType,
+    props?: ToolbarItemCallbackProps
   ) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
   tooltipTitle?: string | ((props: ToolbarItemCallbackProps) => string)
@@ -127,7 +131,10 @@ export type ToolbarItem = {
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
   disabledReason?:
     | string
-    | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
+    | ((
+        state: StateFrom<typeof modelingMachine>,
+        props?: ToolbarItemCallbackProps
+      ) => string | undefined)
 }
 
 type ToolbarConfig = Record<ToolbarModeName, ToolbarMode>
@@ -379,7 +386,7 @@ type SketchSolveConstraintState = {
 
 type ConstraintToolbarItemConfig = Pick<
   ToolbarItem,
-  'id' | 'command' | 'icon' | 'title' | 'description'
+  'id' | 'command' | 'icon'
 > & {
   toolName: ConstraintToolName
 }
@@ -413,9 +420,9 @@ function createSketchSolveConstraintDropdownItem({
   command,
   toolName,
   icon,
-  title,
-  description,
 }: ConstraintToolbarItemConfig): ToolbarItem {
+  const metadata = constraintToolMetadata[toolName]
+
   return {
     id,
     command,
@@ -426,8 +433,8 @@ function createSketchSolveConstraintDropdownItem({
     icon,
     sketchSolveToolName: toolName,
     status: 'available',
-    title,
-    description,
+    title: metadata.title,
+    description: metadata.description,
     links: [],
     isActive: (state) => isSketchSolveConstraintToolActive(state, toolName),
   }
@@ -441,94 +448,87 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
     command: TOOLBAR_COMMAND_IDS.sketchSolve.coincident,
     toolName: 'coincidentConstraintTool',
     icon: 'coincident',
-    title: 'Coincident',
-    description: 'Constrain points or curves to be coincident.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'midpoint',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.midpoint,
     toolName: 'midpointConstraintTool',
     icon: 'midpoint',
-    title: 'Midpoint',
-    description: 'Constrain a point to lie at the midpoint of a selected line.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Tangent',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.tangent,
     toolName: 'tangentConstraintTool',
     icon: 'tangent',
-    title: 'Tangent',
-    description:
-      'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Parallel',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.parallel,
     toolName: 'parallelConstraintTool',
     icon: 'parallel',
-    title: 'Parallel',
-    description: 'Constrain lines or curves to be parallel.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Perpendicular',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.perpendicular,
     toolName: 'perpendicularConstraintTool',
     icon: 'perpendicular',
-    title: 'Perpendicular',
-    description: 'Constrain lines or curves to be perpendicular.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'equalLength',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.equal,
     toolName: 'equalLengthConstraintTool',
     icon: 'equal',
-    title: 'Equal',
-    description:
-      'Constrain lines to have equal length, or arcs and circles to have equal radius.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Symmetric',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.symmetric,
     toolName: 'symmetricConstraintTool',
     icon: 'symmetric',
-    title: 'Symmetric',
-    description:
-      'Constrain two points, two arc-like segments, or two lines to be symmetric across a selected axis line.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'vertical',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.vertical,
     toolName: 'verticalConstraintTool',
     icon: 'vertical',
-    title: 'Vertical',
-    description: 'Constrain lines to be vertical.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Horizontal',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.horizontal,
     toolName: 'horizontalConstraintTool',
     icon: 'horizontal',
-    title: 'Horizontal',
-    description: 'Constrain lines to be horizontal.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Fixed',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.fixed,
     toolName: 'fixedConstraintTool',
     icon: 'fix',
-    title: 'Fixed',
-    description: 'Lock selected points to their current x and y positions.',
   }),
 ]
 
 type ToolbarCommands = Pick<ReturnType<typeof useApp>['commands'], 'send'>
 
+export function isLegacySketchEditRequest({
+  editorHasFocus,
+  sketchPathId,
+  modelingState,
+}: Pick<
+  ToolbarItemCallbackProps,
+  'editorHasFocus' | 'sketchPathId' | 'modelingState'
+>): boolean {
+  return (
+    Boolean(editorHasFocus && sketchPathId) &&
+    !isSketchBlockSelected(modelingState.context.selectionRanges)
+  )
+}
+
 export function buildToolbarConfig(
   commands: ToolbarCommands,
   {
     showExperimentalFeatures = false,
+    hasLegacySketchMode = false,
   }: {
     showExperimentalFeatures?: boolean
+    hasLegacySketchMode?: boolean
   } = {}
 ): ToolbarConfig {
   const splineToolbarItem: ToolbarItem = {
@@ -586,18 +586,23 @@ export function buildToolbarConfig(
         {
           id: 'sketch',
           command: TOOLBAR_COMMAND_IDS.modeling.sketch,
-          onClick: ({
-            modelingSend,
-            modelingState,
-            sketchPathId,
-            editorHasFocus,
-          }) => {
+          onClick: (props) => {
+            const {
+              modelingSend,
+              modelingState,
+              sketchPathId,
+              editorHasFocus,
+            } = props
             const isSketchBlock = isSketchBlockSelected(
               modelingState.context.selectionRanges
             )
             const selectedSketchTarget =
               getSelectedSketchTarget(modelingState.context.selectionRanges)
                 ?.id ?? null
+
+            if (isLegacySketchEditRequest(props) && !hasLegacySketchMode) {
+              return
+            }
 
             // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
@@ -627,6 +632,14 @@ export function buildToolbarConfig(
           iconColor: ({ modelingState }) =>
             getSelectedSketchIconColor(modelingState.context.selectionRanges),
           status: 'available',
+          disabled: (_state, _wasmInstance, props) =>
+            Boolean(
+              props && isLegacySketchEditRequest(props) && !hasLegacySketchMode
+            ),
+          disabledReason: (_state, props) =>
+            props && isLegacySketchEditRequest(props) && !hasLegacySketchMode
+              ? LEGACY_SKETCH_MODE_REMOVED_MESSAGE
+              : undefined,
           title: ({ editorHasFocus, sketchPathId, modelingState }) => {
             const isSketchBlock = isSketchBlockSelected(
               modelingState.context.selectionRanges
@@ -661,9 +674,7 @@ export function buildToolbarConfig(
           links: [
             {
               label: 'KCL docs',
-              url: withSiteBaseURL(
-                '/docs/kcl-std/functions/std-sketch-startSketchOn'
-              ),
+              url: withSiteBaseURL('/docs/kcl-lang/sketches'),
             },
           ],
         },
@@ -1228,7 +1239,7 @@ export function buildToolbarConfig(
               icon: 'rotate',
               status: 'available',
               title: 'Rotate',
-              description: 'Apply a rotation to a solid or sketch.',
+              description: 'Apply a rotation to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
@@ -1249,7 +1260,7 @@ export function buildToolbarConfig(
               icon: 'scale',
               status: 'available',
               title: 'Scale',
-              description: 'Apply scaling to a solid or sketch.',
+              description: 'Apply scaling to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
@@ -1424,6 +1435,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-straightness',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'GDT Straightness',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1445,6 +1460,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-circularity',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'GDT Circularity',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1466,6 +1485,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-cylindricity',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'GDT Cylindricity',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1551,6 +1574,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-concentricity',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'GDT Concentricity',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1575,6 +1602,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-symmetry',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Symmetry' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1599,6 +1627,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-runout',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Runout' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1623,6 +1652,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-angularity',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Angularity' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -2003,9 +2033,7 @@ export function buildToolbarConfig(
           links: [
             {
               label: 'KCL docs',
-              url: withSiteBaseURL(
-                '/docs/kcl-std/functions/std-sketch-polygon'
-              ),
+              url: withSiteBaseURL('/docs/kcl-lang/sketches'),
             },
           ],
         },
@@ -2567,11 +2595,15 @@ export function buildToolbarConfig(
         {
           id: 'Dimension',
           command: TOOLBAR_COMMAND_IDS.sketchSolve.dimension,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'Dimension',
-              keepSelection,
-            }),
+          onClick: ({ modelingSend, isActive, keepSelection }) =>
+            isActive
+              ? modelingSend({
+                  type: 'unequip tool',
+                })
+              : modelingSend({
+                  type: 'Dimension',
+                  keepSelection,
+                }),
           icon: 'dimension',
           status: 'available',
           title: 'Dimension',
@@ -2579,39 +2611,9 @@ export function buildToolbarConfig(
             'Constrain distance between points, length of lines, or radius of arcs.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
-        },
-        {
-          id: 'HorizontalDistance',
-          command: TOOLBAR_COMMAND_IDS.sketchSolve.horizontalDistance,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'HorizontalDistance',
-              keepSelection,
-            }),
-          icon: 'horizontalDimension',
-          status: 'available',
-          title: 'Horizontal Distance',
-          description: 'Constrain horizontal distance between two points.',
-          extraInfo: constraintsExtraInfo,
-          links: [],
-          isActive: (state) => false,
-        },
-        {
-          id: 'VerticalDistance',
-          command: TOOLBAR_COMMAND_IDS.sketchSolve.verticalDistance,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'VerticalDistance',
-              keepSelection,
-            }),
-          icon: 'verticalDimension',
-          status: 'available',
-          title: 'Vertical Distance',
-          description: 'Constrain vertical distance between two points.',
-          extraInfo: constraintsExtraInfo,
-          links: [],
-          isActive: (state) => false,
+          isActive: (state) =>
+            state.matches('sketchSolveMode') &&
+            state.context.sketchSolveToolName === 'dimensionTool',
         },
         {
           id: 'construction',
@@ -2690,10 +2692,18 @@ export const useToolbarConfig = () => {
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
+  const hasLegacySketchMode = userFeatures.useHas(
+    LEGACY_SKETCH_MODE_FEATURE_FLAG,
+    false
+  )
 
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
-    () => buildToolbarConfig(commands, { showExperimentalFeatures }),
-    [commands, showExperimentalFeatures]
+    () =>
+      buildToolbarConfig(commands, {
+        showExperimentalFeatures,
+        hasLegacySketchMode,
+      }),
+    [commands, showExperimentalFeatures, hasLegacySketchMode]
   )
 }
 

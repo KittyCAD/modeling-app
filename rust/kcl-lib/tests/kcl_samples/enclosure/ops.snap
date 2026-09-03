@@ -2245,64 +2245,15 @@ description: Operations executed enclosure.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 5.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "innerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -6060,112 +6011,19 @@ description: Operations executed enclosure.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 62.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 87.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "holeBackLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeBackRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeFrontLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeFrontRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideBackLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideBackRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideFrontLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideFrontRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectBottom": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectTop": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
@@ -6439,46 +6297,6 @@ description: Operations executed enclosure.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "String",
-            "value": "end"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 34
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
           }
         ]
       },
@@ -9808,112 +9626,19 @@ description: Operations executed enclosure.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 212.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 87.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "holeBackLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeBackRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeFrontLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeFrontRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideBackLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideBackRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideFrontLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeGuideFrontRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectBottom": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectLeft": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "holeRectTop": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
@@ -10175,7 +9900,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10199,7 +9924,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10223,7 +9948,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10247,7 +9972,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10271,7 +9996,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10295,7 +10020,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10319,7 +10044,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10343,7 +10068,7 @@ description: Operations executed enclosure.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"

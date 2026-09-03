@@ -55,6 +55,67 @@ Imported symbols can be renamed for convenience or to avoid name collisions.
 import increment as inc, decrement as dec from "util.kcl"
 ```
 
+## Avoid circular imports
+
+Imports between local KCL files must form an acyclic dependency graph: following
+the imports from one file must never lead back to that file. KCL cannot execute
+a project with a circular import.
+
+For example, this project has a circular import because `main.kcl` imports
+`wheel.kcl`, which imports `main.kcl`:
+
+```norun
+// main.kcl
+import makeWheel from "wheel.kcl"
+
+export wheelDiameter = 20mm
+wheel = makeWheel()
+
+// wheel.kcl
+import wheelDiameter from "main.kcl"
+
+export fn makeWheel() {
+  return wheelDiameter
+}
+```
+
+Executing this project reports a `circular import of modules is not allowed`
+error. Re-exports can create the same problem if they lead back to an earlier
+module.
+
+To break a cycle, move shared values and functions into a dependency-only file
+that does not import its consumers. Both of the original files can then import
+the shared dependency:
+
+```norun
+// parameters.kcl
+export wheelDiameter = 20mm
+
+// wheel.kcl
+import wheelDiameter from "parameters.kcl"
+
+export fn makeWheel() {
+  return wheelDiameter
+}
+
+// main.kcl
+import wheelDiameter from "parameters.kcl"
+import makeWheel from "wheel.kcl"
+
+wheel = makeWheel()
+```
+
+For all projects, keep dependencies flowing in one direction:
+
+1. Parameter modules import nothing.
+2. Utility modules may import parameters.
+3. Part modules may import parameters and utilities.
+4. Assembly files and `main.kcl` may import parts.
+
+Part, utility, and parameter modules should not import `main.kcl`. If two files
+need the same definition, extract it into a lower-level shared module instead of
+making the files import each other.
+
 ## Subdirectories
 
 You can import files from the current directory or from subdirectories, but if importing from a
@@ -105,7 +166,7 @@ fn cube(height) {
     coincident([line3.end, line4.start])
     coincident([line4.end, line1.start])
   }
-  region001 = region(point = [2mm, 2mm], sketch = sketch001)
+  region001 = region(segments = [sketch001.line1, sketch001.line2])
   return extrude(region001, length = height)
 }
 
@@ -283,7 +344,7 @@ file represents object(s) in memory. If you import the same file multiple times,
 it will only be rendered once.
 
 If you want to have multiple instances of the same object, you can use the
-[`clone`](/docs/kcl/clone) function. This will render a new instance of the object in memory.
+[`clone`](/docs/kcl-std/functions/std-clone) function. This will render a new instance of the object in memory.
 
 ```norun
 import cube from "cube.kcl"

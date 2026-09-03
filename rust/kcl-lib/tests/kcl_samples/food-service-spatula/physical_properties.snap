@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties food-service-spatula.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 57.22932954487879,
+      "y": 26.46064449999999,
+      "z": 27.43541033614048
+    },
+    "dimensions": {
+      "x": 289.864444329997,
+      "y": 129.72128899999998,
+      "z": 154.87082067228096
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 25590.105778146462
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 54.29881538298227
+  }
+}

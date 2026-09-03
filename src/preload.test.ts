@@ -36,6 +36,7 @@ vi.mock('chokidar', () => ({
     watch: vi.fn(() => ({
       on: vi.fn(),
       off: vi.fn(),
+      close: vi.fn().mockResolvedValue(undefined),
     })),
   },
 }))

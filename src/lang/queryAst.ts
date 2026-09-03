@@ -1279,17 +1279,13 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
-    const patternCopyExpr = getPatternCopyExprFromSelection(
-      s,
-      ast,
-      wasmInstance
-    )
-    if (patternCopyExpr) {
-      const key = outputExprKey(patternCopyExpr)
+    const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    if (patternExpr) {
+      const key = outputExprKey(patternExpr)
       if (pushedNames[key]) {
         continue
       }
-      exprs.push(patternCopyExpr)
+      exprs.push(patternExpr)
       pushedNames[key] = true
       continue
     }
@@ -1514,7 +1510,7 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
-function getPatternCopyExprFromSelection(
+function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType
@@ -1528,8 +1524,8 @@ function getPatternCopyExprFromSelection(
     selection.patternIndex ??
     (selection.engineEntityId
       ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
-      : -1)
-  if (patternIndex < 0) {
+      : undefined)
+  if (patternIndex !== undefined && patternIndex < 0) {
     return null
   }
 
@@ -1546,6 +1542,9 @@ function getPatternCopyExprFromSelection(
       wasmInstance
     )
     if (patternVariableName) {
+      if (patternIndex === undefined) {
+        return createLocalName(patternVariableName)
+      }
       return createMemberExpression(
         patternVariableName,
         createLiteral(patternIndex, wasmInstance),
@@ -1794,9 +1793,9 @@ export function retrieveSelectionsFromOpArg(
     }
 
     if (artifact.type === 'segment') {
-      const correspondingWall = artifactGraph
-        .values()
-        .find((a) => a.type === 'wall' && a.segId === artifact?.id)
+      const correspondingWall = Array.from(artifactGraph.values()).find(
+        (a) => a.type === 'wall' && a.segId === artifact?.id
+      )
       if (correspondingWall) {
         artifact = correspondingWall
       }
@@ -1836,15 +1835,12 @@ export function findOperationArtifact(
   artifactGraph: ArtifactGraph
 ) {
   const nodePath = JSON.stringify(operation.nodePath)
-  const artifact = artifactGraph
-    .values()
-    .toArray()
-    .find(
-      (a) =>
-        'codeRef' in a &&
-        JSON.stringify(a.codeRef?.nodePath) === nodePath &&
-        a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
-    )
+  const artifact = Array.from(artifactGraph.values()).find(
+    (a) =>
+      'codeRef' in a &&
+      JSON.stringify(a.codeRef?.nodePath) === nodePath &&
+      a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
+  )
   return artifact
 }
 
@@ -2479,6 +2475,7 @@ export function getSketchSegmentNameFromSourceSurface(
     if (!err(pathArtifact) && pathArtifact.type === 'path') {
       const matchingSegmentIndex = pathArtifact.segIds.findIndex(
         (segmentId) =>
+          segmentId === selectedSegment.sourceSegmentId ||
           segmentId === selectedSegment.originalSegId ||
           segmentId === selectedSegment.id
       )

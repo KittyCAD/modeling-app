@@ -15,7 +15,7 @@ use kcmc::websocket::OkWebSocketResponseData;
 use kcmc::websocket::SuccessWebSocketResponse;
 use kcmc::websocket::WebSocketRequest;
 use kcmc::websocket::WebSocketResponse;
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
@@ -48,10 +48,10 @@ impl TcpRead {
             Err(e) => return Err(anyhow!("Error reading from engine's WebSocket: {e}").into()),
         };
         let msg: WebSocketResponse = match msg {
-            WsMsg::Text(text) => serde_json::from_str(&text)
+            WsMsg::Text(text) => kcl_engine_codec::deserialize_response_json(&text)
                 .map_err(anyhow::Error::from)
                 .map_err(WebSocketReadError::from)?,
-            WsMsg::Binary(bin) => rmp_serde::from_slice(&bin)
+            WsMsg::Binary(bin) => kcl_engine_codec::deserialize_response_msgpack(&bin)
                 .map_err(anyhow::Error::from)
                 .map_err(WebSocketReadError::from)?,
             other => return Err(anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
@@ -278,7 +278,8 @@ impl WebSocketTransport {
         request: WebSocketRequest,
         tcp_write: &mut WebSocketTcpWrite,
     ) -> anyhow::Result<()> {
-        let msg = rmp_serde::to_vec_named(&request).map_err(|e| anyhow!("could not serialize msgpack: {e}"))?;
+        let msg = kcl_engine_codec::serialize_request_msgpack(&request)
+            .map_err(|e| anyhow!("could not serialize msgpack: {e}"))?;
         tcp_write
             .send(WsMsg::Binary(msg.into()))
             .await
@@ -288,7 +289,8 @@ impl WebSocketTransport {
 
     /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
     async fn inner_send_to_engine(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> anyhow::Result<()> {
-        let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
+        let msg =
+            kcl_engine_codec::serialize_request_json(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
         tcp_write
             .send(WsMsg::Text(msg.into()))
             .await
@@ -320,7 +322,7 @@ impl WebSocketTransport {
                                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
                                     cmd: ModelingCmd::ImportFiles { .. },
                                     cmd_id: _,
-                                }) | WebSocketRequest::ExecKclProject { .. }
+                                })
                             ) {
                                 Self::inner_send_to_engine_binary(req, &mut tcp_write).await
                             } else {
@@ -380,6 +382,17 @@ impl EngineTransport for WebSocketTransport {
     ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
+        let api_call_id_msg = {
+            // Get the API call ID from session data if available. Drop it as
+            // soon as we're done.
+            let session_data = self.session_data.read().await;
+            if let Some(session) = session_data.as_ref() {
+                format!(" (API call ID: {})", session.api_call_id)
+            } else {
+                String::new()
+            }
+        };
+
         // Send the request to the engine, via the actor.
         self.engine_req_tx
             .send(ToEngineReq {
@@ -389,7 +402,7 @@ impl EngineTransport for WebSocketTransport {
             .await
             .map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to send modeling command: {e}"),
+                    format!("Failed to send modeling command: {e}{api_call_id_msg}"),
                     vec![source_range],
                 ))
             })?;
@@ -399,7 +412,7 @@ impl EngineTransport for WebSocketTransport {
             .map_err(|e| {
                 KclError::new_engine_hangup(
                     KclErrorDetails::new(
-                        format!("could not send request to the engine actor: {e}"),
+                        format!("could not send request to the engine actor: {e}{api_call_id_msg}"),
                         vec![source_range],
                     ),
                     None,
@@ -407,7 +420,10 @@ impl EngineTransport for WebSocketTransport {
             })?
             .map_err(|e| {
                 KclError::new_engine_hangup(
-                    KclErrorDetails::new(format!("could not send request to the engine: {e}"), vec![source_range]),
+                    KclErrorDetails::new(
+                        format!("could not send request to the engine: {e}{api_call_id_msg}"),
+                        vec![source_range],
+                    ),
                     None,
                 )
             })?;

@@ -24,6 +24,16 @@ import type {
   CommandArgumentConfig,
   KclCommandValue,
 } from '@src/lib/commandTypes'
+import {
+  KCL_AXIS_Z,
+  KCL_DEFAULT_ROTATE_ANGLE,
+  KCL_DEFAULT_SCALE_FACTOR,
+  KCL_DEFAULT_TRANSLATE_X,
+} from '@src/lib/constants'
+import {
+  canSubmitSelectionArg,
+  type ResolvedSelectionType,
+} from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type {
   ModelingMachineContext,
@@ -155,6 +165,65 @@ describe('GDT tolerance defaults', () => {
   })
 })
 
+describe('modeling dialog label isolation', () => {
+  it('preserves every legacy argument display label for adapted commands', () => {
+    const expectedLabels = {
+      Extrude: { sketches: 'Profiles' },
+      Revolve: { sketches: 'Profiles', axis: 'Sketch Axis' },
+      Sweep: { sketches: 'Profiles' },
+      Loft: { sketches: 'Profiles' },
+      Hole: {},
+      Chamfer: {},
+    }
+
+    for (const commandName of [
+      'Extrude',
+      'Revolve',
+      'Sweep',
+      'Loft',
+      'Hole',
+      'Chamfer',
+    ] as const) {
+      const config = modelingMachineCommandConfig[commandName]
+      if (!config || isArray(config)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+      const labels = Object.fromEntries(
+        Object.entries(config.args ?? {})
+          .filter(([, arg]) => arg.displayName !== undefined)
+          .map(([name, arg]) => [name, arg.displayName])
+      )
+      expect(labels, `${commandName} palette labels changed`).toEqual(
+        expectedLabels[commandName]
+      )
+    }
+  })
+
+  it('keeps the new labels available only through dialog metadata', () => {
+    for (const [commandName, argName, paletteLabel, dialogLabel] of [
+      ['Extrude', 'length', 'length', 'Distance'],
+      ['Extrude', 'method', 'method', 'Operation'],
+      ['Extrude', 'bodyType', 'bodyType', 'Output'],
+      ['Revolve', 'axis', 'Sketch Axis', 'Sketch axis'],
+      ['Sweep', 'relativeTo', 'relativeTo', 'Legacy alignment'],
+      ['Loft', 'vDegree', 'vDegree', 'Interpolation degree'],
+      ['Hole', 'cutAt', 'cutAt', 'Center'],
+      ['Hole', 'holeType', 'holeType', 'Type'],
+      ['Chamfer', 'length', 'length', 'Distance'],
+    ] as const) {
+      const config = modelingMachineCommandConfig[commandName]
+      if (!config || isArray(config)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+      const arg = Object.entries(config.args ?? {}).find(
+        ([name]) => name === argName
+      )?.[1]
+      expect(arg?.displayName ?? argName).toBe(paletteLabel)
+      expect(arg?.dialog?.displayName).toBe(dialogLabel)
+    }
+  })
+})
+
 describe('Extrude surface arguments', () => {
   function extrudeConfig() {
     const commandConfig = modelingMachineCommandConfig.Extrude
@@ -189,6 +258,30 @@ describe('Extrude surface arguments', () => {
         } as never)
       : Boolean(required)
   }
+
+  it('preserves the legacy Extrude operation default when dialogs are off', () => {
+    const method = extrudeConfig().args?.method
+    if (
+      method?.inputType !== 'options' ||
+      typeof method.options !== 'function'
+    ) {
+      throw new Error(
+        'Extrude operation options should depend on the UI surface'
+      )
+    }
+
+    const legacyOptions = method.options({
+      argumentsToSubmit: {},
+      selectedCommand: { useModelingDialog: false },
+    } as never)
+    const dialogOptions = method.options({
+      argumentsToSubmit: {},
+      selectedCommand: { useModelingDialog: true },
+    } as never)
+
+    expect(legacyOptions[0]).toMatchObject({ name: 'New', value: 'NEW' })
+    expect(dialogOptions[0]).toMatchObject({ name: 'Merge', value: 'MERGE' })
+  })
 
   it('allows extrude profiles to include body edge selections', () => {
     const commandConfig = extrudeConfig()
@@ -252,6 +345,27 @@ describe('Extrude surface arguments', () => {
         argumentsToSubmit: { bidirectionalLength: parsedLength() },
       } as never)
     ).toBe('twoSides')
+  })
+
+  it('keeps surface output available for open profiles without a distance value', () => {
+    for (const extentType of ['distance', 'toFace']) {
+      const argumentsToSubmit = {
+        extentType,
+        sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+      }
+      expect(evaluateHidden('bodyType', argumentsToSubmit)).toBe(false)
+      expect(evaluateRequired('bodyType', argumentsToSubmit)).toBe(true)
+    }
+  })
+
+  it('shows body-edge operation before a distance value is parsed', () => {
+    const argumentsToSubmit = {
+      extentType: 'distance',
+      sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+      length: '5',
+    }
+    expect(evaluateHidden('method', argumentsToSubmit)).toBe(false)
+    expect(evaluateRequired('method', argumentsToSubmit)).toBe(true)
   })
 
   it('keeps dependent twist controls hidden until twist is enabled', () => {
@@ -627,6 +741,19 @@ describe('Hole dialog arguments', () => {
     })
   })
 
+  it('prepopulates dimensions only on the dialog surface', () => {
+    for (const name of [
+      'counterboreDepth',
+      'counterboreDiameter',
+      'countersinkAngle',
+      'countersinkDiameter',
+      'drillPointAngle',
+    ] as const) {
+      expect(holeConfig().args?.[name]?.prepopulate).not.toBe(true)
+      expect(holeConfig().args?.[name]?.dialog?.prepopulate).toBe(true)
+    }
+  })
+
   it('shows only dimensions associated with the selected head type', () => {
     const simple = { holeType: 'simple', holeBottom: 'flat' }
     expect(evaluateHidden('counterboreDepth', simple)).toBe(true)
@@ -661,6 +788,32 @@ describe('Hole dialog arguments', () => {
     expect(evaluateRequired('drillPointAngle', { holeBottom: 'drill' })).toBe(
       true
     )
+  })
+})
+
+describe('Helix cylinder selection', () => {
+  it('accepts a region-backed cylinder', () => {
+    const commandConfig = modelingMachineCommandConfig.Helix
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Helix should have a single command config')
+    }
+
+    const cylinderArg = commandConfig.args?.cylinder
+    if (!cylinderArg || cylinderArg.inputType !== 'selection') {
+      throw new Error('Helix should expose a cylinder selection argument')
+    }
+
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
+        {
+          inputType: 'selection',
+          selectionTypes: cylinderArg.selectionTypes,
+          multiple: cylinderArg.multiple,
+          required: true,
+        }
+      )
+    ).toBe(true)
   })
 })
 
@@ -1014,8 +1167,40 @@ describe('Chamfer dialog arguments', () => {
         argumentsToSubmit: { angle: parsedLength('45deg') },
       } as never)
     ).toBe('distanceAndAngle')
-    expect(chamferConfig().args?.angle).toMatchObject({ defaultValue: '45deg' })
-    expect(chamferConfig().args?.version).toMatchObject({ defaultValue: '1' })
+    const angle = chamferConfig().args?.angle
+    const version = chamferConfig().args?.version
+    if (
+      angle?.inputType !== 'kcl' ||
+      typeof angle.defaultValue !== 'function' ||
+      version?.inputType !== 'kcl' ||
+      typeof version.defaultValue !== 'function'
+    ) {
+      throw new Error('Chamfer defaults should depend on the UI surface')
+    }
+    const dialogContext = {
+      argumentsToSubmit: {},
+      selectedCommand: { useModelingDialog: true },
+    } as never
+    expect(angle.defaultValue(dialogContext)).toBe('45deg')
+    expect(version.defaultValue(dialogContext)).toBe('')
+  })
+
+  it('preserves the legacy Chamfer angle and algorithm defaults with dialogs off', () => {
+    const angle = chamferConfig().args?.angle
+    const version = chamferConfig().args?.version
+    if (
+      angle?.inputType !== 'kcl' ||
+      typeof angle.defaultValue !== 'function' ||
+      version?.inputType !== 'kcl' ||
+      typeof version.defaultValue !== 'function'
+    ) {
+      throw new Error('Chamfer defaults should depend on the UI surface')
+    }
+    for (const selectedCommand of [undefined, { useModelingDialog: false }]) {
+      const context = { argumentsToSubmit: {}, selectedCommand } as never
+      expect(angle.defaultValue(context)).toBe('360deg')
+      expect(version.defaultValue(context)).toBe('1')
+    }
   })
 
   it('keeps UI-only size modes out of the legacy command bar', () => {
@@ -1025,9 +1210,34 @@ describe('Chamfer dialog arguments', () => {
   })
 })
 
-describe('Translate arguments', () => {
-  it('accepts helices without enabling them for other transforms', () => {
-    for (const commandName of ['Translate', 'Rotate', 'Scale'] as const) {
+describe('Transform arguments', () => {
+  it('prepopulates clearable transform values', () => {
+    for (const [commandName, argName, defaultValue] of [
+      ['Translate', 'x', KCL_DEFAULT_TRANSLATE_X],
+      ['Rotate', 'axis', KCL_AXIS_Z],
+      ['Rotate', 'angle', KCL_DEFAULT_ROTATE_ANGLE],
+      ['Scale', 'factor', KCL_DEFAULT_SCALE_FACTOR],
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const args = commandConfig.args as Record<string, unknown> | undefined
+      expect(args?.[argName]).toMatchObject({
+        defaultValue,
+        prepopulate: true,
+      })
+    }
+  })
+
+  it('accepts helices only for supported transforms', () => {
+    for (const commandName of [
+      'Translate',
+      'Rotate',
+      'Scale',
+      'Clone',
+    ] as const) {
       const commandConfig = modelingMachineCommandConfig[commandName]
       if (!commandConfig || isArray(commandConfig)) {
         throw new Error(`${commandName} should have a single command config`)
@@ -1038,7 +1248,11 @@ describe('Translate arguments', () => {
         throw new Error(`${commandName}.objects should be a selection argument`)
       }
       const selectionTypes = objectsArg.selectionTypes
-      if (commandName === 'Translate') {
+      if (
+        commandName === 'Translate' ||
+        commandName === 'Scale' ||
+        commandName === 'Rotate'
+      ) {
         expect(selectionTypes).toContain('helix')
       } else {
         expect(selectionTypes).not.toContain('helix')
@@ -1232,13 +1446,15 @@ describe('stdlib command arg derivation', () => {
     ).toBe(false)
   })
 
-  it('keeps the product-selected Sweep algorithm ahead of the KCL default', () => {
+  it('keeps the product-selected Sweep algorithm when KCL has no literal default', () => {
     const sweepCommand = modelingMachineCommandConfig.Sweep
     if (!sweepCommand || isArray(sweepCommand)) {
       throw new Error('Sweep should have a single command config')
     }
 
-    expect(stdLibCommandArgMetadata('sweep', 'version')?.defaultValue).toBe('0')
+    expect(
+      stdLibCommandArgMetadata('sweep', 'version')?.defaultValue
+    ).toBeUndefined()
     expect(sweepCommand.args?.version).toMatchObject({ defaultValue: '2' })
   })
 })

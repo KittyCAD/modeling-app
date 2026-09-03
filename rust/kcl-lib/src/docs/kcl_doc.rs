@@ -152,9 +152,11 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                 let qual = format!("{}::", result.qual_name);
                 let mut dd = match var.kind {
                     VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, &result.name)),
-                    VariableKind::Const => {
-                        DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
-                    }
+                    VariableKind::Const => function_alias_from_ast(var, &result, &qual, preferred_prefix)
+                        .map(DocData::Fn)
+                        .unwrap_or_else(|| {
+                            DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
+                        }),
                 };
                 let key = format!("I:{}", dd.qual_name());
                 if result.children.contains_key(&key) {
@@ -193,6 +195,34 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     }
 
     Ok(result)
+}
+
+/// Build documentation for a direct, same-module function alias.
+///
+/// KCL declares an alias such as `export fixed = coincident` as a constant, but
+/// users call it as a function. Reuse the target function's callable contract
+/// while keeping the alias's identity and documentation.
+fn function_alias_from_ast(
+    var: &crate::parsing::ast::types::VariableDeclaration,
+    module: &ModData,
+    qual_prefix: &str,
+    preferred_prefix: &str,
+) -> Option<FnData> {
+    let Expr::Name(target) = &var.declaration.init else {
+        return None;
+    };
+    let target_name = target.local_ident()?;
+    let target_key = format!("I:{qual_prefix}{target_name}");
+    let DocData::Fn(target) = module.children.get(&target_key)? else {
+        return None;
+    };
+
+    let name = var.declaration.id.name.clone();
+    let mut alias = target.clone();
+    alias.preferred_name = format!("{preferred_prefix}{name}");
+    alias.qual_name = format!("{qual_prefix}{name}");
+    alias.name = name;
+    Some(alias)
 }
 
 #[derive(Debug, Clone)]
@@ -718,7 +748,12 @@ impl FnData {
     }
 
     pub(super) fn to_autocomplete_snippet(&self) -> String {
-        if self.name == "loft" {
+        if self.name == "angleDimension" {
+            return format!(
+                "{}(lines = [${{1:line1}}, ${{2:line2}}], sector = ${{3:1}})",
+                self.preferred_name
+            );
+        } else if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
         } else if self.name == "union" {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
@@ -900,6 +935,8 @@ pub struct ArgData {
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
+    /// Constraint on the KCL version at or after which this argument is removed.
+    pub removed_since: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -943,6 +980,7 @@ impl ArgData {
             },
             deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
+            removed_since: arg.removed_since.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -1026,6 +1064,9 @@ impl ArgData {
                     "angleEnd" => "180deg",
                     "angle" => "180deg",
                     "arcDegrees" => "360deg",
+                    "sector" => "1",
+                    "metalness" => "90",
+                    "roughness" => "50",
                     _ => "10",
                 };
                 Some((index, format!(r#"{label}${{{index}:{value}}}"#)))
@@ -1061,7 +1102,7 @@ impl ArgData {
 
             Some("string") => {
                 if self.name == "color" {
-                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
+                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#da4333\"")))
                 } else {
                     Some((index, format!(r#"{label}${{{index}:"string"}}"#)))
                 }
@@ -1109,6 +1150,9 @@ pub struct TyData {
     pub qual_name: String,
     pub properties: Properties,
     pub alias: Option<String>,
+    /// The variants of an enum type, in declaration order. Empty for
+    /// non-enum types.
+    pub variants: Vec<TyVariantData>,
 
     /// The summary of the function.
     pub summary: Option<String>,
@@ -1119,6 +1163,29 @@ pub struct TyData {
     pub examples: Vec<(String, ExampleProperties)>,
 
     pub module_name: String,
+}
+
+/// One variant of an enum type, with the doc comment attached to it in the
+/// declaration, e.g. `/// The standard three-quarter view.` above
+/// `| Isometric`.
+#[derive(Debug, Clone)]
+pub struct TyVariantData {
+    pub name: String,
+    pub docs: Option<String>,
+}
+
+/// The doc comment attached to one enum variant: the `///` lines among its
+/// pre-comments, markers stripped, joined into one string.
+fn variant_docs(pre_comments: &[String]) -> Option<String> {
+    let lines: Vec<&str> = pre_comments
+        .iter()
+        .filter(|l| l.starts_with("///"))
+        .map(|l| l.strip_prefix("/// ").unwrap_or(&l[3..]).trim_end())
+        .collect();
+    if lines.is_empty() {
+        return None;
+    }
+    Some(lines.join(" "))
 }
 
 impl TyData {
@@ -1148,6 +1215,17 @@ impl TyData {
                 TypeDeclarationDefinition::Alias { ty } => Some(ty.to_string()),
                 TypeDeclarationDefinition::Bare | TypeDeclarationDefinition::Enum(_) => None,
             },
+            variants: match &ty.definition {
+                TypeDeclarationDefinition::Enum(decl) => decl
+                    .variants
+                    .iter()
+                    .map(|variant| TyVariantData {
+                        name: variant.name.name.clone(),
+                        docs: variant_docs(&variant.pre_comments),
+                    })
+                    .collect(),
+                TypeDeclarationDefinition::Bare | TypeDeclarationDefinition::Alias { .. } => Vec::new(),
+            },
             summary: None,
             description: None,
             examples: Vec::new(),
@@ -1174,22 +1252,45 @@ impl TyData {
     fn to_completion_item(&self) -> CompletionItem {
         CompletionItem {
             label: self.preferred_name.clone(),
-            label_details: self.alias.as_ref().map(|t| CompletionItemLabelDetails {
-                detail: Some(format!("type {} = {t}", self.name)),
-                description: None,
-            }),
+            label_details: self
+                .alias
+                .as_ref()
+                .map(|t| CompletionItemLabelDetails {
+                    detail: Some(format!("type {} = {t}", self.name)),
+                    description: None,
+                })
+                .or_else(|| {
+                    if self.variants.is_empty() {
+                        return None;
+                    }
+                    let arms = self.variants.iter().map(|v| v.name.as_str()).collect::<Vec<_>>();
+                    Some(CompletionItemLabelDetails {
+                        detail: Some(format!("type {} {{ | {} }}", self.name, arms.join(" | "))),
+                        description: None,
+                    })
+                }),
             kind: self
                 .properties
                 .doc_category
                 .map(DocCategory::to_completion_item_kind)
                 .or(Some(CompletionItemKind::STRUCT)),
             detail: Some(self.qual_name().to_owned()),
-            documentation: self.short_docs().map(|s| {
-                Documentation::MarkupContent(MarkupContent {
+            documentation: {
+                let mut value = self.short_docs().map(|s| remove_md_links(&s)).unwrap_or_default();
+                for variant in &self.variants {
+                    value.push_str(if value.is_empty() { "- `" } else { "\n- `" });
+                    value.push_str(&variant.name);
+                    value.push('`');
+                    if let Some(docs) = &variant.docs {
+                        value.push_str(": ");
+                        value.push_str(&remove_md_links(docs));
+                    }
+                }
+                (!value.is_empty()).then_some(Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: remove_md_links(&s),
-                })
-            }),
+                    value,
+                }))
+            },
             deprecated: Some(self.properties.deprecated),
             preselect: None,
             sort_text: None,
@@ -1629,6 +1730,49 @@ mod test {
     }
 
     #[test]
+    fn direct_function_alias_inherits_callable_documentation() {
+        let stdlib = walk_stdlib();
+        let Some(DocData::Fn(fixed)) = stdlib.find_by_name("fixed") else {
+            panic!("fixed should be documented as a function alias");
+        };
+
+        assert_eq!(fixed.name, "fixed");
+        assert_eq!(fixed.preferred_name, "solver::fixed");
+        assert_eq!(fixed.qual_name, "std::solver::fixed");
+        assert_eq!(fixed.fn_signature(), "(@points: [Segment | Point2d; 2+])");
+        assert_eq!(
+            fixed.to_signature_help().signatures[0].label,
+            "solver::fixed(@points: [Segment | Point2d; 2+])"
+        );
+        assert_eq!(fixed.examples.len(), 1);
+        assert!(fixed.examples[0].0.contains("fixed([edge.start, ORIGIN])"));
+    }
+
+    #[test]
+    fn stdlib_parameters_removed_in_kcl_3_are_marked() {
+        let stdlib = walk_stdlib();
+        for (func, param) in [
+            ("chamfer", "legacyMethod"),
+            ("fillet", "legacyMethod"),
+            ("union", "legacyMethod"),
+            ("intersect", "legacyMethod"),
+            ("subtract", "legacyMethod"),
+            ("split", "legacyMethod"),
+            ("sweep", "relativeTo"),
+        ] {
+            let Some(DocData::Fn(f)) = stdlib.find_by_name(func) else {
+                panic!("{func} should be a documented function");
+            };
+            let arg = f
+                .args
+                .iter()
+                .find(|a| a.name == param)
+                .unwrap_or_else(|| panic!("{func} should declare {param}"));
+            assert_eq!(arg.removed_since, VersionConstraint::parse("3.0"), "{func}({param})");
+        }
+    }
+
+    #[test]
     fn test_remove_md_links() {
         assert_eq!(
             remove_md_links("sdf dsf sd fj sdk fasdfs. asad[sdfs] dfsdf(dsfs, dsf)"),
@@ -1712,7 +1856,7 @@ mod test {
             }
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
-            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None, !eg.1.no3d).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!(
                         "Error testing example {NAME} for {owner_name} in {}: {}",
@@ -1729,16 +1873,21 @@ mod test {
             if eg.1.norun {
                 return;
             }
-            twenty_twenty::assert_image(
+            if let Err(err) = twenty_twenty::try_assert_image(
                 format!(
                     "tests/outputs/serial_test_example_fn_{}{i}.png",
                     qualname.replace("::", "-")
                 ),
                 &result.image,
                 0.99,
-            );
-            // Doc generation omits the model viewer for a `no3d` example, so
-            // writing its glTF would produce a file no page can ever link to.
+            ) {
+                panic!(
+                    "Image assertion failed for example {NAME} for {owner_name} in {}: {err}",
+                    source_path.display()
+                );
+            }
+            // Doc generation omits the model viewer for a `no3d` example. Its
+            // glTF export was already skipped by `execute_and_snapshot_3d`.
             // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
             if !eg.1.no3d {
                 for gltf_file in result.gltf {

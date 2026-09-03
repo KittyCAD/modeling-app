@@ -34,49 +34,49 @@ export const loftDialogOverrides = {
   },
   bodyType: bodyTypeResultArg(profileSelectionRequiresBodyType),
   vDegree: {
-    displayName: 'Interpolation degree',
     description: 'Interpolation degree in the loft direction.',
     dialog: {
+      displayName: 'Interpolation degree',
       group: 'advanced',
       order: 0,
     },
   },
   bezApproximateRational: {
-    displayName: 'Approximate rational curves',
     description: 'Reduce banding when lofting between arcs and non-arcs.',
     dialog: {
+      displayName: 'Approximate rational curves',
       group: 'advanced',
       order: 10,
       controlStyle: 'segmented',
     },
   },
   baseCurveIndex: {
-    displayName: 'Base profile index',
     description: 'Override the automatically chosen base profile.',
     dialog: {
+      displayName: 'Base profile index',
       group: 'advanced',
       order: 20,
     },
   },
   tolerance: {
-    displayName: 'Tolerance',
     description:
       'Leave unchanged unless the loft needs a custom geometric tolerance.',
     dialog: {
+      displayName: 'Tolerance',
       group: 'advanced',
       order: 30,
     },
   },
   tagStart: {
-    displayName: 'Start face tag',
     dialog: {
+      displayName: 'Start face tag',
       group: 'advanced',
       order: 40,
     },
   },
   tagEnd: {
-    displayName: 'End face tag',
     dialog: {
+      displayName: 'End face tag',
       group: 'advanced',
       order: 50,
     },

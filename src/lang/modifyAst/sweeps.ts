@@ -28,7 +28,10 @@ import {
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  resolveEdgeSelectionContext,
+} from '@src/lang/modifyAst/tagManagement'
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   createSketchTagMemberExpression,
@@ -44,11 +47,9 @@ import {
 import {
   getArtifactOfTypes,
   getOriginalSegmentArtifact,
-  getSweepArtifactFromSelection,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
-  Artifact,
   ArtifactGraph,
   CallExpressionKw,
   Expr,
@@ -1241,34 +1242,17 @@ function getEdgeProfileExprsFromSelection({
       return new Error('Extrude edge profiles must be sweep edge selections.')
     }
 
-    const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-      selection,
-      artifactGraph
-    )
-    if (err(sourceSurfaceArtifact)) return sourceSurfaceArtifact
-
-    const sourceSurfaceVars = getVariableExprsFromSelection(
-      {
-        graphSelections: [
-          {
-            artifact: sourceSurfaceArtifact as Artifact,
-            codeRef: sourceSurfaceArtifact.codeRef,
-          },
-        ],
-        otherSelections: [],
-      },
-      artifactGraph,
+    const edgeContext = resolveEdgeSelectionContext(
       modifiedAst,
+      selection,
+      artifactGraph,
       wasmInstance,
-      nodeToEdit
+      nodeToEdit,
+      false
     )
-    if (err(sourceSurfaceVars)) return sourceSurfaceVars
-    if (sourceSurfaceVars.exprs.length !== 1) {
-      return new Error(
-        'Expected exactly one source surface for each selected edge.'
-      )
-    }
-    const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+    if (err(edgeContext)) return edgeContext
+    const sourceSurfaceArtifact = edgeContext.sourceSweep
+    const sourceSurfaceExpr = edgeContext.selectedBodyExpr
 
     const sourceSurfaceNode = getNodeFromPath<
       CallExpressionKw | VariableDeclaration
@@ -1291,14 +1275,14 @@ function getEdgeProfileExprsFromSelection({
         isCallExprWithName(sourceSurfaceInput, 'getPreviousAdjacentEdge') ||
         isCallExprWithName(sourceSurfaceInput, 'edgeId'))
 
-    if (sourceSurfaceInputIsEdgeExpr) {
+    if (!edgeContext.isClone && sourceSurfaceInputIsEdgeExpr) {
       exprs.push(
         getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
       )
       continue
     }
 
-    if (sourceSurfaceInput?.type === 'Name') {
+    if (!edgeContext.isClone && sourceSurfaceInput?.type === 'Name') {
       const variableDeclaration = modifiedAst.body.find(
         (statement): statement is Node<VariableDeclaration> =>
           statement.type === 'VariableDeclaration' &&
@@ -1320,7 +1304,7 @@ function getEdgeProfileExprsFromSelection({
     }
 
     let sketchSegmentName = getSketchSegmentNameFromSourceSurface(
-      sourceSurfaceArtifact as Artifact,
+      sourceSurfaceArtifact,
       edgeArtifact,
       artifactGraph,
       modifiedAst,
@@ -1361,13 +1345,13 @@ function getEdgeProfileExprsFromSelection({
     }
 
     const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-      sourceSurfaceArtifact as Artifact,
+      sourceSurfaceArtifact,
       edgeArtifact,
       artifactGraph,
       modifiedAst,
       wasmInstance
     )
-    if (regionSketchTagExpr) {
+    if (regionSketchTagExpr && !edgeContext.isClone) {
       exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
       continue
     }

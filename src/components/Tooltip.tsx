@@ -1,8 +1,25 @@
 // We do use all the classes in this file currently, but we
 // index into them with styles[position], which CSS Modules doesn't pick up.
 
-import { useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useRef } from 'react'
 import styles from './Tooltip.module.css'
+
+export const RICH_TOOLTIP_SURFACE_CLASS_NAME =
+  '!text-left text-wrap !text-xs !p-0 !pb-2 flex !w-72 flex-col items-stretch'
+
+type TooltipSurfaceProps = React.ComponentPropsWithoutRef<'div'>
+
+export const TooltipSurface = forwardRef<HTMLDivElement, TooltipSurfaceProps>(
+  function TooltipSurface({ className = '', ...props }, ref) {
+    return (
+      <div
+        ref={ref}
+        className={`rounded ${styles.tooltip} ${className}`}
+        {...props}
+      />
+    )
+  }
+)
 
 type TopOrBottom = 'top' | 'bottom'
 type LeftOrRight = 'left' | 'right'
@@ -17,6 +34,73 @@ export interface TooltipProps extends React.HTMLProps<HTMLDivElement> {
   delay?: number
   hoverOnly?: boolean
   inert?: boolean
+}
+
+function supportsNativeAnchorPositioning() {
+  return (
+    typeof CSS !== 'undefined' &&
+    CSS.supports('position-anchor', 'auto') &&
+    CSS.supports('top', 'anchor(bottom)')
+  )
+}
+
+// Browser-native anchor positioning is still uneven, so keep a direct
+// rectangle-based fallback for popover tooltips.
+function positionTooltipFromTrigger(
+  tooltip: HTMLElement,
+  trigger: HTMLElement,
+  position: TooltipPosition
+) {
+  const triggerBox = trigger.getBoundingClientRect()
+  const tooltipBox = tooltip.getBoundingClientRect()
+
+  let left = triggerBox.left
+  let top = triggerBox.top
+
+  switch (position) {
+    case 'top':
+      left = triggerBox.left + triggerBox.width / 2 - tooltipBox.width / 2
+      top = triggerBox.top - tooltipBox.height
+      break
+    case 'top-left':
+      left = triggerBox.left
+      top = triggerBox.top - tooltipBox.height
+      break
+    case 'top-right':
+      left = triggerBox.right - tooltipBox.width
+      top = triggerBox.top - tooltipBox.height
+      break
+    case 'right':
+      left = triggerBox.right
+      top = triggerBox.top + triggerBox.height / 2 - tooltipBox.height / 2
+      break
+    case 'bottom':
+      left = triggerBox.left + triggerBox.width / 2 - tooltipBox.width / 2
+      top = triggerBox.bottom
+      break
+    case 'bottom-left':
+      left = triggerBox.left
+      top = triggerBox.bottom
+      break
+    case 'bottom-right':
+      left = triggerBox.right - tooltipBox.width
+      top = triggerBox.bottom
+      break
+    case 'left':
+      left = triggerBox.left - tooltipBox.width
+      top = triggerBox.top + triggerBox.height / 2 - tooltipBox.height / 2
+      break
+  }
+
+  Object.assign(tooltip.style, {
+    bottom: 'auto',
+    inset: 'auto',
+    left: `${left}px`,
+    position: 'fixed',
+    right: 'auto',
+    top: `${top}px`,
+    transform: 'none',
+  })
 }
 
 export default function Tooltip({
@@ -40,9 +124,29 @@ export default function Tooltip({
       return
     }
 
-    // @ts-ignore-next-line -- React is not up to date about the options that can be passed
-    const show = () => tooltip.current?.showPopover({ source: parent })
-    const hide = () => tooltip.current?.hidePopover()
+    const updateFallbackPosition = () => {
+      if (tooltip.current && !supportsNativeAnchorPositioning()) {
+        positionTooltipFromTrigger(tooltip.current, parent, position)
+      }
+    }
+
+    const show = () => {
+      const currentTooltip = tooltip.current
+      if (!currentTooltip) return
+
+      currentTooltip.showPopover({ source: parent })
+      updateFallbackPosition()
+
+      if (!supportsNativeAnchorPositioning()) {
+        window.addEventListener('resize', updateFallbackPosition)
+        window.addEventListener('scroll', updateFallbackPosition, true)
+      }
+    }
+    const hide = () => {
+      window.removeEventListener('resize', updateFallbackPosition)
+      window.removeEventListener('scroll', updateFallbackPosition, true)
+      tooltip.current?.hidePopover()
+    }
 
     parent.addEventListener('mouseenter', show)
     parent.addEventListener('mouseleave', hide)
@@ -54,8 +158,10 @@ export default function Tooltip({
       parent.removeEventListener('mouseleave', hide)
       parent.removeEventListener('focus', show)
       parent.removeEventListener('blur', hide)
+      window.removeEventListener('resize', updateFallbackPosition)
+      window.removeEventListener('scroll', updateFallbackPosition, true)
     }
-  }, [])
+  }, [position])
   return (
     <div
       popover="hint"
@@ -73,9 +179,7 @@ export default function Tooltip({
       )}
       {...rest}
     >
-      <div className={`rounded ${styles.tooltip} ${contentClassName || ''}`}>
-        {children}
-      </div>
+      <TooltipSurface className={contentClassName}>{children}</TooltipSurface>
     </div>
   )
 }

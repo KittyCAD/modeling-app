@@ -107,7 +107,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -204,7 +204,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: namespace-profile-ubuntu-8-cores
+          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
           - os: namespace-profile-macos-8-cores
           - os: namespace-profile-windows-8-cores
     runs-on: ${{ matrix.os }}
@@ -250,7 +250,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -310,7 +310,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [namespace-profile-ubuntu-8-cores]
+        os:
+          - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
         shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
         shardTotal: [8]
         include:
@@ -355,7 +356,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -383,8 +384,9 @@ jobs:
       - name: Build app
         run: npm run tronb:vite:dev
 
-      - uses: actions/download-artifact@v8
-        if: ${{ !cancelled() && (success() || failure()) }}
+      - name: Download test results from a previous workflow attempt
+        if: ${{ github.run_attempt > 1 && !cancelled() && (success() || failure()) }}
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -442,13 +444,13 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
 
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -472,7 +474,7 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 1200 # average build times are 17-19 minutes
+          max_timeout: 800 # average build times are <9 minutes
           check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
@@ -484,13 +486,12 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: staging
-          max_timeout: 1200 # average build times are 17-19 minutes
+          max_timeout: 1000 # average build times are <11 minutes
           check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Check Vercel
         run: .github/ci-cd-scripts/check-vercel.sh
-        continue-on-error: true
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -498,7 +499,7 @@ jobs:
       - name: npm run test:e2e:web
         run: npm run test:e2e:web -- --grep=demo
         env:
-          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url || format('https://pr-{0}.vercel.dev.zoo.dev', github.event.pull_request.number) }}
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}

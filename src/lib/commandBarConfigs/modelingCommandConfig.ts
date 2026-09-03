@@ -66,8 +66,11 @@ import {
   KCL_DEFAULT_ORIGIN,
   KCL_DEFAULT_ORIGIN_2D,
   KCL_DEFAULT_PRECISION,
+  KCL_DEFAULT_ROTATE_ANGLE,
   KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_TRANSLATE_X,
   KCL_DEFAULT_TRANSFORM,
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
@@ -82,6 +85,7 @@ import type {
   Selections,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
+import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 export { profileSelectionRequiresBodyType } from '@src/lib/commandBarConfigs/modelingDialogShared'
@@ -305,6 +309,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'change tool': [
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing straight lines.',
       icon: 'line',
       displayName: 'Line',
@@ -318,6 +323,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing an arc tangent to the current segment.',
       icon: 'arc',
       displayName: 'Tangential Arc',
@@ -331,6 +337,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing a rectangle.',
       icon: 'rectangle',
       displayName: 'Rectangle',
@@ -805,6 +812,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         cylinder: {
           ...objectsTypesAndFilters,
+          selectionTypes: [
+            ...objectsTypesAndFilters.selectionTypes,
+            'pathRegion',
+          ],
           inputType: 'selection',
           multiple: false,
           required: (context) =>
@@ -1011,6 +1022,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Constrain length': {
+    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
     args: {
@@ -1060,6 +1072,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Constrain with named value': {
+    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain a value by making it a named constant.',
     icon: 'make-variable',
     args: {
@@ -1164,7 +1177,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           x: {
-            defaultValue: KCL_DEFAULT_TRANSFORM,
+            defaultValue: KCL_DEFAULT_TRANSLATE_X,
+            prepopulate: true,
           },
           y: {
             defaultValue: KCL_DEFAULT_TRANSFORM,
@@ -1191,6 +1205,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectsTypesAndFilters,
+          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,
@@ -1207,6 +1222,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         axis: {
           inputType: 'options',
           defaultValue: KCL_AXIS_Z,
+          prepopulate: true,
           options: [
             { name: 'X-axis', value: KCL_AXIS_X },
             { name: 'Y-axis', value: KCL_AXIS_Y },
@@ -1214,7 +1230,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ],
         },
         angle: {
-          defaultValue: KCL_DEFAULT_DEGREE,
+          defaultValue: KCL_DEFAULT_ROTATE_ANGLE,
+          prepopulate: true,
         },
       },
     }),
@@ -1230,6 +1247,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectsTypesAndFilters,
+          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,
@@ -1244,7 +1262,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           defaultValue: KCL_DEFAULT_SCALE,
         },
         factor: {
-          defaultValue: KCL_DEFAULT_SCALE,
+          defaultValue: KCL_DEFAULT_SCALE_FACTOR,
+          prepopulate: true,
         },
       },
     }),

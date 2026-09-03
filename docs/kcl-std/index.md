@@ -166,6 +166,7 @@ layout: manual
   * [`union`](/docs/kcl-std/functions/std-solid-union)
 * [**std::solver**](/docs/kcl-std/modules/std-solver)
   * [`solver::angle`](/docs/kcl-std/functions/std-solver-angle)
+  * [`solver::angleDimension`](/docs/kcl-std/functions/std-solver-angleDimension)
   * [`solver::arc`](/docs/kcl-std/functions/std-solver-arc)
   * [`solver::circle`](/docs/kcl-std/functions/std-solver-circle)
   * [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)
@@ -221,6 +222,10 @@ layout: manual
   * [`vector::mul`](/docs/kcl-std/functions/std-vector-mul)
   * [`vector::normalize`](/docs/kcl-std/functions/std-vector-normalize)
   * [`vector::sub`](/docs/kcl-std/functions/std-vector-sub)
+* [**std::view**](/docs/kcl-std/modules/std-view) Experimental
+  * [`view::directed`](/docs/kcl-std/functions/std-view-directed) Experimental
+  * [`view::named`](/docs/kcl-std/functions/std-view-named) Experimental
+  * [`view::oriented`](/docs/kcl-std/functions/std-view-oriented) Experimental
 
 ### Constants
 
@@ -292,3 +297,9 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`mm`](/docs/kcl-std/types/std-types-mm)
   * [`rad`](/docs/kcl-std/types/std-types-rad)
   * [`yd`](/docs/kcl-std/types/std-types-yd)
+* [**std::view**](/docs/kcl-std/modules/std-view) Experimental
+  * [`view::CameraView`](/docs/kcl-std/types/std-view-CameraView) Experimental
+  * [`view::NamedView`](/docs/kcl-std/types/std-view-NamedView) Experimental
+  * [`view::Orientation`](/docs/kcl-std/types/std-view-Orientation) Experimental
+  * [`view::Projection`](/docs/kcl-std/types/std-view-Projection) Experimental
+  * [`view::Visibility`](/docs/kcl-std/types/std-view-Visibility) Experimental

@@ -1,27 +1,104 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
-  CloudSyncConfig,
   CloudSyncConflictResolution,
   CloudSyncLocalProject,
+  CloudSyncOpenedProject,
   CloudSyncProjectMetadata,
   CloudSyncProjectMetadataIndexEntry,
   CloudSyncStatus,
   RemoteProjectSummary,
 } from '@src/lib/cloudSync'
+import type { CloudSyncProjectNowResult } from '@src/lib/cloudSync/types'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import type { ProjectLibraryRealization } from '@src/registry/contracts/projectLibraries'
+
+export type CloudProjectDuplicateRisk =
+  | 'exact'
+  | 'divergent'
+  | 'pending'
+  | 'conflicted'
+  | 'unreadable'
+  | 'tombstoned'
+  | 'sync-excluded'
+  | 'unknown'
+
+export type CloudProjectRealizationRole = 'canonical' | 'duplicate'
+
+export type CloudProjectDuplicateCleanupInput = {
+  remoteProjectId: string
+  canonicalProjectPath?: string
+  duplicateProjectPaths: readonly string[]
+}
+
+export interface CloudProjectRelationshipRealization {
+  role: CloudProjectRealizationRole
+  realization: ProjectLibraryRealization
+  duplicateRisk: CloudProjectDuplicateRisk
+  autoCleanupEligible: boolean
+}
+
+/**
+ * A remote project is the cloud-side project record identified by cloud project
+ * ID. A cloud relationship explicitly binds that remote project to zero or
+ * more local realizations.
+ *
+ * The canonical realization is the preferred local folder for the
+ * relationship. Duplicate realizations are non-canonical local folders bound to
+ * the same remote project. Home renders these relationships; it does not infer
+ * them from provider entries.
+ */
+export interface CloudProjectRelationship {
+  id: string
+  remoteProjectId: string
+  remoteProject?: RemoteProjectSummary
+  canonicalRealization?: CloudProjectRelationshipRealization
+  duplicateRealizations: readonly CloudProjectRelationshipRealization[]
+  localRealizations: readonly CloudProjectRelationshipRealization[]
+  modified?: number
+  remoteThumbnailUrl?: string
+  conflict?: unknown
+  syncFailure?: {
+    message: string
+    at?: string
+    kind?: string
+  }
+}
+
+export type CloudProjectRelationshipsRegistryService = {
+  /**
+   * cloudSync-owned relationship state. This is a singleton service signal,
+   * not a ValueSpec, because cloud identity resolution is not an extension
+   * contribution surface.
+   */
+  relationships: ReadonlySignal<CloudProjectRelationship[]>
+}
+
+/** Runtime inputs registry callers may override before activation policy runs. */
+export type CloudSyncRegistryRuntimeConfig = {
+  token?: string
+  baseUrl?: string
+  environmentName?: string
+  cloudProjectDirectoryPaths?: string[]
+  autoEnrollCloudLibraryProjects?: boolean
+}
 
 export type CloudSyncRegistryService = {
   status: ReadonlySignal<CloudSyncStatus>
-  configure: (config: CloudSyncConfig) => void
+  configure: (config: CloudSyncRegistryRuntimeConfig) => void
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
   retry: () => void
-  setProjectScope: (projectPath?: string) => void
+  setOpenedProject: (project?: CloudSyncOpenedProject) => void
   /**
    * Explicitly enroll a local-only project in cloud sync, even when the global
    * policy is not auto-enrolling existing local projects.
    */
   startProjectSync: (projectPath: string) => Promise<void>
+  /**
+   * Synchronize one explicitly enrolled project before returning. This is for
+   * workflows that need its remote identity and exact API archive immediately.
+   */
+  syncNow: (projectPath: string) => Promise<CloudSyncProjectNowResult>
   /**
    * Delete the remote cloud project and keep the local project as local-only.
    * The local project is marked excluded so later edits do not recreate it.
@@ -41,6 +118,14 @@ export type CloudSyncRegistryService = {
   deleteLocalProjectRealizations: (
     remoteProjectId: string,
     selectedProjectPath: string
+  ) => Promise<void>
+  /**
+   * Delete user-confirmed duplicate local realizations for a cloud
+   * relationship. Implementations must ignore the canonical realization even if
+   * a caller includes it in the selected duplicate paths.
+   */
+  deleteDuplicateProjectRealizations: (
+    input: CloudProjectDuplicateCleanupInput
   ) => Promise<void>
   /**
    * Materialize a remote cloud project into the local library directory the
@@ -75,6 +160,11 @@ export type CloudSyncRegistryService = {
 export const cloudSyncContract = defineContract({
   cloudSyncService:
     defineService<CloudSyncRegistryService>('cloud-sync.service'),
+  cloudProjectRelationshipsService:
+    defineService<CloudProjectRelationshipsRegistryService>(
+      'cloud-project-relationships.service'
+    ),
 })
 
-export const { cloudSyncService } = cloudSyncContract
+export const { cloudSyncService, cloudProjectRelationshipsService } =
+  cloudSyncContract

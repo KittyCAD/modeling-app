@@ -8,8 +8,7 @@ description: Variables in memory after executing torus.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -130,7 +129,7 @@ description: Variables in memory after executing torus.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -193,10 +192,10 @@ description: Variables in memory after executing torus.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 364,
-                    "end": 371,
+                    "commentStart": 319,
+                    "end": 326,
                     "moduleId": 0,
-                    "start": 364,
+                    "start": 319,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -211,7 +210,7 @@ description: Variables in memory after executing torus.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XY",
+                "kind": "Custom",
                 "objectId": 0,
                 "origin": {
                   "x": 0.0,
@@ -295,10 +294,10 @@ description: Variables in memory after executing torus.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 364,
-            "end": 371,
+            "commentStart": 319,
+            "end": 326,
             "moduleId": 0,
-            "start": 364,
+            "start": 319,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -313,7 +312,7 @@ description: Variables in memory after executing torus.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
+        "kind": "Custom",
         "objectId": 0,
         "origin": {
           "x": 0.0,
@@ -369,39 +368,6 @@ description: Variables in memory after executing torus.kcl
       "units": "mm"
     }
   },
-  "sketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
-    }
-  },
   "torus": {
     "type": "Solid",
     "value": {
@@ -414,10 +380,10 @@ description: Variables in memory after executing torus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 364,
-            "end": 371,
+            "commentStart": 319,
+            "end": 326,
             "moduleId": 0,
-            "start": 364,
+            "start": 319,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -445,10 +411,10 @@ description: Variables in memory after executing torus.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 364,
-              "end": 371,
+              "commentStart": 319,
+              "end": 326,
               "moduleId": 0,
-              "start": 364,
+              "start": 319,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -463,7 +429,7 @@ description: Variables in memory after executing torus.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
+          "kind": "Custom",
           "objectId": 0,
           "origin": {
             "x": 0.0,

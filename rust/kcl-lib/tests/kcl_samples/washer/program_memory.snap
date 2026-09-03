@@ -76,7 +76,7 @@ description: Variables in memory after executing washer.kcl
           },
           "ccw": true,
           "center": [
-            0.000000000000999999994004197,
+            0.0000000000009999999940041969,
             0.0
           ],
           "from": [
@@ -85,15 +85,45 @@ description: Variables in memory after executing washer.kcl
           ],
           "radius": 0.219000000001,
           "tag": {
-            "commentStart": 720,
-            "end": 727,
+            "commentStart": 732,
+            "end": 739,
             "moduleId": 0,
-            "start": 720,
+            "start": 732,
             "type": "TagDeclarator",
             "value": "circle1"
           },
           "to": [
             0.219000000002,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.0000000000015000002078467296,
+            0.0
+          ],
+          "from": [
+            0.101499999997,
+            0.0
+          ],
+          "radius": 0.1014999999985,
+          "tag": {
+            "commentStart": 915,
+            "end": 922,
+            "moduleId": 0,
+            "start": 915,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.101499999997,
             0.0
           ],
           "type": "Circle",
@@ -184,12 +214,26 @@ description: Variables in memory after executing washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 720,
-            "end": 727,
+            "commentStart": 732,
+            "end": 739,
             "moduleId": 0,
-            "start": 720,
+            "start": 732,
             "type": "TagDeclarator",
             "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 915,
+            "end": 922,
+            "moduleId": 0,
+            "start": 915,
+            "type": "TagDeclarator",
+            "value": "circle2"
           },
           "type": "extrudeArc"
         }
@@ -206,7 +250,7 @@ description: Variables in memory after executing washer.kcl
             },
             "ccw": true,
             "center": [
-              0.000000000000999999994004197,
+              0.0000000000009999999940041969,
               0.0
             ],
             "from": [
@@ -215,15 +259,45 @@ description: Variables in memory after executing washer.kcl
             ],
             "radius": 0.219000000001,
             "tag": {
-              "commentStart": 720,
-              "end": 727,
+              "commentStart": 732,
+              "end": 739,
               "moduleId": 0,
-              "start": 720,
+              "start": 732,
               "type": "TagDeclarator",
               "value": "circle1"
             },
             "to": [
               0.219000000002,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0000000000015000002078467296,
+              0.0
+            ],
+            "from": [
+              0.101499999997,
+              0.0
+            ],
+            "radius": 0.1014999999985,
+            "tag": {
+              "commentStart": 915,
+              "end": 922,
+              "moduleId": 0,
+              "start": 915,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.101499999997,
               0.0
             ],
             "type": "Circle",
@@ -331,7 +405,7 @@ description: Variables in memory after executing washer.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000999999994004197,
+                        "n": 0.0000000000009999999940041969,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -557,7 +631,7 @@ description: Variables in memory after executing washer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000000000999999994004197,
+                    0.0000000000009999999940041969,
                     0.0
                   ],
                   "from": [
@@ -566,10 +640,10 @@ description: Variables in memory after executing washer.kcl
                   ],
                   "radius": 0.219000000001,
                   "tag": {
-                    "commentStart": 720,
-                    "end": 727,
+                    "commentStart": 732,
+                    "end": 739,
                     "moduleId": 0,
-                    "start": 720,
+                    "start": 732,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -613,10 +687,10 @@ description: Variables in memory after executing washer.kcl
                   ],
                   "radius": 0.1014999999985,
                   "tag": {
-                    "commentStart": 903,
-                    "end": 910,
+                    "commentStart": 915,
+                    "end": 922,
                     "moduleId": 0,
-                    "start": 903,
+                    "start": 915,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },

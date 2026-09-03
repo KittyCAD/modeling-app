@@ -12,6 +12,7 @@ env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
   FORCE_RELEASE_BUILD: false # Set to true to enable codesign in a PR
+  FORCE_RELEASE_BUILD_ALLOW_DOWNGRADE: false # Set to true to allow the updater to downgrade to the last release
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,14 +24,14 @@ jobs:
 
   prepare-files:
     needs: [build-wasm]
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     outputs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -63,11 +64,15 @@ jobs:
           export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
 
-      - name: Set dummy release version (forced release build) and disable updater
+      - name: Set dummy release version (forced release build)
         if: ${{ env.FORCE_RELEASE_BUILD == 'true' }}
         run: |
           export VERSION=255.255.0
           npm run files:set-version
+
+      - name: Set dummy updater URL
+        if: ${{ env.FORCE_RELEASE_BUILD == 'true' && env.FORCE_RELEASE_BUILD_ALLOW_DOWNGRADE == 'false' }}
+        run: |
           yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/no-update"' electron-builder.yml
 
       - name: Set windows codesign config
@@ -148,7 +153,7 @@ jobs:
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm # Set this to npm, npm or pnpm.

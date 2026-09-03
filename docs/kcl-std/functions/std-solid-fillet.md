@@ -34,8 +34,8 @@ will smoothly blend the transition.
 | `edges` | [[`any`](/docs/kcl-std/types/std-types-any)] | **Experimental.** Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based) | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this fillet | No |
-| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
-| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Experimental.** What version of the fillet algorithm to use. Defaults to 1. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed as of KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Removed as of KCL 3.0.** **Experimental.** What version of the fillet algorithm to use. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm. | No |
 
 ### Returns
 
@@ -141,7 +141,7 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [3mm, 2mm], sketch = blockProfile), length = 3, tagEnd = $top)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 3, tagEnd = $top)
 
 tabProfile = startSketchOn(block, face = top)
   |> startProfile(at = [1mm, 1mm])
@@ -163,6 +163,163 @@ filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// This example shows rolling ball fillets, a new type of fillet
+// available with KCL 3.
+@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
+  seg01 = line(start = [var 195.16mm, var 32.75mm], end = [var 195.16mm, var 112.75mm])
+  topRightInset = line(start = [var 195.16mm, var 112.75mm], end = [var 168.73mm, var 112.75mm])
+  innerRightDrop = line(start = [var 168.73mm, var 112.75mm], end = [var 168.73mm, var 62.75mm])
+  lowerSpan = line(start = [var 168.73mm, var 62.75mm], end = [var -104.94mm, var 62.75mm])
+  innerLeftRise = line(start = [var -104.94mm, var 62.75mm], end = [var -104.94mm, var 112.75mm])
+  topLeftInset = line(start = [var -104.94mm, var 112.75mm], end = [var -131.92mm, var 112.75mm])
+  seg03 = line(start = [var -131.92mm, var 112.75mm], end = [var -131.92mm, var 32.75mm])
+
+  coincident([seg02.end, seg01.start])
+  coincident([seg01.end, topRightInset.start])
+  coincident([
+    topRightInset.end,
+    innerRightDrop.start
+  ])
+  coincident([innerRightDrop.end, lowerSpan.start])
+  coincident([lowerSpan.end, innerLeftRise.start])
+  coincident([innerLeftRise.end, topLeftInset.start])
+  coincident([topLeftInset.end, seg03.start])
+  coincident([seg03.end, seg02.start])
+
+  horizontal(seg02)
+  vertical(seg01)
+  horizontal(topRightInset)
+  vertical(innerRightDrop)
+  horizontal(lowerSpan)
+  vertical(innerLeftRise)
+  horizontal(topLeftInset)
+
+  horizontalDistance([seg02.start, ORIGIN]) == 131.92mm
+  verticalDistance([ORIGIN, seg02.start]) == 32.75mm
+  distance([seg01.start, seg01.end]) == 80
+  distance([topRightInset.start, topRightInset.end]) == 26.43mm
+  distance([
+  innerRightDrop.start,
+  innerRightDrop.end
+]) == 50
+  distance([lowerSpan.start, lowerSpan.end]) == 273.67mm
+  distance([innerLeftRise.start, innerLeftRise.end]) == 50
+  distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
+  vertical(seg03)
+}
+
+hidden001 = hide(sketch001)
+profile001 = region(segments = [sketch001.seg02, sketch001.seg01], intersectionIndex = -1, direction = CCW)
+revolve001 = revolve(profile001, angle = 360deg, axis = X)
+  |> fillet(
+       radius = 10mm,
+       tags = [
+         getCommonEdge(faces = [seg02, seg01]),
+         getCommonEdge(faces = [seg02, seg03])
+       ],
+     )
+  |> rotate(yaw = 70deg, pitch = 10deg)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the fillet function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet3_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet3.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Same as previous example, but with the fillet and revolve call
+// in separate commands, with an intermediate variable.
+@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
+  seg01 = line(start = [var 195.16mm, var 32.75mm], end = [var 195.16mm, var 112.75mm])
+  topRightInset = line(start = [var 195.16mm, var 112.75mm], end = [var 168.73mm, var 112.75mm])
+  innerRightDrop = line(start = [var 168.73mm, var 112.75mm], end = [var 168.73mm, var 62.75mm])
+  lowerSpan = line(start = [var 168.73mm, var 62.75mm], end = [var -104.94mm, var 62.75mm])
+  innerLeftRise = line(start = [var -104.94mm, var 62.75mm], end = [var -104.94mm, var 112.75mm])
+  topLeftInset = line(start = [var -104.94mm, var 112.75mm], end = [var -131.92mm, var 112.75mm])
+  seg03 = line(start = [var -131.92mm, var 112.75mm], end = [var -131.92mm, var 32.75mm])
+
+  coincident([seg02.end, seg01.start])
+  coincident([seg01.end, topRightInset.start])
+  coincident([
+    topRightInset.end,
+    innerRightDrop.start
+  ])
+  coincident([innerRightDrop.end, lowerSpan.start])
+  coincident([lowerSpan.end, innerLeftRise.start])
+  coincident([innerLeftRise.end, topLeftInset.start])
+  coincident([topLeftInset.end, seg03.start])
+  coincident([seg03.end, seg02.start])
+
+  horizontal(seg02)
+  vertical(seg01)
+  horizontal(topRightInset)
+  vertical(innerRightDrop)
+  horizontal(lowerSpan)
+  vertical(innerLeftRise)
+  horizontal(topLeftInset)
+
+  horizontalDistance([seg02.start, ORIGIN]) == 131.92mm
+  verticalDistance([ORIGIN, seg02.start]) == 32.75mm
+  distance([seg01.start, seg01.end]) == 80
+  distance([topRightInset.start, topRightInset.end]) == 26.43mm
+  distance([
+  innerRightDrop.start,
+  innerRightDrop.end
+]) == 50
+  distance([lowerSpan.start, lowerSpan.end]) == 273.67mm
+  distance([innerLeftRise.start, innerLeftRise.end]) == 50
+  distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
+  vertical(seg03)
+}
+
+hidden001 = hide(sketch001)
+profile001 = region(segments = [sketch001.seg02, sketch001.seg01], intersectionIndex = -1, direction = CCW)
+
+revolve001 = revolve(profile001, angle = 360deg, axis = X)
+
+fillet001 = fillet(
+  revolve001,
+  tags = getCommonEdge(faces = [
+    profile001.tags.seg02,
+    profile001.tags.seg01
+  ]),
+  radius = 10,
+)
+  |> rotate(yaw = 70deg, pitch = 10deg)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the fillet function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet4_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet4.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

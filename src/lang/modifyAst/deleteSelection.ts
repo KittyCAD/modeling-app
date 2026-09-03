@@ -16,6 +16,16 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 export const deletionErrorMessage =
   'Unable to delete selection. Please edit manually in code pane.'
 
+function clearSelectionAfterDelete(kclManager: KclManager) {
+  kclManager.sendModelingEvent({
+    type: 'Set selection',
+    data: {
+      selectionType: 'completeSelection',
+      selection: { graphSelections: [], otherSelections: [] },
+    },
+  })
+}
+
 export async function deleteSelectionPromise({
   selection,
   systemDeps,
@@ -74,6 +84,7 @@ export async function deleteSelectionPromise({
       shouldExecute: true,
       shouldWriteToDisk: true,
     })
+    clearSelectionAfterDelete(systemDeps.kclManager)
     return
   }
 
@@ -126,4 +137,5 @@ export async function deleteSelectionPromise({
       isDeleting: true,
     }
   )
+  clearSelectionAfterDelete(systemDeps.kclManager)
 }

@@ -9,14 +9,23 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { createLayoutWithMetadata } from '@src/lib/layout/utils'
-import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
+import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
+import {
+  LATEST_LAYOUT_VERSION,
+  createLayoutWithMetadata,
+} from '@src/lib/layout/utils'
+import {
+  DEFAULT_PROJECT_LIBRARY_TITLE,
+  getDefaultCloudProjectLibrarySetting,
+  getDefaultProjectLibrarySettings,
+  LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+} from '@src/lib/projectLibraries'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
+  clearSettingsAtLevel,
   configurationToSettingsPayload,
   formatSettingsLabel,
   getAllCurrentSettings,
@@ -118,7 +127,7 @@ describe('testing settings initialization', () => {
 
     expect(settings.app.libraries.current).toEqual([
       {
-        title: 'Default Projects Directory',
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
         path: '/tmp/projects',
         type: 'directory',
       },
@@ -133,6 +142,31 @@ describe('testing settings initialization', () => {
     expect(settings.app.libraries.current).toEqual([])
     expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toEqual(
       []
+    )
+  })
+
+  it('falls back to default project libraries after clearing user-level libraries', () => {
+    const settings = createSettingsWithProjectLibraries()
+    settings.app.libraries.default =
+      getDefaultProjectLibrarySettings('/tmp/projects')
+
+    setSettingsAtLevel(settings, 'user', {
+      app: {
+        libraries: [getDefaultCloudProjectLibrarySetting()],
+      },
+    })
+
+    clearSettingsAtLevel(settings, 'user')
+
+    expect(settings.app.libraries.current).toEqual([
+      {
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
+        path: '/tmp/projects',
+        type: 'directory',
+      },
+    ])
+    expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toBe(
+      undefined
     )
   })
 })
@@ -276,7 +310,7 @@ describe('project settings serialization regression', () => {
             projectDirectory: '/tmp/projects',
             libraries: [
               {
-                title: 'Default Projects Directory',
+                title: DEFAULT_PROJECT_LIBRARY_TITLE,
                 path: '/tmp/projects',
                 type: 'directory',
               },
@@ -294,6 +328,7 @@ describe('project settings serialization regression', () => {
             gizmoType: 'axis',
             enableTouchControls: false,
             useSketchSolveMode: false,
+            showSketchGrid: true,
             snapToGrid: true,
             majorGridSpacing: 2.5,
             minorGridsPerMajor: 5,
@@ -332,6 +367,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
     expect(serializedToml).toContain('use_sketch_solve_mode = false')
+    expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
     expect(serializedToml).toContain('minor_grids_per_major = 5')
@@ -364,7 +400,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
     expect(parsedPayload.app?.libraries).toEqual([
       {
-        title: 'Default Projects Directory',
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
         path: '/tmp/projects',
         type: 'directory',
       },
@@ -376,6 +412,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
     expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
     expect(parsedPayload.modeling?.useSketchSolveMode).toBe(false)
+    expect(parsedPayload.modeling?.showSketchGrid).toBe(true)
     expect(parsedPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedPayload.modeling?.majorGridSpacing).toBe(2.5)
     expect(parsedPayload.modeling?.minorGridsPerMajor).toBe(5)
@@ -383,7 +420,9 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
-    expect(parsedPayload.layout?.configs?.default.version).toBe('v3')
+    expect(parsedPayload.layout?.configs?.default.version).toBe(
+      LATEST_LAYOUT_VERSION
+    )
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )
@@ -441,6 +480,50 @@ describe('project settings serialization regression', () => {
 
     expect(serializedToml).toContain('[settings.project]')
     expect(serializedToml).toContain('directory = "/library-projects"')
+  })
+
+  it('omits the default personal cloud library path when serializing settings', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration(
+        {
+          app: {
+            libraries: [
+              {
+                title: 'Personal Cloud',
+                path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+                type: 'cloud',
+              },
+            ],
+          },
+        },
+        projectLibrariesExtensionSettings
+      ),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
+
+    expect(serializedToml).toContain('[[settings.app.libraries]]')
+    expect(serializedToml).toContain('title = "Personal Cloud"')
+    expect(serializedToml).toContain('type = "cloud"')
+    expect(serializedToml).not.toContain('path =')
+
+    const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
+
+    const parsedPayload = configurationToSettingsPayload(
+      parsedConfiguration,
+      projectLibrariesExtensionSettings
+    )
+    expect(parsedPayload.app?.libraries).toEqual([
+      getDefaultCloudProjectLibrarySetting(),
+    ])
   })
 
   it('preserves extension-contributed plugin settings through wasm round-trip', async () => {
@@ -605,6 +688,7 @@ describe('project settings serialization regression', () => {
           showModelingMachineState: true,
         },
         modeling: {
+          showSketchGrid: true,
           snapToGrid: true,
           majorGridSpacing: 2.5,
           minorGridsPerMajor: 5,
@@ -629,6 +713,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('[settings.debug]')
     expect(serializedToml).toContain('show_panel = false')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
+    expect(serializedToml).toContain('show_sketch_grid = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
     expect(serializedToml).toContain('minor_grids_per_major = 5')
@@ -654,6 +739,7 @@ describe('project settings serialization regression', () => {
     expect(parsedProjectPayload.app?.allowOrbitInSketchMode).toBe(true)
     expect(parsedProjectPayload.debug?.showPanel).toBe(false)
     expect(parsedProjectPayload.debug?.showModelingMachineState).toBe(true)
+    expect(parsedProjectPayload.modeling?.showSketchGrid).toBe(true)
     expect(parsedProjectPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedProjectPayload.modeling?.majorGridSpacing).toBe(2.5)
     expect(parsedProjectPayload.modeling?.minorGridsPerMajor).toBe(5)

@@ -1,14 +1,12 @@
 import { Spinner } from '@src/components/Spinner'
 import { useApp } from '@src/lib/boot'
-import {
-  ONBOARDING_PROJECT_NAME,
-  SEARCH_PARAM_ML_PROMPT_KEY,
-} from '@src/lib/constants'
+import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   type DesktopOnboardingPath,
   desktopOnboardingPaths,
+  legacyDesktopOnboardingPathAliases,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
@@ -41,8 +39,10 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop': <Welcome />,
   '/desktop/scene': <Scene />,
   '/desktop/toolbar': <Toolbar />,
-  '/desktop/text-to-cad': <TextToCad />,
-  '/desktop/text-to-cad-prompt': <TextToCadPrompt />,
+  '/desktop/zookeeper': <Zookeeper />,
+  '/desktop/zookeeper-prompt': <ZookeeperPrompt />,
+  '/desktop/text-to-cad': <Zookeeper />,
+  '/desktop/text-to-cad-prompt': <ZookeeperPrompt />,
   '/desktop/feature-tree-pane': <FeatureTreePane />,
   '/desktop/code-pane': <CodePane />,
   '/desktop/project-pane': <ProjectPane />,
@@ -55,9 +55,13 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop/conclusion': <OnboardingConclusion />,
 }
 
+function useOnboardingProjectIO() {
+  const { project, systemIOActor } = useApp()
+  return { projectName: project?.name, systemIOActor }
+}
+
 function Welcome() {
-  const app = useApp()
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
 
   // Ensure panes are closed
@@ -65,11 +69,14 @@ function Welcome() {
 
   // Things that happen when we load this route
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Navigate to the `main.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: app.project?.name || ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -77,7 +84,7 @@ function Welcome() {
         ),
       },
     })
-  }, [systemIOActor, app.project?.name])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -97,7 +104,7 @@ function Welcome() {
 }
 
 function Scene() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -105,15 +112,18 @@ function Scene() {
 
   // Things that happen when we load this route
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Create if necessary and navigate to the `blank.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileNameWithExtension: 'blank.kcl',
         files: [
           {
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedProjectName: projectName,
             requestedFileName: 'blank.kcl',
             requestedCode: '',
           },
@@ -125,7 +135,7 @@ function Scene() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -163,8 +173,8 @@ function Toolbar() {
   )
 }
 
-function TextToCad() {
-  // Highlight the text-to-cad button if it's present
+function Zookeeper() {
+  // Highlight the zookeeper button if it's present
   useOnboardingHighlight('ttc-pane-button')
 
   // Ensure panes are closed
@@ -189,7 +199,7 @@ function TextToCad() {
           Let’s walk through an example of how to use Zookeeper.
         </p>
         <OnboardingButtons
-          currentSlug="/desktop/text-to-cad"
+          currentSlug="/desktop/zookeeper"
           platform="desktop"
         />
       </OnboardingCard>
@@ -197,20 +207,20 @@ function TextToCad() {
   )
 }
 
-function TextToCadPrompt() {
+function ZookeeperPrompt() {
   const thisOnboardingStatus: DesktopOnboardingPath =
-    '/desktop/text-to-cad-prompt'
+    '/desktop/zookeeper-prompt'
   const [searchParams, setSearchParams] = useSearchParams()
   const prompt =
     'Design a cold plate with a serpentine copper coolant tube and recessed channels for thermal management'
 
-  // Ensure panes are closed except TTC
-  useOnboardingPanes([DefaultLayoutPaneID.TTC])
+  // Ensure panes are closed except Zookeeper
+  useOnboardingPanes([DefaultLayoutPaneID.Zookeeper])
 
   // Enter the zookeeper flow with a prebaked prompt
   useEffect(() => {
-    searchParams.set(SEARCH_PARAM_ML_PROMPT_KEY, prompt)
-    setSearchParams(searchParams)
+    searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
+    setSearchParams(searchParams, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -236,7 +246,7 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'main.kcl'
@@ -249,10 +259,13 @@ function FeatureTreePane() {
 
   // navigate to the "generated" file
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: generatedFileName,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -260,7 +273,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -370,19 +383,22 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
-  // Highlight the text-to-cad button if it's present
+  // Highlight the zookeeper button if it's present
   useOnboardingHighlight('ttc-pane-button')
 
-  // Open the text-to-cad pane
+  // Open the zookeeper pane
   // Navigate to the sample file
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -390,7 +406,7 @@ function PromptToEdit() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -418,14 +434,17 @@ function PromptToEditPrompt() {
   const prompt =
     'Increase the cold plate length to 12 inches and make the copper tube blue.'
 
-  // Open the text-to-cad pane
-  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
+  // Open the zookeeper pane
+  useOnboardingPanes(
+    [DefaultLayoutPaneID.Zookeeper],
+    [DefaultLayoutPaneID.Zookeeper]
+  )
 
   // Fill in the prompt if available
   const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
-    searchParams.set(SEARCH_PARAM_ML_PROMPT_KEY, prompt)
-    setSearchParams(searchParams)
+    searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
+    setSearchParams(searchParams, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -484,7 +503,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -492,15 +511,18 @@ function PromptToEditResult() {
   useOnboardingPanes([DefaultLayoutPaneID.Code])
 
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Navigate to the `main.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         files: [
           {
             requestedFileName: 'main.kcl',
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedProjectName: projectName,
             requestedCode: modifiedColdPlate,
           },
         ],
@@ -511,7 +533,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -621,10 +643,10 @@ function OnboardingConclusion() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Time to start building</h1>
         <p className="my-4">
-          We appreciate you downloading Zoo Design Studio and taking the time to
-          walk through the basics. To navigate back home to create your own
-          project, click the Zoo button in the top left. To learn more detailed
-          and advanced techniques,{' '}
+          We appreciate you taking the time to walk through the basics. Select
+          Finish to return home, where you can keep working with the tutorial
+          project or create a project of your own. To learn more detailed and
+          advanced techniques,{' '}
           <a
             onClick={openExternalBrowserIfDesktop(withSiteBaseURL('/docs'))}
             href={`${withSiteBaseURL('/docs')}`}
@@ -644,6 +666,11 @@ function OnboardingConclusion() {
 
 export const desktopOnboardingRoutes: DesktopOnboardingRoute[] = [
   ...Object.values(desktopOnboardingPaths).map((path) => ({
+    path,
+    index: true,
+    element: onboardingComponents[path],
+  })),
+  ...Object.values(legacyDesktopOnboardingPathAliases).map((path) => ({
     path,
     index: true,
     element: onboardingComponents[path],

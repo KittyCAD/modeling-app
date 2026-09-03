@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use anyhow::Result;
 use kcmc::ImportFile;
 use kcmc::ModelingCmd;
@@ -50,18 +48,13 @@ pub async fn import_foreign(
         )));
     }
 
-    let ext_format = get_import_format_from_extension(file_path.extension().ok_or_else(|| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!("No file extension found for `{}`", file_path.display()),
-            vec![source_range],
-        ))
-    })?)
-    .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
+    let ext_format = get_import_format_from_extension(&file_path.to_string_lossy())
+        .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
 
     // Get the format type from the extension of the file.
     let format = if let Some(format) = format {
         // Validate the given format with the extension format.
-        validate_extension_format(ext_format, format.clone())
+        validate_extension_format(&file_path.to_string_lossy(), ext_format, format.clone())
             .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
         format
     } else {
@@ -161,10 +154,7 @@ pub(super) fn format_from_annotations(
     }
 
     let mut result = result
-        .or_else(|| {
-            path.extension()
-                .and_then(|ext| get_import_format_from_extension(ext).ok())
-        })
+        .or_else(|| get_import_format_from_extension(&path.to_string_lossy()).ok())
         .ok_or(KclError::new_semantic(KclErrorDetails::new(
             "Unknown or missing extension, and no specified format for imported file".to_owned(),
             vec![import_source_range],
@@ -178,14 +168,18 @@ pub(super) fn format_from_annotations(
             annotations::IMPORT_LENGTH_UNIT => {
                 set_length_unit(&mut result, annotations::expect_ident(&p.value)?, p.as_source_range())?;
             }
+            annotations::IMPORT_TARGET_REPRESENTATION => {
+                set_target_representation(&mut result, annotations::expect_ident(&p.value)?, p.as_source_range())?;
+            }
             annotations::IMPORT_FORMAT => {}
             _ => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
-                        "Unexpected annotation for import, expected one of: {}, {}, {}",
+                        "Unexpected annotation for import, expected one of: {}, {}, {}, {}",
                         annotations::IMPORT_FORMAT,
                         annotations::IMPORT_COORDS,
-                        annotations::IMPORT_LENGTH_UNIT
+                        annotations::IMPORT_LENGTH_UNIT,
+                        annotations::IMPORT_TARGET_REPRESENTATION
                     ),
                     vec![p.as_source_range()],
                 )));
@@ -258,6 +252,42 @@ fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: Sourc
     Ok(())
 }
 
+fn set_target_representation(
+    fmt: &mut InputFormat3d,
+    representation: &str,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    const MESH: &str = "mesh";
+    const BREP: &str = "brep";
+    const ALL_OPTIONS: [&str; 2] = [MESH, BREP];
+    let target_representation = match representation {
+        MESH => kcmc::format::step::TargetRepresentation::Mesh,
+        BREP => kcmc::format::step::TargetRepresentation::Brep,
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Unknown target representation: {representation}, expected one of: {}",
+                    ALL_OPTIONS.join(", ")
+                ),
+                vec![source_range],
+            )));
+        }
+    };
+
+    let InputFormat3d::Step(opts) = fmt else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "`{}` option cannot be applied to the specified format",
+                annotations::IMPORT_TARGET_REPRESENTATION
+            ),
+            vec![source_range],
+        )));
+    };
+
+    opts.target_representation = target_representation;
+    Ok(())
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct PreImportedGeometry {
     id: Uuid,
@@ -286,23 +316,15 @@ pub async fn send_to_engine(
     Ok(imported_geometry)
 }
 
-/// Get the source format from the extension.
+/// Get the source format from a file path, extension, or canonical format name.
 fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
-    let ext = ext.to_lowercase();
-    let format = match FileImportFormat::from_str(&ext) {
-        Ok(format) => format,
-        Err(_) => {
-            if ext == "stp" {
-                FileImportFormat::Step
-            } else if ext == "glb" {
-                FileImportFormat::Gltf
-            } else {
-                anyhow::bail!(
-                    "unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format."
-                )
-            }
-        }
-    };
+    let format = crate::import_format::import_format_from_path(ext)
+        .or_else(|| crate::import_format::import_format_from_name(ext))
+        .ok_or_else(|| {
+            anyhow::anyhow!(
+                "unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format."
+            )
+        })?;
 
     // Make the default units millimeters.
     let ul = UnitLength::Millimeters;
@@ -313,6 +335,9 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
     // * Up: +Z
     // * Handedness: Right
     match format {
+        FileImportFormat::Acis => Ok(InputFormat3d::Acis(kcmc::format::acis::import::Options::default())),
+        FileImportFormat::Catia => Ok(InputFormat3d::Catia(kcmc::format::catia::import::Options::default())),
+        FileImportFormat::Creo => Ok(InputFormat3d::Creo(kcmc::format::creo::import::Options::default())),
         FileImportFormat::Step => Ok(InputFormat3d::Step(
             kcmc::format::step::import::Options::builder()
                 .coords(ZOO_COORD_SYSTEM)
@@ -332,6 +357,10 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
                 .build(),
         )),
         FileImportFormat::Gltf => Ok(InputFormat3d::Gltf(kcmc::format::gltf::import::Options::default())),
+        FileImportFormat::Inventor => Ok(InputFormat3d::Inventor(
+            kcmc::format::inventor::import::Options::default(),
+        )),
+        FileImportFormat::Nx => Ok(InputFormat3d::Nx(kcmc::format::nx::import::Options::default())),
         FileImportFormat::Ply => Ok(InputFormat3d::Ply(
             kcmc::format::ply::import::Options::builder()
                 .coords(ZOO_COORD_SYSTEM)
@@ -339,6 +368,9 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
                 .build(),
         )),
         FileImportFormat::Fbx => Ok(InputFormat3d::Fbx(kcmc::format::fbx::import::Options::default())),
+        FileImportFormat::Parasolid => Ok(InputFormat3d::Parasolid(
+            kcmc::format::parasolid::import::Options::default(),
+        )),
         FileImportFormat::Sldprt => Ok(InputFormat3d::Sldprt(
             kcmc::format::sldprt::import::Options::builder()
                 .split_closed_faces(false)
@@ -348,32 +380,8 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
     }
 }
 
-fn validate_extension_format(ext: InputFormat3d, given: InputFormat3d) -> Result<()> {
-    if let InputFormat3d::Stl(_) = ext
-        && let InputFormat3d::Stl(_) = given
-    {
-        return Ok(());
-    }
-
-    if let InputFormat3d::Obj(_) = ext
-        && let InputFormat3d::Obj(_) = given
-    {
-        return Ok(());
-    }
-
-    if let InputFormat3d::Ply(_) = ext
-        && let InputFormat3d::Ply(_) = given
-    {
-        return Ok(());
-    }
-
-    if let InputFormat3d::Step(_) = ext
-        && let InputFormat3d::Step(_) = given
-    {
-        return Ok(());
-    }
-
-    if ext == given {
+fn validate_extension_format(path: &str, ext: InputFormat3d, given: InputFormat3d) -> Result<()> {
+    if crate::import_format::import_path_supports_format(path, given.clone().into()) {
         return Ok(());
     }
 
@@ -404,13 +412,46 @@ mod test {
     test_import_format_from_extension!(test_xtn_step_spongebob, "STeP", InputFormat3d::Step);
     test_import_format_from_extension!(test_xtn_fbx, "fbx", InputFormat3d::Fbx);
     test_import_format_from_extension!(test_xtn_gltf, "gltf", InputFormat3d::Gltf);
+    test_import_format_from_extension!(test_xtn_sat, "sat", InputFormat3d::Acis);
+    test_import_format_from_extension!(test_xtn_sab, "sab", InputFormat3d::Acis);
+    test_import_format_from_extension!(test_xtn_catpart, "catpart", InputFormat3d::Catia);
+    test_import_format_from_extension!(test_xtn_ipt, "ipt", InputFormat3d::Inventor);
+    test_import_format_from_extension!(test_xtn_prt, "prt", InputFormat3d::Nx);
     test_import_format_from_extension!(test_xtn_obj, "obj", InputFormat3d::Obj);
+    test_import_format_from_extension!(test_xtn_x_t, "x_t", InputFormat3d::Parasolid);
+    test_import_format_from_extension!(test_xtn_x_b, "x_b", InputFormat3d::Parasolid);
     test_import_format_from_extension!(test_xtn_ply, "ply", InputFormat3d::Ply);
     test_import_format_from_extension!(test_xtn_sldprt, "sldprt", InputFormat3d::Sldprt);
     test_import_format_from_extension!(test_xtn_stl, "stl", InputFormat3d::Stl);
+    test_import_format_from_extension!(test_format_creo, "creo", InputFormat3d::Creo);
+
+    #[test]
+    fn versioned_creo_import_format_from_path() {
+        for path in ["part.prt.1", "nested/part.PRT.23"] {
+            let format = get_import_format_from_extension(path).unwrap();
+            assert_eq!(
+                format,
+                InputFormat3d::Creo(kcmc::format::creo::import::Options::default())
+            );
+        }
+    }
+
+    #[test]
+    fn unversioned_prt_accepts_explicit_creo_format() {
+        validate_extension_format(
+            "part.prt",
+            InputFormat3d::Nx(kcmc::format::nx::import::Options::default()),
+            InputFormat3d::Creo(kcmc::format::creo::import::Options::default()),
+        )
+        .unwrap();
+    }
 
     #[test]
     fn annotations() {
+        let (_, issues) = crate::Program::parse("@(targetRepresentation = mesh)\nimport '../foo.step' as foo")
+            .expect("program should parse");
+        assert_eq!(issues.len(), 0);
+
         // no annotations
         assert!(
             format_from_annotations(&[], &TypedPath::from("../foo.txt"), SourceRange::default(),)
@@ -426,6 +467,24 @@ mod test {
             .unwrap()
             .unwrap();
         assert_eq!(fmt, InputFormat3d::Gltf(kcmc::format::gltf::import::Options::default()));
+
+        // Creo format inferred from a versioned part path.
+        let text = "@()\nimport '../foo.prt.3' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.prt.3"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        assert_eq!(fmt, InputFormat3d::Creo(kcmc::format::creo::import::Options::default()));
+
+        // Creo's canonical format name remains valid in annotations.
+        let text = "@(format = creo)\nimport '../foo.prt.3' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.prt.3"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        assert_eq!(fmt, InputFormat3d::Creo(kcmc::format::creo::import::Options::default()));
 
         // format, no options
         let text = "@(format = gltf)\nimport '../foo.txt' as foo";
@@ -459,6 +518,44 @@ mod test {
             )
         );
 
+        // STEP defaults are unchanged when no target representation is given.
+        let text = "@()\nimport '../foo.step' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        assert_eq!(fmt, get_import_format_from_extension("step").unwrap());
+
+        // STEP target representation.
+        let text = "@(targetRepresentation = mesh)\nimport '../foo.step' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        let InputFormat3d::Step(opts) = fmt else {
+            panic!("expected STEP import options");
+        };
+        assert_eq!(
+            opts.target_representation,
+            kcmc::format::step::TargetRepresentation::Mesh
+        );
+
+        let text = "@(targetRepresentation = brep)\nimport '../foo.step' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        let InputFormat3d::Step(opts) = fmt else {
+            panic!("expected STEP import options");
+        };
+        assert_eq!(
+            opts.target_representation,
+            kcmc::format::step::TargetRepresentation::Brep,
+        );
+
         // no format, options
         let text = "@(coords = vulkan, lengthUnit = ft)\nimport '../foo.obj' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
@@ -481,6 +578,16 @@ mod test {
             "@(format = gltf, lengthUnit = ft)\nimport '../foo.txt' as foo",
             "../foo.txt",
             "`lengthUnit` option cannot be applied",
+        );
+        assert_annotation_error(
+            "@(targetRepresentation = brep)\nimport '../foo.obj' as foo",
+            "../foo.obj",
+            "`targetRepresentation` option cannot be applied",
+        );
+        assert_annotation_error(
+            "@(targetRepresentation = voxels)\nimport '../foo.step' as foo",
+            "../foo.step",
+            "Unknown target representation",
         );
         // err - no format, options, but no options for specified format
         assert_annotation_error(

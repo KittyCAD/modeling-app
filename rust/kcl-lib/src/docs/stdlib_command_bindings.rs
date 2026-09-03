@@ -52,6 +52,7 @@ struct StdLibCommandArgShape {
     experimental: bool,
     deprecated: bool,
     deprecated_since: Option<String>,
+    removed_since: Option<String>,
 }
 
 #[derive(Debug, Serialize, TS)]
@@ -114,6 +115,7 @@ fn stdlib_commands(stdlib: &ModData) -> BTreeMap<String, StdLibCommandShape> {
                             experimental: arg.experimental,
                             deprecated: arg.deprecated,
                             deprecated_since: arg.deprecated_since.as_ref().map(ToString::to_string),
+                            removed_since: arg.removed_since.as_ref().map(ToString::to_string),
                         })
                         .collect(),
                 },

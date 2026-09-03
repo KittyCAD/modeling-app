@@ -1,3 +1,5 @@
+import type { ProjectLibraryType } from '@src/lib/projectLibraries'
+
 /** Cloud API project revision token used for guarded updates. */
 export type Revision = string
 
@@ -16,6 +18,11 @@ export type ProjectManifest = {
 export type ProjectArchiveFile = {
   relativePath: string
   data: Uint8Array
+}
+
+/** Result of synchronizing one explicitly enrolled project to convergence. */
+export type CloudSyncProjectNowResult = {
+  remoteProjectId: string
 }
 
 /** Durable per-project sync metadata stored locally in the cloud sync DB. */
@@ -64,6 +71,7 @@ export type OutboxEntry = {
   kind: 'upsert' | 'delete'
   targetPath: string
   sourcePath?: string
+  deletedPaths?: string[]
   createdAt: string
 }
 
@@ -87,6 +95,13 @@ export type ProjectUploadBody = {
   entrypoint_path: string
   project_toml_path: string
   expected_revision?: Revision
+  deleted_paths?: string[]
+}
+
+/** Publication metadata that whole-project replacements must preserve. */
+export type ProjectUploadPublicationMetadata = {
+  description: string
+  category_ids: string[]
 }
 
 /** Runtime configuration for enabling and targeting cloud sync replication. */
@@ -95,8 +110,16 @@ export type CloudSyncConfig = {
   token?: string
   baseUrl?: string
   environmentName?: string
-  projectDirectoryPath?: string
-  syncExistingLocalProjects?: boolean
+  /** Local materialization paths for configured cloud-type project libraries. */
+  cloudProjectDirectoryPaths?: string[]
+  autoEnrollCloudLibraryProjects?: boolean
+}
+
+/** Currently opened project context used to scope status and retry behavior. */
+export type CloudSyncOpenedProject = {
+  projectPath: string
+  libraryPath?: string
+  libraryType?: ProjectLibraryType
 }
 
 /** Coarse user-visible sync state exposed to status bar consumers. */
@@ -112,6 +135,8 @@ export type CloudSyncStatus = {
   enabled: boolean
   state: CloudSyncState
   pendingCount: number
+  scopedProjectPath?: string
+  scopedProjectCloudProjectId?: string
   activeProjectPath?: string
   lastFailure?: string
   lastFailureKind?: ProjectSyncFailureKind
@@ -130,6 +155,7 @@ export type CloudSyncLocalProject = {
 /** Project metadata index entry enriched with pending local-change state. */
 export type CloudSyncProjectMetadataIndexEntry = ProjectMetadata & {
   hasPendingChanges: boolean
+  pendingSince?: string
 }
 
 /** Remote revision/update metadata extracted from cloud API responses. */

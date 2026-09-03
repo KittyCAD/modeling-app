@@ -11448,27 +11448,6 @@ description: Result of parsing gallows-bracket.kcl
                   "type": "Name",
                   "type": "Name"
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
-                }
               }
             ],
             "callee": {
@@ -14737,27 +14716,6 @@ description: Result of parsing gallows-bracket.kcl
                   "start": 0,
                   "type": "Name",
                   "type": "Name"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
                 }
               }
             ],
@@ -21686,27 +21644,6 @@ description: Result of parsing gallows-bracket.kcl
                   "type": "Name",
                   "type": "Name"
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
-                }
               }
             ],
             "callee": {
@@ -24793,27 +24730,6 @@ description: Result of parsing gallows-bracket.kcl
                   "start": 0,
                   "type": "Name",
                   "type": "Name"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
                 }
               }
             ],
@@ -31834,27 +31750,6 @@ description: Result of parsing gallows-bracket.kcl
                   "type": "Name",
                   "type": "Name"
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
-                }
               }
             ],
             "callee": {
@@ -35530,27 +35425,6 @@ description: Result of parsing gallows-bracket.kcl
                   "type": "Name",
                   "type": "Name"
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
-                }
               }
             ],
             "callee": {
@@ -39009,6 +38883,34 @@ description: Result of parsing gallows-bracket.kcl
               "type": "Name",
               "type": "Name"
             }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            }
           }
         ],
         "start": 0,
@@ -39532,7 +39434,7 @@ description: Result of parsing gallows-bracket.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Construction",
+            "value": "Categories: Architecture & Construction",
             "style": "line"
           }
         },

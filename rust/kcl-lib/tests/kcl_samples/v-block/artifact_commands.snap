@@ -359,7 +359,8 @@ description: Artifact commands v-block.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -450,8 +451,8 @@ description: Artifact commands v-block.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -6.35,
-          "y": 30.162499999999998,
+          "x": -6.3503174761893515,
+          "y": 30.22599682523442,
           "z": 0.0
         }
       }
@@ -472,17 +473,17 @@ description: Artifact commands v-block.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -12.7,
+            "x": -12.699999999999967,
             "y": 30.162499999999998
           },
-          "radius": 6.35,
+          "radius": 6.350000000000063,
           "start": {
-            "unit": "degrees",
-            "value": 0.0
+            "unit": "radians",
+            "value": 0.009999666686085531
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.293184973865672
           },
           "relative": false
         }
@@ -492,8 +493,13 @@ description: Artifact commands v-block.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

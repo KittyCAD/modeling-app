@@ -2189,80 +2189,19 @@ description: Operations executed counterdrilled-weldment.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 3.15,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "bottomEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "centerToRight": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "centerToTop": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerHole": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerHoleRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "leftEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "rightEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "topEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -4899,13 +4838,6 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
@@ -4968,13 +4900,6 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
@@ -6995,64 +6920,15 @@ description: Operations executed counterdrilled-weldment.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 0.6825,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "innerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -10391,7 +10267,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10415,7 +10291,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10439,7 +10315,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10463,7 +10339,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10487,7 +10363,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10511,7 +10387,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10535,7 +10411,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10559,7 +10435,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"

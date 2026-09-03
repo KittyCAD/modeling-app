@@ -9,8 +9,7 @@ KCL Semantic error
    ╭─[7:6]
  6 │   |> line(end = [-11.53311, 2.81559])
  7 │   |> extrude(length = 4)
-   ·      ─────────┬─────────┬
-   ·               ╰── tests/execute_engine_error_return/input.kcl
+   ·      ─────────┬─────────
    ·               ╰── tests/execute_engine_error_return/input.kcl
    ╰────
   ╰─▶ KCL Semantic error

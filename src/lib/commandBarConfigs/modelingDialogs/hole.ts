@@ -42,18 +42,20 @@ export const holeDialogLayout = modelingDialogLayout(
 export const holeDialogOverrides = {
   face: {
     inputType: 'selection',
-    displayName: 'Face',
     selectionTypes: ['cap', 'wall', 'edgeCut'],
     multiple: false,
     hidden: isEditingNodeSelection,
-    dialog: compactSelectionDialog('placement', 'Select a face', {
-      order: 0,
-    }),
+    dialog: {
+      displayName: 'Face',
+      ...compactSelectionDialog('placement', 'Select a face', {
+        order: 0,
+      }),
+    },
   },
   cutAt: {
-    displayName: 'Center',
     defaultValue: KCL_DEFAULT_ORIGIN_2D,
     dialog: {
+      displayName: 'Center',
       group: 'placement',
       order: 10,
     },
@@ -66,33 +68,32 @@ export const holeDialogOverrides = {
   },
   blindDepth: {
     inputType: 'kcl',
-    displayName: 'Depth',
     required: (context) =>
       ['blind'].includes(context.argumentsToSubmit.holeBody as string),
     hidden: (context) =>
       !['blind'].includes(context.argumentsToSubmit.holeBody as string),
     defaultValue: '2',
     dialog: {
+      displayName: 'Depth',
       group: 'hole',
       order: 20,
     },
   },
   blindDiameter: {
     inputType: 'kcl',
-    displayName: 'Diameter',
     required: (context) =>
       ['blind'].includes(context.argumentsToSubmit.holeBody as string),
     hidden: (context) =>
       !['blind'].includes(context.argumentsToSubmit.holeBody as string),
     defaultValue: '1',
     dialog: {
+      displayName: 'Diameter',
       group: 'hole',
       order: 10,
     },
   },
   holeType: {
     inputType: 'options',
-    displayName: 'Type',
     defaultValue: 'simple',
     options: [
       { name: 'Simple', value: 'simple' },
@@ -100,6 +101,7 @@ export const holeDialogOverrides = {
       { name: 'Countersink', value: 'countersink' },
     ],
     dialog: {
+      displayName: 'Type',
       group: 'hole',
       order: 0,
       controlStyle: 'segmented',
@@ -107,63 +109,62 @@ export const holeDialogOverrides = {
   },
   counterboreDepth: {
     inputType: 'kcl',
-    displayName: 'Head depth',
     required: (context) =>
       getHoleType(context.argumentsToSubmit) === 'counterbore',
     hidden: (context) =>
       getHoleType(context.argumentsToSubmit) !== 'counterbore',
     defaultValue: '1',
-    prepopulate: true,
     dialog: {
+      displayName: 'Head depth',
       group: 'hole',
       order: 40,
+      prepopulate: true,
     },
   },
   counterboreDiameter: {
     inputType: 'kcl',
-    displayName: 'Head diameter',
     required: (context) =>
       getHoleType(context.argumentsToSubmit) === 'counterbore',
     hidden: (context) =>
       getHoleType(context.argumentsToSubmit) !== 'counterbore',
     defaultValue: '2',
-    prepopulate: true,
     dialog: {
+      displayName: 'Head diameter',
       group: 'hole',
       order: 30,
+      prepopulate: true,
     },
   },
   countersinkAngle: {
     inputType: 'kcl',
-    displayName: 'Head angle',
     required: (context) =>
       getHoleType(context.argumentsToSubmit) === 'countersink',
     hidden: (context) =>
       getHoleType(context.argumentsToSubmit) !== 'countersink',
     defaultValue: '90deg',
-    prepopulate: true,
     dialog: {
+      displayName: 'Head angle',
       group: 'hole',
       order: 40,
+      prepopulate: true,
     },
   },
   countersinkDiameter: {
     inputType: 'kcl',
-    displayName: 'Head diameter',
     required: (context) =>
       getHoleType(context.argumentsToSubmit) === 'countersink',
     hidden: (context) =>
       getHoleType(context.argumentsToSubmit) !== 'countersink',
     defaultValue: '2',
-    prepopulate: true,
     dialog: {
+      displayName: 'Head diameter',
       group: 'hole',
       order: 30,
+      prepopulate: true,
     },
   },
   countersinkHeadClearance: {
     inputType: 'kcl',
-    displayName: 'Head clearance',
     required: false,
     hidden: (context) =>
       getHoleType(context.argumentsToSubmit) !== 'countersink',
@@ -172,19 +173,20 @@ export const holeDialogOverrides = {
         ? countersinkHeadClearanceDefault
         : undefined,
     dialog: {
+      displayName: 'Head clearance',
       group: 'advanced',
       order: 0,
     },
   },
   holeBottom: {
     inputType: 'options',
-    displayName: 'Type',
     defaultValue: 'flat',
     options: [
       { name: 'Flat', value: 'flat' },
       { name: 'Drill point', value: 'drill' },
     ],
     dialog: {
+      displayName: 'Type',
       group: 'bottom',
       order: 0,
       controlStyle: 'segmented',
@@ -192,14 +194,14 @@ export const holeDialogOverrides = {
   },
   drillPointAngle: {
     inputType: 'kcl',
-    displayName: 'Point angle',
     required: (context) => getHoleBottom(context.argumentsToSubmit) === 'drill',
     hidden: (context) => getHoleBottom(context.argumentsToSubmit) !== 'drill',
     defaultValue: '110deg',
-    prepopulate: true,
     dialog: {
+      displayName: 'Point angle',
       group: 'bottom',
       order: 10,
+      prepopulate: true,
     },
   },
 } satisfies ModelingCommandArgOverrides<HoleCommandArgs>

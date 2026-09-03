@@ -6,7 +6,10 @@ import type {
   CommandReviewValidationDetails,
   KclCommandValue,
 } from '@src/lib/commandTypes'
-import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import {
+  getCommandArgumentKclValuesOnly,
+  isModelingDialogCommand,
+} from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { isErr, reportRejection } from '@src/lib/trap'
@@ -86,7 +89,10 @@ export type CommandBarMachineEvent =
     }
   | {
       type: 'Submit command from dialog'
-      data: { argumentsToSubmit: { [x: string]: unknown } }
+      data: {
+        command: Command
+        argumentsToSubmit: { [x: string]: unknown }
+      }
     }
   | {
       type: 'Add argument'
@@ -484,6 +490,10 @@ export const commandBarMachine = setup({
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,
+    'Dialog submission matches selected command': ({ context, event }) =>
+      event.type === 'Submit command from dialog' &&
+      isModelingDialogCommand(context.selectedCommand) &&
+      event.data.command === context.selectedCommand,
     'Has review validation error': ({ event }) =>
       event.type === 'xstate.done.actor.validateArguments' &&
       !!event.output.reviewValidationError,
@@ -900,6 +910,7 @@ export const commandBarMachine = setup({
     },
 
     'Submit command from dialog': {
+      guard: 'Dialog submission matches selected command',
       target: '.Checking Arguments for Dialog',
       actions: ['Set arguments to submit', 'Clear current argument'],
     },

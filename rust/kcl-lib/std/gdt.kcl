@@ -2,7 +2,9 @@
 /// This can be used for model-based definition (MBD).
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+import Edge, Face, GdtAnnotation, Plane, Point2d, TaggedFace from "std::types"
 
 /// GD&T datum feature.
 ///
@@ -45,7 +47,7 @@
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [4mm, 2mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 ///
 /// gdt::datum(
 ///   face = top,
@@ -73,6 +75,8 @@ export fn datum(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
@@ -135,7 +139,7 @@ export fn datum(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// gdt::flatness(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -160,6 +164,8 @@ export fn flatness(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how straight a feature must be.
@@ -192,7 +198,7 @@ export fn flatness(
 ///   vertical(edge4)
 /// }
 ///
-/// blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+/// blockRegion = region(segments = [blockSketch.edge1, blockSketch.edge2])
 /// hide(blockSketch)
 /// block = extrude(blockRegion, length = 10mm)
 /// gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
@@ -216,7 +222,7 @@ export fn flatness(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// gdt::straightness(faces = [top], tolerance = 0.02mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
@@ -238,7 +244,7 @@ export fn flatness(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::straightness(edges = [sideEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
@@ -267,6 +273,8 @@ export fn straightness(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how circular (round) a feature must be.
@@ -289,7 +297,7 @@ export fn straightness(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+/// cylinderRegion = region(segments = [cylinderSketch.perimeter])
 /// hide(cylinderSketch)
 /// cylinder = extrude(cylinderRegion, length = 10mm)
 /// gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
@@ -302,7 +310,7 @@ export fn straightness(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+/// cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm)
 /// gdt::circularity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 ///
@@ -313,7 +321,7 @@ export fn straightness(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
 /// topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
 /// gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
@@ -342,6 +350,8 @@ export fn circularity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how closely a feature must conform to a perfect cylinder.
@@ -365,7 +375,7 @@ export fn circularity(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+/// cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm)
 /// gdt::cylindricity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 ///
@@ -376,7 +386,7 @@ export fn circularity(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+/// cylinderRegion = region(segments = [cylinderSketch.perimeter])
 /// hide(cylinderSketch)
 /// cylinder = extrude(cylinderRegion, length = 10mm)
 /// gdt::cylindricity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
@@ -389,7 +399,7 @@ export fn circularity(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
 /// topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
 /// gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
@@ -418,6 +428,8 @@ export fn cylindricity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T concentricity annotation specifying how closely a feature's median axis must align with datum references.
@@ -445,7 +457,7 @@ export fn cylindricity(
 ///   coincident([diameter.start, perimeter.end])
 /// }
 ///
-/// datumCylinder = extrude(region(point = [0mm, 1mm], sketch = datumSketch), length = 10mm)
+/// datumCylinder = extrude(region(segments = [datumSketch.diameter, datumSketch.perimeter]), length = 10mm)
 ///
 /// controlledSketch = sketch(on = XY) {
 ///   diameter = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
@@ -454,7 +466,7 @@ export fn cylindricity(
 ///   coincident([diameter.end, perimeter.end])
 /// }
 ///
-/// controlledCylinder = extrude(region(point = [0mm, -1mm], sketch = controlledSketch), length = 10mm)
+/// controlledCylinder = extrude(region(segments = [controlledSketch.diameter, controlledSketch.perimeter]), length = 10mm)
 ///
 /// gdt::datum(face = datumCylinder.sketch.tags.perimeter, name = "A", framePosition = [-14mm, 8mm], framePlane = XZ)
 /// gdt::concentricity(faces = [controlledCylinder.sketch.tags.perimeter], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
@@ -467,13 +479,13 @@ export fn cylindricity(
 ///   perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// datumCylinder = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 10mm)
+/// datumCylinder = extrude(region(segments = [datumSketch.perimeter]), length = 10mm)
 ///
 /// controlledSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// controlledCylinder = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 10mm, tagEnd = $top)
+/// controlledCylinder = extrude(region(segments = [controlledSketch.perimeter]), length = 10mm, tagEnd = $top)
 /// topEdge = getCommonEdge(faces = [controlledCylinder.sketch.tags.perimeter, top])
 ///
 /// gdt::datum(face = datumCylinder.sketch.tags.perimeter, name = "A", framePosition = [-14mm, 8mm], framePlane = XZ)
@@ -507,6 +519,8 @@ export fn concentricity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T symmetry annotation specifying how closely a feature's median plane must align with datum references.
@@ -558,7 +572,7 @@ export fn concentricity(
 ///   vertical(leftSide)
 /// }
 ///
-/// latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
+/// latchBlockRegion = region(segments = [latchProfile.bottom, latchProfile.datumWidthFace])
 /// latchBlock = extrude(latchBlockRegion, length = 12mm)
 ///
 /// gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
@@ -595,7 +609,7 @@ export fn concentricity(
 ///   vertical(leftSide)
 /// }
 ///
-/// latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
+/// latchBlockRegion = region(segments = [latchProfile.bottom, latchProfile.datumWidthFace])
 /// latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
 /// grooveFloorFrontEdge = getCommonEdge(faces = [latchBlock.sketch.tags.grooveFloor, frontFace])
 ///
@@ -630,6 +644,8 @@ export fn symmetry(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying circular runout relative to a datum axis.
@@ -655,7 +671,7 @@ export fn symmetry(
 /// }
 ///
 /// controlledShaft = extrude(
-///   region(point = [0mm, 1mm], sketch = controlledSketch),
+///   region(segments = [controlledSketch.upperPerimeter, controlledSketch.lowerPerimeter]),
 ///   length = -58mm,
 ///   tagStart = $controlledShoulder,
 ///   tagEnd = $controlledFreeEnd
@@ -671,7 +687,7 @@ export fn symmetry(
 /// }
 ///
 /// datumShaft = extrude(
-///   region(point = datumSketch.perimeter.center, sketch = datumSketch),
+///   region(segments = [datumSketch.perimeter]),
 ///   length = 36mm,
 ///   tagEnd = $datumEnd
 /// )
@@ -724,6 +740,8 @@ export fn runout(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T angularity annotation specifying how much faces or edges may deviate from an orientation at a basic angle relative to datum references.
@@ -780,7 +798,7 @@ export fn runout(
 ///   angle([datumFace, controlledSurface]) == basicAngle
 /// }
 ///
-/// stampedPart = extrude(region(point = [12mm, 2mm], sketch = stampedProfile), length = 0.8mm)
+/// stampedPart = extrude(region(segments = [stampedProfile.datumFace, stampedProfile.flangeEnd]), length = 0.8mm)
 ///
 /// gdt::datum(face = stampedPart.sketch.tags.datumFace, name = "A", framePosition = [6mm, -4mm], framePlane = XY, fontSize = annotationFont)
 /// gdt::angularity(faces = [stampedPart.sketch.tags.controlledSurface], tolerance = 0.1mm, datums = ["A"], framePosition = [-12mm, 11mm], framePlane = XZ, fontSize = annotationFont)
@@ -830,7 +848,7 @@ export fn runout(
 ///   angle([datumFace, controlledSurface]) == basicAngle
 /// }
 ///
-/// stampedRegion = region(point = [12mm, 2mm], sketch = stampedProfile)
+/// stampedRegion = region(segments = [stampedProfile.datumFace, stampedProfile.flangeEnd])
 /// hide(stampedProfile)
 /// stampedPart = extrude(stampedRegion, length = 0.8mm)
 ///
@@ -865,6 +883,8 @@ export fn angularity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references.
@@ -903,7 +923,7 @@ export fn angularity(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
 /// gdt::perpendicularity(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
@@ -935,6 +955,8 @@ export fn perpendicularity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T parallelism annotation specifying how much faces or edges may deviate from parallel orientation relative to datum references.
@@ -973,7 +995,7 @@ export fn perpendicularity(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::parallelism(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
@@ -1005,6 +1027,8 @@ export fn parallelism(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T position annotation specifying how much faces or edges may deviate from their ideal location.
@@ -1043,7 +1067,7 @@ export fn parallelism(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
 /// gdt::position(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
@@ -1075,6 +1099,8 @@ export fn position(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation for attaching manufacturing text to faces or edges.
@@ -1112,7 +1138,7 @@ export fn position(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::annotation(edges = [sideEdge], annotation = "Deburr edge", framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
@@ -1138,6 +1164,8 @@ export fn annotation(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T note for adding free-floating manufacturing text that is not attached to a face or edge.
@@ -1164,7 +1192,7 @@ export fn annotation(
 ///   horizontal(edge3)
 ///   vertical(edge4)
 /// }
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm)
 ///
 /// gdt::note(note = "Note on XY", framePosition = [12mm, 8mm])
 /// ```
@@ -1187,7 +1215,7 @@ export fn annotation(
 ///   horizontal(edge3)
 ///   vertical(edge4)
 /// }
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm)
 ///
 /// notePlane = offsetPlane(XZ, offset = 12mm)
 /// gdt::note(note = "Note on custom Plane", framePlane = notePlane, framePosition = [12mm, 8mm])
@@ -1206,6 +1234,8 @@ export fn note(
   /// The model-space height to use for the note text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): GdtAnnotation {}
 
 /// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
@@ -1213,6 +1243,7 @@ export fn note(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
+/// @settings(kclVersion = 2.0)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1228,6 +1259,7 @@ export fn note(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1244,15 +1276,49 @@ export fn note(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// // Example of a distance annotation with no tolerance.
+///
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -6.19mm, var 4.16mm], end = [var 7.91mm, var 4.16mm])
+///   line2 = line(start = [var 7.91mm, var 4.16mm], end = [var 7.91mm, var -3.35mm])
+///   line3 = line(start = [var 7.91mm, var -3.35mm], end = [var -6.19mm, var -3.35mm])
+///   line4 = line(start = [var -6.19mm, var -3.35mm], end = [var -6.19mm, var 4.16mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+/// hidden001 = hide(sketch001)
+/// region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+/// extrude001 = extrude(region001, length = 1, tagEnd = $capEnd001)
+/// gdt::distance(
+///   edges = [
+///     getCommonEdge(faces = [
+///       region001.tags.line1,
+///       extrude001.faces.capEnd001
+///     ])
+///   ],
+///   framePosition = [5, 5],
+///   fontSize = 0.5276mm,
+/// )
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn distance(
   /// The acceptable distance tolerance.
+  /// If not given, or 0, tolerance will not be shown.
   @(includeInSnippet = true)
-  tolerance: number(Length),
+  tolerance?: number(Length) = 0mm,
   /// The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   from?: Face | TaggedFace | Edge | any,
   /// The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
@@ -1274,6 +1340,8 @@ export fn distance(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile annotation specifying how much edges or faces may deviate from their ideal shape.
@@ -1316,7 +1384,7 @@ export fn distance(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
 /// gdt::profile(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1346,6 +1414,8 @@ export fn profile(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile-of-a-line annotation specifying how much edges may deviate from their ideal shape.
@@ -1393,7 +1463,7 @@ export fn profile(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 /// profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
@@ -1422,6 +1492,8 @@ export fn profileLine(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile-of-a-surface annotation specifying how much faces may deviate from their ideal shape.
@@ -1436,7 +1508,7 @@ export fn profileLine(
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 /// }
 ///
-/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
 /// gdt::profileSurface(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1464,4 +1536,6 @@ export fn profileSurface(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}

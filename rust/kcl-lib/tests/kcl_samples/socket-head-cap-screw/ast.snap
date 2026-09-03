@@ -1096,7 +1096,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -3185,7 +3185,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -3755,7 +3755,7 @@ description: Result of parsing socket-head-cap-screw.kcl
         "preComments": [
           "// Socket Head Cap Screw",
           "// This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.",
-          "// Categories: Fasteners",
+          "// Categories: Mechanical Components",
           "",
           "",
           "// Set units"
@@ -3812,12 +3812,12 @@ description: Result of parsing socket-head-cap-screw.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.0",
+              "raw": "2.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.0,
+                "value": 2.0,
                 "suffix": "None"
               }
             }

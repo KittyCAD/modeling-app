@@ -2,13 +2,21 @@ import {
   type ProjectCardClassNames,
   ProjectCard as UiProjectCard,
 } from '@kittycad/ui-components'
+import {
+  AquariumStatusBadge,
+  getAquariumStatusBadge,
+} from '@src/components/AquariumStatusBadge'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import fsZds from '@src/lib/fs-zds'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDeleteWarningMessage,
+  getHomeProjectDisplayName,
+  shouldPreserveRemoteOnHomeProjectDelete,
+} from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -145,8 +153,11 @@ function AppProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
-  const hasChangesRequested =
-    projectStatus?.publicationStatus === 'changes_requested'
+  const [isReviewingDuplicates, setIsReviewingDuplicates] = useState(false)
+  const [selectedDuplicatePaths, setSelectedDuplicatePaths] = useState<
+    Set<string>
+  >(new Set())
+  const aquariumStatusBadge = getAquariumStatusBadge(projectStatus)
   const hasCloudConflict = Boolean(
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
@@ -237,22 +248,38 @@ function AppProjectCard({
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
   const canOpen = projectActions.canOpen(project)
+  const canReviewDuplicateRealizations =
+    showCloudSyncUi && projectActions.canReviewDuplicateRealizations(project)
+  const duplicateRealizations = project.duplicateRealizations ?? []
+  const hasDuplicateRealizations =
+    showCloudSyncUi && duplicateRealizations.length > 0
   const canMoveToLibrary = Boolean(
     onMoveToLibrary && projectActions.canMoveToLibrary(project)
   )
+  const deleteProjectDisplayName = projectName || 'this file'
+  const deleteWarningMessage = getHomeProjectDeleteWarningMessage(
+    project,
+    deleteProjectDisplayName
+  )
+  const deleteConfirmationMessage = shouldPreserveRemoteOnHomeProjectDelete(
+    project
+  )
+    ? `Are you sure you want to delete the local copy of "${deleteProjectDisplayName}"? This action cannot be undone.`
+    : `Are you sure you want to delete "${deleteProjectDisplayName}"? This action cannot be undone.`
   const openHref =
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
   const statusBadgeLabel =
-    !showCloudSyncUi || !showSourceStatusBadges || project.source === 'both'
+    !showCloudSyncUi || !showSourceStatusBadges
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 
   const badges = (statusBadgeLabel ||
     hasCloudConflict ||
     hasCloudSyncFailure ||
-    hasChangesRequested) && (
+    aquariumStatusBadge ||
+    hasDuplicateRealizations) && (
     <>
       {statusBadgeLabel && (
         <span
@@ -279,12 +306,18 @@ function AppProjectCard({
           <Tooltip>{getCloudSyncFailureTooltip(project)}</Tooltip>
         </span>
       )}
-      {hasChangesRequested && (
+      {aquariumStatusBadge && projectStatus && (
+        <AquariumStatusBadge
+          projectStatus={projectStatus}
+          className="whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-none shadow-sm ring-1 ring-inset"
+        />
+      )}
+      {hasDuplicateRealizations && (
         <span
-          className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10"
-          data-testid="changes-requested-badge"
+          className="rounded bg-chalkboard-20 px-1.5 py-0.5 text-[10px] font-medium text-chalkboard-90 dark:bg-chalkboard-80 dark:text-chalkboard-10"
+          data-testid="project-duplicate-copies-badge"
         >
-          Changes requested
+          Duplicate copies
         </span>
       )}
     </>
@@ -329,14 +362,73 @@ function AppProjectCard({
           }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >
+          <p className="my-4 text-wrap break-words">{deleteWarningMessage}</p>
           <p className="my-4 text-wrap break-words">
-            This will permanently delete "{projectName || 'this file'}
-            ".
+            {deleteConfirmationMessage}
           </p>
+        </DeleteConfirmationDialog>
+      )}
+      {isReviewingDuplicates && (
+        <DeleteConfirmationDialog
+          title="Review Duplicate Copies"
+          onConfirm={toSync(async () => {
+            await projectActions.deleteDuplicateRealizations(
+              project,
+              Array.from(selectedDuplicatePaths)
+            )
+            setIsReviewingDuplicates(false)
+          }, reportRejection)}
+          onDismiss={() => setIsReviewingDuplicates(false)}
+        >
           <p className="my-4 text-wrap break-words">
-            Are you sure you want to delete "{projectName || 'this file'}
-            "? This action cannot be undone.
+            Select duplicate local project folders to permanently delete. The
+            canonical folder will be kept.
           </p>
+          <ul className="my-4 flex max-h-72 flex-col gap-2 overflow-y-auto text-sm">
+            {duplicateRealizations.map((duplicate) => (
+              <li key={duplicate.localProjectPath}>
+                <label className="flex items-start gap-2 rounded border border-chalkboard-30 p-2 dark:border-chalkboard-80">
+                  <span className="sr-only">Select duplicate copy</span>
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={selectedDuplicatePaths.has(
+                      duplicate.localProjectPath
+                    )}
+                    onChange={(event) => {
+                      const checked = event.currentTarget.checked
+                      const duplicatePath = duplicate.localProjectPath
+                      setSelectedDuplicatePaths((paths) => {
+                        const nextPaths = new Set(paths)
+                        if (checked) {
+                          nextPaths.add(duplicatePath)
+                        } else {
+                          nextPaths.delete(duplicatePath)
+                        }
+                        return nextPaths
+                      })
+                    }}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block break-words font-medium">
+                      {duplicate.title ||
+                        duplicate.localProjectName ||
+                        duplicate.localProjectPath}
+                    </span>
+                    <span className="block break-all text-chalkboard-60 text-xs">
+                      {duplicate.localProjectPath}
+                    </span>
+                    <span className="block text-chalkboard-60 text-xs">
+                      {duplicate.duplicateRisk}
+                      {duplicate.libraryTitles.length > 0
+                        ? ` in ${duplicate.libraryTitles.join(', ')}`
+                        : ''}
+                    </span>
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </DeleteConfirmationDialog>
       )}
     </>
@@ -383,8 +475,30 @@ function AppProjectCard({
               data-testid="project-card-context-move-to-library"
               onClick={() => onMoveToLibrary?.(project)}
             >
-              Move to library
+              Move to another library
             </ContextMenuItem>,
+            ...(hasDuplicateRealizations
+              ? [
+                  <ContextMenuItem
+                    key="review-duplicate-copies"
+                    icon="glasses"
+                    disabled={!canReviewDuplicateRealizations}
+                    data-testid="project-card-context-review-duplicate-copies"
+                    onClick={() => {
+                      setSelectedDuplicatePaths(
+                        new Set(
+                          duplicateRealizations.map(
+                            (duplicate) => duplicate.localProjectPath
+                          )
+                        )
+                      )
+                      setIsReviewingDuplicates(true)
+                    }}
+                  >
+                    Review duplicate copies
+                  </ContextMenuItem>,
+                ]
+              : []),
             <ContextMenuItem
               key="delete"
               icon="trash"

@@ -1,11 +1,10 @@
 ---
 source: kcl-lib/src/frontend.rs
-expression: "src_delta.text.as_str()"
+expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  arc1 = arc(start = [var -14.46, var 0], end = [var -10, var 4.65], center = [var -10.14, var 0.31])
-  arc2 = arc(start = [var 5.49, var 2.26], end = [var 11.58, var -3.47], center = [var 9.34, var 0.25])
-  line1 = line(start = [var -0.44, var -10], end = [var -0.37, var 10])
+  arc1 = arc(start = [var -14.71, var 0], end = [var -10, var 4.9], center = [var -9.98, var 0.16])
+  arc2 = arc(start = [var 5.14, var 2.43], end = [var 11.82, var -3.77], center = [var 9.36, var 0.28])
+  line1 = line(start = [var -0.25, var -10], end = [var -0.37, var 10])
   symmetric([arc1, arc2], axis = line1)
 }
-

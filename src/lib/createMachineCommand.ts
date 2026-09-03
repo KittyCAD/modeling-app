@@ -28,6 +28,7 @@ interface CreateMachineCommandProps<
   send: Function
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  defaultScopes: Command['scopes']
   onCancel?: () => void
   forceDisable?: boolean
   showExperimentalCommands?: boolean
@@ -45,6 +46,7 @@ export function createMachineCommand<
   send,
   actor,
   commandBarConfig,
+  defaultScopes,
   onCancel,
   forceDisable = false,
   showExperimentalCommands = false,
@@ -74,6 +76,7 @@ export function createMachineCommand<
           send,
           actor,
           commandBarConfig: recursiveCommandBarConfig,
+          defaultScopes,
           onCancel,
           forceDisable,
           showExperimentalCommands,
@@ -113,6 +116,7 @@ export function createMachineCommand<
     groupId,
     icon,
     description: commandConfig.description,
+    scopes: commandConfig.scopes ?? defaultScopes,
     needsReview: commandConfig.needsReview || false,
     machineActor: actor,
     onSubmit: (data?: S[typeof type]) => {

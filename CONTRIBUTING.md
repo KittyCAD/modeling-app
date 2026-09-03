@@ -137,7 +137,7 @@ Integration tests will be slower, require more dependencies, and could be flaky.
 
 Prepare these system dependencies:
 
-- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
+- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/developer
 
 #### Desktop tests (Electron on all platforms)
 
@@ -243,14 +243,15 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 Prepare these system dependencies:
 
-- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
-- Install `just` following [these instructions](https://just.systems/man/en/packages.html)
+- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/developer
+- Confirm that `just` is installed via the asdf instructions earlier.
 
 then run tests that target the KCL language:
 
 ```
 npm run test:e2e:kcl
 ```
+Note that the `TS-RS` typescript bindings generation runs as a series of "test" jobs alongside other Rust tests and under the multithreaded conditions of this command these jobs are expected to result in failures or flakiness. You may disregard test failures whose names start with `export_bindings`.
 
 ### Fuzzing the parser
 
@@ -316,6 +317,14 @@ diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
 ```
 
 - `npm run circular-deps:diff`
+
+## Making issues
+
+We receive a lot of issues while we're building this app. Please follow these principles when creating issues, in order to help our team work as efficiently as possible:
+
+1. Look for duplicate issues. If you have edit access, feel free to edit an existing issue as needed. If not, please add a comment with your additional context instead of creating a new issue.
+2. If a new issue is needed, please start with a succinct one-sentence description of the request, specifying whether the request is a missing feature, bug, maintenance task, or a fun new idea along the way.
+3. For bugs, please provide reproduction steps whenever possible, as well as context around device, platform and your state. Sharing KCL is often very helpful for bugs.
 
 ## Proposing changes
 

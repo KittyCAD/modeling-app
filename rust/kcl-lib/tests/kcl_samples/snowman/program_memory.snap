@@ -68,8 +68,7 @@ description: Variables in memory after executing snowman.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 134,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -133,8 +132,7 @@ description: Variables in memory after executing snowman.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 139,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -549,7 +547,7 @@ description: Variables in memory after executing snowman.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 139,
                   "origin": {
                     "x": 0.0,
@@ -612,10 +610,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 7597,
-                    "end": 7604,
+                    "commentStart": 7533,
+                    "end": 7540,
                     "moduleId": 0,
-                    "start": 7597,
+                    "start": 7533,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -630,7 +628,7 @@ description: Variables in memory after executing snowman.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XZ",
+                "kind": "Custom",
                 "objectId": 139,
                 "origin": {
                   "x": 0.0,
@@ -777,7 +775,7 @@ description: Variables in memory after executing snowman.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 134,
                   "origin": {
                     "x": 0.0,
@@ -840,10 +838,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 7088,
-                    "end": 7095,
+                    "commentStart": 7063,
+                    "end": 7070,
                     "moduleId": 0,
-                    "start": 7088,
+                    "start": 7063,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -858,7 +856,7 @@ description: Variables in memory after executing snowman.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XZ",
+                "kind": "Custom",
                 "objectId": 134,
                 "origin": {
                   "x": 0.0,
@@ -956,72 +954,6 @@ description: Variables in memory after executing snowman.kcl
       "angle": "degrees"
     }
   },
-  "armSketchL": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 139,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": null
-      }
-    }
-  },
-  "armSketchR": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 134,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      }
-    }
-  },
   "armZOffset": {
     "type": "Number",
     "value": 4.2,
@@ -1047,10 +979,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8215,
-            "end": 8222,
+            "commentStart": 8151,
+            "end": 8158,
             "moduleId": 0,
-            "start": 8215,
+            "start": 8151,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1078,10 +1010,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 71.8,
             "tag": {
-              "commentStart": 8215,
-              "end": 8222,
+              "commentStart": 8151,
+              "end": 8158,
               "moduleId": 0,
-              "start": 8215,
+              "start": 8151,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -1196,10 +1128,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 890,
-            "end": 894,
+            "commentStart": 911,
+            "end": 915,
             "moduleId": 0,
-            "start": 890,
+            "start": 911,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1221,10 +1153,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 818,
-              "end": 823,
+              "commentStart": 839,
+              "end": 844,
               "moduleId": 0,
-              "start": 818,
+              "start": 839,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1251,10 +1183,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 40.0,
             "tag": {
-              "commentStart": 890,
-              "end": 894,
+              "commentStart": 911,
+              "end": 915,
               "moduleId": 0,
-              "start": 890,
+              "start": 911,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1350,10 +1282,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 818,
-            "end": 823,
+            "commentStart": 839,
+            "end": 844,
             "moduleId": 0,
-            "start": 818,
+            "start": 839,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1380,10 +1312,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 40.0,
           "tag": {
-            "commentStart": 890,
-            "end": 894,
+            "commentStart": 911,
+            "end": 915,
             "moduleId": 0,
-            "start": 890,
+            "start": 911,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1752,10 +1684,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 818,
-                    "end": 823,
+                    "commentStart": 839,
+                    "end": 844,
                     "moduleId": 0,
-                    "start": 818,
+                    "start": 839,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1782,10 +1714,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 40.0,
                   "tag": {
-                    "commentStart": 890,
-                    "end": 894,
+                    "commentStart": 911,
+                    "end": 915,
                     "moduleId": 0,
-                    "start": 890,
+                    "start": 911,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -1878,10 +1810,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2583,
-            "end": 2587,
+            "commentStart": 2604,
+            "end": 2608,
             "moduleId": 0,
-            "start": 2583,
+            "start": 2604,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1903,10 +1835,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2513,
-              "end": 2518,
+              "commentStart": 2534,
+              "end": 2539,
               "moduleId": 0,
-              "start": 2513,
+              "start": 2534,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1933,10 +1865,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 2583,
-              "end": 2587,
+              "commentStart": 2604,
+              "end": 2608,
               "moduleId": 0,
-              "start": 2583,
+              "start": 2604,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2032,10 +1964,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2513,
-            "end": 2518,
+            "commentStart": 2534,
+            "end": 2539,
             "moduleId": 0,
-            "start": 2513,
+            "start": 2534,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2062,10 +1994,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 3.0,
           "tag": {
-            "commentStart": 2583,
-            "end": 2587,
+            "commentStart": 2604,
+            "end": 2608,
             "moduleId": 0,
-            "start": 2583,
+            "start": 2604,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2434,10 +2366,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2513,
-                    "end": 2518,
+                    "commentStart": 2534,
+                    "end": 2539,
                     "moduleId": 0,
-                    "start": 2513,
+                    "start": 2534,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2464,10 +2396,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 3.0,
                   "tag": {
-                    "commentStart": 2583,
-                    "end": 2587,
+                    "commentStart": 2604,
+                    "end": 2608,
                     "moduleId": 0,
-                    "start": 2583,
+                    "start": 2604,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -2560,10 +2492,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3065,
-            "end": 3069,
+            "commentStart": 3086,
+            "end": 3090,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3086,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2585,10 +2517,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2995,
-              "end": 3000,
+              "commentStart": 3016,
+              "end": 3021,
               "moduleId": 0,
-              "start": 2995,
+              "start": 3016,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2615,10 +2547,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 3065,
-              "end": 3069,
+              "commentStart": 3086,
+              "end": 3090,
               "moduleId": 0,
-              "start": 3065,
+              "start": 3086,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2714,10 +2646,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2995,
-            "end": 3000,
+            "commentStart": 3016,
+            "end": 3021,
             "moduleId": 0,
-            "start": 2995,
+            "start": 3016,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2744,10 +2676,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 3.0,
           "tag": {
-            "commentStart": 3065,
-            "end": 3069,
+            "commentStart": 3086,
+            "end": 3090,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3086,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3116,10 +3048,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2995,
-                    "end": 3000,
+                    "commentStart": 3016,
+                    "end": 3021,
                     "moduleId": 0,
-                    "start": 2995,
+                    "start": 3016,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3146,10 +3078,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 3.0,
                   "tag": {
-                    "commentStart": 3065,
-                    "end": 3069,
+                    "commentStart": 3086,
+                    "end": 3090,
                     "moduleId": 0,
-                    "start": 3065,
+                    "start": 3086,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -3242,10 +3174,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3534,
-            "end": 3538,
+            "commentStart": 3555,
+            "end": 3559,
             "moduleId": 0,
-            "start": 3534,
+            "start": 3555,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3267,10 +3199,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3464,
-              "end": 3469,
+              "commentStart": 3485,
+              "end": 3490,
               "moduleId": 0,
-              "start": 3464,
+              "start": 3485,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3297,10 +3229,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 3534,
-              "end": 3538,
+              "commentStart": 3555,
+              "end": 3559,
               "moduleId": 0,
-              "start": 3534,
+              "start": 3555,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -3396,10 +3328,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3464,
-            "end": 3469,
+            "commentStart": 3485,
+            "end": 3490,
             "moduleId": 0,
-            "start": 3464,
+            "start": 3485,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3426,10 +3358,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 3.0,
           "tag": {
-            "commentStart": 3534,
-            "end": 3538,
+            "commentStart": 3555,
+            "end": 3559,
             "moduleId": 0,
-            "start": 3534,
+            "start": 3555,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3798,10 +3730,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3464,
-                    "end": 3469,
+                    "commentStart": 3485,
+                    "end": 3490,
                     "moduleId": 0,
-                    "start": 3464,
+                    "start": 3485,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3828,10 +3760,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 3.0,
                   "tag": {
-                    "commentStart": 3534,
-                    "end": 3538,
+                    "commentStart": 3555,
+                    "end": 3559,
                     "moduleId": 0,
-                    "start": 3534,
+                    "start": 3555,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -3954,10 +3886,10 @@ description: Variables in memory after executing snowman.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2583,
-                "end": 2587,
+                "commentStart": 2604,
+                "end": 2608,
                 "moduleId": 0,
-                "start": 2583,
+                "start": 2604,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3979,10 +3911,10 @@ description: Variables in memory after executing snowman.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2513,
-                  "end": 2518,
+                  "commentStart": 2534,
+                  "end": 2539,
                   "moduleId": 0,
-                  "start": 2513,
+                  "start": 2534,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4009,10 +3941,10 @@ description: Variables in memory after executing snowman.kcl
                 ],
                 "radius": 3.0,
                 "tag": {
-                  "commentStart": 2583,
-                  "end": 2587,
+                  "commentStart": 2604,
+                  "end": 2608,
                   "moduleId": 0,
-                  "start": 2583,
+                  "start": 2604,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4104,10 +4036,10 @@ description: Variables in memory after executing snowman.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3065,
-                "end": 3069,
+                "commentStart": 3086,
+                "end": 3090,
                 "moduleId": 0,
-                "start": 3065,
+                "start": 3086,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4129,10 +4061,10 @@ description: Variables in memory after executing snowman.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2995,
-                  "end": 3000,
+                  "commentStart": 3016,
+                  "end": 3021,
                   "moduleId": 0,
-                  "start": 2995,
+                  "start": 3016,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4159,10 +4091,10 @@ description: Variables in memory after executing snowman.kcl
                 ],
                 "radius": 3.0,
                 "tag": {
-                  "commentStart": 3065,
-                  "end": 3069,
+                  "commentStart": 3086,
+                  "end": 3090,
                   "moduleId": 0,
-                  "start": 3065,
+                  "start": 3086,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4254,10 +4186,10 @@ description: Variables in memory after executing snowman.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3534,
-                "end": 3538,
+                "commentStart": 3555,
+                "end": 3559,
                 "moduleId": 0,
-                "start": 3534,
+                "start": 3555,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4279,10 +4211,10 @@ description: Variables in memory after executing snowman.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 3464,
-                  "end": 3469,
+                  "commentStart": 3485,
+                  "end": 3490,
                   "moduleId": 0,
-                  "start": 3464,
+                  "start": 3485,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4309,10 +4241,10 @@ description: Variables in memory after executing snowman.kcl
                 ],
                 "radius": 3.0,
                 "tag": {
-                  "commentStart": 3534,
-                  "end": 3538,
+                  "commentStart": 3555,
+                  "end": 3559,
                   "moduleId": 0,
-                  "start": 3534,
+                  "start": 3555,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4411,10 +4343,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4222,
-            "end": 4226,
+            "commentStart": 4243,
+            "end": 4247,
             "moduleId": 0,
-            "start": 4222,
+            "start": 4243,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -4436,10 +4368,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4152,
-              "end": 4157,
+              "commentStart": 4173,
+              "end": 4178,
               "moduleId": 0,
-              "start": 4152,
+              "start": 4173,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4466,10 +4398,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 4222,
-              "end": 4226,
+              "commentStart": 4243,
+              "end": 4247,
               "moduleId": 0,
-              "start": 4222,
+              "start": 4243,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -4565,10 +4497,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 4152,
-            "end": 4157,
+            "commentStart": 4173,
+            "end": 4178,
             "moduleId": 0,
-            "start": 4152,
+            "start": 4173,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4595,10 +4527,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 3.0,
           "tag": {
-            "commentStart": 4222,
-            "end": 4226,
+            "commentStart": 4243,
+            "end": 4247,
             "moduleId": 0,
-            "start": 4222,
+            "start": 4243,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -4967,10 +4899,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4152,
-                    "end": 4157,
+                    "commentStart": 4173,
+                    "end": 4178,
                     "moduleId": 0,
-                    "start": 4152,
+                    "start": 4173,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4997,10 +4929,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 3.0,
                   "tag": {
-                    "commentStart": 4222,
-                    "end": 4226,
+                    "commentStart": 4243,
+                    "end": 4247,
                     "moduleId": 0,
-                    "start": 4222,
+                    "start": 4243,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -5106,10 +5038,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 4624,
-            "end": 4629,
+            "commentStart": 4645,
+            "end": 4650,
             "moduleId": 0,
-            "start": 4624,
+            "start": 4645,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5136,10 +5068,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 3.0,
           "tag": {
-            "commentStart": 4694,
-            "end": 4698,
+            "commentStart": 4715,
+            "end": 4719,
             "moduleId": 0,
-            "start": 4694,
+            "start": 4715,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5508,10 +5440,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4624,
-                    "end": 4629,
+                    "commentStart": 4645,
+                    "end": 4650,
                     "moduleId": 0,
-                    "start": 4624,
+                    "start": 4645,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5538,10 +5470,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 3.0,
                   "tag": {
-                    "commentStart": 4694,
-                    "end": 4698,
+                    "commentStart": 4715,
+                    "end": 4719,
                     "moduleId": 0,
-                    "start": 4694,
+                    "start": 4715,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -5634,10 +5566,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4694,
-            "end": 4698,
+            "commentStart": 4715,
+            "end": 4719,
             "moduleId": 0,
-            "start": 4694,
+            "start": 4715,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5659,10 +5591,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4624,
-              "end": 4629,
+              "commentStart": 4645,
+              "end": 4650,
               "moduleId": 0,
-              "start": 4624,
+              "start": 4645,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5689,10 +5621,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 4694,
-              "end": 4698,
+              "commentStart": 4715,
+              "end": 4719,
               "moduleId": 0,
-              "start": 4694,
+              "start": 4715,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -5814,10 +5746,10 @@ description: Variables in memory after executing snowman.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4222,
-                "end": 4226,
+                "commentStart": 4243,
+                "end": 4247,
                 "moduleId": 0,
-                "start": 4222,
+                "start": 4243,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5839,10 +5771,10 @@ description: Variables in memory after executing snowman.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 4152,
-                  "end": 4157,
+                  "commentStart": 4173,
+                  "end": 4178,
                   "moduleId": 0,
-                  "start": 4152,
+                  "start": 4173,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5869,10 +5801,10 @@ description: Variables in memory after executing snowman.kcl
                 ],
                 "radius": 3.0,
                 "tag": {
-                  "commentStart": 4222,
-                  "end": 4226,
+                  "commentStart": 4243,
+                  "end": 4247,
                   "moduleId": 0,
-                  "start": 4222,
+                  "start": 4243,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5964,10 +5896,10 @@ description: Variables in memory after executing snowman.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4694,
-                "end": 4698,
+                "commentStart": 4715,
+                "end": 4719,
                 "moduleId": 0,
-                "start": 4694,
+                "start": 4715,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5989,10 +5921,10 @@ description: Variables in memory after executing snowman.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 4624,
-                  "end": 4629,
+                  "commentStart": 4645,
+                  "end": 4650,
                   "moduleId": 0,
-                  "start": 4624,
+                  "start": 4645,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6019,10 +5951,10 @@ description: Variables in memory after executing snowman.kcl
                 ],
                 "radius": 3.0,
                 "tag": {
-                  "commentStart": 4694,
-                  "end": 4698,
+                  "commentStart": 4715,
+                  "end": 4719,
                   "moduleId": 0,
-                  "start": 4694,
+                  "start": 4715,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6116,10 +6048,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6643,
-            "end": 6650,
+            "commentStart": 6657,
+            "end": 6664,
             "moduleId": 0,
-            "start": 6643,
+            "start": 6657,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6147,10 +6079,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 18.0,
             "tag": {
-              "commentStart": 6643,
-              "end": 6650,
+              "commentStart": 6657,
+              "end": 6664,
               "moduleId": 0,
-              "start": 6643,
+              "start": 6657,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -6232,10 +6164,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6384,
-            "end": 6391,
+            "commentStart": 6405,
+            "end": 6412,
             "moduleId": 0,
-            "start": 6384,
+            "start": 6405,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6263,10 +6195,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 26.0,
             "tag": {
-              "commentStart": 6384,
-              "end": 6391,
+              "commentStart": 6405,
+              "end": 6412,
               "moduleId": 0,
-              "start": 6384,
+              "start": 6405,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -6423,10 +6355,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1960,
-            "end": 1964,
+            "commentStart": 1981,
+            "end": 1985,
             "moduleId": 0,
-            "start": 1960,
+            "start": 1981,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6448,10 +6380,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1888,
-              "end": 1893,
+              "commentStart": 1909,
+              "end": 1914,
               "moduleId": 0,
-              "start": 1888,
+              "start": 1909,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6478,10 +6410,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 20.0,
             "tag": {
-              "commentStart": 1960,
-              "end": 1964,
+              "commentStart": 1981,
+              "end": 1985,
               "moduleId": 0,
-              "start": 1960,
+              "start": 1981,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -6577,10 +6509,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1888,
-            "end": 1893,
+            "commentStart": 1909,
+            "end": 1914,
             "moduleId": 0,
-            "start": 1888,
+            "start": 1909,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6607,10 +6539,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 20.0,
           "tag": {
-            "commentStart": 1960,
-            "end": 1964,
+            "commentStart": 1981,
+            "end": 1985,
             "moduleId": 0,
-            "start": 1960,
+            "start": 1981,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6979,10 +6911,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1888,
-                    "end": 1893,
+                    "commentStart": 1909,
+                    "end": 1914,
                     "moduleId": 0,
-                    "start": 1888,
+                    "start": 1909,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7009,10 +6941,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 20.0,
                   "tag": {
-                    "commentStart": 1960,
-                    "end": 1964,
+                    "commentStart": 1981,
+                    "end": 1985,
                     "moduleId": 0,
-                    "start": 1960,
+                    "start": 1981,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -7105,10 +7037,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7597,
-            "end": 7604,
+            "commentStart": 7533,
+            "end": 7540,
             "moduleId": 0,
-            "start": 7597,
+            "start": 7533,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7136,10 +7068,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 7597,
-              "end": 7604,
+              "commentStart": 7533,
+              "end": 7540,
               "moduleId": 0,
-              "start": 7597,
+              "start": 7533,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7154,7 +7086,7 @@ description: Variables in memory after executing snowman.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
+          "kind": "Custom",
           "objectId": 139,
           "origin": {
             "x": 0.0,
@@ -7247,10 +7179,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1426,
-            "end": 1430,
+            "commentStart": 1447,
+            "end": 1451,
             "moduleId": 0,
-            "start": 1426,
+            "start": 1447,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -7272,10 +7204,10 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1354,
-              "end": 1359,
+              "commentStart": 1375,
+              "end": 1380,
               "moduleId": 0,
-              "start": 1354,
+              "start": 1375,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7302,10 +7234,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 28.0,
             "tag": {
-              "commentStart": 1426,
-              "end": 1430,
+              "commentStart": 1447,
+              "end": 1451,
               "moduleId": 0,
-              "start": 1426,
+              "start": 1447,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -7401,10 +7333,10 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1354,
-            "end": 1359,
+            "commentStart": 1375,
+            "end": 1380,
             "moduleId": 0,
-            "start": 1354,
+            "start": 1375,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7431,10 +7363,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 28.0,
           "tag": {
-            "commentStart": 1426,
-            "end": 1430,
+            "commentStart": 1447,
+            "end": 1451,
             "moduleId": 0,
-            "start": 1426,
+            "start": 1447,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -7803,10 +7735,10 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1354,
-                    "end": 1359,
+                    "commentStart": 1375,
+                    "end": 1380,
                     "moduleId": 0,
-                    "start": 1354,
+                    "start": 1375,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7833,10 +7765,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 28.0,
                   "tag": {
-                    "commentStart": 1426,
-                    "end": 1430,
+                    "commentStart": 1447,
+                    "end": 1451,
                     "moduleId": 0,
-                    "start": 1426,
+                    "start": 1447,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -7929,10 +7861,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5233,
-            "end": 5238,
+            "commentStart": 5254,
+            "end": 5259,
             "moduleId": 0,
-            "start": 5233,
+            "start": 5254,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7943,10 +7875,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5303,
-            "end": 5308,
+            "commentStart": 5324,
+            "end": 5329,
             "moduleId": 0,
-            "start": 5303,
+            "start": 5324,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7957,10 +7889,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5417,
-            "end": 5421,
+            "commentStart": 5438,
+            "end": 5442,
             "moduleId": 0,
-            "start": 5417,
+            "start": 5438,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -7971,10 +7903,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5569,
-            "end": 5574,
+            "commentStart": 5590,
+            "end": 5595,
             "moduleId": 0,
-            "start": 5569,
+            "start": 5590,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7985,10 +7917,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5693,
-            "end": 5697,
+            "commentStart": 5714,
+            "end": 5718,
             "moduleId": 0,
-            "start": 5693,
+            "start": 5714,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -7999,10 +7931,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5842,
-            "end": 5847,
+            "commentStart": 5863,
+            "end": 5868,
             "moduleId": 0,
-            "start": 5842,
+            "start": 5863,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8024,16 +7956,16 @@ description: Variables in memory after executing snowman.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5233,
-              "end": 5238,
+              "commentStart": 5254,
+              "end": 5259,
               "moduleId": 0,
-              "start": 5233,
+              "start": 5254,
               "type": "TagDeclarator",
               "value": "line1"
             },
             "to": [
               18.0,
-              -0.005000029668266223
+              -0.00500002965632076
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -8045,19 +7977,19 @@ description: Variables in memory after executing snowman.kcl
             },
             "from": [
               18.0,
-              -0.005000029668266223
+              -0.00500002965632076
             ],
             "tag": {
-              "commentStart": 5303,
-              "end": 5308,
+              "commentStart": 5324,
+              "end": 5329,
               "moduleId": 0,
-              "start": 5303,
+              "start": 5324,
               "type": "TagDeclarator",
               "value": "line2"
             },
             "to": [
-              18.000275398936473,
-              -0.005000029668266312
+              18.000275849550174,
+              -0.00500002965632077
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -8069,25 +8001,25 @@ description: Variables in memory after executing snowman.kcl
             },
             "ccw": false,
             "center": [
-              17.499493256719706,
-              -0.010550714230660821
+              17.499492284372938,
+              -0.010549823674176981
             ],
             "from": [
-              18.000275398936473,
-              -0.005000029668266312
+              18.000275849550174,
+              -0.00500002965632077
             ],
-            "radius": 0.5008129032506309,
+            "radius": 0.5008143162543024,
             "tag": {
-              "commentStart": 5417,
-              "end": 5421,
+              "commentStart": 5438,
+              "end": 5442,
               "moduleId": 0,
-              "start": 5417,
+              "start": 5438,
               "type": "TagDeclarator",
               "value": "arc3"
             },
             "to": [
-              17.539977972673178,
-              -0.5097245835752936
+              17.539978008309163,
+              -0.509725028910399
             ],
             "type": "Arc",
             "units": "mm"
@@ -8098,20 +8030,20 @@ description: Variables in memory after executing snowman.kcl
               "sourceRange": []
             },
             "from": [
-              17.539977972673178,
-              -0.5097245835752936
+              17.539978008309163,
+              -0.509725028910399
             ],
             "tag": {
-              "commentStart": 5569,
-              "end": 5574,
+              "commentStart": 5590,
+              "end": 5595,
               "moduleId": 0,
-              "start": 5569,
+              "start": 5590,
               "type": "TagDeclarator",
               "value": "line4"
             },
             "to": [
-              1.339850797996827,
-              -1.9283045232221967
+              1.3398514943177136,
+              -1.9283124368642235
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -8123,25 +8055,25 @@ description: Variables in memory after executing snowman.kcl
             },
             "ccw": false,
             "center": [
-              1.2336350998369878,
-              -0.6838792488192935
+              1.2336494751078868,
+              -0.6838657302181186
             ],
             "from": [
-              1.339850797996827,
-              -1.9283045232221967
+              1.3398514943177136,
+              -1.9283124368642235
             ],
-            "radius": 1.248949974221675,
+            "radius": 1.2489701656030785,
             "tag": {
-              "commentStart": 5693,
-              "end": 5697,
+              "commentStart": 5714,
+              "end": 5718,
               "moduleId": 0,
-              "start": 5693,
+              "start": 5714,
               "type": "TagDeclarator",
               "value": "arc5"
             },
             "to": [
-              -0.0016683498251930384,
-              -0.4997558517155083
+              -0.0016762318805425558,
+              -0.4997546979030556
             ],
             "type": "Arc",
             "units": "mm"
@@ -8152,14 +8084,14 @@ description: Variables in memory after executing snowman.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0016683498251930384,
-              -0.4997558517155083
+              -0.0016762318805425558,
+              -0.4997546979030556
             ],
             "tag": {
-              "commentStart": 5842,
-              "end": 5847,
+              "commentStart": 5863,
+              "end": 5868,
               "moduleId": 0,
-              "start": 5842,
+              "start": 5863,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8288,7 +8220,7 @@ description: Variables in memory after executing snowman.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 17.539977972673224,
+                        "n": 17.539978008309212,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8296,7 +8228,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.5097245835759037,
+                        "n": -0.5097250289110229,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8306,7 +8238,7 @@ description: Variables in memory after executing snowman.kcl
                     ],
                     "end": [
                       {
-                        "n": 18.00027539893647,
+                        "n": 18.000275849550174,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8314,7 +8246,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.005000029668266401,
+                        "n": -0.0050000296563207786,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8324,7 +8256,7 @@ description: Variables in memory after executing snowman.kcl
                     ],
                     "center": [
                       {
-                        "n": 17.499493256719703,
+                        "n": 17.499492284372938,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8332,7 +8264,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.010550714230660911,
+                        "n": -0.010549823674176988,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8440,7 +8372,7 @@ description: Variables in memory after executing snowman.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.0016683498251931792,
+                        "n": -0.0016762318805427822,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8448,7 +8380,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.4997558517155077,
+                        "n": -0.4997546979030557,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8458,7 +8390,7 @@ description: Variables in memory after executing snowman.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.339850797996827,
+                        "n": 1.3398514943177136,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8466,7 +8398,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -1.9283045232221965,
+                        "n": -1.9283124368642235,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8476,7 +8408,7 @@ description: Variables in memory after executing snowman.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.2336350998369878,
+                        "n": 1.2336494751078864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8484,7 +8416,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.6838792488192934,
+                        "n": -0.6838657302181186,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8618,7 +8550,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.005000029668266223,
+                        "n": -0.00500002965632076,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8720,7 +8652,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.005000029668266253,
+                        "n": -0.005000029656320764,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8730,7 +8662,7 @@ description: Variables in memory after executing snowman.kcl
                     ],
                     "end": [
                       {
-                        "n": 18.000275398936473,
+                        "n": 18.000275849550174,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8738,7 +8670,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.005000029668266312,
+                        "n": -0.00500002965632077,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8832,7 +8764,7 @@ description: Variables in memory after executing snowman.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 17.539977972673224,
+                        "n": 17.539978008309212,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8840,7 +8772,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.5097245835758983,
+                        "n": -0.5097250289110224,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8850,7 +8782,7 @@ description: Variables in memory after executing snowman.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.339850797996827,
+                        "n": 1.3398514943177136,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8858,7 +8790,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -1.9283045232221967,
+                        "n": -1.9283124368642235,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8952,7 +8884,7 @@ description: Variables in memory after executing snowman.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0016683498251931638,
+                        "n": -0.0016762318805427822,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8960,7 +8892,7 @@ description: Variables in memory after executing snowman.kcl
                         }
                       },
                       {
-                        "n": -0.4997558517155077,
+                        "n": -0.4997546979030557,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -9079,16 +9011,16 @@ description: Variables in memory after executing snowman.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5233,
-                    "end": 5238,
+                    "commentStart": 5254,
+                    "end": 5259,
                     "moduleId": 0,
-                    "start": 5233,
+                    "start": 5254,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
                   "to": [
                     18.0,
-                    -0.005000029668266223
+                    -0.00500002965632076
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -9100,19 +9032,19 @@ description: Variables in memory after executing snowman.kcl
                   },
                   "from": [
                     18.0,
-                    -0.005000029668266223
+                    -0.00500002965632076
                   ],
                   "tag": {
-                    "commentStart": 5303,
-                    "end": 5308,
+                    "commentStart": 5324,
+                    "end": 5329,
                     "moduleId": 0,
-                    "start": 5303,
+                    "start": 5324,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
                   "to": [
-                    18.000275398936473,
-                    -0.005000029668266312
+                    18.000275849550174,
+                    -0.00500002965632077
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -9124,25 +9056,25 @@ description: Variables in memory after executing snowman.kcl
                   },
                   "ccw": false,
                   "center": [
-                    17.499493256719706,
-                    -0.010550714230660821
+                    17.499492284372938,
+                    -0.010549823674176981
                   ],
                   "from": [
-                    18.000275398936473,
-                    -0.005000029668266312
+                    18.000275849550174,
+                    -0.00500002965632077
                   ],
-                  "radius": 0.5008129032506309,
+                  "radius": 0.5008143162543024,
                   "tag": {
-                    "commentStart": 5417,
-                    "end": 5421,
+                    "commentStart": 5438,
+                    "end": 5442,
                     "moduleId": 0,
-                    "start": 5417,
+                    "start": 5438,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
                   "to": [
-                    17.539977972673178,
-                    -0.5097245835752936
+                    17.539978008309163,
+                    -0.509725028910399
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -9153,20 +9085,20 @@ description: Variables in memory after executing snowman.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    17.539977972673178,
-                    -0.5097245835752936
+                    17.539978008309163,
+                    -0.509725028910399
                   ],
                   "tag": {
-                    "commentStart": 5569,
-                    "end": 5574,
+                    "commentStart": 5590,
+                    "end": 5595,
                     "moduleId": 0,
-                    "start": 5569,
+                    "start": 5590,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
                   "to": [
-                    1.339850797996827,
-                    -1.9283045232221967
+                    1.3398514943177136,
+                    -1.9283124368642235
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -9178,25 +9110,25 @@ description: Variables in memory after executing snowman.kcl
                   },
                   "ccw": false,
                   "center": [
-                    1.2336350998369878,
-                    -0.6838792488192935
+                    1.2336494751078868,
+                    -0.6838657302181186
                   ],
                   "from": [
-                    1.339850797996827,
-                    -1.9283045232221967
+                    1.3398514943177136,
+                    -1.9283124368642235
                   ],
-                  "radius": 1.248949974221675,
+                  "radius": 1.2489701656030785,
                   "tag": {
-                    "commentStart": 5693,
-                    "end": 5697,
+                    "commentStart": 5714,
+                    "end": 5718,
                     "moduleId": 0,
-                    "start": 5693,
+                    "start": 5714,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
                   "to": [
-                    -0.0016683498251930384,
-                    -0.4997558517155083
+                    -0.0016762318805425558,
+                    -0.4997546979030556
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -9207,14 +9139,14 @@ description: Variables in memory after executing snowman.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0016683498251930384,
-                    -0.4997558517155083
+                    -0.0016762318805425558,
+                    -0.4997546979030556
                   ],
                   "tag": {
-                    "commentStart": 5842,
-                    "end": 5847,
+                    "commentStart": 5863,
+                    "end": 5868,
                     "moduleId": 0,
-                    "start": 5842,
+                    "start": 5863,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -9354,16 +9286,16 @@ description: Variables in memory after executing snowman.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5233,
-            "end": 5238,
+            "commentStart": 5254,
+            "end": 5259,
             "moduleId": 0,
-            "start": 5233,
+            "start": 5254,
             "type": "TagDeclarator",
             "value": "line1"
           },
           "to": [
             18.0,
-            -0.005000029668266223
+            -0.00500002965632076
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -9375,19 +9307,19 @@ description: Variables in memory after executing snowman.kcl
           },
           "from": [
             18.0,
-            -0.005000029668266223
+            -0.00500002965632076
           ],
           "tag": {
-            "commentStart": 5303,
-            "end": 5308,
+            "commentStart": 5324,
+            "end": 5329,
             "moduleId": 0,
-            "start": 5303,
+            "start": 5324,
             "type": "TagDeclarator",
             "value": "line2"
           },
           "to": [
-            18.000275398936473,
-            -0.005000029668266312
+            18.000275849550174,
+            -0.00500002965632077
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -9399,25 +9331,25 @@ description: Variables in memory after executing snowman.kcl
           },
           "ccw": false,
           "center": [
-            17.499493256719706,
-            -0.010550714230660821
+            17.499492284372938,
+            -0.010549823674176981
           ],
           "from": [
-            18.000275398936473,
-            -0.005000029668266312
+            18.000275849550174,
+            -0.00500002965632077
           ],
-          "radius": 0.5008129032506309,
+          "radius": 0.5008143162543024,
           "tag": {
-            "commentStart": 5417,
-            "end": 5421,
+            "commentStart": 5438,
+            "end": 5442,
             "moduleId": 0,
-            "start": 5417,
+            "start": 5438,
             "type": "TagDeclarator",
             "value": "arc3"
           },
           "to": [
-            17.539977972673178,
-            -0.5097245835752936
+            17.539978008309163,
+            -0.509725028910399
           ],
           "type": "Arc",
           "units": "mm"
@@ -9428,20 +9360,20 @@ description: Variables in memory after executing snowman.kcl
             "sourceRange": []
           },
           "from": [
-            17.539977972673178,
-            -0.5097245835752936
+            17.539978008309163,
+            -0.509725028910399
           ],
           "tag": {
-            "commentStart": 5569,
-            "end": 5574,
+            "commentStart": 5590,
+            "end": 5595,
             "moduleId": 0,
-            "start": 5569,
+            "start": 5590,
             "type": "TagDeclarator",
             "value": "line4"
           },
           "to": [
-            1.339850797996827,
-            -1.9283045232221967
+            1.3398514943177136,
+            -1.9283124368642235
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -9453,25 +9385,25 @@ description: Variables in memory after executing snowman.kcl
           },
           "ccw": false,
           "center": [
-            1.2336350998369878,
-            -0.6838792488192935
+            1.2336494751078868,
+            -0.6838657302181186
           ],
           "from": [
-            1.339850797996827,
-            -1.9283045232221967
+            1.3398514943177136,
+            -1.9283124368642235
           ],
-          "radius": 1.248949974221675,
+          "radius": 1.2489701656030785,
           "tag": {
-            "commentStart": 5693,
-            "end": 5697,
+            "commentStart": 5714,
+            "end": 5718,
             "moduleId": 0,
-            "start": 5693,
+            "start": 5714,
             "type": "TagDeclarator",
             "value": "arc5"
           },
           "to": [
-            -0.0016683498251930384,
-            -0.4997558517155083
+            -0.0016762318805425558,
+            -0.4997546979030556
           ],
           "type": "Arc",
           "units": "mm"
@@ -9482,14 +9414,14 @@ description: Variables in memory after executing snowman.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0016683498251930384,
-            -0.4997558517155083
+            -0.0016762318805425558,
+            -0.4997546979030556
           ],
           "tag": {
-            "commentStart": 5842,
-            "end": 5847,
+            "commentStart": 5863,
+            "end": 5868,
             "moduleId": 0,
-            "start": 5842,
+            "start": 5863,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -9602,10 +9534,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 26.0,
           "tag": {
-            "commentStart": 6384,
-            "end": 6391,
+            "commentStart": 6405,
+            "end": 6412,
             "moduleId": 0,
-            "start": 6384,
+            "start": 6405,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9698,10 +9630,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 18.0,
           "tag": {
-            "commentStart": 6643,
-            "end": 6650,
+            "commentStart": 6657,
+            "end": 6664,
             "moduleId": 0,
-            "start": 6643,
+            "start": 6657,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9788,10 +9720,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 7088,
-            "end": 7095,
+            "commentStart": 7063,
+            "end": 7070,
             "moduleId": 0,
-            "start": 7088,
+            "start": 7063,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9806,7 +9738,7 @@ description: Variables in memory after executing snowman.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
+        "kind": "Custom",
         "objectId": 134,
         "origin": {
           "x": 0.0,
@@ -9884,10 +9816,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 7597,
-            "end": 7604,
+            "commentStart": 7533,
+            "end": 7540,
             "moduleId": 0,
-            "start": 7597,
+            "start": 7533,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9902,7 +9834,7 @@ description: Variables in memory after executing snowman.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
+        "kind": "Custom",
         "objectId": 139,
         "origin": {
           "x": 0.0,
@@ -9980,10 +9912,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 71.8,
           "tag": {
-            "commentStart": 8215,
-            "end": 8222,
+            "commentStart": 8151,
+            "end": 8158,
             "moduleId": 0,
-            "start": 8215,
+            "start": 8151,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10066,10 +9998,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7088,
-            "end": 7095,
+            "commentStart": 7063,
+            "end": 7070,
             "moduleId": 0,
-            "start": 7088,
+            "start": 7063,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10097,10 +10029,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 7088,
-              "end": 7095,
+              "commentStart": 7063,
+              "end": 7070,
               "moduleId": 0,
-              "start": 7088,
+              "start": 7063,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -10115,7 +10047,7 @@ description: Variables in memory after executing snowman.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
+          "kind": "Custom",
           "objectId": 134,
           "origin": {
             "x": 0.0,
@@ -10324,10 +10256,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 26.0,
                   "tag": {
-                    "commentStart": 6384,
-                    "end": 6391,
+                    "commentStart": 6405,
+                    "end": 6412,
                     "moduleId": 0,
-                    "start": 6384,
+                    "start": 6405,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -10546,10 +10478,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 18.0,
                   "tag": {
-                    "commentStart": 6643,
-                    "end": 6650,
+                    "commentStart": 6657,
+                    "end": 6664,
                     "moduleId": 0,
-                    "start": 6643,
+                    "start": 6657,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -10768,10 +10700,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 71.8,
                   "tag": {
-                    "commentStart": 8215,
-                    "end": 8222,
+                    "commentStart": 8151,
+                    "end": 8158,
                     "moduleId": 0,
-                    "start": 8215,
+                    "start": 8151,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },

@@ -1,5 +1,6 @@
 //! Cache testing framework.
 
+use kcl_api::Artifact;
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
 use kcl_lib::NodePathExt;
@@ -132,7 +133,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -173,7 +174,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -214,7 +215,7 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -704,7 +705,8 @@ profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude(profile001, length = 100)
-    |> translate(z = 100)
+  |> clone()
+  |> translate(z = 100)
 "#
         .to_string(),
     );
@@ -729,10 +731,10 @@ extrude(profile001, length = 100)
     let r1 = result.first().unwrap();
     let r2 = result.last().unwrap();
 
-    assert!(r1.1 != r2.1, "The images should be different");
+    assert_ne!(r1.1, r2.1, "The images should be different");
     // Make sure the outcomes are different.
-    assert!(
-        r1.2.artifact_graph != r2.2.artifact_graph,
+    assert_ne!(
+        r1.2.artifact_graph, r2.2.artifact_graph,
         "The outcomes artifact graphs should be different"
     );
 }
@@ -794,7 +796,7 @@ extrude(profile001, length = 100)"#
     let first = result.first().unwrap();
     let last = result.last().unwrap();
 
-    assert!(first.1 != last.1, "The images should be different for the grid");
+    assert_ne!(first.1, last.1, "The images should be different for the grid");
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
@@ -896,4 +898,144 @@ import \"rectangle2.kcl\"
             "artifact={artifact:#?}"
         );
     }
+}
+
+/// Renaming a view reports the new name, rather than keeping the name its
+/// previous run registered.
+///
+/// Execution artifacts are folded into the graph with `entry(id).or_insert`, and
+/// artifact ids are stable across runs, so a re-executed declaration could in
+/// principle keep the payload of its earlier registration. It does not, because
+/// editing an existing statement clears the artifact state before re-executing,
+/// and the one path that preserves that state -- appending statements to an
+/// unchanged prefix -- does not re-run the prefix it appends to. `view::named`
+/// therefore registers plainly, with no guard of its own against a stale
+/// payload. This test is what keeps that true: were an edit ever routed through
+/// the preserving path, the view would still report `Front`.
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_rename_named_view_reports_the_new_name() {
+    let code = |view_name: &str| {
+        format!(
+            r#"@settings(experimentalFeatures = allow)
+
+plateSketch = sketch(on = XY) {{
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  edge2 = line(start = [var 40mm, var 0mm], end = [var 40mm, var 20mm])
+  edge3 = line(start = [var 40mm, var 20mm], end = [var 0mm, var 20mm])
+  edge4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}}
+plate = extrude(region(point = [20mm, 10mm], sketch = plateSketch), length = 5mm)
+
+view001 = view::named(
+  "{view_name}",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Show,
+)
+"#
+        )
+    };
+    let before = code("Front");
+    let after = code("Front elevation");
+
+    let result = cache_test(
+        "rename_named_view",
+        vec![
+            Variation {
+                code: &before,
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+            Variation {
+                code: &after,
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let view_names = |outcome: &ExecOutcome| -> Vec<String> {
+        outcome
+            .artifact_graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::NamedView(view) => Some(view.name.clone()),
+                _ => None,
+            })
+            .collect()
+    };
+
+    assert_eq!(view_names(&result.first().unwrap().2), ["Front"]);
+    // One view under the new name. Two entries here would mean the rename added
+    // a view; the old name alone would mean the stale payload survived.
+    assert_eq!(view_names(&result.last().unwrap().2), ["Front elevation"]);
+}
+
+/// A view name that duplicates one already in the file is rejected even when the
+/// duplicate arrives by APPENDING to an unchanged file.
+///
+/// This is the path the uniqueness check exists in two halves for. Appending
+/// leaves the prefix un-re-executed, so the views it declared stay in the
+/// artifact state kept from the previous run, while the appended declaration
+/// registers into the state of the current one. Reading only the current run's
+/// state would accept this program, and the same file would then be rejected on
+/// the next full re-execution -- accepted while typed, rejected after an
+/// unrelated edit.
+///
+/// `cache_test` cannot express this case: it panics on any execution error, so
+/// this drives the caching context directly.
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_appended_duplicate_view_name_is_rejected() {
+    let first = r#"@settings(experimentalFeatures = allow)
+
+plateSketch = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  edge2 = line(start = [var 40mm, var 0mm], end = [var 40mm, var 20mm])
+  edge3 = line(start = [var 40mm, var 20mm], end = [var 0mm, var 20mm])
+  edge4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+plate = extrude(region(point = [20mm, 10mm], sketch = plateSketch), length = 5mm)
+
+view001 = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Show,
+)
+"#;
+    // The same text plus one appended declaration, so the cache takes the
+    // append path rather than clearing and re-executing.
+    let second = format!(
+        r#"{first}
+view002 = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Back),
+  baseline = view::Visibility::Show,
+)
+"#
+    );
+
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    bust_cache().await;
+
+    ctx.run_with_caching(kcl_lib::Program::parse_no_errs(first).unwrap())
+        .await
+        .expect("the first program declares one view and executes");
+
+    let err = ctx
+        .run_with_caching(kcl_lib::Program::parse_no_errs(&second).unwrap())
+        .await
+        .expect_err("the appended view repeats a name the file already declares");
+    assert!(
+        err.error.message().contains("A view named `Front` already exists"),
+        "{:?}",
+        err.error
+    );
 }

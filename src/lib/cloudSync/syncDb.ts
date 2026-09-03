@@ -100,9 +100,14 @@ export async function getCloudSyncProjectMetadataIndex() {
     getAllProjectMetadata(),
     getAllOutboxEntries(),
   ])
-  const pendingProjectPaths = new Set(
-    outboxEntries.map((entry) => normalizePathForSync(entry.projectPath))
-  )
+  const pendingSinceByProjectPath = new Map<string, string>()
+  for (const entry of outboxEntries) {
+    const projectPath = normalizePathForSync(entry.projectPath)
+    const pendingSince = pendingSinceByProjectPath.get(projectPath)
+    if (!pendingSince || entry.createdAt < pendingSince) {
+      pendingSinceByProjectPath.set(projectPath, entry.createdAt)
+    }
+  }
 
   return new Map<string, CloudSyncProjectMetadataIndexEntry>(
     metadata.map((entry) => [
@@ -110,9 +115,12 @@ export async function getCloudSyncProjectMetadataIndex() {
       {
         ...entry,
         hasPendingChanges:
-          pendingProjectPaths.has(
+          pendingSinceByProjectPath.has(
             normalizePathForSync(entry.localProjectPath)
           ) || Boolean(entry.tombstone),
+        pendingSince: pendingSinceByProjectPath.get(
+          normalizePathForSync(entry.localProjectPath)
+        ),
       },
     ])
   )
@@ -151,7 +159,10 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
     const store = transaction.objectStore(OUTBOX_STORE)
     const request = store.openCursor()
     const matchingDeleteEntryKeys: IDBValidKey[] = []
-    const matchingUpsertEntryKeys: IDBValidKey[] = []
+    const matchingUpsertEntries: Array<{
+      key: IDBValidKey
+      entry: OutboxEntry
+    }> = []
 
     request.onsuccess = () => {
       const cursor = request.result
@@ -159,7 +170,7 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
         if (nextEntry.kind === 'delete') {
           for (const key of [
             ...matchingDeleteEntryKeys,
-            ...matchingUpsertEntryKeys,
+            ...matchingUpsertEntries.map(({ key }) => key),
           ]) {
             store.delete(key)
           }
@@ -171,16 +182,27 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
         if (retainedDeleteEntryKey !== undefined) {
           for (const key of [
             ...matchingDeleteEntryKeys.slice(1),
-            ...matchingUpsertEntryKeys,
+            ...matchingUpsertEntries.map(({ key }) => key),
           ]) {
             store.delete(key)
           }
           return
         }
 
-        const retainedUpsertEntryKey = matchingUpsertEntryKeys[0]
-        if (retainedUpsertEntryKey !== undefined) {
-          for (const key of matchingUpsertEntryKeys.slice(1)) {
+        const retainedUpsertEntry = matchingUpsertEntries[0]
+        if (retainedUpsertEntry !== undefined) {
+          const deletedPaths = Array.from(
+            new Set(
+              [...matchingUpsertEntries.map(({ entry }) => entry), nextEntry]
+                .flatMap((entry) => entry.deletedPaths ?? [])
+                .map(normalizePathForSync)
+            )
+          ).sort()
+          store.put({
+            ...retainedUpsertEntry.entry,
+            deletedPaths: deletedPaths.length ? deletedPaths : undefined,
+          })
+          for (const { key } of matchingUpsertEntries.slice(1)) {
             store.delete(key)
           }
           return
@@ -198,7 +220,10 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
         if (existingEntry.kind === 'delete') {
           matchingDeleteEntryKeys.push(cursor.primaryKey)
         } else {
-          matchingUpsertEntryKeys.push(cursor.primaryKey)
+          matchingUpsertEntries.push({
+            key: cursor.primaryKey,
+            entry: existingEntry,
+          })
         }
       }
       cursor.continue()
@@ -219,6 +244,21 @@ export async function getAllOutboxEntries() {
   )
 }
 
+function pathTouchesProjectRoot(
+  targetPath: string | undefined,
+  projectRoot: string
+) {
+  if (!targetPath) {
+    return false
+  }
+
+  const normalizedTargetPath = normalizePathForSync(targetPath)
+  return (
+    normalizedTargetPath === projectRoot ||
+    normalizedTargetPath.startsWith(`${projectRoot}/`)
+  )
+}
+
 export async function clearOutboxEntriesForProject(projectPath: string) {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   const db = await openSyncDb()
@@ -235,6 +275,79 @@ export async function clearOutboxEntriesForProject(projectPath: string) {
       const entry = cursor.value as OutboxEntry
       if (normalizePathForSync(entry.projectPath) === normalizedProjectPath) {
         cursor.delete()
+      }
+      cursor.continue()
+    }
+    request.onerror = () => reject(request.error)
+    transaction.onerror = () => reject(transaction.error)
+    transaction.onabort = () => reject(transaction.error)
+    transaction.oncomplete = () => {
+      db.close()
+      resolve()
+    }
+  })
+}
+
+export async function clearOutboxEntriesTouchingProject(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const db = await openSyncDb()
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(OUTBOX_STORE, 'readwrite')
+    const store = transaction.objectStore(OUTBOX_STORE)
+    const request = store.openCursor()
+
+    request.onsuccess = () => {
+      const cursor = request.result
+      if (!cursor) {
+        return
+      }
+      const entry = cursor.value as OutboxEntry
+      if (
+        pathTouchesProjectRoot(entry.projectPath, normalizedProjectPath) ||
+        pathTouchesProjectRoot(entry.targetPath, normalizedProjectPath) ||
+        pathTouchesProjectRoot(entry.sourcePath, normalizedProjectPath)
+      ) {
+        cursor.delete()
+      }
+      cursor.continue()
+    }
+    request.onerror = () => reject(request.error)
+    transaction.onerror = () => reject(transaction.error)
+    transaction.onabort = () => reject(transaction.error)
+    transaction.oncomplete = () => {
+      db.close()
+      resolve()
+    }
+  })
+}
+
+export async function clearLegacyConflictCopyReferences(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const db = await openSyncDb()
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(PROJECTS_STORE, 'readwrite')
+    const store = transaction.objectStore(PROJECTS_STORE)
+    const request = store.openCursor()
+
+    request.onsuccess = () => {
+      const cursor = request.result
+      if (!cursor) {
+        return
+      }
+
+      const metadata = cursor.value as ProjectMetadata
+      if (
+        pathTouchesProjectRoot(
+          metadata.conflict?.conflictProjectPath,
+          normalizedProjectPath
+        )
+      ) {
+        const conflict = { ...metadata.conflict }
+        delete conflict.conflictProjectPath
+        cursor.update({
+          ...metadata,
+          conflict,
+        })
       }
       cursor.continue()
     }

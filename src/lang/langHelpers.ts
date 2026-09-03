@@ -2,6 +2,7 @@ import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
@@ -151,6 +152,7 @@ export async function lintAst({
   rustContext,
   edgeRefactorMetadata,
   directTagFilletMetadata,
+  legacyAngleRefactorMetadata,
   artifactGraph,
 }: {
   ast: Node<Program>
@@ -159,6 +161,7 @@ export async function lintAst({
   rustContext?: RustContext
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
+  legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
@@ -183,11 +186,10 @@ export async function lintAst({
       )
     }
 
-    // Process findings - for Z0005 without suggestion, we'll create actions async
+    // Process findings and add any available async refactor actions.
     const z0006RefactorCache: Z0006RefactorCache = {}
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
       let actions
-      let message = lint.finding.title
       const suggestion = lint.suggestion
 
       if (suggestion) {
@@ -212,23 +214,19 @@ export async function lintAst({
           ast,
           sourceCode,
           instance,
-          rustContext,
-          shouldShowZ0005,
           edgeRefactorMetadata,
           directTagFilletMetadata,
+          legacyAngleRefactorMetadata,
           artifactGraph,
           z0006RefactorCache,
         })
         actions = refactorResult.actions
-        if (refactorResult.messageOverride) {
-          message = refactorResult.messageOverride
-        }
       }
 
       const diagnostic = {
         from: toUtf16(lint.pos[0], sourceCode),
         to: toUtf16(lint.pos[1], sourceCode),
-        message,
+        message: lint.finding.title,
         severity: 'info',
         actions,
       } as const

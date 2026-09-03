@@ -7,19 +7,45 @@ import {
 import type {
   CloudSyncConfig,
   ProjectArchiveFile,
+  ProjectUploadPublicationMetadata,
   RemoteProject,
   RemoteProjectSummary,
   Revision,
 } from '@src/lib/cloudSync/types'
+import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import { isArray } from '@src/lib/utils'
 
 export class CloudApiError extends Error {
   status: number
+  retryAfterMs?: number
 
-  constructor(status: number, message: string) {
+  constructor(
+    status: number,
+    message: string,
+    options: { retryAfterMs?: number } = {}
+  ) {
     super(message)
     this.status = status
+    this.retryAfterMs = options.retryAfterMs
   }
+}
+
+function retryAfterDelayMs(value: string | null) {
+  if (!value?.trim()) {
+    return undefined
+  }
+
+  const numericSeconds = Number(value)
+  if (Number.isFinite(numericSeconds) && numericSeconds >= 0) {
+    return numericSeconds * 1000
+  }
+
+  const retryAtMs = Date.parse(value)
+  if (Number.isNaN(retryAtMs)) {
+    return undefined
+  }
+
+  return Math.max(0, retryAtMs - Date.now())
 }
 
 function getBaseUrl(config: CloudSyncConfig) {
@@ -45,7 +71,7 @@ async function cloudFetch(
     headers.set('Authorization', `Bearer ${config.token}`)
   }
 
-  const response = await fetch(`${baseUrl}${targetPath}`, {
+  const response = await fetchWithSessionExpiration(`${baseUrl}${targetPath}`, {
     ...init,
     headers,
     credentials: 'include',
@@ -66,7 +92,9 @@ async function cloudFetch(
     }
 
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new CloudApiError(response.status, message)
+    throw new CloudApiError(response.status, message, {
+      retryAfterMs: retryAfterDelayMs(response.headers.get('Retry-After')),
+    })
   }
 
   return response
@@ -345,45 +373,70 @@ export async function createRemoteProject(
 ) {
   return cloudJson<RemoteProject>(config, '/user/projects', {
     method: 'POST',
-    body: buildProjectFormData(projectPath, files),
+    body: buildProjectFormData(projectPath, files, {
+      publicationMetadata: {
+        description: '',
+        category_ids: [],
+      },
+    }),
   })
 }
 
 export async function updateRemoteProject({
   config,
   projectPath,
-  projectId,
+  project,
   files,
   expectedRevision,
+  entrypointPath,
+  deletedPaths,
 }: {
   config: CloudSyncConfig
   projectPath: string
-  projectId: string
+  project: RemoteProject
   files: ProjectArchiveFile[]
   expectedRevision?: Revision
+  entrypointPath?: string
+  deletedPaths?: string[]
 }) {
+  const publicationMetadata = getProjectUploadPublicationMetadata(project)
+
   return cloudJson<RemoteProject>(
     config,
     appendExpectedRevisionParam(
-      `/user/projects/${projectId}`,
+      `/user/projects/${project.id}`,
       expectedRevision
     ),
     {
       method: 'PUT',
-      body: buildProjectFormData(projectPath, files, expectedRevision),
+      body: buildProjectFormData(projectPath, files, {
+        expectedRevision,
+        entrypointPath,
+        publicationMetadata,
+        deletedPaths,
+      }),
     }
   )
+}
+
+type BuildProjectFormDataOptions = {
+  expectedRevision?: Revision
+  entrypointPath?: string
+  publicationMetadata?: ProjectUploadPublicationMetadata
+  deletedPaths?: string[]
 }
 
 function buildProjectFormData(
   projectPath: string,
   files: ProjectArchiveFile[],
-  expectedRevision?: Revision
+  options?: Revision | BuildProjectFormDataOptions
 ) {
+  const uploadOptions =
+    typeof options === 'string' ? { expectedRevision: options } : options
   const uploadPayload = prepareProjectFilesForCloudUpload(
     projectPath,
     files,
-    expectedRevision
+    uploadOptions
   )
 
   const formData = new FormData()
@@ -406,4 +459,37 @@ function buildProjectFormData(
   }
 
   return formData
+}
+
+function getProjectUploadPublicationMetadata(
+  project: RemoteProject
+): ProjectUploadPublicationMetadata {
+  if (typeof project.description !== 'string') {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Cloud sync cannot preserve publication metadata for project ${project.id}: missing description.`
+    )
+  }
+  if (!isArray(project.category_ids)) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Cloud sync cannot preserve publication metadata for project ${project.id}: missing category_ids.`
+    )
+  }
+
+  const categoryIds: string[] = []
+  for (const categoryId of project.category_ids) {
+    if (typeof categoryId !== 'string') {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new Error(
+        `Cloud sync cannot preserve publication metadata for project ${project.id}: invalid category_ids.`
+      )
+    }
+    categoryIds.push(categoryId)
+  }
+
+  return {
+    description: project.description,
+    category_ids: categoryIds,
+  }
 }

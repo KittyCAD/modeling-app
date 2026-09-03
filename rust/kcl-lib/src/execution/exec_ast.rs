@@ -4,6 +4,7 @@ use std::sync::Arc;
 use async_recursion::async_recursion;
 use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
+use ezpz::datatypes::inputs::DatumPoint;
 use indexmap::IndexMap;
 use kcl_api::Group;
 use kcl_api::NumericType;
@@ -18,9 +19,13 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::Sketch;
 use crate::execution::AbstractSegment;
+use crate::execution::AngleConstraintMode;
+use crate::execution::AngleRayDirection;
+use crate::execution::AngleSector;
 use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::BodyType;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::ConstraintKind;
 use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
@@ -28,10 +33,13 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::LegacyAngleRefactorMeta;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::ModuleArtifactState;
+use crate::execution::PendingLegacyAngleRefactorMeta;
 use crate::execution::PreserveMem;
+use crate::execution::RefactorMetadata;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::SKETCH_OBJECT_META;
 use crate::execution::SKETCH_OBJECT_META_SKETCH;
@@ -40,6 +48,7 @@ use crate::execution::SegmentKind;
 use crate::execution::SegmentRepr;
 use crate::execution::SketchConstraintKind;
 use crate::execution::SketchSurface;
+use crate::execution::SolverArc;
 use crate::execution::StatementKind;
 use crate::execution::TagIdentifier;
 use crate::execution::UnsolvedExpr;
@@ -65,6 +74,7 @@ use crate::execution::memory::{self};
 use crate::execution::sketch_constraint_status_for_sketch;
 use crate::execution::sketch_solve::FreedomAnalysis;
 use crate::execution::sketch_solve::Solved;
+use crate::execution::sketch_solve::UnsatisfiedDirectionalConstraint;
 use crate::execution::sketch_solve::create_segment_scene_objects;
 use crate::execution::sketch_solve::normalize_to_solver_angle_unit;
 use crate::execution::sketch_solve::normalize_to_solver_distance_unit;
@@ -77,6 +87,7 @@ use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::front::ArcDirection;
 use crate::front::LineCtor;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -96,10 +107,12 @@ use crate::parsing::ast::types::BinaryPart;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CodeBlock;
 use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::Identifier;
 use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::MemberExpression;
 use crate::parsing::ast::types::Name;
@@ -107,13 +120,16 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::ReturnStatement;
 use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclaration;
 use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
+use crate::parsing::ast::types::VariableDeclaration;
 use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -121,9 +137,48 @@ use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
+use crate::std::utils::intersect_lines_2d;
+use crate::std::utils::normalize_rad;
+use crate::std::utils::vec2_dot;
+use crate::std::utils::vec2_len;
+use crate::std::utils::vec2_sub;
+use crate::walk::Visitable;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
+}
+
+fn signed_distance_conflict_hint(solve_outcome: &Solved) -> String {
+    let hints = solve_outcome
+        .unsatisfied_directional_constraints
+        .iter()
+        .map(|constraint| match constraint {
+            UnsatisfiedDirectionalConstraint::Horizontal(expected) if *expected > 0.0 => {
+                "Unsatisfied signed horizontalDistance constraint: a positive right-hand side requires the second point to be right of the first (second.x - first.x > 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Horizontal(expected) if *expected < 0.0 => {
+                "Unsatisfied signed horizontalDistance constraint: a negative right-hand side requires the second point to be left of the first (second.x - first.x < 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Horizontal(_) => {
+                "Unsatisfied signed horizontalDistance constraint: a zero right-hand side requires both points to have the same X coordinate."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(expected) if *expected > 0.0 => {
+                "Unsatisfied signed verticalDistance constraint: a positive right-hand side requires the second point to be above the first (second.y - first.y > 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(expected) if *expected < 0.0 => {
+                "Unsatisfied signed verticalDistance constraint: a negative right-hand side requires the second point to be below the first (second.y - first.y < 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(_) => {
+                "Unsatisfied signed verticalDistance constraint: a zero right-hand side requires both points to have the same Y coordinate."
+            }
+        })
+        .collect::<Vec<_>>();
+
+    if hints.is_empty() {
+        String::new()
+    } else {
+        format!(" {}", hints.join(" "))
+    }
 }
 
 fn datum_point_from_constrainable(
@@ -205,6 +260,325 @@ fn datum_line_from_constrainable(
             line.vars[1].y.to_constraint_id(range)?,
         ),
     ))
+}
+
+fn push_hidden_sketch_point(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    initial: [f64; 2],
+    range: SourceRange,
+) -> Result<DatumPoint, KclError> {
+    let x_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: x_id,
+            initial_value: initial[0],
+            ty: sketch_var_ty,
+            node_path: None,
+            meta: vec![],
+        }),
+    });
+    let y_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: y_id,
+            initial_value: initial[1],
+            ty: sketch_var_ty,
+            node_path: None,
+            meta: vec![],
+        }),
+    });
+
+    Ok(DatumPoint::new_xy(
+        x_id.to_constraint_id(range)?,
+        y_id.to_constraint_id(range)?,
+    ))
+}
+
+fn front_angle_sector(sector: AngleSector) -> u8 {
+    match sector {
+        AngleSector::One => 1,
+        AngleSector::Two => 2,
+        AngleSector::Three => 3,
+        AngleSector::Four => 4,
+    }
+}
+
+#[derive(Clone, Copy)]
+struct AngleSectorRay {
+    line_index: usize,
+    direction: AngleRayDirection,
+}
+
+fn angle_sector_rays(sector: AngleSector, is_inverse: bool) -> [AngleSectorRay; 2] {
+    let rays = match sector {
+        AngleSector::One => [
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Forward,
+            },
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Forward,
+            },
+        ],
+        AngleSector::Two => [
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Forward,
+            },
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Reverse,
+            },
+        ],
+        AngleSector::Three => [
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Reverse,
+            },
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Reverse,
+            },
+        ],
+        AngleSector::Four => [
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Reverse,
+            },
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Forward,
+            },
+        ],
+    };
+    if is_inverse { [rays[1], rays[0]] } else { rays }
+}
+
+fn line_endpoint_datum(
+    line: &ConstrainableLine2d,
+    endpoint_index: usize,
+    range: SourceRange,
+) -> Result<DatumPoint, KclError> {
+    let Some(endpoint) = line.vars.get(endpoint_index) else {
+        return Err(internal_err("Invalid angle line endpoint index", range));
+    };
+
+    Ok(DatumPoint::new_xy(
+        endpoint.x.to_constraint_id(range)?,
+        endpoint.y.to_constraint_id(range)?,
+    ))
+}
+
+fn representative_angle_endpoint(
+    line: &ConstrainableLine2d,
+    initial_line: ([f64; 2], [f64; 2]),
+    vertex: [f64; 2],
+    range: SourceRange,
+) -> Result<(DatumPoint, AngleRayDirection), KclError> {
+    let start_delta = vec2_sub(initial_line.0, vertex);
+    let end_delta = vec2_sub(initial_line.1, vertex);
+    let endpoint_index = if vec2_len(end_delta) >= vec2_len(start_delta) {
+        1
+    } else {
+        0
+    };
+    let endpoint_delta = if endpoint_index == 1 { end_delta } else { start_delta };
+    if vec2_len(endpoint_delta) <= 1e-9 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "angleDimension(lines = ..., sector = ...) requires each line to have an endpoint away from the intersection"
+                .to_owned(),
+            vec![range],
+        )));
+    }
+
+    let line_direction = vec2_sub(initial_line.1, initial_line.0);
+    let direction = if vec2_dot(endpoint_delta, line_direction) >= 0.0 {
+        AngleRayDirection::Forward
+    } else {
+        AngleRayDirection::Reverse
+    };
+
+    Ok((line_endpoint_datum(line, endpoint_index, range)?, direction))
+}
+
+fn remap_angle_for_representative_rays(
+    requested_rays: [AngleSectorRay; 2],
+    representative_directions: [AngleRayDirection; 2],
+    desired_angle: ezpz::datatypes::Angle,
+) -> ezpz::datatypes::Angle {
+    let mut requested_directions = representative_directions;
+    for ray in requested_rays {
+        requested_directions[ray.line_index] = ray.direction;
+    }
+
+    let sign_offset = if (requested_directions[0] != representative_directions[0])
+        ^ (requested_directions[1] != representative_directions[1])
+    {
+        std::f64::consts::PI
+    } else {
+        0.0
+    };
+
+    let desired = desired_angle.to_radians();
+    let representative_angle = if requested_rays[0].line_index == 0 {
+        desired - sign_offset
+    } else {
+        -desired - sign_offset
+    };
+
+    ezpz::datatypes::Angle::from_radians(normalize_rad(representative_angle))
+}
+
+struct PointsAtAngleLineData {
+    initial_vertex: [f64; 2],
+    representative_points: [DatumPoint; 2],
+    angle_kind: ezpz::datatypes::AngleKind,
+}
+
+enum AngleConstraintLowering {
+    LinesAtAngle(Box<PendingLegacyAngleRefactorMeta>),
+    PointsAtAngle(PointsAtAngleLineData),
+}
+
+fn solved_angle_line(line: &ConstrainableLine2d, final_values: &[f64]) -> Option<([f64; 2], [f64; 2])> {
+    let point = |index: usize| {
+        let point = line.vars.get(index)?;
+        Some([*final_values.get(point.x.0)?, *final_values.get(point.y.0)?])
+    };
+    Some((point(0)?, point(1)?))
+}
+
+fn angle_ray_vector(lines: [[f64; 2]; 2], ray: AngleSectorRay) -> [f64; 2] {
+    let direction = lines[ray.line_index];
+    match ray.direction {
+        AngleRayDirection::Forward => direction,
+        AngleRayDirection::Reverse => [-direction[0], -direction[1]],
+    }
+}
+
+fn directed_angle(from: [f64; 2], to: [f64; 2]) -> f64 {
+    let cross = from[0] * to[1] - from[1] * to[0];
+    libm::atan2(cross, vec2_dot(from, to)).rem_euclid(std::f64::consts::TAU)
+}
+
+fn circular_angle_distance(a: f64, b: f64) -> f64 {
+    let delta = (a - b).abs().rem_euclid(std::f64::consts::TAU);
+    libm::fmin(delta, std::f64::consts::TAU - delta)
+}
+
+fn legacy_angle_arc_midpoint_angle(
+    lines: [([f64; 2], [f64; 2]); 2],
+    directions: [[f64; 2]; 2],
+    vertex: [f64; 2],
+    desired: f64,
+) -> f64 {
+    let signed_distances = lines.map(|line| {
+        let direction = vec2_sub(line.1, line.0);
+        let length = vec2_len(direction);
+        [
+            vec2_dot(vec2_sub(line.0, vertex), direction) / length,
+            vec2_dot(vec2_sub(line.1, vertex), direction) / length,
+        ]
+    });
+    let overlap = [
+        libm::fmax(signed_distances[0][0], signed_distances[1][0]),
+        libm::fmin(signed_distances[0][1], signed_distances[1][1]),
+    ];
+    // Match calculateArcRenderInput in src/machines/sketchSolve/constraints/AngleConstraintBuilder.ts;
+    // the radius sign chooses the line 0 ray on which the legacy arc starts.
+    let radius = if overlap[1] >= overlap[0] {
+        let near_start = overlap[0] + (overlap[1] - overlap[0]) * 0.15;
+        let near_end = overlap[0] + (overlap[1] - overlap[0]) * 0.85;
+        if near_start.abs() < near_end.abs() {
+            near_start
+        } else {
+            near_end
+        }
+    } else {
+        let mut distances = signed_distances.into_iter().flatten().collect::<Vec<_>>();
+        distances.sort_by(f64::total_cmp);
+        distances[1]
+    };
+    let start = if radius < 0.0 {
+        [-directions[0][0], -directions[0][1]]
+    } else {
+        directions[0]
+    };
+
+    (libm::atan2(start[1], start[0]) + desired * 0.5).rem_euclid(std::f64::consts::TAU)
+}
+
+fn finalize_legacy_angle_refactor_meta(
+    pending: &PendingLegacyAngleRefactorMeta,
+    final_values: &[f64],
+) -> Option<LegacyAngleRefactorMeta> {
+    let line0 = solved_angle_line(&pending.lines[0], final_values)?;
+    let line1 = solved_angle_line(&pending.lines[1], final_values)?;
+    let vertex = intersect_lines_2d(line0, line1)?;
+    let directions = [vec2_sub(line0.1, line0.0), vec2_sub(line1.1, line1.0)];
+    if directions.iter().any(|direction| vec2_len(*direction) <= 1e-9) {
+        return None;
+    }
+
+    let desired = pending.desired_angle_radians.rem_euclid(std::f64::consts::TAU);
+    let sectors = [
+        AngleSector::One,
+        AngleSector::Two,
+        AngleSector::Three,
+        AngleSector::Four,
+    ];
+    let mut candidates = Vec::new();
+    for sector in sectors {
+        for inverse in [false, true] {
+            let rays = angle_sector_rays(sector, inverse);
+            let from = angle_ray_vector(directions, rays[0]);
+            let to = angle_ray_vector(directions, rays[1]);
+            if circular_angle_distance(directed_angle(from, to), desired) <= 1e-5 {
+                let midpoint = libm::atan2(from[1], from[0]) + desired * 0.5;
+                candidates.push((sector, inverse, midpoint.rem_euclid(std::f64::consts::TAU)));
+            }
+        }
+    }
+
+    let arc_midpoint_angle = legacy_angle_arc_midpoint_angle([line0, line1], directions, vertex, desired);
+    let selected = candidates.into_iter().min_by(|a, b| {
+        circular_angle_distance(a.2, arc_midpoint_angle).total_cmp(&circular_angle_distance(b.2, arc_midpoint_angle))
+    })?;
+
+    Some(LegacyAngleRefactorMeta {
+        source_range: pending.source_range,
+        sector: front_angle_sector(selected.0),
+        inverse: selected.1,
+    })
+}
+
+fn push_points_at_angle_for_lines(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    lines: [&ConstrainableLine2d; 2],
+    data: PointsAtAngleLineData,
+    range: SourceRange,
+) -> Result<(), KclError> {
+    let solver_line0 = datum_line_from_constrainable(lines[0], range)?;
+    let solver_line1 = datum_line_from_constrainable(lines[1], range)?;
+    let vertex = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, data.initial_vertex, range)?;
+
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(vertex, solver_line0, 0.0));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(vertex, solver_line1, 0.0));
+    sketch_block_state.solver_constraints.push(Constraint::PointsAtAngle(
+        vertex,
+        data.representative_points[0],
+        data.representative_points[1],
+        data.angle_kind,
+    ));
+
+    Ok(())
 }
 
 fn sketch_var_initial_value(
@@ -549,7 +923,7 @@ impl<'a> StatementKind<'a> {
 
 impl ExecutorContext {
     /// Returns true if importing the prelude should be skipped.
-    async fn handle_annotations(
+    pub(super) async fn handle_annotations(
         &self,
         annotations: impl Iterator<Item = &Node<Annotation>>,
         body_type: BodyType,
@@ -728,8 +1102,12 @@ impl ExecutorContext {
         body_type: BodyType,
     ) -> Result<Option<KclValueControlFlow>, KclError>
     where
-        B: CodeBlock + Sync,
+        B: CodeBlock + crate::execution::machine::ToMachineBlock + Sync,
     {
+        if self.is_machine_executor() {
+            return crate::execution::machine::run_block(self, block.to_machine_block(), exec_state, body_type).await;
+        }
+
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in block.body() {
@@ -738,193 +1116,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-                    if !matches!(body_type, BodyType::Root) {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Imports are only supported at the top-level of a file.".to_owned(),
-                            vec![import_stmt.into()],
-                        )));
-                    }
-
-                    let source_range = SourceRange::from(import_stmt);
-                    let attrs = &import_stmt.outer_attrs;
-                    let module_path = ModulePath::from_import_path(
-                        &import_stmt.path,
-                        &self.settings.project_directory,
-                        &exec_state.mod_local.path,
-                    )?;
-                    let module_id = self
-                        .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
-                        .await?;
-
-                    if let ModulePath::Local { value, .. } = &module_path {
-                        let name = import_stmt
-                            .module_name()
-                            .unwrap_or_else(|| value.file_name().unwrap_or_default());
-                        exec_state.push_op(Operation::ModuleInstance {
-                            name,
-                            module_id,
-                            glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
-                            node_path: NodePath::placeholder(),
-                            source_range,
-                        });
-                    }
-
-                    match &import_stmt.selector {
-                        ImportSelector::List { items } => {
-                            let (env_ref, module_exports) =
-                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
-                            for import_item in items {
-                                // Extract the item from the module.
-                                let mem = &exec_state.stack().memory;
-                                let mut value =
-                                    mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
-                                let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                                let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
-                                let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                                let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
-
-                                if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return Err(KclError::new_undefined_value(
-                                        KclErrorDetails::new(
-                                            format!("{} is not defined in module", import_item.name.name),
-                                            vec![SourceRange::from(&import_item.name)],
-                                        ),
-                                        None,
-                                    ));
-                                }
-
-                                // Check that the item is allowed to be imported (in at least one namespace).
-                                if value.is_ok() && !module_exports.contains(&import_item.name.name) {
-                                    value = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if ty.is_ok() && !module_exports.contains(&ty_name) {
-                                    ty = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if mod_value.is_ok() && !module_exports.contains(&mod_name) {
-                                    mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return value.map(|v| Some(v.continue_()));
-                                }
-
-                                // Add the item to the current module.
-                                if let Ok(value) = value {
-                                    exec_state.mut_stack().add(
-                                        import_item.identifier().to_owned(),
-                                        value,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state
-                                            .mod_local
-                                            .module_exports
-                                            .push(import_item.identifier().to_owned());
-                                    }
-                                }
-
-                                if let Ok(ty) = ty {
-                                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
-                                    if matches!(
-                                        &ty,
-                                        KclValue::Type {
-                                            value: TypeDef::Enum(_),
-                                            ..
-                                        }
-                                    ) {
-                                        reject_enum_clashing_with_module(
-                                            exec_state,
-                                            import_item.identifier(),
-                                            SourceRange::from(&import_item.name),
-                                        )?;
-                                    }
-                                    exec_state.mut_stack().add(
-                                        ty_name.clone(),
-                                        ty,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state.mod_local.module_exports.push(ty_name);
-                                    }
-                                }
-
-                                if let Ok(mod_value) = mod_value {
-                                    let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
-                                    reject_module_clashing_with_enum(
-                                        exec_state,
-                                        import_item.identifier(),
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-                                    exec_state.mut_stack().add(
-                                        mod_name.clone(),
-                                        mod_value,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state.mod_local.module_exports.push(mod_name);
-                                    }
-                                }
-                            }
-                        }
-                        ImportSelector::Glob(_) => {
-                            let (env_ref, module_exports) =
-                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
-                            for name in module_exports.iter() {
-                                let item = exec_state
-                                    .stack()
-                                    .memory
-                                    .get_from_owned(name, env_ref, source_range, 0)
-                                    .map_err(|_err| {
-                                        internal_err(
-                                            format!("{name} is not defined in module (but was exported?)"),
-                                            source_range,
-                                        )
-                                    })?;
-                                reject_glob_import_clash(exec_state, name, &item, source_range)?;
-                                exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
-
-                                if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.mod_local.module_exports.push(name.clone());
-                                }
-                            }
-                        }
-                        ImportSelector::None { .. } => {
-                            let name = import_stmt.module_name().unwrap();
-                            reject_module_clashing_with_enum(exec_state, &name, source_range)?;
-                            let item = KclValue::Module {
-                                value: module_id,
-                                meta: vec![source_range.into()],
-                            };
-                            exec_state.mut_stack().add(
-                                format!("{}{}", memory::MODULE_PREFIX, name),
-                                item,
-                                source_range,
-                            )?;
-                        }
-                    }
+                    self.exec_import_statement(import_stmt, body_type, exec_state).await?;
                     last_expr = None;
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
@@ -983,91 +1175,8 @@ impl ExecutorContext {
                         last_expr = Some(rhs);
                         break;
                     }
-                    let mut rhs = rhs.into_value();
-
-                    // Attach the variable name to unsolved segments as a tag.
-                    // While executing the body of a sketch block, the segments
-                    // won't have been solved yet.
-                    if let KclValue::Segment { value } = &mut rhs
-                        && let SegmentRepr::Unsolved { segment } = &mut value.repr
-                    {
-                        segment.tag = Some(TagIdentifier {
-                            value: variable_declaration.declaration.id.name.clone(),
-                            info: Default::default(),
-                            meta: vec![SourceRange::from(&variable_declaration.declaration.id).into()],
-                        });
-                    }
-                    let rhs = rhs; // Remove mutability.
-
-                    let should_bind_name =
-                        if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
-                            // Declaring a function with a name, so only bind
-                            // the variable name if it differs from the function
-                            // name.
-                            var_name != fn_name
-                        } else {
-                            // Not declaring a function, so we should bind the
-                            // variable name.
-                            true
-                        };
-                    if should_bind_name {
-                        exec_state
-                            .mut_stack()
-                            .add(var_name.clone(), rhs.clone(), source_range)?;
-                    }
-
-                    if let Some(sketch_block_state) = exec_state.mod_local.sketch_block.as_mut()
-                        && let KclValue::Segment { value } = &rhs
-                    {
-                        // Add segment to mapping so that we can tag it when
-                        // sending to the engine.
-                        let segment_object_id = match &value.repr {
-                            SegmentRepr::Unsolved { segment } => segment.object_id,
-                            SegmentRepr::Solved { segment } => segment.object_id,
-                        };
-                        sketch_block_state
-                            .segment_tags
-                            .entry(segment_object_id)
-                            .or_insert_with(|| {
-                                let id_node = &variable_declaration.declaration.id;
-                                Node::new(
-                                    TagDeclarator {
-                                        name: id_node.name.clone(),
-                                        digest: None,
-                                    },
-                                    id_node.start,
-                                    id_node.end,
-                                    id_node.module_id,
-                                )
-                            });
-                    }
-
-                    // Track operations, for the feature tree.
-                    // Don't track these operations if the KCL code being executed is in the stdlib,
-                    // because users shouldn't know about stdlib internals -- it's useless noise, to them.
-                    let should_show_in_feature_tree =
-                        !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
-                    if should_show_in_feature_tree {
-                        exec_state.push_op(Operation::VariableDeclaration {
-                            name: var_name.clone(),
-                            value: op_from_kcl_value(&rhs),
-                            visibility: variable_declaration.visibility,
-                            node_path: NodePath::placeholder(),
-                            source_range,
-                        });
-                    }
-
-                    // Track exports.
-                    if let ItemVisibility::Export = variable_declaration.visibility {
-                        if matches!(body_type, BodyType::Root) {
-                            exec_state.mod_local.module_exports.push(var_name);
-                        } else {
-                            exec_state.err(CompilationIssue::err(
-                                variable_declaration.as_source_range(),
-                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
-                            ));
-                        }
-                    }
+                    let rhs =
+                        self.bind_variable_declaration(variable_declaration, rhs.into_value(), body_type, exec_state)?;
                     // Variable declaration can be the return value of a module.
                     last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
@@ -1075,137 +1184,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-
-                    let metadata = Metadata::from(&**ty);
-                    let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
-                    match attrs.impl_ {
-                        annotations::Impl::Rust
-                        | annotations::Impl::RustConstrainable
-                        | annotations::Impl::RustConstraint => {
-                            let std_path = match &exec_state.mod_local.path {
-                                ModulePath::Std { value } => value,
-                                ModulePath::Local { .. } | ModulePath::Main => {
-                                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                                        "User-defined types are not yet supported.".to_owned(),
-                                        vec![metadata.source_range],
-                                    )));
-                                }
-                            };
-                            let (t, props) = crate::std::std_ty(std_path, &ty.name.name);
-                            let value = KclValue::Type {
-                                value: TypeDef::RustRepr(t, props),
-                                meta: vec![metadata],
-                                experimental: attrs.experimental,
-                            };
-                            let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
-                            exec_state
-                                .mut_stack()
-                                .add(name_in_mem.clone(), value, metadata.source_range)
-                                .map_err(|_| {
-                                    KclError::new_semantic(KclErrorDetails::new(
-                                        format!("Redefinition of type {}.", ty.name.name),
-                                        vec![metadata.source_range],
-                                    ))
-                                })?;
-
-                            if let ItemVisibility::Export = ty.visibility {
-                                exec_state.mod_local.module_exports.push(name_in_mem);
-                            }
-                        }
-                        // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
-                        annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.definition {
-                            TypeDeclarationDefinition::Alias { ty: alias } => {
-                                let value = KclValue::Type {
-                                    value: TypeDef::Alias(
-                                        RuntimeType::from_parsed(
-                                            alias.inner.clone(),
-                                            exec_state,
-                                            metadata.source_range,
-                                            attrs.impl_ == annotations::Impl::KclConstrainable,
-                                            false,
-                                        )
-                                        .map_err(|e| KclError::new_semantic(e.into()))?,
-                                    ),
-                                    meta: vec![metadata],
-                                    experimental: attrs.experimental,
-                                };
-                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
-                                exec_state
-                                    .mut_stack()
-                                    .add(name_in_mem.clone(), value, metadata.source_range)
-                                    .map_err(|_| {
-                                        KclError::new_semantic(KclErrorDetails::new(
-                                            format!("Redefinition of type {}.", ty.name.name),
-                                            vec![metadata.source_range],
-                                        ))
-                                    })?;
-
-                                if let ItemVisibility::Export = ty.visibility {
-                                    exec_state.mod_local.module_exports.push(name_in_mem);
-                                }
-                            }
-                            TypeDeclarationDefinition::Bare => {
-                                return Err(KclError::new_semantic(KclErrorDetails::new(
-                                    "User-defined types are not yet supported.".to_owned(),
-                                    vec![metadata.source_range],
-                                )));
-                            }
-                            TypeDeclarationDefinition::Enum(decl) => {
-                                // Identity is module plus declared name, so `type Color` in
-                                // two function bodies of one file would be one type with two
-                                // variant sets. A V1 limitation, liftable in enum v2 by
-                                // giving `EnumTypeId` a declaration site.
-                                if !matches!(body_type, BodyType::Root) {
-                                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Enum declarations are only supported at the top-level of a file. Move `type {}` to the top-level.",
-                                            ty.name.name
-                                        ),
-                                        vec![metadata.source_range],
-                                    )));
-                                }
-
-                                reject_enum_clashing_with_module(exec_state, &ty.name.name, metadata.source_range)?;
-
-                                let variants = decl.variants.iter().map(|v| v.name.name.clone()).collect();
-                                let id = EnumTypeId::new(metadata.source_range.module_id(), ty.name.name.clone());
-                                // Constructing the definition is the validation step: nothing
-                                // below runs, so nothing reaches memory, unless every variant
-                                // name is distinct.
-                                let def = EnumTypeDef::new(id, variants).map_err(|duplicate| {
-                                    KclError::new_semantic(KclErrorDetails::new(
-                                        format!("Duplicate variant `{}` in enum `{}`.", duplicate.name, ty.name.name),
-                                        vec![
-                                            decl.variants[duplicate.first_index].as_source_range(),
-                                            decl.variants[duplicate.duplicate_index].as_source_range(),
-                                        ],
-                                    ))
-                                })?;
-
-                                let value = KclValue::Type {
-                                    value: TypeDef::Enum(Arc::new(def)),
-                                    meta: vec![metadata],
-                                    experimental: attrs.experimental,
-                                };
-                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
-                                exec_state
-                                    .mut_stack()
-                                    .add(name_in_mem.clone(), value, metadata.source_range)
-                                    .map_err(|_| {
-                                        KclError::new_semantic(KclErrorDetails::new(
-                                            format!("Redefinition of type {}.", ty.name.name),
-                                            vec![metadata.source_range],
-                                        ))
-                                    })?;
-
-                                if let ItemVisibility::Export = ty.visibility {
-                                    exec_state.mod_local.module_exports.push(name_in_mem);
-                                }
-                            }
-                        },
-                    }
-
+                    self.exec_type_declaration(ty, body_type, exec_state)?;
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
@@ -1236,18 +1215,30 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
-                    exec_state
-                        .mut_stack()
-                        .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
-                        .map_err(|_| {
-                            KclError::new_semantic(KclErrorDetails::new(
-                                "Multiple returns from a single function.".to_owned(),
-                                vec![metadata.source_range],
-                            ))
-                        })?;
+                    if exec_state.entry_point_version_is_v3_or_higher() {
+                        // KCL 3.0: early return. The value unwinds as control
+                        // flow to the nearest function-call boundary, which
+                        // absorbs it; see call_finish.
+                        last_expr = Some(value.return_());
+                        break;
+                    }
+                    Self::bind_return_value(return_statement, value, exec_state)?;
                     last_expr = None;
                 }
             }
+        }
+
+        // A Return can reach a root block only by escaping an expression
+        // evaluated at the top level (e.g. an if-arm); a `return` statement
+        // here is rejected above before it evaluates.
+        if matches!(body_type, BodyType::Root)
+            && let Some(cf) = &last_expr
+            && cf.is_return()
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot return from outside a function.".to_owned(),
+                cf.source_ranges(),
+            )));
         }
 
         if matches!(body_type, BodyType::Root) {
@@ -1263,6 +1254,463 @@ impl ExecutorContext {
         }
 
         Ok(last_expr)
+    }
+
+    /// Execute an import statement. Flat: this does not evaluate KCL
+    /// sub-expressions (module execution happens in its own fresh root), so
+    /// both executors share it.
+    pub(super) async fn exec_import_statement(
+        &self,
+        import_stmt: &Node<ImportStatement>,
+        body_type: BodyType,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        if !matches!(body_type, BodyType::Root) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Imports are only supported at the top-level of a file.".to_owned(),
+                vec![import_stmt.into()],
+            )));
+        }
+
+        let source_range = SourceRange::from(import_stmt);
+        let attrs = &import_stmt.outer_attrs;
+        let module_path = ModulePath::from_import_path(
+            &import_stmt.path,
+            &self.settings.project_directory,
+            &exec_state.mod_local.path,
+        )?;
+        let module_id = self
+            .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
+            .await?;
+
+        if let ModulePath::Local { value, .. } = &module_path {
+            let name = import_stmt
+                .module_name()
+                .unwrap_or_else(|| value.file_name().unwrap_or_default());
+            exec_state.push_op(Operation::ModuleInstance {
+                name,
+                module_id,
+                glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
+                node_path: NodePath::placeholder(),
+                source_range,
+            });
+        }
+
+        match &import_stmt.selector {
+            ImportSelector::List { items } => {
+                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                for import_item in items {
+                    // Extract the item from the module.
+                    let mem = &exec_state.stack().memory;
+                    let mut value = mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
+                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
+                    let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
+                    let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
+                    let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
+
+                    if value.is_err() && ty.is_err() && mod_value.is_err() {
+                        return Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("{} is not defined in module", import_item.name.name),
+                                vec![SourceRange::from(&import_item.name)],
+                            ),
+                            None,
+                        ));
+                    }
+
+                    // Check that the item is allowed to be imported (in at least one namespace).
+                    if value.is_ok() && !module_exports.contains(&import_item.name.name) {
+                        value = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if ty.is_ok() && !module_exports.contains(&ty_name) {
+                        ty = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if mod_value.is_ok() && !module_exports.contains(&mod_name) {
+                        mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if value.is_err() && ty.is_err() && mod_value.is_err() {
+                        return value.map(|_| ());
+                    }
+
+                    // Add the item to the current module.
+                    if let Ok(value) = value {
+                        exec_state.mut_stack().add(
+                            import_item.identifier().to_owned(),
+                            value,
+                            SourceRange::from(&import_item.name),
+                        )?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state
+                                .mod_local
+                                .module_exports
+                                .push(import_item.identifier().to_owned());
+                        }
+                    }
+
+                    if let Ok(ty) = ty {
+                        let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
+                        if matches!(
+                            &ty,
+                            KclValue::Type {
+                                value: TypeDef::Enum(_),
+                                ..
+                            }
+                        ) {
+                            reject_enum_clashing_with_module(
+                                exec_state,
+                                import_item.identifier(),
+                                SourceRange::from(&import_item.name),
+                            )?;
+                        }
+                        exec_state
+                            .mut_stack()
+                            .add(ty_name.clone(), ty, SourceRange::from(&import_item.name))?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state.mod_local.module_exports.push(ty_name);
+                        }
+                    }
+
+                    if let Ok(mod_value) = mod_value {
+                        let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
+                        reject_module_clashing_with_enum(
+                            exec_state,
+                            import_item.identifier(),
+                            SourceRange::from(&import_item.name),
+                        )?;
+                        exec_state.mut_stack().add(
+                            mod_name.clone(),
+                            mod_value,
+                            SourceRange::from(&import_item.name),
+                        )?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state.mod_local.module_exports.push(mod_name);
+                        }
+                    }
+                }
+            }
+            ImportSelector::Glob(_) => {
+                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                for name in module_exports.iter() {
+                    let item = exec_state
+                        .stack()
+                        .memory
+                        .get_from_owned(name, env_ref, source_range, 0)
+                        .map_err(|_err| {
+                            internal_err(
+                                format!("{name} is not defined in module (but was exported?)"),
+                                source_range,
+                            )
+                        })?;
+                    reject_glob_import_clash(exec_state, name, &item, source_range)?;
+                    exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
+
+                    if let ItemVisibility::Export = import_stmt.visibility {
+                        exec_state.mod_local.module_exports.push(name.clone());
+                    }
+                }
+            }
+            ImportSelector::None { .. } => {
+                let name = import_stmt.module_name().unwrap();
+                reject_module_clashing_with_enum(exec_state, &name, source_range)?;
+                let item = KclValue::Module {
+                    value: module_id,
+                    meta: vec![source_range.into()],
+                };
+                exec_state
+                    .mut_stack()
+                    .add(format!("{}{}", memory::MODULE_PREFIX, name), item, source_range)?;
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Execute a type declaration. Flat; shared by both executors.
+    pub(super) fn exec_type_declaration(
+        &self,
+        ty: &Node<TypeDeclaration>,
+        body_type: BodyType,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        let metadata = Metadata::from(ty);
+        let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+        match attrs.impl_ {
+            annotations::Impl::Rust | annotations::Impl::RustConstrainable | annotations::Impl::RustConstraint => {
+                let std_path = match &exec_state.mod_local.path {
+                    ModulePath::Std { value } => value,
+                    ModulePath::Local { .. } | ModulePath::Main => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "User-defined types are not yet supported.".to_owned(),
+                            vec![metadata.source_range],
+                        )));
+                    }
+                };
+                let (t, props) = crate::std::std_ty(std_path, &ty.name.name);
+                let value = KclValue::Type {
+                    value: TypeDef::RustRepr(t, props),
+                    meta: vec![metadata],
+                    experimental: attrs.experimental,
+                };
+                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                exec_state
+                    .mut_stack()
+                    .add(name_in_mem.clone(), value, metadata.source_range)
+                    .map_err(|_| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!("Redefinition of type {}.", ty.name.name),
+                            vec![metadata.source_range],
+                        ))
+                    })?;
+
+                if let ItemVisibility::Export = ty.visibility {
+                    exec_state.mod_local.module_exports.push(name_in_mem);
+                }
+            }
+            // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
+            annotations::Impl::Primitive => {}
+            annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.definition {
+                TypeDeclarationDefinition::Alias { ty: alias } => {
+                    let value = KclValue::Type {
+                        value: TypeDef::Alias(
+                            RuntimeType::from_parsed(
+                                alias.inner.clone(),
+                                exec_state,
+                                metadata.source_range,
+                                attrs.impl_ == annotations::Impl::KclConstrainable,
+                                false,
+                            )
+                            .map_err(|e| KclError::new_semantic(e.into()))?,
+                        ),
+                        meta: vec![metadata],
+                        experimental: attrs.experimental,
+                    };
+                    let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                    exec_state
+                        .mut_stack()
+                        .add(name_in_mem.clone(), value, metadata.source_range)
+                        .map_err(|_| {
+                            KclError::new_semantic(KclErrorDetails::new(
+                                format!("Redefinition of type {}.", ty.name.name),
+                                vec![metadata.source_range],
+                            ))
+                        })?;
+
+                    if let ItemVisibility::Export = ty.visibility {
+                        exec_state.mod_local.module_exports.push(name_in_mem);
+                    }
+                }
+                TypeDeclarationDefinition::Bare => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "User-defined types are not yet supported.".to_owned(),
+                        vec![metadata.source_range],
+                    )));
+                }
+                TypeDeclarationDefinition::Enum(decl) => {
+                    // Identity is module plus declared name, so `type Color` in
+                    // two function bodies of one file would be one type with two
+                    // variant sets. A V1 limitation, liftable in enum v2 by
+                    // giving `EnumTypeId` a declaration site.
+                    if !matches!(body_type, BodyType::Root) {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Enum declarations are only supported at the top-level of a file. Move `type {}` to the top-level.",
+                                ty.name.name
+                            ),
+                            vec![metadata.source_range],
+                        )));
+                    }
+
+                    reject_enum_clashing_with_module(exec_state, &ty.name.name, metadata.source_range)?;
+
+                    let variants = decl.variants.iter().map(|v| v.name.name.clone()).collect();
+                    let id = EnumTypeId::new(metadata.source_range.module_id(), ty.name.name.clone());
+                    // Constructing the definition is the validation step: nothing
+                    // below runs, so nothing reaches memory, unless every variant
+                    // name is distinct.
+                    let def = EnumTypeDef::new(id, variants).map_err(|duplicate| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!("Duplicate variant `{}` in enum `{}`.", duplicate.name, ty.name.name),
+                            vec![
+                                decl.variants[duplicate.first_index].as_source_range(),
+                                decl.variants[duplicate.duplicate_index].as_source_range(),
+                            ],
+                        ))
+                    })?;
+
+                    let value = KclValue::Type {
+                        value: TypeDef::Enum(Arc::new(def)),
+                        meta: vec![metadata],
+                        experimental: attrs.experimental,
+                    };
+                    let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                    exec_state
+                        .mut_stack()
+                        .add(name_in_mem.clone(), value, metadata.source_range)
+                        .map_err(|_| {
+                            KclError::new_semantic(KclErrorDetails::new(
+                                format!("Redefinition of type {}.", ty.name.name),
+                                vec![metadata.source_range],
+                            ))
+                        })?;
+
+                    if let ItemVisibility::Export = ty.visibility {
+                        exec_state.mod_local.module_exports.push(name_in_mem);
+                    }
+                }
+            },
+        }
+
+        Ok(())
+    }
+
+    /// Bind the evaluated right-hand side of a variable declaration: segment
+    /// tag attachment, name binding, sketch-block segment tags, feature-tree
+    /// operation, and export tracking. The evaluation-free second half of
+    /// variable-declaration execution, shared by both executors. Returns the
+    /// bound value (which becomes the module result when this is the last
+    /// Root statement).
+    pub(super) fn bind_variable_declaration(
+        &self,
+        variable_declaration: &Node<VariableDeclaration>,
+        rhs: KclValue,
+        body_type: BodyType,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let var_name = variable_declaration.declaration.id.name.to_string();
+        let source_range = SourceRange::from(&variable_declaration.declaration.init);
+        let mut rhs = rhs;
+
+        // Attach the variable name to unsolved segments as a tag.
+        // While executing the body of a sketch block, the segments
+        // won't have been solved yet.
+        if let KclValue::Segment { value } = &mut rhs
+            && let SegmentRepr::Unsolved { segment } = &mut value.repr
+        {
+            segment.tag = Some(TagIdentifier {
+                value: variable_declaration.declaration.id.name.clone(),
+                info: Default::default(),
+                meta: vec![SourceRange::from(&variable_declaration.declaration.id).into()],
+            });
+        }
+        let rhs = rhs; // Remove mutability.
+
+        let should_bind_name = if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
+            // Declaring a function with a name, so only bind
+            // the variable name if it differs from the function
+            // name.
+            var_name != fn_name
+        } else {
+            // Not declaring a function, so we should bind the
+            // variable name.
+            true
+        };
+        if should_bind_name {
+            exec_state
+                .mut_stack()
+                .add(var_name.clone(), rhs.clone(), source_range)?;
+        }
+
+        if let Some(sketch_block_state) = exec_state.mod_local.sketch_block.as_mut()
+            && let KclValue::Segment { value } = &rhs
+        {
+            // Add segment to mapping so that we can tag it when
+            // sending to the engine.
+            let segment_object_id = match &value.repr {
+                SegmentRepr::Unsolved { segment } => segment.object_id,
+                SegmentRepr::Solved { segment } => segment.object_id,
+            };
+            sketch_block_state
+                .segment_tags
+                .entry(segment_object_id)
+                .or_insert_with(|| {
+                    let id_node = &variable_declaration.declaration.id;
+                    Node::new(
+                        TagDeclarator {
+                            name: id_node.name.clone(),
+                            digest: None,
+                        },
+                        id_node.start,
+                        id_node.end,
+                        id_node.module_id,
+                    )
+                });
+        }
+
+        // Track operations, for the feature tree.
+        // Don't track these operations if the KCL code being executed is in the stdlib,
+        // because users shouldn't know about stdlib internals -- it's useless noise, to them.
+        let should_show_in_feature_tree = !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
+        if should_show_in_feature_tree {
+            exec_state.push_op(Operation::VariableDeclaration {
+                name: var_name.clone(),
+                value: op_from_kcl_value(&rhs),
+                visibility: variable_declaration.visibility,
+                node_path: NodePath::placeholder(),
+                source_range,
+            });
+        }
+
+        // Track exports.
+        if let ItemVisibility::Export = variable_declaration.visibility {
+            if matches!(body_type, BodyType::Root) {
+                exec_state.mod_local.module_exports.push(var_name);
+            } else {
+                exec_state.err(CompilationIssue::err(
+                                variable_declaration.as_source_range(),
+                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
+                            ));
+            }
+        }
+        Ok(rhs)
+    }
+
+    /// Record a return statement's evaluated value as the function result
+    /// (`__return`). This is the pre-KCL-3.0 `return` semantics: it
+    /// deliberately does NOT stop the enclosing block -- statements after a
+    /// `return` still execute, exactly like the historical behavior (see the
+    /// ReturnStatement arm of exec_block); a second executed `return` is the
+    /// "Multiple returns" error. Under KCL 3.0, this is never called; `return`
+    /// unwinds as `Return` control flow instead. Shared by both executors.
+    pub(super) fn bind_return_value(
+        return_statement: &Node<ReturnStatement>,
+        value: KclValue,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        let metadata = Metadata::from(return_statement);
+        exec_state
+            .mut_stack()
+            .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
+            .map_err(|_| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "Multiple returns from a single function.".to_owned(),
+                    vec![metadata.source_range],
+                ))
+            })?;
+        Ok(())
     }
 
     pub async fn open_module(
@@ -1391,16 +1839,25 @@ impl ExecutorContext {
             }
             ModuleRepr::Foreign(_, Some((imported, _))) => Ok(imported.clone()),
             ModuleRepr::Foreign(geom, cached) => {
+                let caller_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
                 let result = super::import::send_to_engine(geom.clone(), exec_state, self)
                     .await
                     .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                let module_artifacts = std::mem::replace(&mut exec_state.mod_local.artifacts, caller_artifacts);
 
                 match result {
                     Ok(val) => {
-                        *cached = Some((val.clone(), exec_state.mod_local.artifacts.clone()));
+                        *cached = Some((val.clone(), module_artifacts));
                         Ok(val)
                     }
-                    Err(e) => Err(e),
+                    Err(e) => {
+                        // Preserve the failed command in the caller's error artifacts, matching
+                        // the behavior before foreign module artifact states were isolated.
+                        exec_state.mod_local.artifacts.extend(module_artifacts);
+                        // Label the failure with the import so the backtrace
+                        // names the foreign file, like KCL module failures do.
+                        Err(e.add_import_location(&path.import_name(), source_range))
+                    }
                 }
             }
             ModuleRepr::Dummy => unreachable!(),
@@ -1434,23 +1891,47 @@ impl ExecutorContext {
                     // It was an import cycle.  Keep the original message.
                     err.override_source_ranges(vec![source_range])
                 }
-                KclError::EngineHangup { .. } | KclError::EngineInternal { .. } => {
-                    // Propagate this type of error. It's likely a transient
-                    // error that just needs to be retried.
-                    err.override_source_ranges(vec![source_range])
-                }
-                _ => {
-                    // TODO would be great to have line/column for the underlying error here
-                    KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "Error loading imported file ({path}). Open it to view more details.\n  {}",
-                            err.message()
-                        ),
-                        vec![source_range],
-                    ))
-                }
+                // The module loaded successfully, so preserve execution errors
+                // exactly as they occurred inside it. Rewrapping them here loses
+                // the error kind, structured fields, and imported-file location.
+                _ => err.add_import_location(&path.import_name(), source_range),
             }
         })
+    }
+
+    /// Resolve a name to its value, running the module body first when the name
+    /// refers to a module. Flat (module execution happens in its own fresh
+    /// root); shared by both executors.
+    pub(super) async fn resolve_name_for_eval(
+        &self,
+        name: &Node<Name>,
+        metadata: &Metadata,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let value = name.get_result(exec_state, self).await?;
+        if let KclValue::Module { value: module_id, meta } = value {
+            Ok(self
+                .exec_module_for_result(module_id, exec_state, metadata.source_range)
+                .await?
+                .unwrap_or_else(|| {
+                    exec_state.warn(
+                        CompilationIssue::err(
+                            metadata.source_range,
+                            "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
+                        ),
+                        annotations::WARN_MOD_RETURN_VALUE,
+                    );
+
+                    let mut new_meta = vec![metadata.to_owned()];
+                    new_meta.extend(meta);
+                    KclValue::KclNone {
+                        value: Default::default(),
+                        meta: new_meta,
+                    }
+                }))
+        } else {
+            Ok(value)
+        }
     }
 
     #[async_recursion]
@@ -1466,128 +1947,14 @@ impl ExecutorContext {
             Expr::None(none) => KclValue::from(none).continue_(),
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
-            Expr::Name(name) => {
-                let being_declared = exec_state.mod_local.being_declared.clone();
-                let value = name
-                    .get_result(exec_state, self)
-                    .await
-                    .map_err(|e| var_in_own_ref_err(e, &being_declared))?
-                    .clone();
-                if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(
-                        module_id,
-                        exec_state,
-                        metadata.source_range
-                        ).await?.map(|v| v.continue_())
-                        .unwrap_or_else(|| {
-                            exec_state.warn(CompilationIssue::err(
-                                metadata.source_range,
-                                "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
-                            ),
-                        annotations::WARN_MOD_RETURN_VALUE);
-
-                            let mut new_meta = vec![metadata.to_owned()];
-                            new_meta.extend(meta);
-                            KclValue::KclNone {
-                                value: Default::default(),
-                                meta: new_meta,
-                            }.continue_()
-                        })
-                } else {
-                    value.continue_()
-                }
-            }
+            Expr::Name(name) => self
+                .resolve_name_for_eval(name, metadata, exec_state)
+                .await?
+                .continue_(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
-            Expr::FunctionExpression(function_expression) => {
-                let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs
-                    .as_ref()
-                    .map(|a| a.experimental)
-                    // Use the default for the field, not the bool type.
-                    .unwrap_or_else(|| FnAttrs::default().experimental);
-
-                // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs
-                    .as_ref()
-                    .map(|a| a.include_in_feature_tree)
-                    // Use the default for the field, not the bool type.
-                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
-                let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
-                    && (attrs.impl_ == annotations::Impl::Rust
-                        || attrs.impl_ == annotations::Impl::RustConstrainable
-                        || attrs.impl_ == annotations::Impl::RustConstraint)
-                {
-                    if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
-                        let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
-                        (
-                            KclValue::Function {
-                                value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
-                                meta: vec![metadata.to_owned()],
-                            },
-                            None,
-                        )
-                    } else {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Rust implementation of functions is restricted to the standard library".to_owned(),
-                            vec![metadata.source_range],
-                        )));
-                    }
-                } else {
-                    let std_props = function_expression
-                        .name_str()
-                        .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
-                        .map(|name| StdFnProps::default(&name));
-                    // Snapshotting memory here is crucial for semantics so that we close
-                    // over variables. Variables defined lexically later shouldn't
-                    // be available to the function body.
-                    let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
-                        // Recursive function needs a snapshot that includes
-                        // itself.
-                        let dummy = EnvironmentRef::dummy();
-                        (dummy, Some(dummy))
-                    } else {
-                        (exec_state.mut_stack().snapshot()?, None)
-                    };
-                    (
-                        KclValue::Function {
-                            value: Box::new(FunctionSource::kcl(
-                                function_expression.clone(),
-                                env_ref,
-                                KclFunctionSourceParams {
-                                    std_props,
-                                    experimental,
-                                    include_in_feature_tree,
-                                },
-                            )),
-                            meta: vec![metadata.to_owned()],
-                        },
-                        placeholder_env_ref,
-                    )
-                };
-
-                // If the function expression has a name, i.e. `fn name() {}`,
-                // bind it in the current scope.
-                if let Some(fn_name) = &function_expression.name {
-                    // If we used a placeholder env ref for recursion, fix it up
-                    // with the name recursively bound so that it's available in
-                    // the function body.
-                    if let Some(placeholder_env_ref) = placeholder_env_ref {
-                        closure = exec_state.mut_stack().add_recursive_closure(
-                            fn_name.name.to_owned(),
-                            closure,
-                            placeholder_env_ref,
-                            metadata.source_range,
-                        )?;
-                    } else {
-                        // Regular non-recursive binding.
-                        exec_state
-                            .mut_stack()
-                            .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
-                    }
-                }
-
-                closure.continue_()
-            }
+            Expr::FunctionExpression(function_expression) => self
+                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)?
+                .continue_(),
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
             Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
@@ -1633,6 +2000,130 @@ impl ExecutorContext {
             Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?.continue_(),
         };
         Ok(item)
+    }
+
+    /// Evaluate a single expression on whichever executor is active, as a
+    /// fresh root. For bounded internal evaluations (e.g. GD&T's constant
+    /// plane lookup).
+    pub(crate) async fn eval_expr_fresh_root(
+        &self,
+        expr: &Expr,
+        exec_state: &mut ExecState,
+        metadata: &Metadata,
+    ) -> Result<KclValueControlFlow, KclError> {
+        if self.is_machine_executor() {
+            return crate::execution::machine::run_expr(self, expr, exec_state, metadata).await;
+        }
+        self.execute_expr(expr, exec_state, metadata, &[], StatementKind::Expression)
+            .await
+    }
+
+    /// Create the closure value for a function expression, including the
+    /// recursive-closure placeholder fixup and binding a named `fn name() {}`
+    /// in the current scope. Flat; shared by both executors.
+    pub(super) fn create_function_closure(
+        &self,
+        function_expression: &crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        annotations: &[Node<Annotation>],
+        metadata: &Metadata,
+        statement_kind: StatementKind<'_>,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+        let experimental = attrs
+            .as_ref()
+            .map(|a| a.experimental)
+            // Use the default for the field, not the bool type.
+            .unwrap_or_else(|| FnAttrs::default().experimental);
+
+        // Check the KCL @(feature_tree = ) annotation.
+        let include_in_feature_tree = attrs
+            .as_ref()
+            .map(|a| a.include_in_feature_tree)
+            // Use the default for the field, not the bool type.
+            .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
+        let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
+            && (attrs.impl_ == annotations::Impl::Rust
+                || attrs.impl_ == annotations::Impl::RustConstrainable
+                || attrs.impl_ == annotations::Impl::RustConstraint)
+        {
+            if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
+                let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
+                (
+                    KclValue::Function {
+                        value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
+                        meta: vec![metadata.to_owned()],
+                    },
+                    None,
+                )
+            } else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Rust implementation of functions is restricted to the standard library".to_owned(),
+                    vec![metadata.source_range],
+                )));
+            }
+        } else {
+            let std_props = function_expression
+                .name_str()
+                .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
+                .map(|name| StdFnProps::default(&name));
+            // Snapshotting memory here is crucial for semantics so that we close
+            // over variables. Variables defined lexically later shouldn't
+            // be available to the function body.
+            let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
+                // Recursive function needs a snapshot that includes
+                // itself.
+                let dummy = EnvironmentRef::dummy();
+                (dummy, Some(dummy))
+            } else {
+                (exec_state.mut_stack().snapshot()?, None)
+            };
+            (
+                KclValue::Function {
+                    value: Box::new(FunctionSource::kcl(
+                        function_expression.clone(),
+                        env_ref,
+                        KclFunctionSourceParams {
+                            std_props,
+                            experimental,
+                            include_in_feature_tree,
+                        },
+                    )),
+                    meta: vec![metadata.to_owned()],
+                },
+                placeholder_env_ref,
+            )
+        };
+
+        // Resolve the signature's type names now, in the scope where
+        // the declaration is written. Call sites consume the stored
+        // resolutions and never look type names up themselves.
+        if let KclValue::Function { value, .. } = &mut closure {
+            value.resolve_signature_types(exec_state)?;
+        }
+
+        // If the function expression has a name, i.e. `fn name() {}`,
+        // bind it in the current scope.
+        if let Some(fn_name) = &function_expression.name {
+            // If we used a placeholder env ref for recursion, fix it up
+            // with the name recursively bound so that it's available in
+            // the function body.
+            if let Some(placeholder_env_ref) = placeholder_env_ref {
+                closure = exec_state.mut_stack().add_recursive_closure(
+                    fn_name.name.to_owned(),
+                    closure,
+                    placeholder_env_ref,
+                    metadata.source_range,
+                )?;
+            } else {
+                // Regular non-recursive binding.
+                exec_state
+                    .mut_stack()
+                    .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
+            }
+        }
+
+        Ok(closure)
     }
 }
 
@@ -1848,11 +2339,15 @@ fn reject_glob_import_clash(
 
 /// When executing in sketch mode, whether we should skip executing this
 /// expression.
-fn sketch_mode_should_skip(expr: &Expr) -> bool {
-    match expr {
-        Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
-        _ => true,
+pub(super) fn sketch_mode_should_skip(expr: &Expr) -> bool {
+    fn contains_edited_sketch_block(node: crate::walk::Node<'_>) -> bool {
+        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+            return sketch_block.is_being_edited;
+        }
+        node.children().into_iter().any(contains_edited_sketch_block)
     }
+
+    !contains_edited_sketch_block(expr.into())
 }
 
 /// If the error is about an undefined name, and that name matches the name being defined,
@@ -1917,72 +2412,7 @@ impl Node<SketchBlock> {
                 EarlyReturn::Error(err) => return Err(err),
             },
         };
-        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
-            object_id
-        } else {
-            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
-            debug_assert!(false, "{message}");
-            return Err(internal_err(message, range));
-        };
-        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
-        let sketch_block_artifact_id = {
-            use crate::execution::CodeRef;
-            use crate::execution::SketchBlock;
-            use crate::front::Plane;
-            use crate::front::SourceRef;
-
-            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
-
-            // Get the plane artifact ID so that we can do an exclusive borrow.
-            let plane_artifact_id = on_object.map(|object| object.artifact_id);
-            let plane_info = match &sketch_surface {
-                SketchSurface::Plane(plane) => Some(super::artifact::artifact_plane_info(&plane.info)),
-                SketchSurface::Face(_) => None,
-            };
-
-            let standard_plane = match &sketch_ctor_on {
-                Plane::Default(plane) => Some(*plane),
-                Plane::Object(_) | Plane::PrimitiveFace(_) => None,
-            };
-
-            let artifact_id = ArtifactId::from(exec_state.next_uuid());
-            // Create the sketch scene object and replace its placeholder.
-            let sketch_scene_object = Object {
-                id: sketch_id,
-                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchCtor { on: sketch_ctor_on },
-                    plane: on_object_id,
-                    segments: Default::default(),
-                    constraints: Default::default(),
-                }),
-                label: Default::default(),
-                comments: Default::default(),
-                artifact_id,
-                source: SourceRef::new(self.into(), self.node_path.clone()),
-            };
-            exec_state.set_scene_object(sketch_scene_object);
-
-            // Create and add the sketch block artifact.
-            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
-                id: artifact_id,
-                standard_plane,
-                plane_id: plane_artifact_id,
-                plane_info,
-                // Fill this in later once we create the path. We can't just add
-                // the artifact later because order relative to constraint
-                // artifacts is significant.
-                path_id: None,
-                code_ref: CodeRef::placeholder(range),
-                sketch_id,
-            }));
-
-            exec_state.push_op(Operation::GroupBegin {
-                group: Group::SketchBlock { sketch_id },
-                node_path: NodePath::placeholder(),
-                source_range: range,
-            });
-            artifact_id
-        };
+        let sketch_block_artifact_id = self.scene_setup(sketch_id, &sketch_surface, exec_state)?;
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
@@ -2058,8 +2488,298 @@ impl Node<SketchBlock> {
                 self,
             ));
         };
-        let mut sketch_block_state = sketch_block_state;
+        let return_value = self
+            .finalize_sketch_block(
+                sketch_id,
+                &sketch_surface,
+                sketch_block_artifact_id,
+                variables,
+                sketch_block_state,
+                exec_state,
+                ctx,
+            )
+            .await?;
+        Ok(if self.is_being_edited {
+            // When the sketch block is being edited, we exit the program
+            // immediately.
+            return_value.exit()
+        } else {
+            return_value.continue_()
+        })
+    }
 
+    /// Executes the arguments of the sketch block and returns the sketch ID and
+    /// surface. The surface is the `on` argument, which is basically a Plane or
+    /// Face.
+    ///
+    /// In sketch mode, the execution cache is used to look up the sketch
+    /// surface.
+    ///
+    /// The sketch ID is generated in either case so that it's stable. But only
+    /// a placeholder scene object is created for it.
+    async fn exec_arguments(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        if !exec_state.sketch_mode() {
+            // Evaluate arguments.
+            //
+            // Sketch mode only executes the sketch block body. Arguments must
+            // be evaluated in engine execution so that things like Planes and
+            // Faces can be created in the engine.
+            let mut labeled = IndexMap::new();
+            for labeled_arg in &self.arguments {
+                let source_range = SourceRange::from(labeled_arg.arg.clone());
+                let metadata = Metadata { source_range };
+                let value_cf = ctx
+                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                    .await?;
+                let value = early_return!(value_cf);
+                let arg = Arg::new(value, source_range);
+                match &labeled_arg.label {
+                    Some(label) => {
+                        labeled.insert(label.name.clone(), arg);
+                    }
+                    None => {
+                        let name = labeled_arg.arg.ident_name();
+                        if let Some(name) = name {
+                            labeled.insert(name.to_owned(), arg);
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                                vec![SourceRange::from(&labeled_arg.arg)],
+                            ))
+                            .into());
+                        }
+                    }
+                }
+            }
+            self.finish_arguments_after_eval(labeled, exec_state, ctx).await
+        } else {
+            self.arguments_from_cache(exec_state)
+        }
+    }
+
+    /// The evaluation-free tail of sketch-block argument handling: validate
+    /// the arguments, resolve the `on` surface, ensure it exists in the
+    /// engine, and mint the stable sketch id. Shared by both executors.
+    pub(super) async fn finish_arguments_after_eval(
+        &self,
+        labeled: IndexMap<String, Arg>,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+        let mut args = Args::new_no_args(
+            range,
+            self.node_path.clone(),
+            ctx.clone(),
+            Some(SketchBlock::CALLEE_NAME.to_owned()),
+        );
+        args.labeled = labeled;
+
+        // Report any arguments that aren't valid sketch block parameters.
+        // This is non-fatal so that the rest of the block still executes,
+        // matching how unexpected keyword arguments are handled for
+        // function calls.
+        //
+        // Checking arguments should be done after evaluating them, the same
+        // order as if we were calling a function.
+        self.check_for_unexpected_arguments(&args, exec_state)?;
+
+        let arg_on_value: KclValue =
+            args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
+
+        let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+            let message = "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+        };
+        let mut sketch_surface = arg_on.into_sketch_surface();
+
+        // Ensure that the plane has an ObjectId. Always create an Object so
+        // that we're consistent with IDs.
+        match &mut sketch_surface {
+            SketchSurface::Plane(plane) => {
+                // Ensure that it's been created in the engine.
+                ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
+            }
+            SketchSurface::Face(_) => {
+                // All faces should already be created in the engine.
+            }
+        }
+
+        // Generate an ID for the sketch block. This must be done after
+        // arguments so that we get the same result when the arguments are
+        // cached. This must be done before the sketch block body so that no
+        // matter how many IDs are generated due to objects in the body, the
+        // sketch ID is always stable.
+        let sketch_id = exec_state.next_object_id();
+        exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
+        let on_cache_name = sketch_on_cache_name(sketch_id);
+        // Store in memory so that it's cached.
+        exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
+
+        Ok((sketch_id, sketch_surface))
+    }
+
+    /// Sketch-mode path: arguments cannot be re-evaluated, so look the `on`
+    /// surface up from the execution cache. Flat; shared by both executors.
+    pub(super) fn arguments_from_cache(
+        &self,
+        exec_state: &mut ExecState,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+        {
+            // In sketch mode, we can't re-evaluate arguments. Instead, look
+            // them up from cache.
+
+            // Generate an ID for the sketch block. This must be done before the
+            // sketch block body so that no matter how many IDs are generated
+            // due to objects in the body, the sketch ID is always stable.
+            let sketch_id = exec_state.next_object_id();
+            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
+            let on_cache_name = sketch_on_cache_name(sketch_id);
+            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
+
+            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+                let message =
+                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+                debug_assert!(false, "{message}");
+                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+            };
+            let mut sketch_surface = arg_on.into_sketch_surface();
+
+            // Ensure that the plane has an ObjectId. Always create an Object so
+            // that we're consistent with IDs.
+            if sketch_surface.object_id().is_none() {
+                // Look up the last object. Since this is where we would have
+                // created it in real execution, it will be the last object.
+                let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
+                    return Err(internal_err(
+                        "In sketch mode, the `on` plane argument must refer to an existing plane object.",
+                        range,
+                    )
+                    .into());
+                };
+                sketch_surface.set_object_id(last_object.id);
+            }
+
+            Ok((sketch_id, sketch_surface))
+        }
+    }
+
+    /// Create the sketch scene object and sketch-block artifact, and open
+    /// the feature-tree group. Flat; shared by both executors.
+    pub(super) fn scene_setup(
+        &self,
+        sketch_id: ObjectId,
+        sketch_surface: &SketchSurface,
+        exec_state: &mut ExecState,
+    ) -> Result<ArtifactId, KclError> {
+        let range = SourceRange::from(self);
+        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
+            object_id
+        } else {
+            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(internal_err(message, range));
+        };
+        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
+        let sketch_block_artifact_id = {
+            use crate::execution::CodeRef;
+            use crate::execution::SketchBlock;
+            use crate::front::Plane;
+            use crate::front::SourceRef;
+
+            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
+
+            // Get the plane artifact ID so that we can do an exclusive borrow.
+            let plane_artifact_id = on_object.map(|object| object.artifact_id);
+            let plane_info = match &sketch_surface {
+                SketchSurface::Plane(plane) => Some(super::artifact::artifact_plane_info(&plane.info)),
+                SketchSurface::Face(_) => None,
+            };
+
+            let standard_plane = match &sketch_ctor_on {
+                Plane::Default(plane) => Some(*plane),
+                Plane::Object(_) | Plane::PrimitiveFace(_) => None,
+            };
+
+            let artifact_id = ArtifactId::from(exec_state.next_uuid());
+            // Label the sketch with the name of the variable whose right-hand
+            // side is being evaluated. This function runs before the sketch
+            // body executes, so for `mySketch = sketch(on = XY) { ... }`,
+            // `being_declared` still holds `mySketch` rather than a name
+            // declared inside the body.
+            //
+            // The label is the nearest enclosing declaration, which is not
+            // always the sketch's own name:
+            // - `part = extrude(sketch(on = XY) { ... }, length = 10)` labels
+            //   the sketch `part`.
+            // - A sketch constructed inside a function body and returned takes
+            //   the name of the declaration in progress at the call site, so
+            //   two calls to that function can produce the same label.
+            // - A sketch written as an expression statement has no declaration
+            //   in progress, so its label is the empty string.
+            let label = exec_state.mod_local.being_declared.clone().unwrap_or_default();
+            // Create the sketch scene object and replace its placeholder.
+            let sketch_scene_object = Object {
+                id: sketch_id,
+                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                    args: crate::front::SketchCtor { on: sketch_ctor_on },
+                    plane: on_object_id,
+                    segments: Default::default(),
+                    constraints: Default::default(),
+                }),
+                label,
+                comments: Default::default(),
+                artifact_id,
+                source: SourceRef::new(self.into(), self.node_path.clone()),
+            };
+            exec_state.set_scene_object(sketch_scene_object);
+
+            // Create and add the sketch block artifact.
+            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
+                id: artifact_id,
+                standard_plane,
+                plane_id: plane_artifact_id,
+                plane_info,
+                // Fill this in later once we create the path. We can't just add
+                // the artifact later because order relative to constraint
+                // artifacts is significant.
+                path_id: None,
+                code_ref: CodeRef::placeholder(range),
+                sketch_id,
+            }));
+
+            exec_state.push_op(Operation::GroupBegin {
+                group: Group::SketchBlock { sketch_id },
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
+            artifact_id
+        };
+        Ok(sketch_block_artifact_id)
+    }
+
+    /// Solve constraints, send segments to the engine, update artifacts and
+    /// scene objects, close the feature-tree group, and build the sketch's
+    /// result object. Flat (the body has already executed); shared by both
+    /// executors.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) async fn finalize_sketch_block(
+        &self,
+        sketch_id: ObjectId,
+        sketch_surface: &SketchSurface,
+        sketch_block_artifact_id: ArtifactId,
+        variables: IndexMap<String, KclValue>,
+        mut sketch_block_state: SketchBlockState,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValue, KclError> {
+        let range = SourceRange::from(self);
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
             .solver_constraints
@@ -2170,6 +2890,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
+                                unsatisfied_directional_constraints: Default::default(),
                                 converged: false,
                             },
                             None,
@@ -2209,6 +2930,17 @@ impl Node<SketchBlock> {
             };
             exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
         }
+        if solve_outcome.converged {
+            exec_state.mod_local.artifacts.refactor_metadata.extend(
+                sketch_block_state
+                    .pending_legacy_angle_refactor_metadata
+                    .iter()
+                    .filter_map(|pending| {
+                        finalize_legacy_angle_refactor_meta(pending, &solve_outcome.final_values)
+                            .map(RefactorMetadata::LegacyAngle)
+                    }),
+            );
+        }
         // Substitute solutions back into sketch variables.
         let sketch_engine_id = exec_state.next_uuid();
         let solution_ty = solver_numeric_type(exec_state);
@@ -2216,7 +2948,7 @@ impl Node<SketchBlock> {
         for unsolved_segment in &sketch_block_state.needed_by_engine {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment.clone(),
-                &sketch_surface,
+                sketch_surface,
                 sketch_engine_id,
                 None,
                 &solve_outcome,
@@ -2237,7 +2969,7 @@ impl Node<SketchBlock> {
 
         // Build the sketch and send everything to the engine.
         let sketch = create_segments_in_engine(
-            &sketch_surface,
+            sketch_surface,
             sketch_engine_id,
             &mut solved_segments,
             &sketch_block_state.segment_tags,
@@ -2266,7 +2998,7 @@ impl Node<SketchBlock> {
         // the same.
         let variables = substitute_sketch_vars(
             variables,
-            &sketch_surface,
+            sketch_surface,
             sketch_engine_id,
             sketch.as_ref(),
             &solve_outcome,
@@ -2326,8 +3058,9 @@ impl Node<SketchBlock> {
                     "segments have"
                 };
                 let message = format!(
-                    "Sketch is over-constrained: {} {description} conflicting constraints",
+                    "Sketch is over-constrained: {} {description} conflicting constraints.{}",
                     status.conflict_count,
+                    signed_distance_conflict_hint(&solve_outcome),
                 );
                 exec_state.warn(
                     CompilationIssue::err(range, message),
@@ -2346,153 +3079,7 @@ impl Node<SketchBlock> {
             object_kind: KclObjectKind::Default,
             meta: vec![metadata],
         };
-        Ok(if self.is_being_edited {
-            // When the sketch block is being edited, we exit the program
-            // immediately.
-            return_value.exit()
-        } else {
-            return_value.continue_()
-        })
-    }
-
-    /// Executes the arguments of the sketch block and returns the sketch ID and
-    /// surface. The surface is the `on` argument, which is basically a Plane or
-    /// Face.
-    ///
-    /// In sketch mode, the execution cache is used to look up the sketch
-    /// surface.
-    ///
-    /// The sketch ID is generated in either case so that it's stable. But only
-    /// a placeholder scene object is created for it.
-    async fn exec_arguments(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
-        let range = SourceRange::from(self);
-
-        if !exec_state.sketch_mode() {
-            // Evaluate arguments.
-            //
-            // Sketch mode only executes the sketch block body. Arguments must
-            // be evaluated in engine execution so that things like Planes and
-            // Faces can be created in the engine.
-            let mut labeled = IndexMap::new();
-            for labeled_arg in &self.arguments {
-                let source_range = SourceRange::from(labeled_arg.arg.clone());
-                let metadata = Metadata { source_range };
-                let value_cf = ctx
-                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                    .await?;
-                let value = early_return!(value_cf);
-                let arg = Arg::new(value, source_range);
-                match &labeled_arg.label {
-                    Some(label) => {
-                        labeled.insert(label.name.clone(), arg);
-                    }
-                    None => {
-                        let name = labeled_arg.arg.ident_name();
-                        if let Some(name) = name {
-                            labeled.insert(name.to_owned(), arg);
-                        } else {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
-                                vec![SourceRange::from(&labeled_arg.arg)],
-                            ))
-                            .into());
-                        }
-                    }
-                }
-            }
-            let mut args = Args::new_no_args(
-                range,
-                self.node_path.clone(),
-                ctx.clone(),
-                Some(SketchBlock::CALLEE_NAME.to_owned()),
-            );
-            args.labeled = labeled;
-
-            // Report any arguments that aren't valid sketch block parameters.
-            // This is non-fatal so that the rest of the block still executes,
-            // matching how unexpected keyword arguments are handled for
-            // function calls.
-            //
-            // Checking arguments should be done after evaluating them, the same
-            // order as if we were calling a function.
-            self.check_for_unexpected_arguments(&args, exec_state)?;
-
-            let arg_on_value: KclValue =
-                args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
-
-            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
-                let message =
-                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
-                debug_assert!(false, "{message}");
-                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
-            };
-            let mut sketch_surface = arg_on.into_sketch_surface();
-
-            // Ensure that the plane has an ObjectId. Always create an Object so
-            // that we're consistent with IDs.
-            match &mut sketch_surface {
-                SketchSurface::Plane(plane) => {
-                    // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
-                }
-                SketchSurface::Face(_) => {
-                    // All faces should already be created in the engine.
-                }
-            }
-
-            // Generate an ID for the sketch block. This must be done after
-            // arguments so that we get the same result when the arguments are
-            // cached. This must be done before the sketch block body so that no
-            // matter how many IDs are generated due to objects in the body, the
-            // sketch ID is always stable.
-            let sketch_id = exec_state.next_object_id();
-            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
-            let on_cache_name = sketch_on_cache_name(sketch_id);
-            // Store in memory so that it's cached.
-            exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
-
-            Ok((sketch_id, sketch_surface))
-        } else {
-            // In sketch mode, we can't re-evaluate arguments. Instead, look
-            // them up from cache.
-
-            // Generate an ID for the sketch block. This must be done before the
-            // sketch block body so that no matter how many IDs are generated
-            // due to objects in the body, the sketch ID is always stable.
-            let sketch_id = exec_state.next_object_id();
-            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
-            let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
-
-            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
-                let message =
-                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
-                debug_assert!(false, "{message}");
-                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
-            };
-            let mut sketch_surface = arg_on.into_sketch_surface();
-
-            // Ensure that the plane has an ObjectId. Always create an Object so
-            // that we're consistent with IDs.
-            if sketch_surface.object_id().is_none() {
-                // Look up the last object. Since this is where we would have
-                // created it in real execution, it will be the last object.
-                let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
-                    return Err(internal_err(
-                        "In sketch mode, the `on` plane argument must refer to an existing plane object.",
-                        range,
-                    )
-                    .into());
-                };
-                sketch_surface.set_object_id(last_object.id);
-            }
-
-            Ok((sketch_id, sketch_surface))
-        }
+        Ok(return_value)
     }
 
     /// Report a non-fatal error for each argument that isn't a valid sketch
@@ -2518,7 +3105,7 @@ impl Node<SketchBlock> {
         Ok(())
     }
 
-    async fn load_sketch2_into_current_scope(
+    pub(super) async fn load_sketch2_into_current_scope(
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
@@ -2578,7 +3165,7 @@ impl Node<SketchBlock> {
 }
 
 impl SketchBlock {
-    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
+    pub(super) fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
         exec_state.mut_stack().push_new_env_for_call(parent)
     }
 }
@@ -2622,7 +3209,7 @@ impl Node<SketchVar> {
     }
 }
 
-fn apply_ascription(
+pub(super) fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
@@ -2673,7 +3260,14 @@ impl BinaryPart {
     ) -> Result<KclValueControlFlow, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
-            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.map(KclValue::continue_),
+            BinaryPart::Name(name) => {
+                let metadata = Metadata {
+                    source_range: SourceRange::from(&**name),
+                };
+                ctx.resolve_name_for_eval(name, &metadata, exec_state)
+                    .await
+                    .map(KclValue::continue_)
+            }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
@@ -2694,10 +3288,10 @@ impl Node<Name> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
-        let being_declared = exec_state.mod_local.being_declared.clone();
-        self.get_result_inner(exec_state, ctx)
-            .await
-            .map_err(|e| var_in_own_ref_err(e, &being_declared))
+        // Await first so being_declared is read only on the error path,
+        // instead of cloned before every lookup.
+        let result = self.get_result_inner(exec_state, ctx).await;
+        result.map_err(|e| var_in_own_ref_err(e, &exec_state.mod_local.being_declared))
     }
 
     async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -2708,13 +3302,12 @@ impl Node<Name> {
             )));
         }
 
-        let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
-
         if self.path.is_empty() {
             if let Ok(item_value) = exec_state.stack().get(&self.name.name, self.into()) {
                 return Ok(item_value);
             }
 
+            let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
             let not_defined = match exec_state.stack().get(&mod_name, self.into()) {
                 Ok(module) => return Ok(module),
                 Err(err) => err,
@@ -2794,6 +3387,7 @@ impl Node<Name> {
             return item_value;
         }
 
+        let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
         let mod_exported = exports.contains(&mod_name);
         let mod_value = exec_state
             .stack()
@@ -2819,24 +3413,44 @@ impl Node<Name> {
     }
 }
 
+fn mock_array_may_have_engine_dependent_cardinality(ty: &RuntimeType) -> bool {
+    match ty {
+        RuntimeType::Primitive(
+            PrimitiveType::Sketch
+            | PrimitiveType::Solid
+            | PrimitiveType::Face
+            | PrimitiveType::Edge
+            | PrimitiveType::BoundedEdge
+            | PrimitiveType::ImportedGeometry,
+        ) => true,
+        RuntimeType::Union(types) => types.iter().any(mock_array_may_have_engine_dependent_cardinality),
+        _ => false,
+    }
+}
+
 impl Node<MemberExpression> {
     async fn get_result(
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        let meta = Metadata {
-            source_range: SourceRange::from(self),
-        };
+        // Evaluate each child with its own source range so that diagnostics
+        // raised while evaluating a child (module errors, missing-return
+        // warnings) point at that child instead of the whole member
+        // expression.
+        //
         // TODO: The order of execution is wrong. We should execute the object
         // *before* the property.
+        let property_meta = Metadata {
+            source_range: SourceRange::from(&self.property),
+        };
         let property_result = Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
             self.into(),
             ctx,
-            &meta,
+            &property_meta,
             &[],
             StatementKind::Expression,
         )
@@ -2848,10 +3462,31 @@ impl Node<MemberExpression> {
             Err(EarlyReturn::Value(cf)) => return Ok(cf),
             Err(EarlyReturn::Error(err)) => return Err(err),
         };
+        let object_meta = Metadata {
+            source_range: SourceRange::from(&self.object),
+        };
         let object_cf = ctx
-            .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
+            .execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
             .await?;
         let object = control_continue!(object_cf);
+        self.apply_member(object, property, exec_state, ctx).await
+    }
+
+    /// Apply property access or indexing to an already-evaluated object: the
+    /// evaluation-free second half of member-expression execution, shared by
+    /// both executors.
+    pub(super) async fn apply_member(
+        &self,
+        object: KclValue,
+        property: Property,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        // Result values of the member access itself carry the whole
+        // expression's metadata.
+        let meta = Metadata {
+            source_range: SourceRange::from(self),
+        };
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
@@ -3701,7 +4336,7 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
+            (KclValue::HomArray { value: arr, ty }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 // Out-of-bounds error.
                 let oob_error = KclError::new_undefined_value(
@@ -3714,12 +4349,15 @@ impl Node<MemberExpression> {
                 if let Some(value) = value_of_arr {
                     // Indexing into the array was successful.
                     Ok(value.to_owned().continue_())
-                } else if ctx.no_engine_commands().await && !exec_state.is_sketch_mode_execution() {
+                } else if ctx.no_engine_commands().await
+                    && !exec_state.is_sketch_mode_execution()
+                    && mock_array_may_have_engine_dependent_cardinality(&ty)
+                {
                     // In mock execution, we handle OOB errors
-                    // by trying to get index 0. This is because the array value might have
-                    // come from the engine, so the array's actual length isn't
-                    // known during mock execution runtime. Because it's mock execution
-                    // the specific value is hopefully not important.
+                    // by trying to get index 0 only for geometry-handle arrays. Those
+                    // values may have come from the engine, so their actual length is
+                    // not known during mock execution runtime. Frontend-only arrays
+                    // have exact cardinality and must preserve their OOB errors.
                     //
                     // We don't do this in sketch mode execution since it's
                     // forbidden from contacting the engine, meaning array
@@ -3853,7 +4491,7 @@ impl Node<BinaryExpression> {
                     match left_part {
                         BinaryPart::BinaryExpression(child) => {
                             stack.push(State::FromLeft { node });
-                            stack.push(State::EvaluateLeft(*child));
+                            stack.push(State::EvaluateLeft(child.into_node()));
                         }
                         part => {
                             let left_value = part.get_result(exec_state, ctx).await?;
@@ -3873,7 +4511,7 @@ impl Node<BinaryExpression> {
                     match right_part {
                         BinaryPart::BinaryExpression(child) => {
                             stack.push(State::FromRight { node, left });
-                            stack.push(State::EvaluateLeft(*child));
+                            stack.push(State::EvaluateLeft(child.into_node()));
                         }
                         part => {
                             let right_value = part.get_result(exec_state, ctx).await?;
@@ -3898,7 +4536,7 @@ impl Node<BinaryExpression> {
             .ok_or_else(|| Self::missing_result_error(self))
     }
 
-    async fn apply_operator(
+    pub(super) async fn apply_operator(
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
@@ -4110,26 +4748,13 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
-                        SketchConstraintKind::Angle { line0, line1 } => {
+                        SketchConstraintKind::Angle {
+                            line0,
+                            line1,
+                            mode,
+                            label_position,
+                        } => {
                             let range = self.as_source_range();
-                            // Line 0 is points A and B.
-                            // Line 1 is points C and D.
-                            let ax = line0.vars[0].x.to_constraint_id(range)?;
-                            let ay = line0.vars[0].y.to_constraint_id(range)?;
-                            let bx = line0.vars[1].x.to_constraint_id(range)?;
-                            let by = line0.vars[1].y.to_constraint_id(range)?;
-                            let cx = line1.vars[0].x.to_constraint_id(range)?;
-                            let cy = line1.vars[0].y.to_constraint_id(range)?;
-                            let dx = line1.vars[1].x.to_constraint_id(range)?;
-                            let dy = line1.vars[1].y.to_constraint_id(range)?;
-                            let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
-                            );
-                            let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
-                            );
                             let desired_angle = match n.ty {
                                 NumericType::Known(crate::exec::UnitType::Angle(crate::exec::UnitAngle::Degrees))
                                 | NumericType::Default {
@@ -4152,11 +4777,71 @@ impl Node<BinaryExpression> {
                                     return Err(internal_err(message, self));
                                 }
                             };
-                            let solver_constraint = Constraint::LinesAtAngle(
-                                solver_line0,
-                                solver_line1,
-                                ezpz::datatypes::AngleKind::Other(desired_angle),
-                            );
+                            let angle_lowering = match *mode {
+                                AngleConstraintMode::LinesAtAngle => {
+                                    AngleConstraintLowering::LinesAtAngle(Box::new(PendingLegacyAngleRefactorMeta {
+                                        source_range: constraint
+                                            .meta
+                                            .first()
+                                            .map(|meta| meta.source_range)
+                                            .unwrap_or(range),
+                                        lines: [line0.clone(), line1.clone()],
+                                        desired_angle_radians: desired_angle.to_radians(),
+                                    }))
+                                }
+                                AngleConstraintMode::PointsAtAngle { sector, inverse } => {
+                                    let sketch_vars = exec_state
+                                        .mod_local
+                                        .sketch_block
+                                        .as_ref()
+                                        .ok_or_else(|| {
+                                            internal_err(
+                                                "Being inside a sketch block should have already been checked above",
+                                                self,
+                                            )
+                                        })?
+                                        .sketch_vars
+                                        .clone();
+                                    let initial_line0 = constrainable_line_initial_positions(
+                                        &sketch_vars,
+                                        line0,
+                                        exec_state,
+                                        range,
+                                        "angle line0",
+                                    )?;
+                                    let initial_line1 = constrainable_line_initial_positions(
+                                        &sketch_vars,
+                                        line1,
+                                        exec_state,
+                                        range,
+                                        "angle line1",
+                                    )?;
+                                    let Some(initial_vertex) = intersect_lines_2d(initial_line0, initial_line1) else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "angleDimension(lines = ..., sector = ...) requires non-parallel lines"
+                                                .to_owned(),
+                                            vec![range],
+                                        )));
+                                    };
+                                    let (line0_representative, line0_direction) =
+                                        representative_angle_endpoint(line0, initial_line0, initial_vertex, range)?;
+                                    let (line1_representative, line1_direction) =
+                                        representative_angle_endpoint(line1, initial_line1, initial_vertex, range)?;
+                                    let sector_rays = angle_sector_rays(sector, inverse);
+                                    let angle_kind =
+                                        ezpz::datatypes::AngleKind::Other(remap_angle_for_representative_rays(
+                                            sector_rays,
+                                            [line0_direction, line1_direction],
+                                            desired_angle,
+                                        ));
+                                    AngleConstraintLowering::PointsAtAngle(PointsAtAngleLineData {
+                                        initial_vertex,
+                                        representative_points: [line0_representative, line1_representative],
+                                        angle_kind,
+                                    })
+                                }
+                            };
+                            let sketch_var_ty = solver_numeric_type(exec_state);
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
                                 let message =
@@ -4164,7 +4849,27 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match angle_lowering {
+                                AngleConstraintLowering::LinesAtAngle(refactor_meta) => {
+                                    sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
+                                        datum_line_from_constrainable(line0, range)?,
+                                        datum_line_from_constrainable(line1, range)?,
+                                        ezpz::datatypes::AngleKind::Other(desired_angle),
+                                    ));
+                                    sketch_block_state
+                                        .pending_legacy_angle_refactor_metadata
+                                        .push(*refactor_meta);
+                                }
+                                AngleConstraintLowering::PointsAtAngle(points_at_angle_data) => {
+                                    push_points_at_angle_for_lines(
+                                        sketch_block_state,
+                                        sketch_var_ty,
+                                        [line0, line1],
+                                        points_at_angle_data,
+                                        range,
+                                    )?
+                                }
+                            }
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
@@ -4176,11 +4881,20 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
+                            let (sector, inverse) = match *mode {
+                                AngleConstraintMode::LinesAtAngle => (None, None),
+                                AngleConstraintMode::PointsAtAngle { sector, inverse } => {
+                                    (Some(front_angle_sector(sector)), Some(inverse))
+                                }
+                            };
                             let sketch_constraint = crate::front::Constraint::Angle(Angle {
                                 lines: vec![line0.object_id, line1.object_id],
                                 angle: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert angle units numeric suffix:", range)
                                 })?,
+                                sector,
+                                inverse,
+                                label_position: label_position.clone(),
                                 source,
                             });
                             sketch_block_state.sketch_constraints.push(constraint_id);
@@ -4307,7 +5021,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)
@@ -4453,7 +5167,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids
+                                segments: input_object_ids
                                     .iter()
                                     .copied()
                                     .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
@@ -4596,7 +5310,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -4691,7 +5405,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids
+                                segments: input_object_ids
                                     .iter()
                                     .copied()
                                     .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
@@ -4830,7 +5544,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5012,7 +5726,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5048,6 +5762,7 @@ impl Node<BinaryExpression> {
                                 Arc {
                                     object_id: ObjectId,
                                     end: [crate::execution::SketchVarId; 2],
+                                    direction: ArcDirection,
                                 },
                                 Circle {
                                     object_id: ObjectId,
@@ -5113,6 +5828,7 @@ impl Node<BinaryExpression> {
                                         center_object_id,
                                         start_object_id,
                                         end,
+                                        direction,
                                         ..
                                     } if *center_object_id == center.object_id
                                         && *start_object_id == start.object_id =>
@@ -5126,6 +5842,7 @@ impl Node<BinaryExpression> {
                                         Some(CircularSegmentConstraintTarget::Arc {
                                             object_id: seg.object_id,
                                             end: [end_x_var, end_y_var],
+                                            direction: *direction,
                                         })
                                     }
                                     UnsolvedSegmentKind::Circle {
@@ -5157,16 +5874,15 @@ impl Node<BinaryExpression> {
                                 start.vars.y.to_constraint_id(range)?,
                             );
                             let solver_constraint = match target_segment {
-                                CircularSegmentConstraintTarget::Arc { end, .. } => {
-                                    let solver_arc = ezpz::datatypes::inputs::DatumCircularArc {
-                                        center: center_point,
-                                        start: start_point,
-                                        end: ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                            end[0].to_constraint_id(range)?,
-                                            end[1].to_constraint_id(range)?,
-                                        ),
-                                    };
-                                    Constraint::ArcRadius(solver_arc, radius_value)
+                                CircularSegmentConstraintTarget::Arc { end, direction, .. } => {
+                                    let solver_arc = SolverArc::new(
+                                        [center.vars.x, center.vars.y],
+                                        [start.vars.x, start.vars.y],
+                                        end,
+                                        direction,
+                                        range,
+                                    )?;
+                                    solver_arc.radius_constraint(radius_value)
                                 }
                                 CircularSegmentConstraintTarget::Circle { .. } => {
                                     let sketch_var_ty = solver_numeric_type(exec_state);
@@ -5343,7 +6059,7 @@ impl Node<BinaryExpression> {
                             use crate::frontend::sketch::ConstraintSegment;
 
                             let constraint = crate::front::Constraint::HorizontalDistance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)
@@ -5455,7 +6171,7 @@ impl Node<BinaryExpression> {
                             use crate::frontend::sketch::ConstraintSegment;
 
                             let constraint = crate::front::Constraint::VerticalDistance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)
@@ -5664,10 +6380,16 @@ impl Node<UnaryExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        let value = self.argument.get_result(exec_state, ctx).await?;
+        let value = control_continue!(value);
+        self.apply_unary(value, exec_state).map(KclValue::continue_)
+    }
+
+    /// Apply the unary operator to an already-evaluated operand. Shared by
+    /// both executors.
+    pub(super) fn apply_unary(&self, value: KclValue, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         match self.operator {
             UnaryOperator::Not => {
-                let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = control_continue!(value);
                 let KclValue::Bool {
                     value: bool_value,
                     meta: _,
@@ -5689,11 +6411,9 @@ impl Node<UnaryExpression> {
                     meta,
                 };
 
-                Ok(negated.continue_())
+                Ok(negated)
             }
             UnaryOperator::Neg => {
-                let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = control_continue!(value);
                 let err = || {
                     KclError::new_semantic(KclErrorDetails::new(
                         format!(
@@ -5712,8 +6432,7 @@ impl Node<UnaryExpression> {
                             value: -value,
                             meta,
                             ty: *ty,
-                        }
-                        .continue_())
+                        })
                     }
                     KclValue::Plane { value } => {
                         let mut plane = value.clone();
@@ -5731,7 +6450,7 @@ impl Node<UnaryExpression> {
 
                         plane.id = exec_state.next_uuid();
                         plane.object_id = None;
-                        Ok(KclValue::Plane { value: plane }.continue_())
+                        Ok(KclValue::Plane { value: plane })
                     }
                     KclValue::Object {
                         value: values, meta, ..
@@ -5791,26 +6510,21 @@ impl Node<UnaryExpression> {
                             meta: meta.clone(),
                             constrainable: false,
                             object_kind: KclObjectKind::Default,
-                        }
-                        .continue_())
+                        })
                     }
                     _ => Err(err()),
                 }
             }
-            UnaryOperator::Plus => {
-                let operand = self.argument.get_result(exec_state, ctx).await?;
-                let operand = control_continue!(operand);
-                match operand {
-                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.continue_()),
-                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "You can only apply unary + to numbers or planes, but this is a {}",
-                            operand.human_friendly_type()
-                        ),
-                        vec![self.into()],
-                    ))),
-                }
-            }
+            UnaryOperator::Plus => match value {
+                KclValue::Number { .. } | KclValue::Plane { .. } => Ok(value),
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "You can only apply unary + to numbers or planes, but this is a {}",
+                        value.human_friendly_type()
+                    ),
+                    vec![self.into()],
+                ))),
+            },
         }
     }
 }
@@ -5944,7 +6658,42 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let start_val = control_continue!(start_val);
+        let start_val_for_build = control_continue!(start_val);
+        self.validate_range_start(&start_val_for_build)?;
+        let metadata = Metadata::from(&self.end_element);
+        let end_val = ctx
+            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
+            .await?;
+        let end_val = control_continue!(end_val);
+        self.build_range(start_val_for_build, end_val, exec_state)
+            .map(KclValue::continue_)
+    }
+
+    /// Validate the evaluated start endpoint, preserving the original error
+    /// ordering: a bad start is reported before the end element is ever
+    /// evaluated. Shared by both executors; `build_range` re-checks it,
+    /// which is redundant but keeps `build_range` total on its own.
+    pub(super) fn validate_range_start(&self, start_val: &KclValue) -> Result<(), KclError> {
+        if start_val.as_ty_f64().is_none() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Expected number for range start but found {}",
+                    start_val.human_friendly_type()
+                ),
+                vec![self.into()],
+            )));
+        }
+        Ok(())
+    }
+
+    /// Build the range value from evaluated endpoints. The evaluation-free
+    /// second half of range execution, shared by both executors.
+    pub(super) fn build_range(
+        &self,
+        start_val: KclValue,
+        end_val: KclValue,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
         let start = start_val
             .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
@@ -5954,11 +6703,6 @@ impl Node<ArrayRangeExpression> {
                 ),
                 vec![self.into()],
             )))?;
-        let metadata = Metadata::from(&self.end_element);
-        let end_val = ctx
-            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?;
-        let end_val = control_continue!(end_val);
         let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "Expected number for range end but found {}",
@@ -6008,8 +6752,7 @@ impl Node<ArrayRangeExpression> {
                 })
                 .collect(),
             ty: RuntimeType::Primitive(PrimitiveType::Number(ty)),
-        }
-        .continue_())
+        })
     }
 }
 
@@ -6068,7 +6811,8 @@ impl Node<IfExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Check the `if` branch.
+        // Check the `if` branch. Conditions are evaluated in the enclosing
+        // scope; only arm bodies get their own scope (under KCL 3.0).
         let cond_value = ctx
             .execute_expr(
                 &self.cond,
@@ -6080,11 +6824,7 @@ impl Node<IfExpression> {
             .await?;
         let cond_value = control_continue!(cond_value);
         if cond_value.get_bool()? {
-            let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
-            // Block must end in an expression, so this has to be Some.
-            // Enforced by the parser.
-            // See https://github.com/KittyCAD/modeling-app/issues/4015
-            return Ok(block_result.unwrap());
+            return exec_if_arm(ctx, &self.then_val, exec_state).await;
         }
 
         // Check any `else if` branches.
@@ -6100,23 +6840,64 @@ impl Node<IfExpression> {
                 .await?;
             let cond_value = control_continue!(cond_value);
             if cond_value.get_bool()? {
-                let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
-                // Block must end in an expression, so this has to be Some.
-                // Enforced by the parser.
-                // See https://github.com/KittyCAD/modeling-app/issues/4015
-                return Ok(block_result.unwrap());
+                return exec_if_arm(ctx, &else_if.then_val, exec_state).await;
             }
         }
 
         // Run the final `else` branch.
-        ctx.exec_block(&*self.final_else, exec_state, BodyType::Block)
-            .await
-            .map(|expr| expr.unwrap())
+        exec_if_arm(ctx, &self.final_else, exec_state).await
     }
 }
 
+/// Begin an if-arm scope. Under a KCL 3.0 entry point, each
+/// if/else-if/else arm body gets its own scope: bindings made inside the arm
+/// are visible from their declaration to the arm's closing brace, never
+/// outside it, and may shadow bindings from enclosing scopes. Under older
+/// entry points the arm shares the enclosing environment (bindings leak out
+/// and shadowing is a redefinition error). Returns whether a scope
+/// environment was pushed; the caller must pop it on every path. Shared by
+/// both executors.
+pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
+    if !exec_state.entry_point_version_is_v3_or_higher() {
+        return Ok(false);
+    }
+    exec_state.mut_stack().push_new_env_for_block()?;
+    Ok(true)
+}
+
+/// Execute one if/else-if/else arm body in its own scope (under a
+/// KCL 3.0 entry point). Values escaping the arm -- including closures
+/// declared in it -- stay valid after the pop because environments that may
+/// still be referenced are preserved, exactly as for function returns.
+async fn exec_if_arm(
+    ctx: &ExecutorContext,
+    block: &Node<Program>,
+    exec_state: &mut ExecState,
+) -> Result<KclValueControlFlow, KclError> {
+    let scoped = if_arm_scope_begin(exec_state)?;
+    let result = ctx.exec_block(block, exec_state, BodyType::Block).await;
+    if scoped {
+        // Pop on success (including Return/Exit control flow escaping the
+        // arm) and error alike. A pop failure wins over the block's error,
+        // matching call_abort_on_arg_binding_failure.
+        exec_state.mut_stack().pop_env()?;
+    }
+    // Block must end in an expression, so this is always Some.
+    // Enforced by the parser.
+    // See https://github.com/KittyCAD/modeling-app/issues/4015
+    let Some(cf) = result? else {
+        let message = "if-expression arm produced no value";
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message.to_owned(),
+            vec![block.to_source_range()],
+        )));
+    };
+    Ok(cf)
+}
+
 #[derive(Debug)]
-enum Property {
+pub(super) enum Property {
     UInt(usize),
     String(String),
 }
@@ -6153,6 +6934,13 @@ impl Property {
         // If the property expression exited, e.g. by calling exit(), propagate
         // the exit so that it terminates the enclosing module.
         let prop_value = early_return!(prop_value);
+        Ok(Self::from_value(prop_value, sr)?)
+    }
+
+    /// Convert an already-evaluated computed-property value (the expression
+    /// inside array brackets) into a Property. Shared by both executors.
+    pub(super) fn from_value(prop_value: KclValue, sr: SourceRange) -> Result<Self, KclError> {
+        let property_sr = vec![sr];
         match prop_value {
             KclValue::Number { value, ty, meta: _ } => {
                 if !matches!(
@@ -6166,8 +6954,7 @@ impl Property {
                             "{value} is not a valid index, indices must be non-dimensional numbers. If you're sure this is correct, you can add `: number(Count)` to tell KCL this number is an index"
                         ),
                         property_sr,
-                    ))
-                    .into());
+                    )));
                 }
                 if let Some(x) = crate::try_f64_to_usize(value) {
                     Ok(Property::UInt(x))
@@ -6175,15 +6962,13 @@ impl Property {
                     Err(KclError::new_semantic(KclErrorDetails::new(
                         format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                         property_sr,
-                    ))
-                    .into())
+                    )))
                 }
             }
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Only numbers (>= 0) can be indexes".to_owned(),
                 vec![sr],
-            ))
-            .into()),
+            ))),
         }
     }
 }
@@ -6221,7 +7006,396 @@ mod test {
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
+    use crate::execution::machine::ExecutorKind;
     use crate::execution::parse_execute;
+
+    fn assert_angle_degrees(actual: ezpz::datatypes::Angle, expected: f64) {
+        assert!(
+            (actual.to_degrees() - expected).abs() < 1e-9,
+            "expected {expected}deg, got {}deg",
+            actual.to_degrees()
+        );
+    }
+
+    #[test]
+    fn remaps_sector_angles_to_existing_representative_endpoint_rays() {
+        let representative_directions = [AngleRayDirection::Forward, AngleRayDirection::Forward];
+
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Two, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(120.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Three, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Four, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(120.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, true),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(300.0),
+            ),
+            60.0,
+        );
+    }
+
+    #[test]
+    fn remaps_sector_angles_when_representative_endpoint_is_on_reverse_ray() {
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, false),
+                [AngleRayDirection::Forward, AngleRayDirection::Reverse],
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            240.0,
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_unlabeled_keeps_legacy_lines_at_angle() {
+        let code = r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  lines = [line1, line2]
+  angle(lines) == 60deg
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 1);
+        assert!(!metadata[0].inverse);
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let findings = program.lint(crate::lint::checks::lint_legacy_angle).unwrap();
+        assert_eq!(metadata[0].source_range, findings[0].pos);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_refactor_metadata_matches_the_default_label_side() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var -2mm, var -3.464mm])
+  angle([line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 4);
+        assert!(metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_refactor_metadata_uses_reverse_segment_rays() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var -4mm, var 0mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var -2mm, var -3.464mm], end = [var 0mm, var 0mm])
+  angle([line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 3);
+        assert!(!metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_label_position_does_not_change_the_sector() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2], labelPosition = [-3mm, -1.7mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 1);
+        assert!(!metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parallel_legacy_angle_has_no_refactor_metadata() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
+  angle([line1, line2]) == 0deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        assert!(
+            result
+                .exec_state
+                .global
+                .root_module_artifacts
+                .legacy_angle_refactor_metadata()
+                .is_empty()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_with_sector_uses_named_lines() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angleDimension(lines = [line1, line2], sector = 2) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_requires_sector() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("The `angleDimension` function requires a keyword argument `sector`"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_accepts_label_position() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        let label_position = angle.label_position.as_ref().unwrap();
+        assert_eq!(label_position.x.value, 10.0);
+        assert_eq!(label_position.y.value, 11.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_accepts_all_four_sectors() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2], sector = 1) == 60deg
+  angleDimension(lines = [line1, line2], sector = 2) == 120deg
+  angleDimension(lines = [line1, line2], sector = 3) == 60deg
+  angleDimension(lines = [line1, line2], sector = 4) == 120deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_accepts_inverse_angle_for_sector() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2], sector = 1, inverse = true) == 360deg - 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(angle.sector, Some(1));
+        assert_eq!(angle.inverse, Some(true));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_rejects_invalid_sector() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angleDimension(lines = [line1, line2], sector = 5) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("angleDimension() sector must be 1, 2, 3, or 4"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_rejects_parallel_lines() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
+  angleDimension(lines = [line1, line2], sector = 2) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("angleDimension(lines = ..., sector = ...) requires non-parallel lines"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_accepts_label_position() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        let label_position = angle.label_position.as_ref().unwrap();
+        assert_eq!(label_position.x.value, 10.0);
+        assert_eq!(label_position.y.value, 11.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_requires_unlabeled_lines() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  angle() == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription() {
@@ -6435,6 +7609,8 @@ d = b + c
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 

@@ -1,9 +1,9 @@
 // Curtain Wall Anchor Plate
 // A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening
-// Categories: Construction
+// Categories: Architecture & Construction; Mechanical Components
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 slabPlateBaseLength = 300
@@ -73,17 +73,17 @@ anchorPlateBody = extrude(anchorPlateRegion, length = slabPlateWidth)
 insideBendFillRegion = fillet(
   anchorPlateBody,
   tags = getCommonEdge(faces = [
-    anchorPlateRegion.tags.line5,
+    anchorPlateRegion.tags.line3,
     anchorPlateRegion.tags.line4
   ]),
   radius = insideBendRadius,
 )
 
 anchorPlateOutsideFillet = fillet(
-  anchorPlateBody,
+  insideBendFillRegion,
   tags = getCommonEdge(faces = [
-    anchorPlateRegion.tags.line1,
-    anchorPlateRegion.tags.line2
+    anchorPlateRegion.tags.line6,
+    anchorPlateRegion.tags.line1
   ]),
   radius = outsideBendRadius,
 )
@@ -145,13 +145,7 @@ slotProfile = sketch(on = XY) {
   ])
 }
 
-slotRegion = region(
-  point = [
-    offsetSlabRail,
-    wideHoleOffset - (slabPlateWidth / 2)
-  ],
-  sketch = slotProfile,
-)
+slotRegion = region(segments = [slotProfile.line1, slotProfile.arc2], direction = CW)
 hiddenSlotProfile = hide(slotProfile)
 slotCutterLeft = extrude(slotRegion, length = slabPlateThickness + 2, method = NEW)
   |> translate(z = -1, global = true)
@@ -218,12 +212,18 @@ boltHeadProfile = sketch(on = XY) {
 ]) == boltHeadRadius
 }
 
-boltHeadRegion = region(point = [0mm, 0mm], sketch = boltHeadProfile)
+boltHeadRegion = region(
+  segments = [
+    boltHeadProfile.line1,
+    boltHeadProfile.line2
+  ],
+  direction = CW,
+)
 hiddenBoltHeadProfile = hide(boltHeadProfile)
 boltHeadBody = extrude(boltHeadRegion, length = boltDiameter * 0.7)
 
 // Build a bolt with a hexagonal head and cylindrical shaft
-boltShaftProfile = sketch(on = startSketchOn(boltHeadBody, face = START)) {
+boltShaftProfile = sketch(on = faceOf(boltHeadBody, face = START)) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
   radiusGuide = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm], construction = true)
   coincident([radiusGuide.start, ORIGIN])
@@ -274,7 +274,7 @@ clampPlateRegion = region(segments = [
 hiddenClampPlateProfile = hide(clampPlateProfile)
 clampPlateBody = extrude(clampPlateRegion, length = -boltDiameter * 0.3)
 
-nutProfile = sketch(on = startSketchOn(clampPlateBody, face = START)) {
+nutProfile = sketch(on = faceOf(clampPlateBody, face = START)) {
   nutCircle = circle(start = [var 12mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
   coincident([nutCircle.center, ORIGIN])
 
@@ -322,7 +322,7 @@ nutProfile = sketch(on = startSketchOn(clampPlateBody, face = START)) {
 ]) == nutRadius
 }
 
-nutRegion = region(point = [0mm, 0mm], sketch = nutProfile)
+nutRegion = region(segments = [nutProfile.line1, nutProfile.line2], direction = CW)
 hiddenNutProfile = hide(nutProfile)
 clampBody = extrude(nutRegion, length = boltDiameter * 0.7)
 

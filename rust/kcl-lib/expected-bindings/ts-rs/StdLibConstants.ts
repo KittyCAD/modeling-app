@@ -251,18 +251,6 @@ export default {
     "experimental": false,
     "docHidden": false
   },
-  "solver::fixed": {
-    "name": "fixed",
-    "preferredName": "solver::fixed",
-    "qualName": "std::solver::fixed",
-    "moduleName": "solver",
-    "ty": null,
-    "summary": "Constrain a point to be fixed to a position.",
-    "deprecated": false,
-    "deprecatedSince": null,
-    "experimental": false,
-    "docHidden": false
-  },
   "sweep::SKETCH_PLANE": {
     "name": "SKETCH_PLANE",
     "preferredName": "sweep::SKETCH_PLANE",

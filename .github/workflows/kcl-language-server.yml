@@ -10,6 +10,7 @@ on:
       - "rust/kcl-language-server/**"
       - "**.rs"
       - .github/workflows/kcl-language-server.yml
+      - .github/ci-cd-scripts/verify-rust-cache-writable.sh
     tags:
       - "kcl-*"
   pull_request:
@@ -20,6 +21,7 @@ on:
       - "rust/kcl-language-server/**"
       - "**.rs"
       - .github/workflows/kcl-language-server.yml
+      - .github/ci-cd-scripts/verify-rust-cache-writable.sh
   workflow_dispatch:
 permissions:
   contents: read
@@ -50,7 +52,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
       - name: Install Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
       - name: Install dependencies
@@ -73,26 +75,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: namespace-profile-windows-2-cores
+          - os: namespace-profile-windows-8-cores
             target: x86_64-pc-windows-msvc
             code-target: win32-x64
-            #- os: namespace-profile-windows-2-cores
+            #- os: namespace-profile-windows-8-cores
             #target: i686-pc-windows-msvc
             #code-target:
             #win32-ia32
-            #- os: namespace-profile-windows-2-cores
+            #- os: namespace-profile-windows-8-cores
             #target: aarch64-pc-windows-msvc
             #code-target: win32-arm64
-          - os: namespace-profile-ubuntu-2-cores
+          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
             target: x86_64-unknown-linux-gnu
             code-target: linux-x64
-            #- os: namespace-profile-ubuntu-2-cores
+            #- os: namespace-profile-ubuntu-8-cores
             #target: aarch64-unknown-linux-musl
             #code-target: linux-arm64
-          - os: namespace-profile-ubuntu-2-cores
+          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
             target: aarch64-unknown-linux-gnu
             code-target: linux-arm64
-          - os: namespace-profile-ubuntu-2-cores
+          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
             target: arm-unknown-linux-gnueabihf
             code-target: linux-armhf
           - os: namespace-profile-macos-6-cores
@@ -115,18 +117,28 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
-          cache: rust
+          cache: false
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
           target: ${{ matrix.target }}
+      - name: Rust cache on the Namespace volume
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
+      - name: Verify Rust cache is writable
+        if: runner.os == 'Linux'
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
       - name: Install Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
       - name: Update apt repositories
-        if: matrix.target == 'aarch64-unknown-linux-gnu' || matrix.target == 'arm-unknown-linux-gnueabihf' || matrix.os == 'namespace-profile-ubuntu-2-cores'
+        if: runner.os == 'Linux'
         run: sudo apt-get update
-      - if: ${{ matrix.os == 'namespace-profile-ubuntu-2-cores' }}
+      - if: runner.os == 'Linux'
         name: Install deps
         shell: bash
         run: |
@@ -148,8 +160,6 @@ jobs:
             mingw-w64 \
             wget \
             zlib1g-dev
-
-          cargo install cross
       - name: Install AArch64 target toolchain
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: sudo apt-get install gcc-aarch64-linux-gnu
@@ -198,15 +208,23 @@ jobs:
           path: ./rust/build
   build-release-x86_64-unknown-linux-musl:
     name: kcl-language-server build-release (x86_64-unknown-linux-musl)
-    runs-on: namespace-profile-ubuntu-2-cores
+    # Alpine runs as root, so it must not share Cargo outputs with host jobs.
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-musl-v2
     env:
       RA_TARGET: x86_64-unknown-linux-musl
       # For some reason `-crt-static` is not working for clang without lld
       RUSTFLAGS: "-C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
     container:
       image: alpine:latest
+      # Reaching the host cache volume from a container requires all three:
+      # - NSC_CACHE_PATH, the only variable the action reads to find it.
+      # - The /cache bind mount.
+      # - SYS_ADMIN, for the action's mount calls.
+      env:
+        NSC_CACHE_PATH: ${{ env.NSC_CACHE_PATH }}
       volumes:
-        - /usr/local/cargo/registry:/usr/local/cargo/registry
+        - /cache:/cache
+      options: --cap-add=SYS_ADMIN
     steps:
       - name: Install dependencies
         run: |
@@ -219,7 +237,8 @@ jobs:
             build-base \
             musl-dev \
             nodejs \
-            npm
+            npm \
+            sudo
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
         with:
@@ -231,10 +250,20 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
-          cache: rust
+          # The Namespace volume below handles caching. This cache cannot:
+          # it runs `tar --posix`, which Alpine's BusyBox tar rejects.
+          cache: false
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
-          target: ${{ matrix.target }}
+      - name: Rust cache on the Namespace volume
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            rust/target
+            /github/home/.cargo/registry
+            /github/home/.cargo/git
+      - name: Verify Rust cache is writable
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
       - name: build
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
@@ -275,7 +304,7 @@ jobs:
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV

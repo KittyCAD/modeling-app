@@ -8,8 +8,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -36,7 +35,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       }
     }
   },
-  "__sketch_2_on": {
+  "__sketch_1_on": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",
@@ -113,10 +112,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1390,
-            "end": 1395,
+            "commentStart": 1383,
+            "end": 1388,
             "moduleId": 0,
-            "start": 1390,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -127,10 +126,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1470,
-            "end": 1475,
+            "commentStart": 1463,
+            "end": 1468,
             "moduleId": 0,
-            "start": 1470,
+            "start": 1463,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -141,10 +140,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1587,
-            "end": 1592,
+            "commentStart": 1580,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1587,
+            "start": 1580,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -155,10 +154,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1704,
-            "end": 1709,
+            "commentStart": 1697,
+            "end": 1702,
             "moduleId": 0,
-            "start": 1704,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -180,10 +179,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1390,
-              "end": 1395,
+              "commentStart": 1383,
+              "end": 1388,
               "moduleId": 0,
-              "start": 1390,
+              "start": 1383,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -204,10 +203,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1470,
-              "end": 1475,
+              "commentStart": 1463,
+              "end": 1468,
               "moduleId": 0,
-              "start": 1470,
+              "start": 1463,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -228,10 +227,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1587,
-              "end": 1592,
+              "commentStart": 1580,
+              "end": 1585,
               "moduleId": 0,
-              "start": 1587,
+              "start": 1580,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -252,10 +251,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1704,
-              "end": 1709,
+              "commentStart": 1697,
+              "end": 1702,
               "moduleId": 0,
-              "start": 1704,
+              "start": 1697,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -270,8 +269,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
-          "objectId": 0,
+          "kind": "Custom",
+          "objectId": 13,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -359,10 +358,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             -10.5
           ],
           "tag": {
-            "commentStart": 1390,
-            "end": 1395,
+            "commentStart": 1383,
+            "end": 1388,
             "moduleId": 0,
-            "start": 1390,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -383,10 +382,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             -10.5
           ],
           "tag": {
-            "commentStart": 1470,
-            "end": 1475,
+            "commentStart": 1463,
+            "end": 1468,
             "moduleId": 0,
-            "start": 1470,
+            "start": 1463,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -407,10 +406,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             10.5
           ],
           "tag": {
-            "commentStart": 1587,
-            "end": 1592,
+            "commentStart": 1580,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1587,
+            "start": 1580,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -431,10 +430,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             10.5
           ],
           "tag": {
-            "commentStart": 1704,
-            "end": 1709,
+            "commentStart": 1697,
+            "end": 1702,
             "moduleId": 0,
-            "start": 1704,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -449,8 +448,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
-        "objectId": 0,
+        "kind": "Custom",
+        "objectId": 13,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -602,8 +601,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
-                  "objectId": 0,
+                  "kind": "Custom",
+                  "objectId": 13,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -722,8 +721,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
-                  "objectId": 0,
+                  "kind": "Custom",
+                  "objectId": 13,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -842,8 +841,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
-                  "objectId": 0,
+                  "kind": "Custom",
+                  "objectId": 13,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -962,8 +961,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
-                  "objectId": 0,
+                  "kind": "Custom",
+                  "objectId": 13,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -1019,10 +1018,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     -10.5
                   ],
                   "tag": {
-                    "commentStart": 1390,
-                    "end": 1395,
+                    "commentStart": 1383,
+                    "end": 1388,
                     "moduleId": 0,
-                    "start": 1390,
+                    "start": 1383,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1043,10 +1042,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     -10.5
                   ],
                   "tag": {
-                    "commentStart": 1470,
-                    "end": 1475,
+                    "commentStart": 1463,
+                    "end": 1468,
                     "moduleId": 0,
-                    "start": 1470,
+                    "start": 1463,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1067,10 +1066,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     10.5
                   ],
                   "tag": {
-                    "commentStart": 1587,
-                    "end": 1592,
+                    "commentStart": 1580,
+                    "end": 1585,
                     "moduleId": 0,
-                    "start": 1587,
+                    "start": 1580,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1091,10 +1090,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     10.5
                   ],
                   "tag": {
-                    "commentStart": 1704,
-                    "end": 1709,
+                    "commentStart": 1697,
+                    "end": 1702,
                     "moduleId": 0,
-                    "start": 1704,
+                    "start": 1697,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1109,8 +1108,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XY",
-                "objectId": 0,
+                "kind": "Custom",
+                "objectId": 13,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -1200,10 +1199,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1390,
-            "end": 1395,
+            "commentStart": 1383,
+            "end": 1388,
             "moduleId": 0,
-            "start": 1390,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1214,10 +1213,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1470,
-            "end": 1475,
+            "commentStart": 1463,
+            "end": 1468,
             "moduleId": 0,
-            "start": 1470,
+            "start": 1463,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1228,10 +1227,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1587,
-            "end": 1592,
+            "commentStart": 1580,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1587,
+            "start": 1580,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1242,10 +1241,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1704,
-            "end": 1709,
+            "commentStart": 1697,
+            "end": 1702,
             "moduleId": 0,
-            "start": 1704,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1267,10 +1266,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1390,
-              "end": 1395,
+              "commentStart": 1383,
+              "end": 1388,
               "moduleId": 0,
-              "start": 1390,
+              "start": 1383,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1291,10 +1290,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1470,
-              "end": 1475,
+              "commentStart": 1463,
+              "end": 1468,
               "moduleId": 0,
-              "start": 1470,
+              "start": 1463,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1315,10 +1314,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1587,
-              "end": 1592,
+              "commentStart": 1580,
+              "end": 1585,
               "moduleId": 0,
-              "start": 1587,
+              "start": 1580,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1339,10 +1338,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1704,
-              "end": 1709,
+              "commentStart": 1697,
+              "end": 1702,
               "moduleId": 0,
-              "start": 1704,
+              "start": 1697,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1357,8 +1356,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
-          "objectId": 0,
+          "kind": "Custom",
+          "objectId": 13,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1503,10 +1502,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2183,
-                "end": 2190,
+                "commentStart": 2176,
+                "end": 2183,
                 "moduleId": 0,
-                "start": 2183,
+                "start": 2176,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1517,10 +1516,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2670,
-                "end": 2680,
+                "commentStart": 2663,
+                "end": 2673,
                 "moduleId": 0,
-                "start": 2670,
+                "start": 2663,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -1554,10 +1553,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 ],
                 "radius": 7.0,
                 "tag": {
-                  "commentStart": 2183,
-                  "end": 2190,
+                  "commentStart": 2176,
+                  "end": 2183,
                   "moduleId": 0,
-                  "start": 2183,
+                  "start": 2176,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1665,10 +1664,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2183,
-                "end": 2190,
+                "commentStart": 2176,
+                "end": 2183,
                 "moduleId": 0,
-                "start": 2183,
+                "start": 2176,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1679,10 +1678,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2670,
-                "end": 2680,
+                "commentStart": 2663,
+                "end": 2673,
                 "moduleId": 0,
-                "start": 2670,
+                "start": 2663,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -1716,10 +1715,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 ],
                 "radius": 7.0,
                 "tag": {
-                  "commentStart": 2183,
-                  "end": 2190,
+                  "commentStart": 2176,
+                  "end": 2183,
                   "moduleId": 0,
-                  "start": 2183,
+                  "start": 2176,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1839,25 +1838,25 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           "ccw": true,
           "center": [
-            16.999999992630176,
-            0.0007208569889428887
+            17.0,
+            0.0003064835769238815
           ],
           "from": [
-            15.397057062824118,
-            -2.652687134391831
+            15.396313466227804,
+            -2.6526521522376236
           ],
-          "radius": 3.1000000007965456,
+          "radius": 3.100000003539559,
           "tag": {
-            "commentStart": 828,
-            "end": 835,
+            "commentStart": 843,
+            "end": 850,
             "moduleId": 0,
-            "start": 828,
+            "start": 843,
             "type": "TagDeclarator",
             "value": "circle1"
           },
           "to": [
-            15.397057062824118,
-            -2.652687134391831
+            15.396313466227804,
+            -2.6526521522376236
           ],
           "type": "Circle",
           "units": "mm"
@@ -1867,7 +1866,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "Custom",
-        "objectId": 1,
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1896,12 +1895,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "start": {
         "from": [
-          15.397057062824118,
-          -2.652687134391831
+          15.396313466227804,
+          -2.6526521522376236
         ],
         "to": [
-          15.397057062824118,
-          -2.652687134391831
+          15.396313466227804,
+          -2.6526521522376236
         ],
         "units": "mm",
         "tag": null,
@@ -1932,12 +1931,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 9,
+                "objectId": 8,
                 "kind": {
                   "circle": {
                     "start": [
                       {
-                        "n": 15.397057062824118,
+                        "n": 15.396313466227804,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1945,7 +1944,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": -2.652687134391831,
+                        "n": -2.6526521522376236,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1955,7 +1954,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     ],
                     "center": [
                       {
-                        "n": 16.999999992630176,
+                        "n": 17.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1963,7 +1962,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": 0.0007208569889428887,
+                        "n": 0.0003064835769238815,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1997,8 +1996,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       }
                     },
-                    "start_object_id": 7,
-                    "center_object_id": 8,
+                    "start_object_id": 6,
+                    "center_object_id": 7,
                     "start_freedom": "Free",
                     "center_freedom": "Fixed",
                     "construction": false
@@ -2008,7 +2007,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 1,
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -2052,12 +2051,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 5,
+                "objectId": 4,
                 "kind": {
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000006015160830148392,
+                        "n": 0.000000000000000000012760230031337801,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2065,7 +2064,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000037144191601217483,
+                        "n": -0.000000000000000000017250014904350297,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2075,7 +2074,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     ],
                     "end": [
                       {
-                        "n": 16.999999992630116,
+                        "n": 17.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2083,7 +2082,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         }
                       },
                       {
-                        "n": 0.0007208569887073754,
+                        "n": 0.00030648357692388147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2118,8 +2117,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                       },
                       "construction": true
                     },
-                    "start_object_id": 3,
-                    "end_object_id": 4,
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "construction": true
@@ -2129,7 +2128,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 1,
+                  "objectId": 0,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -2182,25 +2181,25 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   },
                   "ccw": true,
                   "center": [
-                    16.999999992630176,
-                    0.0007208569889428887
+                    17.0,
+                    0.0003064835769238815
                   ],
                   "from": [
-                    15.397057062824118,
-                    -2.652687134391831
+                    15.396313466227804,
+                    -2.6526521522376236
                   ],
-                  "radius": 3.1000000007965456,
+                  "radius": 3.100000003539559,
                   "tag": {
-                    "commentStart": 828,
-                    "end": 835,
+                    "commentStart": 843,
+                    "end": 850,
                     "moduleId": 0,
-                    "start": 828,
+                    "start": 843,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
                   "to": [
-                    15.397057062824118,
-                    -2.652687134391831
+                    15.396313466227804,
+                    -2.6526521522376236
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -2210,7 +2209,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
                 "kind": "Custom",
-                "objectId": 1,
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2239,12 +2238,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               },
               "start": {
                 "from": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.396313466227804,
+                  -2.6526521522376236
                 ],
                 "to": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.396313466227804,
+                  -2.6526521522376236
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2295,10 +2294,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 828,
-                "end": 835,
+                "commentStart": 843,
+                "end": 850,
                 "moduleId": 0,
-                "start": 828,
+                "start": 843,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2317,25 +2316,25 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 },
                 "ccw": true,
                 "center": [
-                  16.999999992630176,
-                  0.0007208569889428887
+                  17.0,
+                  0.0003064835769238815
                 ],
                 "from": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.396313466227804,
+                  -2.6526521522376236
                 ],
-                "radius": 3.1000000007965456,
+                "radius": 3.100000003539559,
                 "tag": {
-                  "commentStart": 828,
-                  "end": 835,
+                  "commentStart": 843,
+                  "end": 850,
                   "moduleId": 0,
-                  "start": 828,
+                  "start": 843,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
                 "to": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.396313466227804,
+                  -2.6526521522376236
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -2345,7 +2344,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2374,12 +2373,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "start": {
               "from": [
-                15.397057062824118,
-                -2.652687134391831
+                15.396313466227804,
+                -2.6526521522376236
               ],
               "to": [
-                15.397057062824118,
-                -2.652687134391831
+                15.396313466227804,
+                -2.6526521522376236
               ],
               "units": "mm",
               "tag": null,
@@ -2417,10 +2416,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 828,
-                "end": 835,
+                "commentStart": 843,
+                "end": 850,
                 "moduleId": 0,
-                "start": 828,
+                "start": 843,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2439,25 +2438,25 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 },
                 "ccw": true,
                 "center": [
-                  16.999999992630176,
-                  0.0007208569889428887
+                  17.0,
+                  0.0003064835769238815
                 ],
                 "from": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.396313466227804,
+                  -2.6526521522376236
                 ],
-                "radius": 3.1000000007965456,
+                "radius": 3.100000003539559,
                 "tag": {
-                  "commentStart": 828,
-                  "end": 835,
+                  "commentStart": 843,
+                  "end": 850,
                   "moduleId": 0,
-                  "start": 828,
+                  "start": 843,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
                 "to": [
-                  15.397057062824118,
-                  -2.652687134391831
+                  15.396313466227804,
+                  -2.6526521522376236
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -2467,7 +2466,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2496,12 +2495,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "start": {
               "from": [
-                15.397057062824118,
-                -2.652687134391831
+                15.396313466227804,
+                -2.6526521522376236
               ],
               "to": [
-                15.397057062824118,
-                -2.652687134391831
+                15.396313466227804,
+                -2.6526521522376236
               ],
               "units": "mm",
               "tag": null,
@@ -2551,10 +2550,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 2183,
-            "end": 2190,
+            "commentStart": 2176,
+            "end": 2183,
             "moduleId": 0,
-            "start": 2183,
+            "start": 2176,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2898,10 +2897,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 2183,
-                    "end": 2190,
+                    "commentStart": 2176,
+                    "end": 2183,
                     "moduleId": 0,
-                    "start": 2183,
+                    "start": 2176,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2977,39 +2976,6 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       }
     },
     "constrainable": false
-  },
-  "sketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
-    }
   },
   "spongeDiameter": {
     "type": "Number",

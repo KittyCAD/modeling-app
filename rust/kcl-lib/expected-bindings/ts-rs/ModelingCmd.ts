@@ -327,7 +327,14 @@ feature_control: AnnotationFeatureControl | null,
 /**
  * Set as a feature tag annotation
  */
-feature_tag: AnnotationFeatureTag | null, };
+feature_tag: AnnotationFeatureTag | null, 
+/**
+ * Human-friendly identifier for this annotation.
+ * Included in some exports and metadata of the model.
+ * This is _not_ displayed visually in, the annotation,
+ * it's only metadata.
+ */
+name?: string | null, };
 
 /**
  * Horizontal Text alignment
@@ -466,9 +473,26 @@ use_legacy?: boolean,
 tolerance: LengthUnit, };
 
 /**
- * Create a new solid from subtracting several other solids.
- * The 'target' is what will be cut from.
- * The 'tool' is what will be cut out from 'target'.
+ * Given a target solid, subtract a set of "tool solids" to create a new solid.
+ *
+ * Most successful subtracts come from solids who's faces do not overlap
+ * aka non-coplanar.
+ *
+ * Prefer one `tool` over multiple when calling this feature.
+ * 
+ * Failure cases:
+ * * A common failure is unsupported coplanar faces try to be unioned.
+ *
+ * Warning cases:
+ *
+ * Notable behaviors:
+ * If two tools occupy the same vertical range and overlap, like two cubes of the same height,
+ * the subtract of the first will cause the second tool to fail because the first leaves behind
+ * coplanar faces, causing an aforementioned failure case.
+ *
+ * Unlike `boolean_union`, if one tool in the set overlaps, any OTHER tool in the set
+ * that doesn't WILL NOT signal a non-overlap warning.
+ *
  */
 export type BooleanSubtract = { 
 /**
@@ -493,8 +517,22 @@ use_legacy?: boolean,
 tolerance: LengthUnit, };
 
 /**
- * Create a new solid from combining other smaller solids.
- * In other words, every part of the input solids will be included in the output solid.
+ * Given a set of overlapping solids, create a new single solid.
+ *
+ * Most successful unions come from solids who's faces do not overlap
+ * aka non-coplanar.
+ * 
+ * Failure cases:
+ * * A common failure is unsupported coincident faces try to be unioned.
+ *
+ * Warning cases:
+ * * When an element of the set doesn't overlap.
+ *
+ * Notable behaviors:
+ * * What appear to be coincident points will succeed and not give a "no overlap" warning, even if they're not.
+ * * Elements' top or bottom faces may not combine into one new face, which can seem like the union failed. You can tell they succeeded from side faces not extending into the original solids.
+ * * When exporting to STEP, if the above behavior is observed, will merged the faces.
+ *
  */
 export type BooleanUnion = { 
 /**
@@ -990,7 +1028,7 @@ view: CameraViewState, };
 export type DefaultCameraZoom = { 
 /**
  * Move the camera forward along the vector it's looking at,
- * by this magnitudedefaultCameraZoom.
+ * by this magnitude.
  * Basically, how much should the camera move forward by.
  */
 magnitude: number, };
@@ -1609,6 +1647,8 @@ export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "s
 
 /**
  * Export the scene to a file.
+ *
+ * The response is a MsgPack-encoded message in a WebSocket binary frame.
  */
 export type Export = { 
 /**
@@ -1635,6 +1675,8 @@ format: OutputFormat2d, };
 
 /**
  * Export the scene to a file.
+ *
+ * The response is a MsgPack-encoded message in a WebSocket binary frame.
  */
 export type Export3d = { 
 /**
@@ -1680,6 +1722,8 @@ target?: ModelingCmdId | null,
 target_reference?: EdgeSpecifier | null, 
 /**
  * How far off the plane to extrude
+ * This distance is relative to the target's plane, not an absolute coordinate.
+ * Symmetric extrusions will extrude outwards from both sides of the sketch to the length specified.
  */
 distance: LengthUnit, 
 /**
@@ -2019,9 +2063,7 @@ sequence: number | null, };
 export type ImageFormat = "png" | "jpeg";
 
 /**
- * File to import into the current model.
- * If you are sending binary data for a file, be sure to send the WebSocketRequest as
- * binary/bson, not text/json.
+ * File to import into the current scene.
  */
 export type ImportFile = { 
 /**
@@ -2034,7 +2076,13 @@ path: string,
 data: Array<number>, };
 
 /**
- * Import files to the current model.
+ * Import CAD files to the current scene.
+ *
+ * Send a request containing binary file data as a MsgPack-encoded message in a WebSocket binary frame.
+ *
+ * Note: These imports are non-editable. In the future we may expose a proprietary-to-KCL function
+ * to resolve this. The main intention today is to use imports as design references.
+ *
  */
 export type ImportFiles = { 
 /**
@@ -3667,7 +3715,7 @@ export type Solid3dGetNextAdjacentEdge = {
  */
 object_id: string, 
 /**
- * Which edge you want the opposite of.
+ * Which edge you want the next edge of.
  */
 edge_id: string, 
 /**
@@ -3701,7 +3749,7 @@ export type Solid3dGetPrevAdjacentEdge = {
  */
 object_id: string, 
 /**
- * Which edge you want the opposite of.
+ * Which edge you want the previous edge of.
  */
 edge_id: string, 
 /**
@@ -3806,7 +3854,16 @@ coords: System,
  *
  * Defaults to `false` but is implicitly `true` when importing into the engine.
  */
-split_closed_faces: boolean, };
+split_closed_faces: boolean, 
+/**
+ * What representation should be used for this file after it's imported?
+ */
+target_representation: StepImportTargetRepresentation, };
+
+/**
+ * After importing, how should this model's data be represented?
+ */
+export type StepImportTargetRepresentation = "mesh" | "brep";
 
 /**
  * Describes the presentation style of the EXPRESS exchange format.

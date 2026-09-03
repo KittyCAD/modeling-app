@@ -136,14 +136,27 @@ export function useCalculateKclExpression({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [ast, variables, endingSourceRange])
 
+  const calculationInput = useMemo(
+    () => ({ value, availableVarInfo, code, rustContext, options, ast }),
+    [value, availableVarInfo, code, rustContext, options, ast]
+  )
+  const [completedCalculationInput, setCompletedCalculationInput] =
+    useState<typeof calculationInput>()
+
   useEffect(() => {
+    let isCancelled = false
     const execAstAndSetResult = async () => {
       const result = await getCalculatedKclExpressionValue(
         value,
         rustContext,
         options
       )
+      if (isCancelled) {
+        return
+      }
+
       setIsExecuting(false)
+      setCompletedCalculationInput(calculationInput)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
         setValueNode(null)
@@ -154,24 +167,38 @@ export function useCalculateKclExpression({
       setCalcResult(result?.valueAsString || 'NAN')
       if (result?.astNode) setValueNode(result.astNode)
     }
-    if (!value) return
+    if (!value) {
+      return
+    }
     setIsExecuting(true)
     execAstAndSetResult().catch(() => {
+      if (isCancelled) {
+        return
+      }
+
       setCalcResult('NAN')
       setIsExecuting(false)
       setValueNode(null)
+      setCompletedCalculationInput(calculationInput)
     })
-  }, [value, availableVarInfo, code, rustContext, options, ast])
+    return () => {
+      isCancelled = true
+    }
+  }, [value, rustContext, options, ast, calculationInput])
+
+  // A render for new input must not expose the previous expression's AST,
+  // even before the calculation effect has started.
+  const hasCurrentResult = completedCalculationInput === calculationInput
 
   return {
-    valueNode,
-    calcResult,
+    valueNode: hasCurrentResult ? valueNode : null,
+    calcResult: hasCurrentResult ? calcResult : 'NAN',
     prevVariables: availableVarInfo.variables,
     newVariableInsertIndex: insertIndex,
     newVariableName,
     isNewVariableNameUnique,
     setNewVariableName,
     inputRef,
-    isExecuting,
+    isExecuting: Boolean(value) && (!hasCurrentResult || isExecuting),
   }
 }

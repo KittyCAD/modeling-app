@@ -155,7 +155,6 @@ export function bodyTypeResultArg(
 ) {
   return {
     inputType: 'options' as const,
-    displayName: 'Output',
     required,
     hidden: (context: ModelingDialogContext) =>
       isUsingModelingDialog(context) &&
@@ -163,6 +162,7 @@ export function bodyTypeResultArg(
       !hasModelingDialogValue(context.argumentsToSubmit.bodyType),
     options: kclBodyTypeOptions,
     dialog: {
+      displayName: 'Output',
       group: options.group ?? 'result',
       order: options.order ?? 0,
       controlStyle: 'segmented' as const,

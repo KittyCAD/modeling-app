@@ -11,6 +11,7 @@ import {
   copyPasteSourceAndTarget,
   flattenProject,
   isExternalFileDrag,
+  isPathWithinFileExplorerEntry,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
@@ -40,8 +41,8 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
-  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
 } from '@src/registry/contracts/keymap'
@@ -247,8 +248,6 @@ export const ProjectExplorer = ({
   const [isCopying, setIsCopying] = useState<boolean>(false)
   const [isFileTreeMutationPending, setIsFileTreeMutationPending] =
     useState<boolean>(false)
-  const lastIndexBeforeNothing = useRef<number>(-2)
-
   // Store a path to copy and paste! Works for folders and files
   const copyToClipBoard = useRef<FileEntry | null>(null)
 
@@ -313,6 +312,18 @@ export const ProjectExplorer = ({
     isFile: boolean
   } | null>(null)
 
+  const startCreatingEntry = useCallback(
+    (entry: FileExplorerEntry | null, isFile: boolean) => {
+      setFakeRow({ entry, isFile })
+      if (entry && entry.children !== null) {
+        const newOpenedRows = { ...openedRowsRef.current }
+        newOpenedRows[entry.key] = true
+        setOpenedRows(newOpenedRows)
+      }
+    },
+    []
+  )
+
   /**
    * External state handlers since the callback logic lives here.
    * If code wants to externall trigger creating a file pass in a new timestamp.
@@ -326,19 +337,10 @@ export const ProjectExplorer = ({
       return
     }
 
-    const row =
-      rowsToRenderRef.current[activeIndexRef.current] ||
-      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
-      null
-    setFakeRow({ entry: row, isFile: true })
-    if (row?.key) {
-      // If the file tree had the folder opened make the new one open.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.key] = true
-      setOpenedRows(newOpenedRows)
-    }
+    const row = selectedRowRef.current
+    startCreatingEntry(row, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFilePressed])
+  }, [createFilePressed, startCreatingEntry])
 
   useEffect(() => {
     if (
@@ -348,19 +350,10 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-    const row =
-      rowsToRenderRef.current[activeIndexRef.current] ||
-      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
-      null
-    setFakeRow({ entry: row, isFile: false })
-    if (row?.key) {
-      // If the file tree had the folder opened make the new one open.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.key] = true
-      setOpenedRows(newOpenedRows)
-    }
+    const row = selectedRowRef.current
+    startCreatingEntry(row, false)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFolderPressed])
+  }, [createFolderPressed, startCreatingEntry])
 
   useEffect(() => {
     if (refreshExplorerPressed <= 0) {
@@ -399,7 +392,7 @@ export const ProjectExplorer = ({
   )
 
   const focusProjectExplorer = useCallback(() => {
-    keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+    keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
     fileExplorerContainer.current?.focus()
   }, [keymap])
 
@@ -533,13 +526,14 @@ export const ProjectExplorer = ({
       return
     }
 
+    setSelectedRowWrapper(focusedEntry)
     const newOpenedRows = { ...openedRowsRef.current }
     const key = focusedEntry.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRowsWrapper(newOpenedRows)
     onRowEnterRef.current(focusedEntry, activeIndexRef.current)
-  }, [setOpenedRowsWrapper])
+  }, [setOpenedRowsWrapper, setSelectedRowWrapper])
 
   const handleRenameCommand = useCallback(() => {
     if (
@@ -624,6 +618,7 @@ export const ProjectExplorer = ({
     () => [
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowLeft,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-left',
         groupId: 'project-explorer',
         displayName: 'Close selected project explorer row',
@@ -633,6 +628,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowRight,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-right',
         groupId: 'project-explorer',
         displayName: 'Open selected project explorer row',
@@ -642,6 +638,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-up',
         groupId: 'project-explorer',
         displayName: 'Move project explorer selection up',
@@ -651,6 +648,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-down',
         groupId: 'project-explorer',
         displayName: 'Move project explorer selection down',
@@ -660,6 +658,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.enter,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'enter',
         groupId: 'project-explorer',
         displayName: 'Open selected project explorer file',
@@ -669,6 +668,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.rename,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'rename',
         groupId: 'project-explorer',
         displayName: 'Rename selected project explorer row',
@@ -678,6 +678,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.delete,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'delete',
         groupId: 'project-explorer',
         displayName: 'Delete selected project explorer row',
@@ -687,6 +688,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.copy,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'copy',
         groupId: 'project-explorer',
         displayName: 'Copy selected project explorer row',
@@ -696,6 +698,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.paste,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'paste',
         groupId: 'project-explorer',
         displayName: 'Paste into selected project explorer row',
@@ -723,7 +726,7 @@ export const ProjectExplorer = ({
 
   useEffect(() => {
     return () => {
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
   }, [keymap])
@@ -857,14 +860,14 @@ export const ProjectExplorer = ({
     const didProjectChange = previousProject.current.name !== project.name
     if (didProjectChange) {
       setOpenedRows({})
-      setSelectedRow(null)
+      setSelectedRowWrapper(null)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
       setRowsToRender([])
       setContextMenuRow(null)
       setIsRenaming(false)
       setIsDeleting(false)
       lastSyncedFilePathRef.current = undefined
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
 
@@ -1032,6 +1035,17 @@ export const ProjectExplorer = ({
             setActiveIndexWrapper(domIndex)
             setContextMenuRow(child)
           },
+          onCreateFile: () => {
+            if (
+              readOnly ||
+              isFileTreeInteractionDisabledRef.current ||
+              child.children === null
+            ) {
+              return
+            }
+            setSelectedRowWrapper(child)
+            startCreatingEntry(child, true)
+          },
           isFake: false,
           activeIndex: activeIndex,
           onDelete: () => {
@@ -1040,7 +1054,8 @@ export const ProjectExplorer = ({
             }
 
             const shouldWeNavigate =
-              file?.path?.startsWith(child.path) && canNavigate
+              isPathWithinFileExplorerEntry(file?.path, child.path) &&
+              canNavigate
 
             if (shouldWeNavigate && file && file.path) {
               const src = child.path
@@ -1417,12 +1432,12 @@ export const ProjectExplorer = ({
   useEffect(() => {
     if (isRenaming) {
       const fileExplorerContainerElement = fileExplorerContainer.current
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.applyScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       return () => {
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         if (fileExplorerContainerElement?.contains(document.activeElement)) {
-          keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+          keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
         }
       }
     }
@@ -1439,10 +1454,7 @@ export const ProjectExplorer = ({
         projectExplorerRef.current &&
         !path.includes(projectExplorerRef.current)
       ) {
-        if (activeIndexRef.current > 0) {
-          lastIndexBeforeNothing.current = activeIndexRef.current
-        }
-        keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+        keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         setActiveIndexWrapper(NOTHING_IS_SELECTED)
       }
@@ -1473,7 +1485,7 @@ export const ProjectExplorer = ({
 
   const handleExplorerFocus = useCallback(
     (event: ReactFocusEvent<HTMLDivElement>) => {
-      keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       if (
         event.target === fileExplorerContainer.current &&
         activeIndexRef.current === NOTHING_IS_SELECTED
@@ -1494,7 +1506,7 @@ export const ProjectExplorer = ({
         return
       }
 
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
     },

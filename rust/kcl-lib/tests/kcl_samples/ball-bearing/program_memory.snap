@@ -182,10 +182,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1355,
-            "end": 1359,
+            "commentStart": 1331,
+            "end": 1335,
             "moduleId": 0,
-            "start": 1355,
+            "start": 1331,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -204,25 +204,25 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000004057865155004947,
-              0.000000000000000000015614635512684868
+              -0.0,
+              0.0000000000004920922557284541
             ],
             "from": [
-              0.12499999999979898,
-              0.00000000000000000003059364977148879
+              0.12500000000000533,
+              0.0000000000011072069910217364
             ],
-            "radius": 0.12499999999983956,
+            "radius": 0.12500000000000533,
             "tag": {
-              "commentStart": 1355,
-              "end": 1359,
+              "commentStart": 1331,
+              "end": 1335,
               "moduleId": 0,
-              "start": 1355,
+              "start": 1331,
               "type": "TagDeclarator",
               "value": "arc1"
             },
             "to": [
-              -0.12499999999988014,
-              0.000000000000000015323699624834952
+              -0.12500000000000533,
+              0.0000000000011072266306070377
             ],
             "type": "Arc",
             "units": "in"
@@ -233,20 +233,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              -0.12499999999988014,
-              0.000000000000000015323699624834952
+              -0.12500000000000533,
+              0.0000000000011072266306070377
             ],
             "tag": {
-              "commentStart": 1494,
-              "end": 1499,
+              "commentStart": 1470,
+              "end": 1475,
               "moduleId": 0,
-              "start": 1494,
+              "start": 1470,
               "type": "TagDeclarator",
               "value": "line1"
             },
             "to": [
-              0.12499999999978884,
-              0.000000000000000000026692492730968603
+              0.12500000000000122,
+              0.0000000000009841836547119787
             ],
             "type": "ToPoint",
             "units": "in"
@@ -285,12 +285,12 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "start": {
           "from": [
-            0.12499999999979898,
-            0.00000000000000000003059364977148879
+            0.12500000000000533,
+            0.0000000000011072069910217364
           ],
           "to": [
-            0.12499999999979898,
-            0.00000000000000000003059364977148879
+            0.12500000000000533,
+            0.0000000000011072069910217364
           ],
           "units": "in",
           "tag": null,
@@ -333,25 +333,25 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "ccw": true,
           "center": [
-            -0.00000000000004057865155004947,
-            0.000000000000000000015614635512684868
+            -0.0,
+            0.0000000000004920922557284541
           ],
           "from": [
-            0.12499999999979898,
-            0.00000000000000000003059364977148879
+            0.12500000000000533,
+            0.0000000000011072069910217364
           ],
-          "radius": 0.12499999999983956,
+          "radius": 0.12500000000000533,
           "tag": {
-            "commentStart": 1355,
-            "end": 1359,
+            "commentStart": 1331,
+            "end": 1335,
             "moduleId": 0,
-            "start": 1355,
+            "start": 1331,
             "type": "TagDeclarator",
             "value": "arc1"
           },
           "to": [
-            -0.12499999999988014,
-            0.000000000000000015323699624834952
+            -0.12500000000000533,
+            0.0000000000011072266306070377
           ],
           "type": "Arc",
           "units": "in"
@@ -362,20 +362,20 @@ description: Variables in memory after executing ball-bearing.kcl
             "sourceRange": []
           },
           "from": [
-            -0.12499999999988014,
-            0.000000000000000015323699624834952
+            -0.12500000000000533,
+            0.0000000000011072266306070377
           ],
           "tag": {
-            "commentStart": 1494,
-            "end": 1499,
+            "commentStart": 1470,
+            "end": 1475,
             "moduleId": 0,
-            "start": 1494,
+            "start": 1470,
             "type": "TagDeclarator",
             "value": "line1"
           },
           "to": [
-            0.12499999999978884,
-            0.000000000000000000026692492730968603
+            0.12500000000000122,
+            0.0000000000009841836547119787
           ],
           "type": "ToPoint",
           "units": "in"
@@ -414,12 +414,12 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "start": {
         "from": [
-          0.12499999999979898,
-          0.00000000000000000003059364977148879
+          0.12500000000000533,
+          0.0000000000011072069910217364
         ],
         "to": [
-          0.12499999999979898,
-          0.00000000000000000003059364977148879
+          0.12500000000000533,
+          0.0000000000011072069910217364
         ],
         "units": "in",
         "tag": null,
@@ -456,10 +456,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1355,
-            "end": 1359,
+            "commentStart": 1331,
+            "end": 1335,
             "moduleId": 0,
-            "start": 1355,
+            "start": 1331,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -478,25 +478,25 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000004057865155004947,
-              0.000000000000000000015614635512684868
+              -0.0,
+              0.0000000000004920922557284541
             ],
             "from": [
-              0.12499999999979898,
-              0.00000000000000000003059364977148879
+              0.12500000000000533,
+              0.0000000000011072069910217364
             ],
-            "radius": 0.12499999999983956,
+            "radius": 0.12500000000000533,
             "tag": {
-              "commentStart": 1355,
-              "end": 1359,
+              "commentStart": 1331,
+              "end": 1335,
               "moduleId": 0,
-              "start": 1355,
+              "start": 1331,
               "type": "TagDeclarator",
               "value": "arc1"
             },
             "to": [
-              -0.12499999999988014,
-              0.000000000000000015323699624834952
+              -0.12500000000000533,
+              0.0000000000011072266306070377
             ],
             "type": "Arc",
             "units": "in"
@@ -507,20 +507,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              -0.12499999999988014,
-              0.000000000000000015323699624834952
+              -0.12500000000000533,
+              0.0000000000011072266306070377
             ],
             "tag": {
-              "commentStart": 1494,
-              "end": 1499,
+              "commentStart": 1470,
+              "end": 1475,
               "moduleId": 0,
-              "start": 1494,
+              "start": 1470,
               "type": "TagDeclarator",
               "value": "line1"
             },
             "to": [
-              0.12499999999978884,
-              0.000000000000000000026692492730968603
+              0.12500000000000122,
+              0.0000000000009841836547119787
             ],
             "type": "ToPoint",
             "units": "in"
@@ -559,12 +559,12 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "start": {
           "from": [
-            0.12499999999979898,
-            0.00000000000000000003059364977148879
+            0.12500000000000533,
+            0.0000000000011072069910217364
           ],
           "to": [
-            0.12499999999979898,
-            0.00000000000000000003059364977148879
+            0.12500000000000533,
+            0.0000000000011072069910217364
           ],
           "units": "in",
           "tag": null,
@@ -609,10 +609,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -631,25 +631,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -660,20 +660,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -712,12 +712,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -759,10 +759,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -781,25 +781,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -810,20 +810,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -862,12 +862,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -909,10 +909,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -931,25 +931,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -960,20 +960,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1012,12 +1012,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -1059,10 +1059,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1081,25 +1081,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1110,20 +1110,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1162,12 +1162,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -1209,10 +1209,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1231,25 +1231,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1260,20 +1260,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1312,12 +1312,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -1359,10 +1359,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1381,25 +1381,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1410,20 +1410,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1462,12 +1462,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -1509,10 +1509,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1531,25 +1531,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1560,20 +1560,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1612,12 +1612,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -1659,10 +1659,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1681,25 +1681,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1710,20 +1710,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1762,12 +1762,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -1809,10 +1809,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1831,25 +1831,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1860,20 +1860,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1912,12 +1912,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -1959,10 +1959,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1355,
-                "end": 1359,
+                "commentStart": 1331,
+                "end": 1335,
                 "moduleId": 0,
-                "start": 1355,
+                "start": 1331,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1981,25 +1981,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000000004057865155004947,
-                  0.000000000000000000015614635512684868
+                  -0.0,
+                  0.0000000000004920922557284541
                 ],
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
-                "radius": 0.12499999999983956,
+                "radius": 0.12500000000000533,
                 "tag": {
-                  "commentStart": 1355,
-                  "end": 1359,
+                  "commentStart": 1331,
+                  "end": 1335,
                   "moduleId": 0,
-                  "start": 1355,
+                  "start": 1331,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -2010,20 +2010,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.12499999999988014,
-                  0.000000000000000015323699624834952
+                  -0.12500000000000533,
+                  0.0000000000011072266306070377
                 ],
                 "tag": {
-                  "commentStart": 1494,
-                  "end": 1499,
+                  "commentStart": 1470,
+                  "end": 1475,
                   "moduleId": 0,
-                  "start": 1494,
+                  "start": 1470,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  0.12499999999978884,
-                  0.000000000000000000026692492730968603
+                  0.12500000000000122,
+                  0.0000000000009841836547119787
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2062,12 +2062,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "to": [
-                0.12499999999979898,
-                0.00000000000000000003059364977148879
+                0.12500000000000533,
+                0.0000000000011072069910217364
               ],
               "units": "in",
               "tag": null,
@@ -2114,7 +2114,7 @@ description: Variables in memory after executing ball-bearing.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.12499999999979898,
+                        "n": 0.12500000000000533,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2122,7 +2122,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000003059364977148879,
+                        "n": 0.0000000000011072069910217364,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2132,7 +2132,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.125000000000201,
+                        "n": -0.12500000000001113,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2140,7 +2140,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000000029943793175474335,
+                        "n": 0.0000000000011072072078621709,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2150,7 +2150,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.000000000000040573672194361487,
+                        "n": -0.0000000000000000001594982581821819,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2158,7 +2158,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000000015614635512684868,
+                        "n": 0.0000000000004920922557284542,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2266,7 +2266,7 @@ description: Variables in memory after executing ball-bearing.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.12500000000021116,
+                        "n": -0.12500000000000702,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2274,7 +2274,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000000026476272242491217,
+                        "n": 0.0000000000009841840883928477,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2284,7 +2284,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.12499999999978884,
+                        "n": 0.12500000000000122,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2292,7 +2292,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000000026692492730968603,
+                        "n": 0.0000000000009841836547119787,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2390,25 +2390,25 @@ description: Variables in memory after executing ball-bearing.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.00000000000004057865155004947,
-                    0.000000000000000000015614635512684868
+                    -0.0,
+                    0.0000000000004920922557284541
                   ],
                   "from": [
-                    0.12499999999979898,
-                    0.00000000000000000003059364977148879
+                    0.12500000000000533,
+                    0.0000000000011072069910217364
                   ],
-                  "radius": 0.12499999999983956,
+                  "radius": 0.12500000000000533,
                   "tag": {
-                    "commentStart": 1355,
-                    "end": 1359,
+                    "commentStart": 1331,
+                    "end": 1335,
                     "moduleId": 0,
-                    "start": 1355,
+                    "start": 1331,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
                   "to": [
-                    -0.12499999999988014,
-                    0.000000000000000015323699624834952
+                    -0.12500000000000533,
+                    0.0000000000011072266306070377
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2419,20 +2419,20 @@ description: Variables in memory after executing ball-bearing.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.12499999999988014,
-                    0.000000000000000015323699624834952
+                    -0.12500000000000533,
+                    0.0000000000011072266306070377
                   ],
                   "tag": {
-                    "commentStart": 1494,
-                    "end": 1499,
+                    "commentStart": 1470,
+                    "end": 1475,
                     "moduleId": 0,
-                    "start": 1494,
+                    "start": 1470,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
                   "to": [
-                    0.12499999999978884,
-                    0.000000000000000000026692492730968603
+                    0.12500000000000122,
+                    0.0000000000009841836547119787
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2471,12 +2471,12 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               "start": {
                 "from": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
                 "to": [
-                  0.12499999999979898,
-                  0.00000000000000000003059364977148879
+                  0.12500000000000533,
+                  0.0000000000011072069910217364
                 ],
                 "units": "in",
                 "tag": null,
@@ -2522,10 +2522,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -2536,10 +2536,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -2550,10 +2550,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -2564,10 +2564,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -2586,25 +2586,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -2615,20 +2615,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2639,20 +2639,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2663,20 +2663,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2715,12 +2715,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -2770,10 +2770,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -2784,10 +2784,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -2798,10 +2798,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -2812,10 +2812,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -2834,25 +2834,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -2863,20 +2863,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2887,20 +2887,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2911,20 +2911,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2963,12 +2963,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -3018,10 +3018,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -3032,10 +3032,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -3046,10 +3046,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -3060,10 +3060,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -3082,25 +3082,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -3111,20 +3111,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3135,20 +3135,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3159,20 +3159,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3211,12 +3211,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -3266,10 +3266,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -3280,10 +3280,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -3294,10 +3294,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -3308,10 +3308,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -3330,25 +3330,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -3359,20 +3359,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3383,20 +3383,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3407,20 +3407,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3459,12 +3459,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -3514,10 +3514,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -3528,10 +3528,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -3542,10 +3542,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -3556,10 +3556,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -3578,25 +3578,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -3607,20 +3607,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3631,20 +3631,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3655,20 +3655,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3707,12 +3707,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -3762,10 +3762,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -3776,10 +3776,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -3790,10 +3790,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -3804,10 +3804,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -3826,25 +3826,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -3855,20 +3855,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3879,20 +3879,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3903,20 +3903,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -3955,12 +3955,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -4010,10 +4010,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -4024,10 +4024,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -4038,10 +4038,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -4052,10 +4052,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -4074,25 +4074,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -4103,20 +4103,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4127,20 +4127,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4151,20 +4151,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4203,12 +4203,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -4258,10 +4258,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -4272,10 +4272,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -4286,10 +4286,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -4300,10 +4300,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -4322,25 +4322,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -4351,20 +4351,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4375,20 +4375,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4399,20 +4399,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4451,12 +4451,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -4506,10 +4506,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -4520,10 +4520,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -4534,10 +4534,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -4548,10 +4548,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -4570,25 +4570,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -4599,20 +4599,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4623,20 +4623,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4647,20 +4647,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4699,12 +4699,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -4754,10 +4754,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2236,
-                "end": 2240,
+                "commentStart": 2219,
+                "end": 2223,
                 "moduleId": 0,
-                "start": 2236,
+                "start": 2219,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -4768,10 +4768,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2420,
-                "end": 2425,
+                "commentStart": 2403,
+                "end": 2408,
                 "moduleId": 0,
-                "start": 2420,
+                "start": 2403,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -4782,10 +4782,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2541,
-                "end": 2546,
+                "commentStart": 2524,
+                "end": 2529,
                 "moduleId": 0,
-                "start": 2541,
+                "start": 2524,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -4796,10 +4796,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2662,
-                "end": 2667,
+                "commentStart": 2645,
+                "end": 2650,
                 "moduleId": 0,
-                "start": 2662,
+                "start": 2645,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -4818,25 +4818,25 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0,
-                  0.0000000000003349404087416019
+                  -0.000000000000000006938893903907228,
+                  0.000000000000033487101980256284
                 ],
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
-                "radius": 0.12500000175543283,
+                "radius": 0.1250000017519326,
                 "tag": {
-                  "commentStart": 2236,
-                  "end": 2240,
+                  "commentStart": 2219,
+                  "end": 2223,
                   "moduleId": 0,
-                  "start": 2236,
+                  "start": 2219,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
                 "to": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -4847,20 +4847,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999826992,
-                  0.10825317750138785
+                  -0.06250000000005287,
+                  0.1082531774960153
                 ],
                 "tag": {
-                  "commentStart": 2420,
-                  "end": 2425,
+                  "commentStart": 2403,
+                  "end": 2408,
                   "moduleId": 0,
-                  "start": 2420,
+                  "start": 2403,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
                 "to": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4871,20 +4871,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.06249999999699886,
-                  0.13950317749922841
+                  -0.0625000000001516,
+                  0.13950317749619057
                 ],
                 "tag": {
-                  "commentStart": 2541,
-                  "end": 2546,
+                  "commentStart": 2524,
+                  "end": 2529,
                   "moduleId": 0,
-                  "start": 2541,
+                  "start": 2524,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
                 "to": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4895,20 +4895,20 @@ description: Variables in memory after executing ball-bearing.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.06250000000280784,
-                  0.13950317749927027
+                  0.06249999999982907,
+                  0.13950317749619476
                 ],
                 "tag": {
-                  "commentStart": 2662,
-                  "end": 2667,
+                  "commentStart": 2645,
+                  "end": 2650,
                   "moduleId": 0,
-                  "start": 2662,
+                  "start": 2645,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
                 "to": [
-                  0.06250000000261453,
-                  0.10825317749906091
+                  0.062499999999809736,
+                  0.10825317749617382
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -4947,12 +4947,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "start": {
               "from": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "to": [
-                0.06250000000251787,
-                0.1082531774989353
+                0.06249999999980007,
+                0.10825317749616126
               ],
               "units": "in",
               "tag": null,
@@ -5004,10 +5004,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2236,
-            "end": 2240,
+            "commentStart": 2219,
+            "end": 2223,
             "moduleId": 0,
-            "start": 2236,
+            "start": 2219,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -5018,10 +5018,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2420,
-            "end": 2425,
+            "commentStart": 2403,
+            "end": 2408,
             "moduleId": 0,
-            "start": 2420,
+            "start": 2403,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5032,10 +5032,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2541,
-            "end": 2546,
+            "commentStart": 2524,
+            "end": 2529,
             "moduleId": 0,
-            "start": 2541,
+            "start": 2524,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5046,10 +5046,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2662,
-            "end": 2667,
+            "commentStart": 2645,
+            "end": 2650,
             "moduleId": 0,
-            "start": 2662,
+            "start": 2645,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5068,25 +5068,25 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "ccw": true,
             "center": [
-              -0.0,
-              0.0000000000003349404087416019
+              -0.000000000000000006938893903907228,
+              0.000000000000033487101980256284
             ],
             "from": [
-              0.06250000000251787,
-              0.1082531774989353
+              0.06249999999980007,
+              0.10825317749616126
             ],
-            "radius": 0.12500000175543283,
+            "radius": 0.1250000017519326,
             "tag": {
-              "commentStart": 2236,
-              "end": 2240,
+              "commentStart": 2219,
+              "end": 2223,
               "moduleId": 0,
-              "start": 2236,
+              "start": 2219,
               "type": "TagDeclarator",
               "value": "arc1"
             },
             "to": [
-              -0.06249999999826992,
-              0.10825317750138785
+              -0.06250000000005287,
+              0.1082531774960153
             ],
             "type": "Arc",
             "units": "in"
@@ -5097,20 +5097,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              -0.06249999999826992,
-              0.10825317750138785
+              -0.06250000000005287,
+              0.1082531774960153
             ],
             "tag": {
-              "commentStart": 2420,
-              "end": 2425,
+              "commentStart": 2403,
+              "end": 2408,
               "moduleId": 0,
-              "start": 2420,
+              "start": 2403,
               "type": "TagDeclarator",
               "value": "line1"
             },
             "to": [
-              -0.06249999999699886,
-              0.13950317749922841
+              -0.0625000000001516,
+              0.13950317749619057
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5121,20 +5121,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              -0.06249999999699886,
-              0.13950317749922841
+              -0.0625000000001516,
+              0.13950317749619057
             ],
             "tag": {
-              "commentStart": 2541,
-              "end": 2546,
+              "commentStart": 2524,
+              "end": 2529,
               "moduleId": 0,
-              "start": 2541,
+              "start": 2524,
               "type": "TagDeclarator",
               "value": "line2"
             },
             "to": [
-              0.06250000000280784,
-              0.13950317749927027
+              0.06249999999982907,
+              0.13950317749619476
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5145,20 +5145,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              0.06250000000280784,
-              0.13950317749927027
+              0.06249999999982907,
+              0.13950317749619476
             ],
             "tag": {
-              "commentStart": 2662,
-              "end": 2667,
+              "commentStart": 2645,
+              "end": 2650,
               "moduleId": 0,
-              "start": 2662,
+              "start": 2645,
               "type": "TagDeclarator",
               "value": "line3"
             },
             "to": [
-              0.06250000000261453,
-              0.10825317749906091
+              0.062499999999809736,
+              0.10825317749617382
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5197,12 +5197,12 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "start": {
           "from": [
-            0.06250000000251787,
-            0.1082531774989353
+            0.06249999999980007,
+            0.10825317749616126
           ],
           "to": [
-            0.06250000000251787,
-            0.1082531774989353
+            0.06249999999980007,
+            0.10825317749616126
           ],
           "units": "in",
           "tag": null,
@@ -5252,10 +5252,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2236,
-            "end": 2240,
+            "commentStart": 2219,
+            "end": 2223,
             "moduleId": 0,
-            "start": 2236,
+            "start": 2219,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -5266,10 +5266,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2420,
-            "end": 2425,
+            "commentStart": 2403,
+            "end": 2408,
             "moduleId": 0,
-            "start": 2420,
+            "start": 2403,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5280,10 +5280,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2541,
-            "end": 2546,
+            "commentStart": 2524,
+            "end": 2529,
             "moduleId": 0,
-            "start": 2541,
+            "start": 2524,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5294,10 +5294,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2662,
-            "end": 2667,
+            "commentStart": 2645,
+            "end": 2650,
             "moduleId": 0,
-            "start": 2662,
+            "start": 2645,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5316,25 +5316,25 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "ccw": true,
             "center": [
-              -0.0,
-              0.0000000000003349404087416019
+              -0.000000000000000006938893903907228,
+              0.000000000000033487101980256284
             ],
             "from": [
-              0.06250000000251787,
-              0.1082531774989353
+              0.06249999999980007,
+              0.10825317749616126
             ],
-            "radius": 0.12500000175543283,
+            "radius": 0.1250000017519326,
             "tag": {
-              "commentStart": 2236,
-              "end": 2240,
+              "commentStart": 2219,
+              "end": 2223,
               "moduleId": 0,
-              "start": 2236,
+              "start": 2219,
               "type": "TagDeclarator",
               "value": "arc1"
             },
             "to": [
-              -0.06249999999826992,
-              0.10825317750138785
+              -0.06250000000005287,
+              0.1082531774960153
             ],
             "type": "Arc",
             "units": "in"
@@ -5345,20 +5345,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              -0.06249999999826992,
-              0.10825317750138785
+              -0.06250000000005287,
+              0.1082531774960153
             ],
             "tag": {
-              "commentStart": 2420,
-              "end": 2425,
+              "commentStart": 2403,
+              "end": 2408,
               "moduleId": 0,
-              "start": 2420,
+              "start": 2403,
               "type": "TagDeclarator",
               "value": "line1"
             },
             "to": [
-              -0.06249999999699886,
-              0.13950317749922841
+              -0.0625000000001516,
+              0.13950317749619057
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5369,20 +5369,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              -0.06249999999699886,
-              0.13950317749922841
+              -0.0625000000001516,
+              0.13950317749619057
             ],
             "tag": {
-              "commentStart": 2541,
-              "end": 2546,
+              "commentStart": 2524,
+              "end": 2529,
               "moduleId": 0,
-              "start": 2541,
+              "start": 2524,
               "type": "TagDeclarator",
               "value": "line2"
             },
             "to": [
-              0.06250000000280784,
-              0.13950317749927027
+              0.06249999999982907,
+              0.13950317749619476
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5393,20 +5393,20 @@ description: Variables in memory after executing ball-bearing.kcl
               "sourceRange": []
             },
             "from": [
-              0.06250000000280784,
-              0.13950317749927027
+              0.06249999999982907,
+              0.13950317749619476
             ],
             "tag": {
-              "commentStart": 2662,
-              "end": 2667,
+              "commentStart": 2645,
+              "end": 2650,
               "moduleId": 0,
-              "start": 2662,
+              "start": 2645,
               "type": "TagDeclarator",
               "value": "line3"
             },
             "to": [
-              0.06250000000261453,
-              0.10825317749906091
+              0.062499999999809736,
+              0.10825317749617382
             ],
             "type": "ToPoint",
             "units": "in"
@@ -5445,12 +5445,12 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "start": {
           "from": [
-            0.06250000000251787,
-            0.1082531774989353
+            0.06249999999980007,
+            0.10825317749616126
           ],
           "to": [
-            0.06250000000251787,
-            0.1082531774989353
+            0.06249999999980007,
+            0.10825317749616126
           ],
           "units": "in",
           "tag": null,
@@ -5501,25 +5501,25 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "ccw": true,
           "center": [
-            -0.0,
-            0.0000000000003349404087416019
+            -0.000000000000000006938893903907228,
+            0.000000000000033487101980256284
           ],
           "from": [
-            0.06250000000251787,
-            0.1082531774989353
+            0.06249999999980007,
+            0.10825317749616126
           ],
-          "radius": 0.12500000175543283,
+          "radius": 0.1250000017519326,
           "tag": {
-            "commentStart": 2236,
-            "end": 2240,
+            "commentStart": 2219,
+            "end": 2223,
             "moduleId": 0,
-            "start": 2236,
+            "start": 2219,
             "type": "TagDeclarator",
             "value": "arc1"
           },
           "to": [
-            -0.06249999999826992,
-            0.10825317750138785
+            -0.06250000000005287,
+            0.1082531774960153
           ],
           "type": "Arc",
           "units": "in"
@@ -5530,20 +5530,20 @@ description: Variables in memory after executing ball-bearing.kcl
             "sourceRange": []
           },
           "from": [
-            -0.06249999999826992,
-            0.10825317750138785
+            -0.06250000000005287,
+            0.1082531774960153
           ],
           "tag": {
-            "commentStart": 2420,
-            "end": 2425,
+            "commentStart": 2403,
+            "end": 2408,
             "moduleId": 0,
-            "start": 2420,
+            "start": 2403,
             "type": "TagDeclarator",
             "value": "line1"
           },
           "to": [
-            -0.06249999999699886,
-            0.13950317749922841
+            -0.0625000000001516,
+            0.13950317749619057
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5554,20 +5554,20 @@ description: Variables in memory after executing ball-bearing.kcl
             "sourceRange": []
           },
           "from": [
-            -0.06249999999699886,
-            0.13950317749922841
+            -0.0625000000001516,
+            0.13950317749619057
           ],
           "tag": {
-            "commentStart": 2541,
-            "end": 2546,
+            "commentStart": 2524,
+            "end": 2529,
             "moduleId": 0,
-            "start": 2541,
+            "start": 2524,
             "type": "TagDeclarator",
             "value": "line2"
           },
           "to": [
-            0.06250000000280784,
-            0.13950317749927027
+            0.06249999999982907,
+            0.13950317749619476
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5578,20 +5578,20 @@ description: Variables in memory after executing ball-bearing.kcl
             "sourceRange": []
           },
           "from": [
-            0.06250000000280784,
-            0.13950317749927027
+            0.06249999999982907,
+            0.13950317749619476
           ],
           "tag": {
-            "commentStart": 2662,
-            "end": 2667,
+            "commentStart": 2645,
+            "end": 2650,
             "moduleId": 0,
-            "start": 2662,
+            "start": 2645,
             "type": "TagDeclarator",
             "value": "line3"
           },
           "to": [
-            0.06250000000261453,
-            0.10825317749906091
+            0.062499999999809736,
+            0.10825317749617382
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5630,12 +5630,12 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "start": {
         "from": [
-          0.06250000000251787,
-          0.1082531774989353
+          0.06249999999980007,
+          0.10825317749616126
         ],
         "to": [
-          0.06250000000251787,
-          0.1082531774989353
+          0.06249999999980007,
+          0.10825317749616126
         ],
         "units": "in",
         "tag": null,
@@ -5683,7 +5683,7 @@ description: Variables in memory after executing ball-bearing.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.06250000000251787,
+                        "n": 0.06249999999980007,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5691,7 +5691,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.1082531774989353,
+                        "n": 0.10825317749616126,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5701,7 +5701,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.062499999996805555,
+                        "n": -0.06250000000013227,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5709,7 +5709,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.1082531774988516,
+                        "n": 0.10825317749615289,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5719,7 +5719,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000000008063148885435586,
+                        "n": 0.0000000000000000005362371511815755,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5727,7 +5727,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000003349481321322546,
+                        "n": 0.00000000000003349471792255139,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5835,7 +5835,7 @@ description: Variables in memory after executing ball-bearing.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.06249999999690221,
+                        "n": -0.06250000000014194,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5843,7 +5843,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.10825317749897721,
+                        "n": 0.10825317749616545,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5853,7 +5853,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.06249999999699886,
+                        "n": -0.0625000000001516,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5861,7 +5861,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.13950317749922841,
+                        "n": 0.13950317749619057,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5955,7 +5955,7 @@ description: Variables in memory after executing ball-bearing.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.06249999999709551,
+                        "n": -0.06250000000016127,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5963,7 +5963,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.13950317749927027,
+                        "n": 0.13950317749619476,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5973,7 +5973,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.06250000000280784,
+                        "n": 0.06249999999982907,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5981,7 +5981,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.13950317749927027,
+                        "n": 0.13950317749619476,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6075,7 +6075,7 @@ description: Variables in memory after executing ball-bearing.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.06250000000271118,
+                        "n": 0.0624999999998194,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6083,7 +6083,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.1395031774992284,
+                        "n": 0.13950317749619057,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6093,7 +6093,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.06250000000261453,
+                        "n": 0.062499999999809736,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6101,7 +6101,7 @@ description: Variables in memory after executing ball-bearing.kcl
                         }
                       },
                       {
-                        "n": 0.10825317749906091,
+                        "n": 0.10825317749617382,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6199,25 +6199,25 @@ description: Variables in memory after executing ball-bearing.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0,
-                    0.0000000000003349404087416019
+                    -0.000000000000000006938893903907228,
+                    0.000000000000033487101980256284
                   ],
                   "from": [
-                    0.06250000000251787,
-                    0.1082531774989353
+                    0.06249999999980007,
+                    0.10825317749616126
                   ],
-                  "radius": 0.12500000175543283,
+                  "radius": 0.1250000017519326,
                   "tag": {
-                    "commentStart": 2236,
-                    "end": 2240,
+                    "commentStart": 2219,
+                    "end": 2223,
                     "moduleId": 0,
-                    "start": 2236,
+                    "start": 2219,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
                   "to": [
-                    -0.06249999999826992,
-                    0.10825317750138785
+                    -0.06250000000005287,
+                    0.1082531774960153
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -6228,20 +6228,20 @@ description: Variables in memory after executing ball-bearing.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.06249999999826992,
-                    0.10825317750138785
+                    -0.06250000000005287,
+                    0.1082531774960153
                   ],
                   "tag": {
-                    "commentStart": 2420,
-                    "end": 2425,
+                    "commentStart": 2403,
+                    "end": 2408,
                     "moduleId": 0,
-                    "start": 2420,
+                    "start": 2403,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
                   "to": [
-                    -0.06249999999699886,
-                    0.13950317749922841
+                    -0.0625000000001516,
+                    0.13950317749619057
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -6252,20 +6252,20 @@ description: Variables in memory after executing ball-bearing.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.06249999999699886,
-                    0.13950317749922841
+                    -0.0625000000001516,
+                    0.13950317749619057
                   ],
                   "tag": {
-                    "commentStart": 2541,
-                    "end": 2546,
+                    "commentStart": 2524,
+                    "end": 2529,
                     "moduleId": 0,
-                    "start": 2541,
+                    "start": 2524,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
                   "to": [
-                    0.06250000000280784,
-                    0.13950317749927027
+                    0.06249999999982907,
+                    0.13950317749619476
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -6276,20 +6276,20 @@ description: Variables in memory after executing ball-bearing.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.06250000000280784,
-                    0.13950317749927027
+                    0.06249999999982907,
+                    0.13950317749619476
                   ],
                   "tag": {
-                    "commentStart": 2662,
-                    "end": 2667,
+                    "commentStart": 2645,
+                    "end": 2650,
                     "moduleId": 0,
-                    "start": 2662,
+                    "start": 2645,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
                   "to": [
-                    0.06250000000261453,
-                    0.10825317749906091
+                    0.062499999999809736,
+                    0.10825317749617382
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -6328,12 +6328,12 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               "start": {
                 "from": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
                 "to": [
-                  0.06250000000251787,
-                  0.1082531774989353
+                  0.06249999999980007,
+                  0.10825317749616126
                 ],
                 "units": "in",
                 "tag": null,
@@ -6402,12 +6402,26 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 731,
-            "end": 738,
+            "commentStart": 716,
+            "end": 723,
             "moduleId": 0,
-            "start": 731,
+            "start": 716,
             "type": "TagDeclarator",
             "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 910,
+            "end": 917,
+            "moduleId": 0,
+            "start": 910,
+            "type": "TagDeclarator",
+            "value": "circle2"
           },
           "type": "extrudeArc"
         }
@@ -6433,15 +6447,45 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "radius": 0.475000000005,
             "tag": {
-              "commentStart": 731,
-              "end": 738,
+              "commentStart": 716,
+              "end": 723,
               "moduleId": 0,
-              "start": 731,
+              "start": 716,
               "type": "TagDeclarator",
               "value": "circle1"
             },
             "to": [
               0.47500000001,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0000000000750000060555278,
+              0.0
+            ],
+            "from": [
+              0.37499999985,
+              0.0
+            ],
+            "radius": 0.374999999925,
+            "tag": {
+              "commentStart": 910,
+              "end": 917,
+              "moduleId": 0,
+              "start": 910,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.37499999985,
               0.0
             ],
             "type": "Circle",
@@ -6538,15 +6582,45 @@ description: Variables in memory after executing ball-bearing.kcl
           ],
           "radius": 0.475000000005,
           "tag": {
-            "commentStart": 731,
-            "end": 738,
+            "commentStart": 716,
+            "end": 723,
             "moduleId": 0,
-            "start": 731,
+            "start": 716,
             "type": "TagDeclarator",
             "value": "circle1"
           },
           "to": [
             0.47500000001,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.0000000000750000060555278,
+            0.0
+          ],
+          "from": [
+            0.37499999985,
+            0.0
+          ],
+          "radius": 0.374999999925,
+          "tag": {
+            "commentStart": 910,
+            "end": 917,
+            "moduleId": 0,
+            "start": 910,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.37499999985,
             0.0
           ],
           "type": "Circle",
@@ -6884,10 +6958,10 @@ description: Variables in memory after executing ball-bearing.kcl
                   ],
                   "radius": 0.475000000005,
                   "tag": {
-                    "commentStart": 731,
-                    "end": 738,
+                    "commentStart": 716,
+                    "end": 723,
                     "moduleId": 0,
-                    "start": 731,
+                    "start": 716,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -6931,10 +7005,10 @@ description: Variables in memory after executing ball-bearing.kcl
                   ],
                   "radius": 0.374999999925,
                   "tag": {
-                    "commentStart": 925,
-                    "end": 932,
+                    "commentStart": 910,
+                    "end": 917,
                     "moduleId": 0,
-                    "start": 925,
+                    "start": 910,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -7051,10 +7125,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3541,
-            "end": 3548,
+            "commentStart": 3524,
+            "end": 3531,
             "moduleId": 0,
-            "start": 3541,
+            "start": 3524,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7082,10 +7156,10 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "radius": 0.03124999999375,
             "tag": {
-              "commentStart": 3541,
-              "end": 3548,
+              "commentStart": 3524,
+              "end": 3531,
               "moduleId": 0,
-              "start": 3541,
+              "start": 3524,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7183,10 +7257,10 @@ description: Variables in memory after executing ball-bearing.kcl
           ],
           "radius": 0.03124999999375,
           "tag": {
-            "commentStart": 3541,
-            "end": 3548,
+            "commentStart": 3524,
+            "end": 3531,
             "moduleId": 0,
-            "start": 3541,
+            "start": 3524,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7269,10 +7343,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3541,
-            "end": 3548,
+            "commentStart": 3524,
+            "end": 3531,
             "moduleId": 0,
-            "start": 3541,
+            "start": 3524,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7300,10 +7374,10 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "radius": 0.03124999999375,
             "tag": {
-              "commentStart": 3541,
-              "end": 3548,
+              "commentStart": 3524,
+              "end": 3531,
               "moduleId": 0,
-              "start": 3541,
+              "start": 3524,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7514,7 +7588,7 @@ description: Variables in memory after executing ball-bearing.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000025000001718509217,
+                        "n": -0.000000000002500000151972465,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7769,10 +7843,10 @@ description: Variables in memory after executing ball-bearing.kcl
                   ],
                   "radius": 0.03124999999375,
                   "tag": {
-                    "commentStart": 3541,
-                    "end": 3548,
+                    "commentStart": 3524,
+                    "end": 3531,
                     "moduleId": 0,
-                    "start": 3541,
+                    "start": 3524,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -7864,10 +7938,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7895,10 +7969,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7986,10 +8060,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8017,10 +8091,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8108,10 +8182,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8139,10 +8213,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8230,10 +8304,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8261,10 +8335,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8352,10 +8426,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8383,10 +8457,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8474,10 +8548,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8505,10 +8579,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8596,10 +8670,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8627,10 +8701,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8718,10 +8792,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8749,10 +8823,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8840,10 +8914,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8871,10 +8945,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8962,10 +9036,10 @@ description: Variables in memory after executing ball-bearing.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3541,
-                "end": 3548,
+                "commentStart": 3524,
+                "end": 3531,
                 "moduleId": 0,
-                "start": 3541,
+                "start": 3524,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8993,10 +9067,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 ],
                 "radius": 0.03124999999375,
                 "tag": {
-                  "commentStart": 3541,
-                  "end": 3548,
+                  "commentStart": 3524,
+                  "end": 3531,
                   "moduleId": 0,
-                  "start": 3541,
+                  "start": 3524,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9114,15 +9188,45 @@ description: Variables in memory after executing ball-bearing.kcl
           ],
           "radius": 0.8124999999975,
           "tag": {
-            "commentStart": 4739,
-            "end": 4746,
+            "commentStart": 4722,
+            "end": 4729,
             "moduleId": 0,
-            "start": 4739,
+            "start": 4722,
             "type": "TagDeclarator",
             "value": "circle1"
           },
           "to": [
             0.812499999995,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.00000000001500000121110556,
+            0.0
+          ],
+          "from": [
+            0.72499999997,
+            0.0
+          ],
+          "radius": 0.724999999985,
+          "tag": {
+            "commentStart": 4907,
+            "end": 4914,
+            "moduleId": 0,
+            "start": 4907,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.72499999997,
             0.0
           ],
           "type": "Circle",
@@ -9204,12 +9308,26 @@ description: Variables in memory after executing ball-bearing.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4739,
-            "end": 4746,
+            "commentStart": 4722,
+            "end": 4729,
             "moduleId": 0,
-            "start": 4739,
+            "start": 4722,
             "type": "TagDeclarator",
             "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4907,
+            "end": 4914,
+            "moduleId": 0,
+            "start": 4907,
+            "type": "TagDeclarator",
+            "value": "circle2"
           },
           "type": "extrudeArc"
         }
@@ -9235,15 +9353,45 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "radius": 0.8124999999975,
             "tag": {
-              "commentStart": 4739,
-              "end": 4746,
+              "commentStart": 4722,
+              "end": 4729,
               "moduleId": 0,
-              "start": 4739,
+              "start": 4722,
               "type": "TagDeclarator",
               "value": "circle1"
             },
             "to": [
               0.812499999995,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.00000000001500000121110556,
+              0.0
+            ],
+            "from": [
+              0.72499999997,
+              0.0
+            ],
+            "radius": 0.724999999985,
+            "tag": {
+              "commentStart": 4907,
+              "end": 4914,
+              "moduleId": 0,
+              "start": 4907,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.72499999997,
               0.0
             ],
             "type": "Circle",
@@ -9586,10 +9734,10 @@ description: Variables in memory after executing ball-bearing.kcl
                   ],
                   "radius": 0.8124999999975,
                   "tag": {
-                    "commentStart": 4739,
-                    "end": 4746,
+                    "commentStart": 4722,
+                    "end": 4729,
                     "moduleId": 0,
-                    "start": 4739,
+                    "start": 4722,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -9633,10 +9781,10 @@ description: Variables in memory after executing ball-bearing.kcl
                   ],
                   "radius": 0.724999999985,
                   "tag": {
-                    "commentStart": 4924,
-                    "end": 4931,
+                    "commentStart": 4907,
+                    "end": 4914,
                     "moduleId": 0,
-                    "start": 4924,
+                    "start": 4907,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },

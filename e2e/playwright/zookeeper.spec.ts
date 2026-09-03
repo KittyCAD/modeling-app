@@ -1,7 +1,7 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-// See text-to-cad/text_to_cad/zookeeper_magic_bypass.py
+// See zookeeper/text_to_cad/zookeeper_magic_bypass.py
 const ZK_MOCK_REPLY_MARKER =
   'ZOO_MAGIC_STRING_TRIGGER_MOCK_REPLY_D39D279C6F84FA63AD49364FDEFB4A27D0E15BA7FB0975D4D6E003A8A594E460'
 
@@ -20,21 +20,25 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
     await scene.settled()
 
     await test.step('Submit basic prompt', async () => {
+      const prompt = `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
+
       await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.TTC)
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await copilot.setMode('fast')
-      await copilot.conversationInput.fill(
-        `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
-      )
+      await copilot.conversationInput.fill(prompt)
       await copilot.submitButton.click()
-      await expect(copilot.placeHolderResponse).toBeVisible()
+      await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
+        prompt
+      )
       await expect(copilot.placeHolderResponse).not.toBeVisible({
         timeout: 30_000,
       })
 
-      await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await expect(editor.codeContent).toContainText('sketch')
+      await expect(editor.codeContent).toContainText('sketch', {
+        timeout: 30_000,
+      })
+      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
 
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -53,7 +57,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
 
       await test.step('Submit placeholder prompt', async () => {
         await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await toolbar.openPane(DefaultLayoutPaneID.TTC)
+        await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
         await copilot.conversationInput.fill(
           `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
         )

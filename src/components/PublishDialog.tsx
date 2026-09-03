@@ -6,8 +6,11 @@ import {
   normalizeMarkdownEditorValue,
 } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
+import { AquariumStatusDetails } from '@src/components/AquariumStatusBadge'
+import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
@@ -28,23 +31,40 @@ type PublishDialogProps = {
   initialTitle?: string
   publishDisabled?: boolean
   publishRequiresUsername?: boolean
+  willMoveProjectToCloud?: boolean
   accountUrl: string
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
   markdownEditorKeymap?: PublishDialogMarkdownEditorKeymap
+  projectStatus?: ProjectStatus | null
 }
 
 const AQUARIUM_TERMS_URL = 'https://zoo.dev/aquarium-terms-of-use'
+// The active-only categories endpoint omits this retired category. Keep it
+// available when already assigned so users may retain or remove it while editing.
+const MAKEATHON_CATEGORY: ProjectCategoryResponse = {
+  id: '3bd6fb75-c6f6-413e-83f6-e93b6076ae0c',
+  slug: 'makeathon',
+  display_name: 'Makeathon',
+  description: 'Entries from the April-May 2026 Makeathon event',
+  sort_order: 220,
+}
+
+type ProjectCategoryWithStatus = ProjectCategoryResponse & {
+  is_active?: boolean
+}
 
 export function PublishDialog({
   onSubmit,
   initialTitle = '',
   publishDisabled = false,
   publishRequiresUsername = false,
+  willMoveProjectToCloud = false,
   accountUrl,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
   markdownEditorKeymap,
+  projectStatus = null,
 }: PublishDialogProps) {
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState('')
@@ -54,7 +74,7 @@ export function PublishDialog({
   const [hasEditedCategories, setHasEditedCategories] = useState(false)
   const [hasTriedSubmit, setHasTriedSubmit] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [categories, setCategories] = useState<ProjectCategoryResponse[]>([])
+  const [categories, setCategories] = useState<ProjectCategoryWithStatus[]>([])
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
   const [categoriesError, setCategoriesError] = useState<string | null>(null)
   const [descriptionEditorActions, setDescriptionEditorActions] =
@@ -89,9 +109,13 @@ export function PublishDialog({
     setCategoriesError(null)
 
     try {
-      const response = await fetch(withAPIBaseURL('/projects/categories'), {
-        signal,
-      })
+      const response = await fetchWithSessionExpiration(
+        withAPIBaseURL('/projects/categories'),
+        {
+          cache: 'no-cache',
+          signal,
+        }
+      )
 
       if (!response.ok) {
         setCategories([])
@@ -100,7 +124,7 @@ export function PublishDialog({
       }
 
       const nextCategories =
-        (await response.json()) as ProjectCategoryResponse[]
+        (await response.json()) as ProjectCategoryWithStatus[]
       setCategories(
         [...nextCategories].sort((a, b) => a.sort_order - b.sort_order)
       )
@@ -158,9 +182,36 @@ export function PublishDialog({
     () => normalizeMarkdownEditorValue(description),
     [description]
   )
+  const availableCategories = useMemo(() => {
+    const assignedCategoryIds = new Set(publicationDetails?.categoryIds ?? [])
+    const activeCategories = categories.filter(
+      (category) =>
+        category.is_active !== false ||
+        (category.slug === MAKEATHON_CATEGORY.slug &&
+          assignedCategoryIds.has(category.id))
+    )
+
+    if (
+      assignedCategoryIds.has(MAKEATHON_CATEGORY.id) &&
+      !activeCategories.some(
+        (category) => category.id === MAKEATHON_CATEGORY.id
+      )
+    ) {
+      activeCategories.push(MAKEATHON_CATEGORY)
+    }
+
+    return activeCategories.sort((a, b) => a.sort_order - b.sort_order)
+  }, [categories, publicationDetails?.categoryIds])
+  const availableCategoryIds = useMemo(
+    () => new Set(availableCategories.map((category) => category.id)),
+    [availableCategories]
+  )
+  const validSelectedCategoryIds = selectedCategoryIds.filter((categoryId) =>
+    availableCategoryIds.has(categoryId)
+  )
   const titleIsValid = title.trim().length > 0
   const descriptionIsValid = normalizedDescription.trim().length > 0
-  const categoriesIsValid = selectedCategoryIds.length > 0
+  const categoriesIsValid = validSelectedCategoryIds.length > 0
   const lastSubmittedText = useMemo(
     () => getLastSubmittedText(publicationDetails),
     [publicationDetails]
@@ -184,7 +235,7 @@ export function PublishDialog({
       await onSubmit({
         title: title.trim(),
         description: normalizedDescription.trim(),
-        categoryIds: selectedCategoryIds,
+        categoryIds: validSelectedCategoryIds,
       })
     } finally {
       setIsSubmitting(false)
@@ -203,8 +254,8 @@ export function PublishDialog({
       leaveFrom="opacity-100 translate-y-0 scale-100"
       leaveTo="opacity-0 translate-y-1 scale-[0.98]"
     >
-      <Popover.Panel className="absolute right-0 top-full z-20 mt-3 flex max-h-[calc(100vh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-y-auto overscroll-contain rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
-        <div className="border-b border-chalkboard-20/70 bg-chalkboard-20/70 px-4 py-4 text-chalkboard-100 dark:border-chalkboard-80/70 dark:bg-chalkboard-80/70 dark:text-chalkboard-10">
+      <Popover.Panel className="fixed bottom-4 right-4 top-16 z-20 flex w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
+        <div className="shrink-0 border-b border-chalkboard-20/70 bg-chalkboard-20/70 px-4 py-4 text-chalkboard-100 dark:border-chalkboard-80/70 dark:bg-chalkboard-80/70 dark:text-chalkboard-10">
           <div className="min-w-0">
             <h2 className="text-base font-medium leading-none">
               Publish project
@@ -217,12 +268,14 @@ export function PublishDialog({
 
         <form
           {...noAutofillFormProps}
-          className="flex flex-col gap-4 px-4 py-4"
+          className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 py-4"
           onSubmit={(event) => {
             event.preventDefault()
             void handleSubmit()
           }}
         >
+          <AquariumStatusDetails projectStatus={projectStatus} />
+
           <section className="flex flex-col gap-3">
             <div>
               <label
@@ -249,6 +302,9 @@ export function PublishDialog({
                     : 'border-chalkboard-20/80 dark:border-chalkboard-80/70'
                 }`}
               />
+              <p className="mt-2 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
+                This will also be used as the project title.
+              </p>
               {hasTriedSubmit && !titleIsValid && (
                 <p className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40">
                   A title is required.
@@ -303,7 +359,7 @@ export function PublishDialog({
 
               <div
                 aria-invalid={hasTriedSubmit && !categoriesIsValid}
-                className={`max-h-64 overflow-y-auto rounded-lg border bg-chalkboard-10/70 p-1.5 dark:bg-chalkboard-100/40 ${
+                className={`max-h-[19rem] overflow-y-auto overscroll-contain rounded-lg border bg-chalkboard-10/70 p-1.5 dark:bg-chalkboard-100/40 ${
                   hasTriedSubmit && !categoriesIsValid
                     ? 'border-destroy-60'
                     : 'border-chalkboard-20/80 dark:border-chalkboard-80/70'
@@ -329,13 +385,13 @@ export function PublishDialog({
                       </ActionButton>
                     </div>
                   </div>
-                ) : categories.length === 0 ? (
+                ) : availableCategories.length === 0 ? (
                   <div className="px-2 py-6 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                     No Aquarium categories are currently available.
                   </div>
                 ) : (
                   <div className="flex flex-col gap-1.5">
-                    {categories.map((category) => {
+                    {availableCategories.map((category) => {
                       const isSelected = selectedCategoryIds.includes(
                         category.id
                       )
@@ -396,7 +452,14 @@ export function PublishDialog({
             </div>
           </section>
 
-          <section className="border-t border-chalkboard-20/70 pt-4 dark:border-chalkboard-80/70">
+          <section className="sticky -bottom-4 z-10 -mx-4 -mb-4 border-t border-chalkboard-20/70 bg-chalkboard-10/95 px-4 pb-4 pt-4 backdrop-blur-sm dark:border-chalkboard-80/70 dark:bg-chalkboard-90/95">
+            {willMoveProjectToCloud && (
+              <p className="mb-3 w-full rounded border border-destroy-40 bg-destroy-10/50 px-3 py-2 text-xs leading-5 text-destroy-80 dark:border-destroy-80 dark:bg-destroy-80/20 dark:text-destroy-20">
+                Publishing will also move this project from its current folder
+                to your Personal Cloud library so it stays synced with your Zoo
+                account.
+              </p>
+            )}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 md:gap-6">
               <div className="min-w-0 flex-1">
                 <p className="text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
@@ -463,9 +526,7 @@ export function PublishDialog({
 function getSubmitButtonLabel(
   publicationDetails: CurrentProjectPublicationDetails | null
 ) {
-  return publicationDetails &&
-    publicationDetails.publicationStatus !== 'draft' &&
-    publicationDetails.publicationStatus !== undefined
+  return publicationDetails && hasBeenSubmitted(publicationDetails)
     ? 'Update submission'
     : 'Submit for review'
 }
@@ -473,7 +534,7 @@ function getSubmitButtonLabel(
 function getLastSubmittedText(
   publicationDetails: CurrentProjectPublicationDetails | null
 ) {
-  if (!publicationDetails || publicationDetails.publicationStatus === 'draft') {
+  if (!publicationDetails || !hasBeenSubmitted(publicationDetails)) {
     return null
   }
 
@@ -481,6 +542,12 @@ function getLastSubmittedText(
     publicationDetails.submittedAt || publicationDetails.updatedAt
 
   return `This project was last submitted for review on ${formatDate(lastSubmittedAt)}.`
+}
+
+function hasBeenSubmitted(
+  publicationDetails: CurrentProjectPublicationDetails
+): boolean {
+  return !['private', 'draft'].includes(publicationDetails.publicationStatus)
 }
 
 function formatDate(value: string) {

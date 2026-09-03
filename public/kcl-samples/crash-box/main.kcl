@@ -1,8 +1,8 @@
 // Crash-box with beam cutout and mounting holes
 // A crash box is an energy-absorbing structural component mounted between a vehicle’s bumper beam and the main body. It is designed to deform in a controlled manner during low- to moderate-speed impacts, reducing crash forces transmitted to the chassis and lowering repair costs by localizing damage to a replaceable module.
-// Categories: Automotive
+// Categories: Automotive & Transportation
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // -----------------------------
 // Parameters
@@ -151,25 +151,35 @@ crashBoxWithPocket = subtract(crashBoxShelled, tools = beamEndFillets)
 // -----------------------------
 
 
-leftHoleProfile = circle(
-  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
-  center = [
-    -mountHoleSpacing / 2,
-    -mountHoleOffsetFromTop
-  ],
-  radius = mountHoleRadius,
-)
-rightHoleProfile = circle(
-  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
-  center = [
-    mountHoleSpacing / 2,
-    -mountHoleOffsetFromTop
-  ],
-  radius = mountHoleRadius,
-)
+holePlane = offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm)
+holeSketch = sketch(on = holePlane) {
+  leftHole = circle(
+    start = [
+      -mountHoleSpacing / 2 + mountHoleRadius,
+      -mountHoleOffsetFromTop
+    ],
+    center = [
+      -mountHoleSpacing / 2,
+      -mountHoleOffsetFromTop
+    ],
+  )
+  rightHole = circle(
+    start = [
+      mountHoleSpacing / 2 + mountHoleRadius,
+      -mountHoleOffsetFromTop
+    ],
+    center = [
+      mountHoleSpacing / 2,
+      -mountHoleOffsetFromTop
+    ],
+  )
+}
+leftHoleProfile = region(segments = [holeSketch.leftHole])
+rightHoleProfile = region(segments = [holeSketch.rightHole])
 
 // Apply the hole cut to the crash box with pocket
 holeCutters = extrude([leftHoleProfile, rightHoleProfile], to = offsetPlane(YZ, offset = crashBoxOuterWidth / 2 + 10mm), method = NEW)
+hide(holeSketch)
 
 crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
 

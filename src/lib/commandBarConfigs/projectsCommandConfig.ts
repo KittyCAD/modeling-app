@@ -1,7 +1,10 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDeleteWarningMessage,
+  getHomeProjectDisplayName,
+} from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -19,6 +22,7 @@ import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type {
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
@@ -30,7 +34,7 @@ export type ProjectsCommandSchema = {
     name: string
     libraryId?: string
   }
-  'Move to library': {
+  'Move project': {
     project: string
     library: string
   }
@@ -284,8 +288,20 @@ export function createProjectCommands({
   const defaultMoveToLibraryId = (
     context: ContextFrom<typeof commandBarMachine>
   ) => moveToLibraryOptions(context)[0]?.value ?? ''
+  const hasSelectedMoveToLibraryTarget = ({
+    argumentsToSubmit,
+  }: {
+    argumentsToSubmit: Record<string, unknown>
+  }) =>
+    Boolean(
+      selectedMoveToLibraryTarget({
+        projectId: argumentsToSubmit.project,
+        libraryId: argumentsToSubmit.library,
+      })
+    )
 
   const openProjectCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
     name: 'Open project',
     displayName: `Open project`,
@@ -319,6 +335,7 @@ export function createProjectCommands({
   }
 
   const createProjectCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
     name: 'Create project',
     displayName: `Create project`,
@@ -398,9 +415,10 @@ export function createProjectCommands({
   }
 
   const moveToLibraryCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
-    name: 'Move to library',
-    displayName: 'Move to library',
+    name: 'Move project',
+    displayName: 'Move project',
     description: 'Move a project to another library',
     groupId: 'projects',
     needsReview: true,
@@ -459,12 +477,14 @@ export function createProjectCommands({
       project: {
         inputType: 'options',
         required: true,
+        hidden: hasSelectedMoveToLibraryTarget,
         options: () => projectOptions('moveToLibrary'),
       },
       library: {
         inputType: 'options',
         required: true,
         prepopulate: true,
+        hidden: hasSelectedMoveToLibraryTarget,
         options: moveToLibraryOptions,
         defaultValue: defaultMoveToLibraryId,
       },
@@ -472,6 +492,7 @@ export function createProjectCommands({
   }
 
   const deleteProjectCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
     name: 'Delete project',
     displayName: `Delete project`,
@@ -491,14 +512,23 @@ export function createProjectCommands({
         })
       }
     },
-    reviewMessage: ({ argumentsToSubmit }) =>
-      CommandBarOverwriteWarning({
+    reviewMessage: ({ argumentsToSubmit }) => {
+      const target = selectedHomeProjectTarget(argumentsToSubmit.name, 'delete')
+      const projectDisplayName = projectDisplayNameFromCommandValue(
+        argumentsToSubmit.name,
+        'delete'
+      )
+
+      return CommandBarOverwriteWarning({
         heading: 'Are you sure you want to delete?',
-        message: `This will permanently delete the project "${projectDisplayNameFromCommandValue(
-          argumentsToSubmit.name,
-          'delete'
-        )}" and all its contents.`,
-      }),
+        message: target
+          ? getHomeProjectDeleteWarningMessage(
+              target.project,
+              projectDisplayName
+            )
+          : `This will permanently delete the project "${projectDisplayName}" and all its contents.`,
+      })
+    },
     args: {
       name: {
         inputType: 'options',
@@ -509,6 +539,7 @@ export function createProjectCommands({
   }
 
   const renameProjectCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     icon: 'folder',
     name: 'Rename project',
     displayName: `Rename project`,
@@ -574,6 +605,7 @@ export function createProjectCommands({
   }
 
   const importFileFromURL: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'Import file from URL',
     groupId: 'projects',
     icon: 'file',

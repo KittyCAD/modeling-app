@@ -1,8 +1,8 @@
 // Bench for kids.
 // Shaped like a friendly animal and sturdy enough for climbing.
-// Categories: Maker
+// Categories: Home & Lifestyle; Toys, Games, & Recreation
 
-@settings(defaultLengthUnit = cm)
+@settings(defaultLengthUnit = cm, kclVersion = 2.0)
 
 // Define primary parameters for the bench geometry.
 benchLength = 80 // overall end-to-end size
@@ -17,8 +17,7 @@ benchSeatRadius = benchWidth / 2
 benchSeatElevation = seatHeight - benchSeatRadius
 
 // Flat face of the cylinder sits one radius below the seat.
-seatSketch = startSketchOn(XZ)
-seatProfile = sketch(on = seatSketch) {
+seatProfile = sketch(on = XZ) {
   arc1 = arc(start = [var 20cm, var 15cm], end = [var -20cm, var 15cm], center = [var 0cm, var 15cm])
   line1 = line(start = [var 20cm, var 15cm], end = [var -20cm, var 15cm])
   horizontal(line1)

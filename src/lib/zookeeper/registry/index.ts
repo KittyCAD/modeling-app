@@ -28,11 +28,11 @@ const LAYOUT_TOOLBAR_IDS = new Set(['left-toolbar', 'right-toolbar'])
 // Registry plugins are imported eagerly while App is still initializing.
 // Keep Zookeeper UI behind lazy imports so importing the plugin does not pull
 // in boot.ts through components that use the global app context.
-const MlEphantConversationPaneWrapper = lazy(async () => {
-  const { MlEphantConversationPaneWrapper } = await import(
-    '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper'
+const ZookeeperConversationPaneWrapper = lazy(async () => {
+  const { ZookeeperConversationPaneWrapper } = await import(
+    '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
   )
-  return { default: MlEphantConversationPaneWrapper }
+  return { default: ZookeeperConversationPaneWrapper }
 })
 
 const ZookeeperCreditsMenu = lazy(async () => {
@@ -46,7 +46,7 @@ const ZookeeperConversationPane = (props: AreaTypeComponentProps) =>
   createElement(
     Suspense,
     { fallback: null },
-    createElement(MlEphantConversationPaneWrapper, props)
+    createElement(ZookeeperConversationPaneWrapper, props)
   )
 
 const ZookeeperCreditsStatusBarItem = () =>
@@ -87,7 +87,7 @@ const zookeeperLayoutArea = defineRegistryItem({
   id: 'zookeeper.layout-area',
   provides: [
     provide(layoutAreaLibraryValueSpec, {
-      [AreaType.TTC]: {
+      [AreaType.Zookeeper]: {
         hide: () => false,
         shortcut: 'Ctrl + T',
         cssClassOverrides: {

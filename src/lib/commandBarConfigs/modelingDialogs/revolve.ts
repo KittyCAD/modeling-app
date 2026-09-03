@@ -51,7 +51,6 @@ export const revolveDialogOverrides = {
   },
   axisOrEdge: {
     inputType: 'options',
-    displayName: 'Reference',
     required: true,
     defaultValue: ({
       argumentsToSubmit,
@@ -64,6 +63,7 @@ export const revolveDialogOverrides = {
     ],
     hidden: isEditingNode,
     dialog: {
+      displayName: 'Reference',
       group: 'axis',
       order: -10,
       controlStyle: 'segmented',
@@ -73,7 +73,7 @@ export const revolveDialogOverrides = {
     required: (context) =>
       getRevolveAxisMode(context.argumentsToSubmit) === 'Axis',
     inputType: 'options',
-    displayName: 'Sketch axis',
+    displayName: 'Sketch Axis',
     defaultValue: 'X',
     hidden: (context) =>
       isUsingModelingDialog(context) &&
@@ -83,6 +83,7 @@ export const revolveDialogOverrides = {
       { name: 'Y axis', value: 'Y' },
     ],
     dialog: {
+      displayName: 'Sketch axis',
       group: 'axis',
       order: 0,
       controlStyle: 'segmented',
@@ -92,19 +93,20 @@ export const revolveDialogOverrides = {
     required: (context) =>
       getRevolveAxisMode(context.argumentsToSubmit) === 'Edge',
     inputType: 'selection',
-    displayName: 'Axis edge',
     selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
     multiple: false,
     hidden: (context) =>
       isEditingNode(context) ||
       getRevolveAxisMode(context.argumentsToSubmit) !== 'Edge',
-    dialog: compactSelectionDialog('axis', 'Select an axis edge', {
-      order: 0,
-    }),
+    dialog: {
+      displayName: 'Axis edge',
+      ...compactSelectionDialog('axis', 'Select an axis edge', {
+        order: 0,
+      }),
+    },
   },
   extentType: {
     inputType: 'options',
-    displayName: 'Type',
     required: isUsingModelingDialog,
     skip: true,
     defaultValue: ({
@@ -118,6 +120,7 @@ export const revolveDialogOverrides = {
       { name: 'Angle', value: 'angle' },
     ],
     dialog: {
+      displayName: 'Type',
       group: 'extent',
       order: -20,
       controlStyle: 'segmented',
@@ -125,7 +128,6 @@ export const revolveDialogOverrides = {
   },
   directionMode: {
     inputType: 'options',
-    displayName: 'Direction',
     required: (context) =>
       isUsingModelingDialog(context) &&
       getRevolveExtentType(context.argumentsToSubmit) === 'angle',
@@ -144,6 +146,7 @@ export const revolveDialogOverrides = {
       { name: 'Two sides', value: 'twoSides' },
     ],
     dialog: {
+      displayName: 'Direction',
       group: 'extent',
       order: -10,
       controlStyle: 'segmented',
@@ -174,8 +177,8 @@ export const revolveDialogOverrides = {
         getRevolveExtentType(argumentsToSubmit) === 'angle' &&
         getRevolveDirectionMode(argumentsToSubmit) === 'twoSides'
     ),
-    displayName: 'Second angle',
     dialog: {
+      displayName: 'Second angle',
       group: 'extent',
       order: 10,
     },
@@ -187,15 +190,15 @@ export const revolveDialogOverrides = {
     },
   },
   tagStart: {
-    displayName: 'Start face tag',
     dialog: {
+      displayName: 'Start face tag',
       group: 'advanced',
       order: 10,
     },
   },
   tagEnd: {
-    displayName: 'End face tag',
     dialog: {
+      displayName: 'End face tag',
       group: 'advanced',
       order: 20,
     },

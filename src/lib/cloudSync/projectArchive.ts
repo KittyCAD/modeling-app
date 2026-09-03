@@ -3,6 +3,7 @@ import type {
   ProjectArchiveFile,
   ProjectManifest,
   ProjectUploadBody,
+  ProjectUploadPublicationMetadata,
   Revision,
 } from '@src/lib/cloudSync/types'
 import {
@@ -14,9 +15,6 @@ import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDefaultFileFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
-  normalizeProjectTomlContents,
-  setCloudProjectIdInProjectTomlContents,
-  setProjectDefaultFileInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isArray } from '@src/lib/utils'
@@ -29,30 +27,74 @@ export function getRemoteProjectTitleForProjectToml(title?: string) {
   return title?.trim() || CLOUD_SYNC_UNTITLED_PROJECT_TITLE
 }
 
+type PrepareProjectFilesForCloudUploadOptions = {
+  expectedRevision?: Revision
+  entrypointPath?: string
+  publicationMetadata?: ProjectUploadPublicationMetadata
+  deletedPaths?: string[]
+}
+
 export function prepareProjectFilesForCloudUpload(
   projectPath: string,
   files: ProjectArchiveFile[],
   expectedRevision?: Revision
+): {
+  body: ProjectUploadBody
+  files: ProjectArchiveFile[]
+}
+export function prepareProjectFilesForCloudUpload(
+  projectPath: string,
+  files: ProjectArchiveFile[],
+  options?: PrepareProjectFilesForCloudUploadOptions
+): {
+  body: ProjectUploadBody
+  files: ProjectArchiveFile[]
+}
+export function prepareProjectFilesForCloudUpload(
+  projectPath: string,
+  files: ProjectArchiveFile[],
+  optionsOrExpectedRevision?:
+    | Revision
+    | PrepareProjectFilesForCloudUploadOptions
 ) {
+  const expectedRevision =
+    typeof optionsOrExpectedRevision === 'string'
+      ? optionsOrExpectedRevision
+      : optionsOrExpectedRevision?.expectedRevision
+  const preferredEntrypointPath =
+    typeof optionsOrExpectedRevision === 'string'
+      ? undefined
+      : optionsOrExpectedRevision?.entrypointPath
   const normalizedFiles = normalizeProjectArchiveFilesForCloudSync(files)
-  const entrypointPath = getUploadEntrypointPath(normalizedFiles)
-  const projectTomlPath = ensureProjectTomlUploadFile(
+  const entrypointPath = getUploadEntrypointPath(
     normalizedFiles,
-    entrypointPath
+    preferredEntrypointPath
   )
+  const projectTomlPath = getUploadProjectTomlPath(normalizedFiles)
   const projectTitle =
     getProjectTomlTitle(normalizedFiles) ||
     localFs.basename(projectPath.replaceAll('\\', '/').replace(/\/+$/g, ''))
-  ensureProjectTomlUploadTitle(normalizedFiles, projectTitle || 'project')
+  const publicationMetadata =
+    typeof optionsOrExpectedRevision === 'string'
+      ? undefined
+      : optionsOrExpectedRevision?.publicationMetadata
   const body: ProjectUploadBody = {
     title: projectTitle || 'project',
-    description: '',
-    category_ids: [],
+    description: publicationMetadata?.description ?? '',
+    category_ids: publicationMetadata?.category_ids ?? [],
     entrypoint_path: entrypointPath,
     project_toml_path: projectTomlPath,
   }
   if (expectedRevision) {
     body.expected_revision = expectedRevision
+  }
+  if (
+    typeof optionsOrExpectedRevision !== 'string' &&
+    optionsOrExpectedRevision?.deletedPaths?.length
+  ) {
+    body.deleted_paths = Array.from(
+      new Set(optionsOrExpectedRevision.deletedPaths.map(normalizeRelativePath))
+    ).sort()
   }
 
   return {
@@ -69,20 +111,12 @@ export function normalizeProjectArchiveFilesForCloudSync(
     return {
       ...file,
       relativePath,
-      data:
-        relativePath === PROJECT_SETTINGS_FILE_NAME
-          ? new TextEncoder().encode(
-              normalizeProjectTomlContents(new TextDecoder().decode(file.data))
-            )
-          : file.data,
+      data: file.data,
     }
   })
 }
 
-function ensureProjectTomlUploadFile(
-  files: ProjectArchiveFile[],
-  entrypointPath: string
-) {
+function getUploadProjectTomlPath(files: ProjectArchiveFile[]) {
   const projectTomlFile = files.find(
     (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
   )
@@ -90,34 +124,8 @@ function ensureProjectTomlUploadFile(
     return projectTomlFile.relativePath
   }
 
-  files.push({
-    relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new TextEncoder().encode(
-      `default_file = ${JSON.stringify(entrypointPath)}\n`
-    ),
-  })
-  return PROJECT_SETTINGS_FILE_NAME
-}
-
-function ensureProjectTomlUploadTitle(
-  files: ProjectArchiveFile[],
-  title: string
-) {
-  const projectTomlFile = files.find(
-    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-  )
-  if (!projectTomlFile) {
-    return
-  }
-
-  const existingProjectToml = new TextDecoder().decode(projectTomlFile.data)
-  if (getProjectTitleFromProjectTomlContents(existingProjectToml)) {
-    return
-  }
-
-  projectTomlFile.data = new TextEncoder().encode(
-    setProjectTitleInProjectTomlContents(existingProjectToml, title)
-  )
+  // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+  throw new Error('Cloud project uploads require an existing project.toml.')
 }
 
 function getProjectTomlTitle(files: ProjectArchiveFile[]) {
@@ -137,14 +145,17 @@ export function getProjectArchiveEntrypointPath(
   files: ProjectArchiveFile[],
   preferredEntrypointPath?: string
 ) {
+  const filePaths = new Set(files.map((file) => file.relativePath))
   const normalizedPreferredEntrypointPath = preferredEntrypointPath
     ? normalizeRelativePath(preferredEntrypointPath)
     : undefined
-  if (normalizedPreferredEntrypointPath) {
+  if (
+    normalizedPreferredEntrypointPath &&
+    filePaths.has(normalizedPreferredEntrypointPath)
+  ) {
     return normalizedPreferredEntrypointPath
   }
 
-  const filePaths = new Set(files.map((file) => file.relativePath))
   const projectTomlDefaultFile = getProjectTomlDefaultFile(files)
   if (projectTomlDefaultFile && filePaths.has(projectTomlDefaultFile)) {
     return projectTomlDefaultFile
@@ -166,8 +177,14 @@ export function getProjectArchiveEntrypointPath(
   return undefined
 }
 
-function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
-  const entrypointPath = getProjectArchiveEntrypointPath(files)
+function getUploadEntrypointPath(
+  files: ProjectArchiveFile[],
+  preferredEntrypointPath?: string
+) {
+  const entrypointPath = getProjectArchiveEntrypointPath(
+    files,
+    preferredEntrypointPath
+  )
   if (entrypointPath) {
     return entrypointPath
   }
@@ -219,33 +236,6 @@ export function withProjectTitleInArchiveFiles(
   )
 }
 
-export function withProjectCloudProjectIdInArchiveFiles(
-  files: ProjectArchiveFile[],
-  projectId: string,
-  environmentName?: string
-) {
-  if (!environmentName) {
-    return files
-  }
-
-  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
-    setCloudProjectIdInProjectTomlContents(contents, environmentName, projectId)
-  )
-}
-
-export function withProjectDefaultFileInArchiveFiles(
-  files: ProjectArchiveFile[],
-  defaultFile?: string
-) {
-  if (!defaultFile) {
-    return files
-  }
-
-  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
-    setProjectDefaultFileInProjectTomlContents(contents, defaultFile)
-  )
-}
-
 export function withUpdatedProjectTomlInArchiveFiles(
   files: ProjectArchiveFile[],
   update: (contents: string) => string
@@ -282,27 +272,6 @@ export function withUpdatedProjectTomlInArchiveFiles(
   }
 
   return nextFiles
-}
-
-export function withRemoteProjectMetadataInArchiveFiles(
-  files: ProjectArchiveFile[],
-  title: string | undefined,
-  projectId: string,
-  environmentName?: string,
-  entrypointPath?: string
-) {
-  const filesWithMetadata = withProjectCloudProjectIdInArchiveFiles(
-    withProjectTitleInArchiveFiles(
-      files,
-      getRemoteProjectTitleForProjectToml(title)
-    ),
-    projectId,
-    environmentName
-  )
-  return withProjectDefaultFileInArchiveFiles(
-    filesWithMetadata,
-    getProjectArchiveEntrypointPath(filesWithMetadata, entrypointPath)
-  )
 }
 
 export function projectManifestsEqual(

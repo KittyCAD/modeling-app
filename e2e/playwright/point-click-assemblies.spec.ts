@@ -13,6 +13,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
+import { isStepFile } from '@src/lib/fileExtensions'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 async function insertPartIntoAssembly(
@@ -22,21 +23,66 @@ async function insertPartIntoAssembly(
   cmdBar: CmdBarFixture,
   page: Page
 ) {
+  const insertingStepFile = isStepFile(path)
+
   await toolbar.insertButton.click()
   await cmdBar.selectOption({ name: path }).click()
   await cmdBar.expectState({
     stage: 'arguments',
     currentArgKey: 'localName',
     currentArgValue: '',
-    headerArguments: { Path: path, LocalName: '' },
+    headerArguments: {
+      Path: path,
+      LocalName: '',
+      ...(insertingStepFile ? { Representation: '' } : {}),
+    },
     highlightedHeaderArg: 'localName',
     commandName: 'Insert',
   })
   await page.keyboard.insertText(alias)
   await cmdBar.progressCmdBar()
+
+  if (insertingStepFile) {
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'Representation',
+      currentArgValue: '',
+      headerArguments: {
+        Path: path,
+        LocalName: alias,
+        Representation: '',
+      },
+      highlightedHeaderArg: 'Representation',
+      commandName: 'Insert',
+    })
+    await expect(
+      page.getByText(
+        'Choose how this STEP file should be represented in your model.'
+      )
+    ).toBeVisible()
+    await expect(
+      page.getByText(
+        'Faster to import. Best when you only need visual reference geometry.'
+      )
+    ).toBeVisible()
+    await expect(
+      page.getByText('B-rep (experimental)', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText(
+        'Under development and currently supports only simple shapes. Imported geometry is not editable; use Mesh for now.'
+      )
+    ).toBeVisible()
+    await cmdBar.progressCmdBar()
+  }
+
   await cmdBar.expectState({
     stage: 'review',
-    headerArguments: { Path: path, LocalName: alias },
+    headerArguments: {
+      Path: path,
+      LocalName: alias,
+      ...(insertingStepFile ? { Representation: 'mesh' } : {}),
+    },
     commandName: 'Insert',
   })
   await cmdBar.progressCmdBar()
@@ -187,10 +233,12 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 plane'
+      const selectedObjects =
+        selectionType === 'scene' ? '1 compositeSolid' : '1 plane'
       async function selectBracket() {
         if (selectionType === 'scene') {
-          const [clickBracketInScene] = scene.makeMouseHelpers(0.5, 0.5, {
+          // The bracket is only visible in the lower-right of the default view
+          const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
             format: 'ratio',
           })
           await clickBracketInScene()
@@ -210,7 +258,7 @@ test.describe(
           await fsp.mkdir(bracketDir, { recursive: true })
           await Promise.all([
             fsp.copyFile(
-              path.join('public', 'kcl-samples-legacy', 'bracket', 'main.kcl'),
+              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
               path.join(bracketDir, 'bracket.kcl')
             ),
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
@@ -249,6 +297,7 @@ test.describe(
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            X: '5',
           },
           highlightedHeaderArg: 'objects',
           commandName: 'Translate',
@@ -256,22 +305,12 @@ test.describe(
         await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-          },
-          commandName: 'Translate',
-          reviewValidationError:
-            'semantic: Expected `x`, `y`, or `z` to be provided.',
-        })
-        await cmdBar.clickOptionalArgument('x')
-        await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'x',
-          currentArgValue: '0',
+          currentArgValue: '5',
           headerArguments: {
             Objects: selectedObjects,
-            X: '',
+            X: '5',
           },
           highlightedHeaderArg: 'x',
           commandName: 'Translate',
@@ -346,6 +385,7 @@ test.describe(
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            Factor: '2',
           },
           highlightedHeaderArg: 'objects',
           commandName: 'Scale',
@@ -353,24 +393,14 @@ test.describe(
         await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-          },
-          commandName: 'Scale',
-          reviewValidationError:
-            'semantic: Expected `x`, `y`, `z` or `factor` to be provided.',
-        })
-        await cmdBar.clickOptionalArgument('x')
-        await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'x',
-          currentArgValue: '1',
+          currentArgKey: 'factor',
+          currentArgValue: '2',
           headerArguments: {
             Objects: selectedObjects,
-            X: '',
+            Factor: '2',
           },
-          highlightedHeaderArg: 'x',
+          highlightedHeaderArg: 'factor',
           commandName: 'Scale',
         })
         await page.keyboard.insertText('1.1')
@@ -379,7 +409,7 @@ test.describe(
           stage: 'review',
           headerArguments: {
             Objects: selectedObjects,
-            X: '1.1',
+            Factor: '1.1',
           },
           commandName: 'Scale',
         })
@@ -389,7 +419,7 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `translate(bracket, x = 1, y = 2)
-          scale(bracket, x = 1.1)`,
+          scale(bracket, factor = 1.1)`,
           { shouldNormalise: true }
         )
       })
@@ -400,20 +430,19 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            X: '1.1',
+            Factor: '1.1',
           },
           commandName: 'Scale',
         })
-        await cmdBar.clickOptionalArgument('y')
+        await cmdBar.clickHeaderArgument('factor')
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'y',
-          currentArgValue: '1',
+          currentArgKey: 'factor',
+          currentArgValue: '1.1',
           headerArguments: {
-            X: '1.1',
-            Y: '',
+            Factor: '1.1',
           },
-          highlightedHeaderArg: 'y',
+          highlightedHeaderArg: 'factor',
           commandName: 'Scale',
         })
         await page.keyboard.insertText('1.2')
@@ -421,19 +450,15 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            X: '1.1',
-            Y: '1.2',
+            Factor: '1.2',
           },
           commandName: 'Scale',
         })
         await cmdBar.submit()
         await scene.settled()
-        await editor.expectEditor.toContain(
-          `scale(bracket, x = 1.1, y = 1.2)`,
-          {
-            shouldNormalise: true,
-          }
-        )
+        await editor.expectEditor.toContain(`scale(bracket, factor = 1.2)`, {
+          shouldNormalise: true,
+        })
       })
 
       await test.step('Set rotate on module', async () => {
@@ -447,6 +472,8 @@ test.describe(
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            Axis: 'Z',
+            Angle: '45deg',
           },
           highlightedHeaderArg: 'objects',
           commandName: 'Rotate',
@@ -454,24 +481,15 @@ test.describe(
         await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-          },
-          commandName: 'Rotate',
-          reviewValidationError:
-            'semantic: Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.',
-        })
-        await cmdBar.clickOptionalArgument('roll')
-        await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'roll',
-          currentArgValue: '0',
+          currentArgKey: 'angle',
+          currentArgValue: '45deg',
           headerArguments: {
             Objects: selectedObjects,
-            Roll: '',
+            Axis: 'Z',
+            Angle: '45deg',
           },
-          highlightedHeaderArg: 'roll',
+          highlightedHeaderArg: 'angle',
           commandName: 'Rotate',
         })
         await page.keyboard.insertText('0.1')
@@ -480,7 +498,8 @@ test.describe(
           stage: 'review',
           headerArguments: {
             Objects: selectedObjects,
-            Roll: '0.1',
+            Axis: 'Z',
+            Angle: '0.1',
           },
           commandName: 'Rotate',
         })
@@ -491,8 +510,8 @@ test.describe(
         await editor.expectEditor.toContain(
           `
           translate(bracket, x = 1, y = 2)
-          scale(bracket, x = 1.1, y = 1.2)
-          rotate(bracket, roll = 0.1)
+          scale(bracket, factor = 1.2)
+          rotate(bracket, axis = Z, angle = 0.1)
           `,
           { shouldNormalise: true }
         )
@@ -504,20 +523,21 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Roll: '0.1',
+            Axis: 'Z',
+            Angle: '0.1',
           },
           commandName: 'Rotate',
         })
-        await cmdBar.clickOptionalArgument('yaw')
+        await cmdBar.clickHeaderArgument('angle')
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'yaw',
-          currentArgValue: '0',
+          currentArgKey: 'angle',
+          currentArgValue: '0.1',
           headerArguments: {
-            Roll: '0.1',
-            Yaw: '',
+            Axis: 'Z',
+            Angle: '0.1',
           },
-          highlightedHeaderArg: 'yaw',
+          highlightedHeaderArg: 'angle',
           commandName: 'Rotate',
         })
         await page.keyboard.insertText('0.2')
@@ -525,15 +545,15 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Roll: '0.1',
-            Yaw: '0.2',
+            Axis: 'Z',
+            Angle: '0.2',
           },
           commandName: 'Rotate',
         })
         await cmdBar.submit()
         await scene.settled()
         await editor.expectEditor.toContain(
-          `rotate(bracket, roll = 0.1, yaw = 0.2)`,
+          `rotate(bracket, axis = Z, angle = 0.2)`,
           {
             shouldNormalise: true,
           }
@@ -587,7 +607,7 @@ test.describe(
         await fsp.mkdir(bracketDir, { recursive: true })
         await Promise.all([
           fsp.copyFile(
-            path.join('public', 'kcl-samples-legacy', 'bracket', 'main.kcl'),
+            path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
             path.join(bracketDir, 'bracket.kcl')
           ),
           fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
@@ -689,6 +709,7 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
+          @(targetRepresentation = mesh)
           import "cube.step" as cube
         `,
           { shouldNormalise: true }
@@ -850,7 +871,7 @@ foreign
           await fsp.mkdir(projectDir, { recursive: true })
           await Promise.all([
             fsp.copyFile(
-              path.join('public', 'kcl-samples-legacy', 'washer', 'main.kcl'),
+              path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
               path.join(projectDir, 'washer.kcl')
             ),
             fsp.writeFile(

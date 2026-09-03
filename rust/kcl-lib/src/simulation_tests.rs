@@ -5,6 +5,14 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::units::UnitArea;
+use kittycad_modeling_cmds::units::UnitDensity;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::units::UnitMass;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
 use uuid::Uuid;
 
@@ -13,6 +21,7 @@ use crate::ExecState;
 use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
+use crate::errors::Tag;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactGraphMermaidExt;
 use crate::execution::EnvironmentRef;
@@ -27,6 +36,7 @@ use crate::walk::Node;
 use crate::walk::walk;
 
 mod kcl_samples;
+mod region_liveness_engine_contract;
 
 /// A simulation test.
 #[derive(Debug, Clone)]
@@ -42,9 +52,15 @@ struct Test {
     /// True to skip asserting the artifact graph and only write it. The default
     /// is false and to assert it.
     skip_assert_artifact_graph: bool,
+    /// Whether a successful execution should snapshot physical properties.
+    snapshot_physical_properties: bool,
+    /// If set, assert that execution emits exactly this many deprecation warnings.
+    expected_deprecation_warnings: Option<usize>,
 }
 
 const REPO_ROOT: &str = "../..";
+const KCL_SAMPLE_DEPRECATION_VERSION: &str = "2.0";
+const MATERIAL_DENSITY_KG_PER_CUBIC_METER: f64 = 1000.0;
 
 fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
@@ -58,7 +74,14 @@ impl Test {
             input_dir: Path::new("tests").join(name),
             output_dir: Path::new("tests").join(name),
             skip_assert_artifact_graph: false,
+            snapshot_physical_properties: true,
+            expected_deprecation_warnings: None,
         }
+    }
+
+    fn without_physical_properties(mut self) -> Self {
+        self.snapshot_physical_properties = false;
+        self
     }
 
     /// Read in the entry point file and return its contents as a string.
@@ -277,6 +300,105 @@ async fn execute(test_name: &str, render_to_png: bool) {
     execute_test(&Test::new(test_name), render_to_png, false).await
 }
 
+async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
+    // Ask for mass first because it returns "Nothing to export" without
+    // closing the engine connection when a successful KCL program produces no
+    // physical body. Bounding box requests close empty-scene connections.
+    let mass_response = match ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::Mass::builder()
+                    .material_density(MATERIAL_DENSITY_KG_PER_CUBIC_METER)
+                    .material_density_unit(UnitDensity::KilogramsPerCubicMeter)
+                    .output_unit(UnitMass::Grams)
+                    .build(),
+            ),
+        )
+        .await
+    {
+        Ok(response) => response,
+        Err(err)
+            if err.message() == "Nothing to export"
+                // Surface bodies have area and bounds, but no volume from
+                // which the engine can calculate mass.
+                || err.message() == "internal error: unknown" =>
+        {
+            return None;
+        }
+        Err(err) => panic!("simulation test should measure the model mass: {err}"),
+    };
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Mass(mass),
+    } = mass_response
+    else {
+        panic!("Expected a mass response, got {mass_response:?}");
+    };
+
+    let bounding_box_response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::BoundingBox::builder()
+                    .output_unit(UnitLength::Millimeters)
+                    .build(),
+            ),
+        )
+        .await
+        .expect("simulation test should measure the model bounding box");
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BoundingBox(bounding_box),
+    } = bounding_box_response
+    else {
+        panic!("Expected a bounding box response, got {bounding_box_response:?}");
+    };
+
+    let surface_area_response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::SurfaceArea::builder()
+                    .output_unit(UnitArea::SquareMillimeters)
+                    .build(),
+            ),
+        )
+        .await
+        .expect("simulation test should measure the model surface area");
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area),
+    } = surface_area_response
+    else {
+        panic!("Expected a surface area response, got {surface_area_response:?}");
+    };
+
+    Some(serde_json::json!({
+        "bounding_box": {
+            "center": bounding_box.center,
+            "dimensions": bounding_box.dimensions,
+            "unit": UnitLength::Millimeters,
+        },
+        "weight": {
+            "value": mass.mass,
+            "unit": mass.output_unit,
+            "material_density": MATERIAL_DENSITY_KG_PER_CUBIC_METER,
+            "material_density_unit": UnitDensity::KilogramsPerCubicMeter,
+        },
+        "surface_area": {
+            "value": surface_area.surface_area,
+            "unit": surface_area.output_unit,
+        },
+    }))
+}
+
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
@@ -284,11 +406,40 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
     // Run the program.
     let exec_res = execute_with_retries(&RetryConfig::default(), || {
-        crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
+        crate::test_server::execute_and_snapshot_ast_no_close(
+            ast.clone(),
+            Some(test.entry_point.clone()),
+            export_step,
+            test.expected_deprecation_warnings
+                .map(|_| KCL_SAMPLE_DEPRECATION_VERSION),
+        )
     })
     .await;
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
+            if let Some(expected_deprecation_warnings) = test.expected_deprecation_warnings {
+                let deprecation_warnings = exec_state
+                    .issues()
+                    .iter()
+                    .filter(|issue| issue.tag == Tag::Deprecated)
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    deprecation_warnings.len(),
+                    expected_deprecation_warnings,
+                    "KCL sample `{}` expected {expected_deprecation_warnings} deprecation warnings, got: {deprecation_warnings:#?}",
+                    test.name,
+                );
+            }
+
+            // Depth survey: when KCL_DEPTH_HIGH_WATER_FILE is set, append the
+            // machine executor's high-water call depth for this program, to
+            // validate the runaway guard's default limit against real code.
+            if let Ok(path) = std::env::var("KCL_DEPTH_HIGH_WATER_FILE") {
+                use std::io::Write;
+                if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+                    let _ = writeln!(f, "{}\t{}", exec_state.machine_depth_high_water(), test.name);
+                }
+            }
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(
@@ -296,8 +447,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     fail_path.to_string_lossy()
                 )
             }
-            if render_to_png {
-                twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
+            if render_to_png
+                && let Err(err) = twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99)
+            {
+                panic!(
+                    "Image assertion failed: {err}; input KCL file: {}",
+                    test.entry_point.display()
+                );
             }
 
             // Ensure the step has data.
@@ -339,14 +495,36 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     .flatten(),
             );
 
-            // Filter out Z0005 (old sketch syntax) from test snapshots
-            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            // Filter out Z0005 (old sketch syntax) from test snapshots.
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
             let (outcome, module_state, responses) =
                 exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
+            let physical_properties = if test.snapshot_physical_properties {
+                physical_properties(&ctx).await
+            } else {
+                None
+            };
+            ctx.close().await;
 
-            let snapshot_results = common_snapshots(test, outcome.variables, responses);
+            let mut snapshot_results = common_snapshots(test, outcome.variables, responses);
+            if let Some(physical_properties) = physical_properties {
+                snapshot_results.push(catch_unwind(AssertUnwindSafe(|| {
+                    assert_snapshot(test, "Physical properties", || {
+                        insta::assert_json_snapshot!("physical_properties", physical_properties)
+                    })
+                })));
+            } else {
+                let physical_properties_snap_path = test.output_dir.join("physical_properties.snap");
+                if is_writing() {
+                    let _ = std::fs::remove_file(&physical_properties_snap_path);
+                } else if physical_properties_snap_path.exists() {
+                    panic!(
+                        "This test case produced no physical model, but it previously did. If this is intended, delete kcl-lib/{}.",
+                        physical_properties_snap_path.to_string_lossy()
+                    );
+                }
+            }
 
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
 
@@ -1579,6 +1757,27 @@ mod export_var_only_at_top_level {
         super::execute(TEST_NAME, false).await
     }
 }
+mod import_nested_runtime_error {
+    const TEST_NAME: &str = "import_nested_runtime_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod assembly_non_default_units {
     const TEST_NAME: &str = "assembly_non_default_units";
 
@@ -2081,7 +2280,7 @@ mod mike_stress_test {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute_test(&super::Test::new(TEST_NAME).without_physical_properties(), true, false).await
     }
 }
 mod pentagon_fillet_sugar {
@@ -6360,6 +6559,24 @@ mod fillet_ambiguous_region_edge_specifier_broad {
         super::execute(TEST_NAME, true).await
     }
 }
+mod chamfer_multiple_auto_hole_region_face_api {
+    const TEST_NAME: &str = "chamfer_multiple_auto_hole_region_face_api";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod gdt_face_api_edge_specifier {
     const TEST_NAME: &str = "gdt_face_api_edge_specifier";
 
@@ -6648,6 +6865,27 @@ mod runtime_exit_in_index {
         super::execute(TEST_NAME, false).await
     }
 }
+mod scale_helix {
+    const TEST_NAME: &str = "scale_helix";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod translate_helix {
     const TEST_NAME: &str = "translate_helix";
 
@@ -6669,8 +6907,974 @@ mod translate_helix {
         super::execute(TEST_NAME, true).await
     }
 }
+mod rotate_helix {
+    const TEST_NAME: &str = "rotate_helix";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_block_arc_direction_cw {
+    const TEST_NAME: &str = "sketch_block_arc_direction_cw";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod clone_a_pattern {
     const TEST_NAME: &str = "clone_a_pattern";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod rolling_ball_chamfer_interacting_edges {
+    const TEST_NAME: &str = "rolling_ball_chamfer_interacting_edges";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod sketch_block_arc_direction_invalid {
+    const TEST_NAME: &str = "sketch_block_arc_direction_invalid";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod clone_an_import {
+    const TEST_NAME: &str = "clone_an_import";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_extrude_v1 {
+    const TEST_NAME: &str = "named_views_hide_extrude_v1";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_sweep_v1 {
+    const TEST_NAME: &str = "named_views_hide_sweep_v1";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_sketch_v1 {
+    const TEST_NAME: &str = "named_views_hide_sketch_v1";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_helix {
+    const TEST_NAME: &str = "named_views_hide_helix";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_imported {
+    const TEST_NAME: &str = "named_views_hide_imported";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_plane {
+    const TEST_NAME: &str = "named_views_hide_plane";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_extrude {
+    const TEST_NAME: &str = "named_views_hide_extrude";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_revolve {
+    const TEST_NAME: &str = "named_views_hide_revolve";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_sweep {
+    const TEST_NAME: &str = "named_views_hide_sweep";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_loft {
+    const TEST_NAME: &str = "named_views_hide_loft";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_sketch {
+    const TEST_NAME: &str = "named_views_hide_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_pattern {
+    const TEST_NAME: &str = "named_views_hide_pattern";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_hide_gdt {
+    const TEST_NAME: &str = "named_views_hide_gdt";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod named_views_module_explicit_import {
+    const TEST_NAME: &str = "named_views_module_explicit_import";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_module_prelude {
+    const TEST_NAME: &str = "named_views_module_prelude";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_module_requires_opt_in {
+    const TEST_NAME: &str = "named_views_module_requires_opt_in";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_oriented {
+    const TEST_NAME: &str = "named_views_oriented";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_directed {
+    const TEST_NAME: &str = "named_views_directed";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_directed_zero_direction {
+    const TEST_NAME: &str = "named_views_directed_zero_direction";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_units_are_millimeters {
+    const TEST_NAME: &str = "named_views_units_are_millimeters";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_units_in_inch_default_file {
+    const TEST_NAME: &str = "named_views_units_in_inch_default_file";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_negative_distance {
+    const TEST_NAME: &str = "named_views_negative_distance";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_baseline_show {
+    const TEST_NAME: &str = "named_views_baseline_show";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_baseline_hide {
+    const TEST_NAME: &str = "named_views_baseline_hide";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_duplicate_name {
+    const TEST_NAME: &str = "named_views_duplicate_name";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_duplicate_across_modules {
+    const TEST_NAME: &str = "named_views_duplicate_across_modules";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_duplicate_from_a_function {
+    const TEST_NAME: &str = "named_views_duplicate_from_a_function";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_except_a_sketch_block {
+    const TEST_NAME: &str = "named_views_except_a_sketch_block";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod clone_dodecahedron {
+    const TEST_NAME: &str = "clone_dodecahedron";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod mirror3d_and_boolean {
+    const TEST_NAME: &str = "mirror3d_and_boolean";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod use_point_from_other_sketch {
+    const TEST_NAME: &str = "use_point_from_other_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_nested_foreign_error {
+    const TEST_NAME: &str = "import_nested_foreign_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_error_in_other_module_with_overflow {
+    const TEST_NAME: &str = "import_error_in_other_module_with_overflow";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod early_return_v3 {
+    const TEST_NAME: &str = "early_return_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_cross_module {
+    const TEST_NAME: &str = "early_return_cross_module";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_geometry {
+    const TEST_NAME: &str = "early_return_geometry";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod if_else_scoped {
+    const TEST_NAME: &str = "if_else_scoped";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod if_arm_scoped_geometry {
+    const TEST_NAME: &str = "if_arm_scoped_geometry";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod clone_a_blend {
+    const TEST_NAME: &str = "clone_a_blend";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod chamfer_multiple_tags_v3 {
+    const TEST_NAME: &str = "chamfer_multiple_tags_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sweep_profile_defaults_v3 {
+    const TEST_NAME: &str = "sweep_profile_defaults_v3";
 
     /// Test parsing KCL.
     #[test]

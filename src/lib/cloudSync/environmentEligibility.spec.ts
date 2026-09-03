@@ -5,16 +5,16 @@ import {
   configureCloudSyncLocalFileSystem,
 } from '@src/lib/cloudSync'
 import {
-  deleteCloudSyncTestDatabase,
+  getAllOutboxEntries,
+  getProjectMetadata,
+} from '@src/lib/cloudSync/syncDb'
+import {
   createCloudSyncTestFs,
+  deleteCloudSyncTestDatabase,
   getFetchMethod,
   getFetchUrl,
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
-import {
-  getAllOutboxEntries,
-  getProjectMetadata,
-} from '@src/lib/cloudSync/syncDb'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -78,8 +78,8 @@ describe('cloud sync environment eligibility', () => {
       enabled: true,
       baseUrl,
       environmentName: currentEnvironmentName,
-      projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: true,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
     })
 
     await vi.waitFor(() => {

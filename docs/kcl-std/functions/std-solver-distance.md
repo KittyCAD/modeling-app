@@ -60,7 +60,7 @@ profile = sketch(on = XY) {
   distance([edge1.start, edge2.end]) == 5mm
 }
 
-solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 
 ```
 

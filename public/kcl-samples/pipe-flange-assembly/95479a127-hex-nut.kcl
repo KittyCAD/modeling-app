@@ -1,0 +1,30 @@
+// Hex Nut
+// Hex nut for the screws in the pipe flange assembly
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "parameters.kcl"
+
+export fn hexNut() {
+  nutSketch = sketch(on = XY) {
+    hex1 = line(start = [var 0.46875in, var 0.2706329387in], end = [var 0.46875in, var -0.2706329387in])
+    hex2 = line(start = [var 0.46875in, var -0.2706329387in], end = [var 0in, var -0.5412658774in])
+    coincident([hex1.end, hex2.start])
+    hex3 = line(start = [var 0in, var -0.5412658774in], end = [var -0.46875in, var -0.2706329387in])
+    coincident([hex2.end, hex3.start])
+    hex4 = line(start = [var -0.46875in, var -0.2706329387in], end = [var -0.46875in, var 0.2706329387in])
+    coincident([hex3.end, hex4.start])
+    hex5 = line(start = [var -0.46875in, var 0.2706329387in], end = [var 0in, var 0.5412658774in])
+    coincident([hex4.end, hex5.start])
+    hex6 = line(start = [var 0in, var 0.5412658774in], end = [var 0.46875in, var 0.2706329387in])
+    coincident([hex5.end, hex6.start])
+    coincident([hex6.end, hex1.start])
+    bore = circle(start = [var 0.3125in, var 0in], center = [var 0in, var 0in])
+  }
+
+  nutRegion = region(segments = [nutSketch.hex1, nutSketch.hex2], direction = CW)
+  nutBody = extrude(nutRegion, length = hexNutThickness)
+    |> appearance(color = "#4edfd5")
+
+  return nutBody
+}

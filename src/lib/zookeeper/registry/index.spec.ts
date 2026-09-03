@@ -23,9 +23,9 @@ import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock(
-  '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper',
+  '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper',
   () => ({
-    MlEphantConversationPaneWrapper: () => null,
+    ZookeeperConversationPaneWrapper: () => null,
   })
 )
 
@@ -44,10 +44,10 @@ function zookeeperPaneLayout(activeIndices: number[] = [0]): Layout {
     splitOrientation: 'block',
     children: [
       {
-        id: DefaultLayoutPaneID.TTC,
+        id: DefaultLayoutPaneID.Zookeeper,
         label: 'Zookeeper',
         type: LayoutType.Simple,
-        areaType: AreaType.TTC,
+        areaType: AreaType.Zookeeper,
         icon: 'sparkles',
       },
     ],
@@ -88,7 +88,7 @@ describe('zookeeper plugin', () => {
 
     expect(plugin).toBeDefined()
     expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.TTC]
+      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]
     ).toMatchObject({
       shortcut: 'Ctrl + T',
     })
@@ -122,9 +122,9 @@ describe('zookeeper plugin', () => {
       throw new Error('Expected zookeeper plugin')
     }
 
-    registry.get(plugin.service).disable()
+    await registry.get(plugin.service).disable()
 
-    expect(registry.get(layoutAreaLibraryValueSpec)[AreaType.TTC]).toBe(
+    expect(registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]).toBe(
       undefined
     )
     expect(

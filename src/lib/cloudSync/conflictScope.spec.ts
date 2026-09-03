@@ -4,7 +4,7 @@ import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
   getCloudSyncProjectMetadata,
-  setCloudSyncProjectScope,
+  setCloudSyncOpenedProject,
 } from '@src/lib/cloudSync'
 import {
   appendOutboxEntry,
@@ -18,6 +18,7 @@ import {
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const baseUrl = 'https://example.test'
@@ -39,7 +40,7 @@ describe('cloud sync conflict scoping', () => {
   })
 
   afterEach(async () => {
-    setCloudSyncProjectScope(undefined)
+    setCloudSyncOpenedProject(undefined)
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
@@ -157,11 +158,15 @@ describe('cloud sync conflict scoping', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: false,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
     })
     await remoteIndexStarted
-    setCloudSyncProjectScope(currentProjectPath)
+    setCloudSyncOpenedProject({
+      projectPath: currentProjectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
     finishRemoteIndex()
 
     await vi.waitFor(async () => {

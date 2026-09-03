@@ -14563,7 +14563,7 @@ description: Result of parsing snowman.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -15175,87 +15175,6 @@ description: Result of parsing snowman.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "armSketchR",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "argument": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "XZ",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "operator": "-",
-              "start": 0,
-              "type": "UnaryExpression",
-              "type": "UnaryExpression"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "preComments": [
-          "// Stick arms (thin cylinders), kept horizontal for robustness",
-          "// Right arm: build along +Y using -XZ (normal is +Y)"
-        ],
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "armCircleR",
             "start": 0,
             "type": "Identifier"
@@ -15273,22 +15192,31 @@ description: Result of parsing snowman.kcl
                   "type": "Identifier"
                 },
                 "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
+                  "argument": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "armSketchR",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "XZ",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "operator": "-",
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
                 }
               }
             ],
@@ -15481,6 +15409,10 @@ description: Result of parsing snowman.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Stick arms (thin cylinders), kept horizontal for robustness",
+          "// Right arm: build along +Y using -XZ (normal is +Y)"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -16054,77 +15986,6 @@ description: Result of parsing snowman.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "armSketchL",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "XZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "preComments": [
-          "// Left arm: build along -Y using XZ (normal is -Y)"
-        ],
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "armCircleL",
             "start": 0,
             "type": "Identifier"
@@ -16150,7 +16011,7 @@ description: Result of parsing snowman.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "armSketchL",
+                    "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -16350,6 +16211,9 @@ description: Result of parsing snowman.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Left arm: build along -Y using XZ (normal is -Y)"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -18153,12 +18017,12 @@ description: Result of parsing snowman.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.0",
+              "raw": "2.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.0,
+                "value": 2.0,
                 "suffix": "None"
               }
             }
@@ -18365,7 +18229,7 @@ description: Result of parsing snowman.kcl
             }
           }
         ],
-        "77": [
+        "76": [
           {
             "commentStart": 0,
             "end": 0,
@@ -18377,7 +18241,7 @@ description: Result of parsing snowman.kcl
             }
           }
         ],
-        "82": [
+        "80": [
           {
             "commentStart": 0,
             "end": 0,
@@ -18389,7 +18253,7 @@ description: Result of parsing snowman.kcl
             }
           }
         ],
-        "88": [
+        "86": [
           {
             "commentStart": 0,
             "end": 0,
@@ -18435,7 +18299,7 @@ description: Result of parsing snowman.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Art & Design; 3D Printable",
             "style": "line"
           }
         },

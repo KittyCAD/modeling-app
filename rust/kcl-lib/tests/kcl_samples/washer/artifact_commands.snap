@@ -90,7 +90,7 @@ description: Artifact commands washer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000025399999847706605,
+            "x": 0.0000000000253999998477066,
             "y": 0.0
           },
           "radius": 5.5626000000254,
@@ -148,12 +148,13 @@ description: Artifact commands washer.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 3.8099999999999996,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

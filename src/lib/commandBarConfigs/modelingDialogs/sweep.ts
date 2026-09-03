@@ -57,8 +57,10 @@ export const sweepDialogOverrides = {
   },
   path: {
     inputType: 'selection',
-    displayName: 'Path',
-    dialog: compactSelectionDialog('path', 'Select a path'),
+    dialog: {
+      displayName: 'Path',
+      ...compactSelectionDialog('path', 'Select a path'),
+    },
     selectionTypes: ['segment', 'path', 'helix'],
     clearSelectionFirst: true,
     multiple: true,
@@ -66,7 +68,6 @@ export const sweepDialogOverrides = {
   },
   relativeTo: {
     inputType: 'options',
-    displayName: 'Legacy alignment',
     hidden: (context) =>
       isUsingModelingDialog(context)
         ? !hasLegacySweepAlignment(context.argumentsToSubmit)
@@ -77,6 +78,7 @@ export const sweepDialogOverrides = {
       { name: 'Trajectory curve', value: 'TRAJECTORY' },
     ],
     dialog: {
+      displayName: 'Legacy alignment',
       group: 'alignment',
       order: -20,
       controlStyle: 'segmented',
@@ -84,7 +86,6 @@ export const sweepDialogOverrides = {
   },
   profilePosition: {
     inputType: 'options',
-    displayName: 'Position',
     required: (context) =>
       isUsingModelingDialog(context) &&
       !hasLegacySweepAlignment(context.argumentsToSubmit) &&
@@ -104,6 +105,7 @@ export const sweepDialogOverrides = {
       { name: 'Move to path', value: 'path' },
     ],
     dialog: {
+      displayName: 'Position',
       group: 'alignment',
       order: -10,
       controlStyle: 'segmented',
@@ -111,7 +113,6 @@ export const sweepDialogOverrides = {
   },
   profileOrientation: {
     inputType: 'options',
-    displayName: 'Orientation',
     required: (context) =>
       isUsingModelingDialog(context) &&
       !hasLegacySweepAlignment(context.argumentsToSubmit) &&
@@ -132,6 +133,7 @@ export const sweepDialogOverrides = {
       { name: 'Perpendicular', value: 'perpendicular' },
     ],
     dialog: {
+      displayName: 'Orientation',
       group: 'alignment',
       order: 0,
       controlStyle: 'segmented',
@@ -150,44 +152,42 @@ export const sweepDialogOverrides = {
     },
   },
   sectional: {
-    displayName: 'Section by path segments',
     description: 'Split the sweep at each path segment.',
     dialog: {
+      displayName: 'Section by path segments',
       group: 'advanced',
       order: 0,
       controlStyle: 'segmented',
     },
   },
   tolerance: {
-    displayName: 'Tolerance',
     description:
       'Leave unchanged unless the sweep needs a custom geometric tolerance.',
     dialog: {
+      displayName: 'Tolerance',
       group: 'advanced',
       order: 10,
     },
   },
   tagStart: {
-    displayName: 'Start face tag',
     dialog: {
+      displayName: 'Start face tag',
       group: 'advanced',
       order: 20,
     },
   },
   tagEnd: {
-    displayName: 'End face tag',
     dialog: {
+      displayName: 'End face tag',
       group: 'advanced',
       order: 30,
     },
   },
   bodyType: bodyTypeResultArg(profileSelectionRequiresBodyType),
   version: {
-    displayName: 'Algorithm version',
-    description:
-      'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
     defaultValue: '2',
     dialog: {
+      displayName: 'Algorithm version',
       group: 'advanced',
       order: 40,
     },

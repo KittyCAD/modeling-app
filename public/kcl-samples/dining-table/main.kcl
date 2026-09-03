@@ -1,12 +1,12 @@
 // Dining Table
 // Simple dining table with rectangular tabletop, aprons and four legs with square section
-// Categories: Maker
+// Categories: Home & Lifestyle
 
 // ──────────────
 // PARAMETERS
 // ──────────────
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 tableHeight = 750
 apronTopElevation = tableHeight

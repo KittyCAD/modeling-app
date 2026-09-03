@@ -1,4 +1,4 @@
-import stdLibConstants from '@rust/kcl-lib/bindings/StdLibConstants'
+import stdLibConstants from '@rust/kcl-lib/expected-bindings/ts-rs/StdLibConstants'
 import {
   KCL_PRELUDE_BODY_TYPE_SOLID,
   KCL_PRELUDE_BODY_TYPE_SURFACE,

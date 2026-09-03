@@ -27,47 +27,7 @@ Paste that link to that GitHub Actions run below.
 
 Workflow run: ???
 
-## 2. Manually test artifacts
-
-<details><summary>Instructions</summary><br>
-
-The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in step 1).
-
-Assign someone to each section of the manual checklist.
-
-</details>
-
-### Windows via ???
-
-* [ ] Download the release build for this platform
-* [ ] Install and run it (ignore the status bar update)
-* [ ] Create a new project
-* [ ] Send and queue two basic Zookeeper prompts
-* [ ] Confirm the result is viewable in an engine stream
-* [ ] Click **Restart to update** in the status bar
-* [ ] Confirm the app can update to the previous release
-
-### macOS via ???
-
-* [ ] Download the release build for this platform
-* [ ] Install and run it (ignore the status bar update)
-* [ ] Create a new project
-* [ ] Send and queue two basic Zookeeper prompts
-* [ ] Confirm the result is viewable in an engine stream
-* [ ] Click **Restart to update** in the status bar
-* [ ] Confirm the app can update to the previous release
-
-### Linux via ???
-
-* [ ] Download the release build for this platform
-* [ ] Install and run it (ignore the status bar update)
-* [ ] Create a new project
-* [ ] Send and queue two basic Zookeeper prompts
-* [ ] Confirm the result is viewable in an engine stream
-* [ ] Click **Restart to update** in the status bar
-* [ ] Confirm the app can update to the previous release
-
-## 3. Draft release notes
+## 2. Draft release notes
 
 <details><summary>Instructions</summary><br>
 
@@ -93,6 +53,49 @@ Click **Generate release notes** as a starting point to for the changelog. Paste
 **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/???
 ```
 
+## 3. Manually check artifacts
+
+<details><summary>Instructions</summary><br>
+
+The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in step 1).
+
+Assign someone to each section of the manual checklist.
+
+</details>
+
+### Windows: ???
+
+* [ ] Download the release build for this platform
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
+* [ ] Confirm the result is viewable in an engine stream
+* [ ] Click **Restart to update** in the status bar
+* [ ] Complete the installation wizard steps
+* [ ] Confirm the app launches to the previous version
+
+### macOS: ???
+
+* [ ] Download the release build for this platform
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
+* [ ] Confirm the result is viewable in an engine stream
+* [ ] Click **Restart to update** in the status bar
+* [ ] Confirm the app launches to the previous version
+
+### Linux: ???
+
+* [ ] Download the release build for this platform
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
+* [ ] Confirm the result is viewable in an engine stream
+* [ ] Click **Restart to update** in the status bar
+* [ ] Close the app and run the newly downloaded file
+* [ ] Confirm the app launches to the previous version
+
+
 ## 4. Publish the release
 
 <details><summary>Instructions</summary><br>
@@ -113,21 +116,35 @@ If anything goes wrong during the deployment of the new release and it needs to 
 the quickest way is to locate the previous release publish job and simply re-run it.
 
 1. Head to https://github.com/KittyCAD/modeling-app/actions/workflows/publish-apps.yml
-2. Click the previous `publish-apps` job, eg. https://github.com/KittyCAD/modeling-app/actions/runs/22152987561
-3. Click _Re-run all jobs_ and wait for success
+2. Click the previous `publish-apps` job, e.g. https://github.com/KittyCAD/modeling-app/actions/runs/22152987561
+3. Click **Re-run all jobs** and wait for success
 4. Confirm https://zoo.dev/design-studio/download shows the previous release
-5. Post a message in Discord #release announcing the release got yanked
-6. Mark the yanked release as _Pre-release_, eg. https://github.com/KittyCAD/modeling-app/releases/tag/v1.1.13
+5. Post a message in Discord `#releases` announcing the release got yanked
+6. Mark the yanked release as **Pre-release**, eg. https://github.com/KittyCAD/modeling-app/releases/tag/v1.1.13
 7. If needed, [create an announcement](https://admin-dashboard.hawk-dinosaur.ts.net/app/announcements) to communicate the urgency of the rollback to users.
 
 </details><br>
 
+## 5. Publish documentation
+
+<details><summary>Instructions</summary><br>
+
+Merge the latest `documentation` Dependabot PR [here](https://github.com/KittyCAD/website/pulls?q=is%3Apr+documentation). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/website/network/updates/17261214/jobs).
+
+Paste a link to the PR below or replace `???` with `N/A`.
+
+</details><br>
+
+Release PR: ???
+
 # KCL
+
+## 1. Publish packages
 
 <details><summary>Instructions</summary><br>
 
 Follow the instructions [here](https://github.com/KittyCAD/modeling-app/blob/main/rust/README.md) to publish new crates.
-This ensures that the KCL accepted by the app is also accepted by the CLI.
+This ensures that the KCL accepted by the app is also understood by other services.
 
 Paste a link to the PR below.
 
@@ -135,7 +152,43 @@ Paste a link to the PR below.
 
 Release PR: ???
 
-# CLI
+## 2. Update Engine
+
+<details><summary>Instructions</summary><br>
+
+Clone https://github.com/KittyCAD/engine and update its dependencies on `kittycad-modeling-cmds` and `kcl-lib` to the latest versions. Open a PR and merge it to main.
+
+Paste a link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
+## 3. Update Zookeeper
+
+<details><summary>Instructions</summary><br>
+
+Merge the corresponding `zoo-kcl` Dependabot PR [here](https://github.com/KittyCAD/text-to-cad/pulls?q=is%3Apr+zoo-kcl). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/text-to-cad/network/updates/27829916/jobs).
+
+Paste a link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
+## 4. Update API
+
+<details><summary>Instructions</summary><br>
+
+Clone https://github.com/KittyCAD/api and update its dependencies on `kittycad-modeling-cmds` and `kcl-lib` to the latest versions. Next, run `just redo-openapi` to make sure the OpenAPI spec gets generated from any types we might be exposing from these libs. Open a PR and merge it to main.
+
+Paste a link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
+## 5. Update CLI
 
 <details><summary>Instructions</summary><br>
 
@@ -151,39 +204,13 @@ The above should generate a PR in https://github.com/KittyCAD/homebrew-kittycad/
 
 Release PR: ???
 
-Homebrew KittyCAD PR: ???
-
-# API
+### 5.1 Update Homebrew
 
 <details><summary>Instructions</summary><br>
 
-Clone https://github.com/KittyCAD/api and update its dependencies on `kittycad-modeling-cmds` and `kcl-lib` to the latest versions. Next, run `just redo-openapi` to make sure the OpenAPI spec gets generated from any types we might be exposing from these libs. Open a PR and merge it to main.
+Visit https://github.com/KittyCAD/homebrew-kittycad/pulls and merge the the updated tap formula.
 
 Paste a link to the PR below.
-
-</details><br>
-
-Release PR: ???
-
-# Zookeeper
-
-<details><summary>Instructions</summary><br>
-
-Merge the corresponding `zoo-kcl` Dependabot PR [here](https://github.com/KittyCAD/text-to-cad/pulls?q=is%3Apr+zoo-kcl). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/text-to-cad/network/updates/27829916/jobs).
-
-Paste a link to the PR below.
-
-</details><br>
-
-Release PR: ???
-
-# Website
-
-<details><summary>Instructions</summary><br>
-
-Merge the latest `documentation` Dependabot PR [here](https://github.com/KittyCAD/website/pulls?q=is%3Apr+documentation). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/website/network/updates/17261214/jobs).
-
-Paste a link to the PR below or replace `???` with `N/A`.
 
 </details><br>
 

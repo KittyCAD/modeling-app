@@ -5204,7 +5204,32 @@ description: Result of parsing hammer.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [],
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "offset",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "13",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 13.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -5214,7 +5239,7 @@ description: Result of parsing hammer.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "startSketchOn",
+                "name": "offsetPlane",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -5229,73 +5254,22 @@ description: Result of parsing hammer.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "arguments": [
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "offset",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "13",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 13.0,
-                      "suffix": "None"
-                    }
-                  }
-                }
-              ],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "offsetPlane",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "abs_path": false,
+              "name": {
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "XY",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "name": "XY",
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
-              }
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             }
           },
           "moduleId": 0,
@@ -19242,7 +19216,7 @@ description: Result of parsing hammer.kcl
         "preComments": [
           "// Claw Hammer",
           "// Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails",
-          "// Categories: Construction",
+          "// Categories: Tools; Architecture & Construction",
           "",
           "",
           "// Set units"
@@ -19279,6 +19253,34 @@ description: Result of parsing hammer.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

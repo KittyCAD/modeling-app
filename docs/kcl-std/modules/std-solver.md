@@ -19,7 +19,7 @@ triangle = sketch(on = XY) {
   equalLength([line2, line3])
 }
 
-triangleRegion = region(point = [0.5mm, 0.5mm], sketch = triangle)
+triangleRegion = region(segments = [triangle.line1, triangle.line2])
 extrude(triangleRegion, length = 5)
 ```
 
@@ -47,6 +47,7 @@ functions, because those are what actually constrain the solved result.
 
 * [`solver::ORIGIN`](/docs/kcl-std/consts/std-solver-ORIGIN)
 * [`solver::angle`](/docs/kcl-std/functions/std-solver-angle)
+* [`solver::angleDimension`](/docs/kcl-std/functions/std-solver-angleDimension)
 * [`solver::arc`](/docs/kcl-std/functions/std-solver-arc)
 * [`solver::circle`](/docs/kcl-std/functions/std-solver-circle)
 * [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)

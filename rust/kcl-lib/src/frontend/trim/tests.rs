@@ -64,6 +64,37 @@ async fn assert_trim_does_not_create_degenerate_geometry(base_kcl_code: &str, tr
     assert_no_zero_length_line_or_arc_constructors(&result.kcl_code);
 }
 
+#[tokio::test]
+async fn test_trim_arc_crossed_once_does_not_create_extra_arc() {
+    let base_kcl_code = r#"@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = YZ) {
+  arc1 = arc(start = [var 1.03mm, var -0.6mm], end = [var 1.34mm, var -3.19mm], center = [var -4.83mm, var -2.61mm])
+  line1 = line(start = [var -1.21mm, var 2.31mm], end = [var -1.17mm, var -0.13mm])
+  line(start = [var -2.01mm, var -8.09mm], end = [var -9.3mm, var 2.73mm])
+  line2 = line(start = [var -1.49mm, var -1.06mm], end = [var 0mm, var 3.31mm])
+  vertical([line2.end, ORIGIN])
+  line3 = line(start = [var 0mm, var 3.31mm], end = [var 1.34mm, var -3.19mm])
+  coincident([line2.end, line3.start])
+  vertical([line3.start, ORIGIN])
+  arc2 = arc(start = [var -1.17mm, var -0.13mm], end = [var -8.85mm, var -4.14mm], center = [var -5mm, var -2.15mm])
+  coincident([arc1.end, line3.end])
+  coincident([arc2.start, line2])
+  coincident([line1.end, arc2])
+  point(at = [var -4.81mm, var 5.29mm])
+  point(at = [var -5.43mm, var 2.88mm])
+  point(at = [var -4.78mm, var 0.95mm])
+}"#;
+    let trim_points = [Coords2d { x: -5.43, y: 2.88 }, Coords2d { x: -4.78, y: 0.95 }];
+
+    assert_trim_result_default_sketch(
+        "test_trim_arc_crossed_once_does_not_create_extra_arc",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
+}
+
 mod sync {
     use crate::frontend::trim::*;
 
@@ -168,6 +199,7 @@ mod sync {
                 x: make_expr_mm(center.x),
                 y: make_expr_mm(center.y),
             },
+            direction: None,
             construction: None,
         });
 
@@ -181,6 +213,7 @@ mod sync {
                     ctor,
                     ctor_applicable: false,
                     construction: false,
+                    direction: Default::default(),
                 }),
             },
         )
@@ -798,6 +831,71 @@ mod sync {
     }
 
     #[test]
+    fn test_project_point_onto_directed_arc_ccw_matches_undirected() {
+        // Quarter arc from (5, 0) to (0, 5) around the origin, counterclockwise.
+        let center = Coords2d { x: 0.0, y: 0.0 };
+        let start = Coords2d { x: 5.0, y: 0.0 };
+        let end = Coords2d { x: 0.0, y: 5.0 };
+        let point = Coords2d {
+            x: 5.0 * libm::cos(45.0_f64.to_radians()),
+            y: 5.0 * libm::sin(45.0_f64.to_radians()),
+        };
+
+        let t = project_point_onto_arc(point, center, start, end, ArcDirection::Ccw);
+
+        assert!((t - project_point_onto_ccw_arc(point, center, start, end)).abs() < 1e-9);
+        assert!((t - 0.5).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_project_point_onto_directed_arc_cw_measures_along_clockwise_sweep() {
+        // Clockwise from (5, 0) to (0, 5) around the origin sweeps 270 degrees
+        // through the bottom of the circle.
+        let center = Coords2d { x: 0.0, y: 0.0 };
+        let start = Coords2d { x: 5.0, y: 0.0 };
+        let end = Coords2d { x: 0.0, y: 5.0 };
+
+        let bottom = Coords2d { x: 0.0, y: -5.0 };
+        let t_bottom = project_point_onto_arc(bottom, center, start, end, ArcDirection::Cw);
+        assert!((t_bottom - 1.0 / 3.0).abs() < 1e-5);
+
+        let left = Coords2d { x: -5.0, y: 0.0 };
+        let t_left = project_point_onto_arc(left, center, start, end, ArcDirection::Cw);
+        assert!((t_left - 2.0 / 3.0).abs() < 1e-5);
+
+        let t_start = project_point_onto_arc(start, center, start, end, ArcDirection::Cw);
+        assert!(t_start.abs() < 1e-5);
+
+        let t_end = project_point_onto_arc(end, center, start, end, ArcDirection::Cw);
+        assert!((t_end - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_project_point_onto_directed_arc_cw_clamps_off_arc_to_nearest_endpoint() {
+        // Clockwise from (5, 0) to (0, 5): the counterclockwise quarter between
+        // them is NOT part of the arc.
+        let center = Coords2d { x: 0.0, y: 0.0 };
+        let start = Coords2d { x: 5.0, y: 0.0 };
+        let end = Coords2d { x: 0.0, y: 5.0 };
+
+        // Point at 30 degrees is off the clockwise arc, nearer the start.
+        let near_start = Coords2d {
+            x: 5.0 * libm::cos(30.0_f64.to_radians()),
+            y: 5.0 * libm::sin(30.0_f64.to_radians()),
+        };
+        let t = project_point_onto_arc(near_start, center, start, end, ArcDirection::Cw);
+        assert!(t.abs() < 1e-9);
+
+        // Point at 60 degrees is off the clockwise arc, nearer the end.
+        let near_end = Coords2d {
+            x: 5.0 * libm::cos(60.0_f64.to_radians()),
+            y: 5.0 * libm::sin(60.0_f64.to_radians()),
+        };
+        let t = project_point_onto_arc(near_end, center, start, end, ArcDirection::Cw);
+        assert!((t - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
     fn test_circle_circle_intersections_two_points() {
         let mut intersections = circle_circle_intersections(
             Coords2d { x: 0.0, y: 0.0 },
@@ -857,11 +955,14 @@ mod sync {
     }
 
     #[test]
-    fn test_arc_arc_intersection() {
-        // Test case matching TypeScript test: two arcs that may or may not intersect
-        // arc1: center [0, 0], start [1, 0], end [0, 1] (quarter circle from 0° to 90°)
-        // arc2: center [1, 0], start [2, 0], end [1, 1] (quarter circle from 0° to 90°)
-        let result = arc_arc_intersection(
+    fn test_arc_arc_intersections_spans_do_not_overlap() {
+        // arc1: center [0, 0], start [1, 0], end [0, 1] (quarter circle from 0 to 90 degrees)
+        // arc2: center [1, 0], start [2, 0], end [1, 1] (quarter circle from 0 to 90 degrees)
+        // The underlying unit circles intersect at (0.5, +-sqrt(3)/2), but
+        // neither point is within both arcs' sweeps: (0.5, 0.866) is at 120
+        // degrees from arc2's center, and (0.5, -0.866) is at -60 degrees from
+        // arc1's center.
+        let intersections = arc_arc_intersections(
             Coords2d { x: 0.0, y: 0.0 }, // arc1 center
             Coords2d { x: 1.0, y: 0.0 }, // arc1 start
             Coords2d { x: 0.0, y: 1.0 }, // arc1 end
@@ -870,11 +971,30 @@ mod sync {
             Coords2d { x: 1.0, y: 1.0 }, // arc2 end
             EPSILON_POINT_ON_SEGMENT,
         );
-        // arc_arc_intersection may return None if no intersection, or Some(point)
-        // The test just verifies the function works without panicking
-        // In this case, the arcs may or may not intersect depending on geometry
-        // The important thing is that the function returns Option<Coords2d>
-        assert!(result.is_none() || result.is_some());
+
+        assert!(intersections.is_empty());
+    }
+
+    #[test]
+    fn test_arc_arc_intersections_returns_point_on_both_arcs() {
+        // Same circles as above, but arc2 sweeps half the circle (0 to 180
+        // degrees), so the circle intersection at (0.5, sqrt(3)/2) is on both
+        // arcs: 60 degrees from arc1's center and 120 degrees from arc2's.
+        // The other circle intersection at (0.5, -sqrt(3)/2) is still outside
+        // both sweeps.
+        let intersections = arc_arc_intersections(
+            Coords2d { x: 0.0, y: 0.0 }, // arc1 center
+            Coords2d { x: 1.0, y: 0.0 }, // arc1 start
+            Coords2d { x: 0.0, y: 1.0 }, // arc1 end
+            Coords2d { x: 1.0, y: 0.0 }, // arc2 center
+            Coords2d { x: 2.0, y: 0.0 }, // arc2 start
+            Coords2d { x: 0.0, y: 0.0 }, // arc2 end
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert_eq!(intersections.len(), 1);
+        assert!((intersections[0].x - 0.5).abs() < 1e-5);
+        assert!((intersections[0].y - 3.0_f64.sqrt() / 2.0).abs() < 1e-5);
     }
 
     #[test]
@@ -1048,7 +1168,7 @@ mod sync {
             ],
         });
         let distance = Constraint::Distance(crate::frontend::sketch::Distance {
-            points: vec![
+            segments: vec![
                 crate::frontend::sketch::ConstraintSegment::Segment(ObjectId(2)),
                 crate::frontend::sketch::ConstraintSegment::Origin(crate::frontend::sketch::OriginLiteral::Origin),
             ],
@@ -1080,7 +1200,7 @@ mod sync {
         else {
             panic!("expected distance rewrite");
         };
-        let rewritten_distance_ids: Vec<ObjectId> = rewritten_distance.point_ids().collect();
+        let rewritten_distance_ids: Vec<ObjectId> = rewritten_distance.segment_ids().collect();
         assert!(rewritten_distance_ids.contains(&ObjectId(202)));
 
         let Some(Constraint::Tangent(rewritten_tangent)) = rewrite_constraint_with_map(&tangent, &rewrite_map) else {
@@ -1342,7 +1462,7 @@ sketch(on = YZ) {
 
     // This should at least parse and set up the frontend without errors
     // The actual trim might not work yet if operations aren't fully implemented
-    let result = execute_trim_flow(kcl_code, &trim_points, ObjectId(0)).await;
+    let result = execute_trim_flow(kcl_code, &trim_points, ObjectId(1)).await;
 
     // For now, just verify it doesn't panic
     // Once operations are fully implemented, we can add assertions
@@ -1833,6 +1953,75 @@ async fn test_split_lines_with_point_segment_coincident_points() {
 
     assert_trim_result_default_sketch(
         "test_split_lines_with_point_segment_coincident_points",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_split_clockwise_arc_between_two_intersections() {
+    // A clockwise arc covers the opposite side of the circle from a
+    // counterclockwise arc with the same points: this one sweeps over the top
+    // through (0, 5). Trimming the top must split it into two clockwise arcs,
+    // one on each side of the removed span.
+    let base_kcl_code = r#"sketch(on = YZ) {
+  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm], direction = CW)
+  line1 = line(start = [var -3mm, var 1mm], end = [var -3mm, var 6mm])
+  line2 = line(start = [var 3mm, var 1mm], end = [var 3mm, var 6mm])
+}
+"#;
+
+    // Crosses the arc at its topmost point (0, 5), between the two lines.
+    let trim_points = vec![Coords2d { x: 0.0, y: 6.0 }, Coords2d { x: 0.0, y: 4.0 }];
+
+    assert_trim_result_default_sketch(
+        "test_split_clockwise_arc_between_two_intersections",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_tail_cut_clockwise_arc_at_intersection() {
+    // Trimming a clockwise arc between a crossing line and the arc's declared
+    // end should cut the tail back to the intersection, keeping the piece
+    // between the declared start and the crossing line.
+    let base_kcl_code = r#"sketch(on = YZ) {
+  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm], direction = CW)
+  line1 = line(start = [var -3mm, var 1mm], end = [var -3mm, var 6mm])
+}
+"#;
+
+    // Crosses the arc's clockwise sweep at (2, ~4.58), between the line
+    // intersection at (-3, 4) and the declared end at (5, 0).
+    let trim_points = vec![Coords2d { x: 2.0, y: 6.0 }, Coords2d { x: 2.0, y: 3.0 }];
+
+    assert_trim_result_default_sketch(
+        "test_tail_cut_clockwise_arc_at_intersection",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_delete_clockwise_arc_with_no_intersections() {
+    // The trim line crosses the clockwise sweep, so the whole arc is deleted.
+    // Before arcs had a direction, this crossing would have missed the arc
+    // entirely because the counterclockwise interpretation sweeps the bottom
+    // of the circle.
+    let base_kcl_code = r#"sketch(on = YZ) {
+  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm], direction = CW)
+  line1 = line(start = [var -8mm, var -2mm], end = [var 8mm, var -2mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 0.0, y: 6.0 }, Coords2d { x: 0.0, y: 4.0 }];
+
+    assert_trim_result_default_sketch(
+        "test_delete_clockwise_arc_with_no_intersections",
         base_kcl_code,
         &trim_points,
     )
@@ -2753,12 +2942,33 @@ const RECT_ARC_LINE5_TRIM_BASE_KCL: &str = r#"sketch001 = sketch(on = YZ) {
 /// Tests for `get_trim_spawn_terminations` function.
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
 mod get_trim_spawn_terminations_tests {
+    use indexmap::IndexSet;
     use kcl_api::UnitLength;
 
     use super::*;
     use crate::frontend::trim::Coords2d;
     use crate::frontend::trim::TrimTermination;
-    use crate::frontend::trim::get_trim_spawn_terminations;
+
+    fn get_terminations_for_all_test_segments(
+        trim_spawn_seg_id: ObjectId,
+        trim_spawn_coords: &[Coords2d],
+        objects: &[crate::frontend::api::Object],
+        default_unit: UnitLength,
+    ) -> Result<crate::frontend::trim::TrimTerminations, String> {
+        let eligible_segment_ids: IndexSet<ObjectId> = objects
+            .iter()
+            .filter(|object| matches!(object.kind, crate::frontend::api::ObjectKind::Segment { .. }))
+            .map(|object| object.id)
+            .collect();
+
+        crate::frontend::trim::get_trim_spawn_terminations(
+            trim_spawn_seg_id,
+            trim_spawn_coords,
+            objects,
+            default_unit,
+            &eligible_segment_ids,
+        )
+    }
 
     #[tokio::test]
     async fn test_line_segment_intersection_terminations() {
@@ -2772,7 +2982,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -2799,8 +3009,8 @@ mod get_trim_spawn_terminations_tests {
             intersecting_seg_id,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - 1.8273063333627224).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.7443175958421935).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 1.8109968114535633).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.743299969685973).abs() < 1e-5);
             assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(11));
         }
     }
@@ -2819,7 +3029,7 @@ mod get_trim_spawn_terminations_tests {
         let line_id = find_first_line_id(&objects);
         let circle_id = find_first_circle_id(&objects);
 
-        let result = get_trim_spawn_terminations(line_id, &trim_points, &objects, UnitLength::Millimeters)
+        let result = get_terminations_for_all_test_segments(line_id, &trim_points, &objects, UnitLength::Millimeters)
             .expect("get_trim_spawn_terminations failed");
 
         // One side should terminate at line endpoint, the other should terminate by intersecting circle.
@@ -2859,7 +3069,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -2883,8 +3093,8 @@ mod get_trim_spawn_terminations_tests {
             trim_termination_coords,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - 2.0716435933183504).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.7918829774915763).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 2.071671330558468).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.791881035862689).abs() < 1e-5);
         }
     }
 
@@ -2902,7 +3112,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -2957,7 +3167,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -2998,7 +3208,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3045,7 +3255,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3061,16 +3271,16 @@ mod get_trim_spawn_terminations_tests {
             trim_termination_coords,
         } = result.left_side
         {
-            assert!((trim_termination_coords.x - 0.008837118620591083).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.809080419697051).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 0.008803091254108455).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.8099058939065307).abs() < 1e-5);
         }
 
         if let TrimTermination::SegEndPoint {
             trim_termination_coords,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - (-5.1310115335133135)).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 1.0662359198714615).abs() < 1e-5);
+            assert!((trim_termination_coords.x - (-5.131579678278041)).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 1.0668109413896305).abs() < 1e-5);
         }
     }
 
@@ -3088,7 +3298,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3143,7 +3353,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3340,6 +3550,34 @@ async fn test_trim_rect_diagonal_corner_reconnects_line5_endpoints() {
         &trim_points,
     )
     .await;
+}
+
+#[tokio::test]
+/// Issue #13165: geometry from another sketch must not terminate a trim in the active sketch.
+async fn test_trim_ignores_intersections_from_other_sketches() {
+    let base_kcl_code = r#"circleSketch = sketch(on = YZ) {
+  circle1 = circle(start = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+}
+
+rectangleSketch = sketch(on = YZ) {
+  line(start = [var -4mm, var 3mm], end = [var 4mm, var 3mm])
+  line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
+  line(start = [var 4mm, var -3mm], end = [var -4mm, var -3mm])
+  line(start = [var -4mm, var -3mm], end = [var -4mm, var 3mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 1.0, y: 6.0 }, Coords2d { x: 1.0, y: 4.0 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let (line_count, arc_count, circle_count) = count_segment_kinds(&objects);
+
+    assert_eq!(line_count, 4, "the rectangle sketch should be unchanged");
+    assert_eq!(arc_count, 0, "the external rectangle must not split the circle");
+    assert_eq!(circle_count, 0, "a standalone circle crossed once should be deleted");
 }
 
 #[tokio::test]
@@ -3886,7 +4124,7 @@ sketch001 = sketch(on = YZ) {
             | crate::frontend::sketch::Constraint::HorizontalDistance(distance)
             | crate::frontend::sketch::Constraint::VerticalDistance(distance) => {
                 assert!(
-                    !distance.point_ids().any(|id| large_spline.1.controls.contains(&id)),
+                    !distance.segment_ids().any(|id| large_spline.1.controls.contains(&id)),
                     "Tail-trimmed spline should not keep point distance constraints on controls, got KCL:\n{}",
                     result.kcl_code
                 );

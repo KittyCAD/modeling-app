@@ -19,8 +19,10 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  type SnapTarget,
   applyConstraintsForSnapTarget,
+  GRID_TARGET,
+  getConstraintsForSnapTarget,
+  type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   calculateArcSwapState,
@@ -168,8 +170,17 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         return
       }
 
-      const dx = twoD.x - context.centerPoint[0]
-      const dy = twoD.y - context.centerPoint[1]
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const dx = x - context.centerPoint[0]
+      const dy = y - context.centerPoint[1]
       const radius = Math.sqrt(dx * dx + dy * dy)
       segmentUtilsMap.ArcSegment.updatePreviewCircle({
         sceneInfra: context.sceneInfra,
@@ -177,13 +188,6 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         radius,
       })
 
-      const snappingCandidate = getBestSnappingCandidate({
-        self,
-        sceneInfra: context.sceneInfra,
-        sketchId: context.sketchId,
-        mousePosition: [twoD.x, twoD.y],
-        mouseEvent: args.mouseEvent,
-      })
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,
@@ -225,8 +229,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
   if (!context.arcId || !context.centerPoint || !context.arcStartPoint) return
 
   let isEditInProgress = false
-  // Track whether start/end are swapped (instead of ccw flag)
-  // If swapped, we're going CW; if not swapped, we're going CCW
+  // This state historically meant the endpoints were swapped. Draft arcs now
+  // keep declared endpoints stable and use it only to select `direction = CW`.
   let isSwapped = context.arcIsSwapped ?? false
   // Track previous end position to detect crossing
   let previousEnd: [number, number] | undefined
@@ -252,15 +256,22 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       }
 
       if (!isEditInProgress) {
-        const snappingCandidate = getBestSnappingCandidate({
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const candidate = getBestSnappingCandidate({
           self,
           sceneInfra: context.sceneInfra,
           sketchId: context.sketchId,
-          mousePosition: [twoD.x, twoD.y],
+          mousePosition,
           mouseEvent: args.mouseEvent,
           getExcludedPointIds: (currentSketchObjects) =>
             getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
+        // The third point sets an angle on an already-fixed radius. An
+        // arbitrary grid point usually is not on that circle, so projecting it
+        // would display a grid marker somewhere the arc cannot end.
+        const snappingCandidate =
+          candidate?.target.type === GRID_TARGET ? null : candidate
+        const endPoint = snappingCandidate?.position ?? mousePosition
         sendHoveredSnappingCandidate(self, snappingCandidate)
         updateToolSnappingPreview({
           sceneInfra: context.sceneInfra,
@@ -284,7 +295,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           const [endX, endY] = projectPointOntoArcRadius({
             center: context.centerPoint,
             start: startPoint,
-            end: [twoD.x, twoD.y],
+            end: endPoint,
           })
 
           // Calculate swap state and final start/end points
@@ -342,6 +353,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
                     x: { type: 'Var', value: roundOff(finalEnd[0]), units },
                     y: { type: 'Var', value: roundOff(finalEnd[1]), units },
                   },
+                  direction: isSwapped ? 'cw' : 'ccw',
                 },
               },
             ],
@@ -380,7 +392,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getBestSnappingCandidate({
+        const candidate = getBestSnappingCandidate({
           self,
           sceneInfra: context.sceneInfra,
           sketchId: context.sketchId,
@@ -389,6 +401,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           getExcludedPointIds: (currentSketchObjects) =>
             getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
+        const snappingCandidate =
+          candidate?.target.type === GRID_TARGET ? null : candidate
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
           type: 'add point',
@@ -690,9 +704,8 @@ export async function createArcActor({
   )
 
   try {
-    // Create an arc with start and end at the same position initially
-    // The actual direction will be determined when the user moves the mouse
-    // (ezpz always goes CCW from start to end, so we'll swap if needed)
+    // Create an arc with start and end at the same position initially. The
+    // actual direction will be determined when the user moves the mouse.
 
     const segmentCtor: SegmentCtor = {
       type: 'Arc',
@@ -907,20 +920,11 @@ export async function finalizeArcActor({
     // If previousEnd is not available but contextIsSwapped is defined, we should still use the context value
     let finalStart: [number, number]
     let finalEnd: [number, number]
-    let clickedPointIsStart: boolean
 
     if (contextIsSwapped !== undefined) {
-      // Use the context value directly - it was correctly tracked during mouseMove
-      // Just swap the points if needed
-      if (contextIsSwapped) {
-        finalStart = [endX, endY]
-        finalEnd = startPoint
-        clickedPointIsStart = true
-      } else {
-        finalStart = startPoint
-        finalEnd = [endX, endY]
-        clickedPointIsStart = false
-      }
+      // Use the context value directly - it was correctly tracked during mouseMove.
+      finalStart = startPoint
+      finalEnd = [endX, endY]
     } else {
       // Fallback: use calculateArcSwapState if contextIsSwapped is not available
       const result = calculateArcSwapState({
@@ -932,7 +936,7 @@ export async function finalizeArcActor({
       })
       finalStart = result.finalStart
       finalEnd = result.finalEnd
-      clickedPointIsStart = result.isSwapped
+      isSwapped = result.isSwapped
     }
 
     const segmentCtor: SegmentCtor = {
@@ -949,19 +953,18 @@ export async function finalizeArcActor({
         x: { type: 'Var', value: roundOff(finalEnd[0]), units },
         y: { type: 'Var', value: roundOff(finalEnd[1]), units },
       },
+      direction: isSwapped ? 'cw' : 'ccw',
     }
     const finalDragAnchorSegmentIds = isArcSegment(arcObj)
       ? Array.from(
-          new Set([
-            arcObj.kind.segment.center,
-            clickedPointIsStart
-              ? arcObj.kind.segment.end
-              : arcObj.kind.segment.start,
-          ])
+          new Set([arcObj.kind.segment.center, arcObj.kind.segment.start])
         )
       : undefined
 
     const settings = jsAppSettings(rustContext.settingsActor)
+    const hasSnapConstraints = [startSnapTarget, endSnapTarget].some(
+      (snapTarget) => getConstraintsForSnapTarget(0, snapTarget).length > 0
+    )
     const result = await rustContext.editSegments(
       0,
       sketchId,
@@ -972,7 +975,7 @@ export async function finalizeArcActor({
         },
       ],
       settings,
-      startSnapTarget == null && endSnapTarget == null,
+      !hasSnapConstraints,
       finalDragAnchorSegmentIds
     )
 
@@ -981,13 +984,9 @@ export async function finalizeArcActor({
       return { error: 'Failed to find arc after final edit' }
     }
 
-    const fixedArcPointId = clickedPointIsStart
-      ? editedArc.kind.segment.end
-      : editedArc.kind.segment.start
-    const clickedArcPointId = clickedPointIsStart
-      ? editedArc.kind.segment.start
-      : editedArc.kind.segment.end
-    const snapTargets = [
+    const fixedArcPointId = editedArc.kind.segment.start
+    const clickedArcPointId = editedArc.kind.segment.end
+    const snapConstraints = [
       {
         segmentId: fixedArcPointId,
         snapTarget: startSnapTarget,
@@ -1000,17 +999,10 @@ export async function finalizeArcActor({
       (
         target
       ): target is { segmentId: number; snapTarget: NonNullable<SnapTarget> } =>
-        target.snapTarget != null
+        target.snapTarget != null &&
+        getConstraintsForSnapTarget(target.segmentId, target.snapTarget)
+          .length > 0
     )
-
-    if (snapTargets.length === 0) {
-      return result
-    }
-
-    const snapConstraints = snapTargets.map(({ segmentId, snapTarget }) => ({
-      segmentId,
-      snapTarget,
-    }))
 
     if (snapConstraints.length === 0) {
       return result

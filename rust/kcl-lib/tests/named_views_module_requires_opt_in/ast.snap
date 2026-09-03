@@ -1,0 +1,80 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing named_views_module_requires_opt_in.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "orientation",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "Front",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [
+              {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "view",
+                "start": 0,
+                "type": "Identifier"
+              },
+              {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "Orientation",
+                "start": 0,
+                "type": "Identifier"
+              }
+            ],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "preComments": [
+          "// Pins spike S1's key finding permanently: the std module's OWN experimental",
+          "// opt-in does not cover the consumer. A file without",
+          "// @settings(experimentalFeatures = allow) cannot use the view enums -- this",
+          "// is the gate that makes named views experimental until enums stabilise",
+          "// (M01 decision 3)."
+        ],
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "moduleId": 0,
+    "start": 0
+  }
+}

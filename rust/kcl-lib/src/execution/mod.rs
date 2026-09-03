@@ -5,6 +5,8 @@ use std::sync::Arc;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
+pub(crate) use artifact::EntityCloneInfo;
+pub(crate) use artifact::named_view_artifact;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
@@ -43,17 +45,16 @@ pub use memory::EnvironmentRef;
 #[cfg(test)]
 pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
+pub use named_views::*;
 use serde::Deserialize;
 use serde::Serialize;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
 pub(crate) use sketch_solve::solver_numeric_type;
-pub use sketch_transpiler::pre_execute_transpile;
-pub use sketch_transpiler::transpile_all_old_sketches_to_new;
-pub use sketch_transpiler::transpile_old_sketch_to_new;
-pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
-pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub(crate) use solver_arc::SolverArc;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedRegionInfo;
+pub(crate) use state::ConsumedRegionOperation;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
@@ -62,10 +63,12 @@ pub use state::DirectTagFilletTagEntry;
 pub use state::EdgeRefactorMeta;
 pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
-pub(crate) use state::KclVersion;
+pub use state::KclVersion;
+pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::PendingEdgeRefactorMeta;
+pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
@@ -95,6 +98,7 @@ use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
+use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
@@ -146,20 +150,24 @@ mod artifact;
 pub(crate) use artifact::mermaid_tests::ArtifactGraphMermaidExt;
 pub(crate) mod cache;
 mod cad_op;
-mod exec_ast;
+pub(crate) mod exec_ast;
 pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
 mod geometry;
+#[cfg(test)]
+mod hide_id_contract_kcl_test_pins;
 mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
+pub(crate) mod machine;
 mod memory;
 mod modeling;
+mod named_views;
 mod sketch_solve;
-mod sketch_transpiler;
+mod solver_arc;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
@@ -204,8 +212,16 @@ pub(crate) use early_return;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum ControlFlowKind {
+    /// Normal control flow. Continue to the next step.
     #[default]
     Continue,
+    /// A `return` statement executed under KCL 3.0: unwind to the nearest
+    /// function-call boundary, which absorbs it as the function's result. Never
+    /// constructed under older entry points, whose `return` uses
+    /// write-and-continue semantics instead; see `bind_return_value`.
+    Return,
+    /// `exit()` was called: unwind all the way to the program root, bypassing
+    /// function-call boundaries.
     Exit,
 }
 
@@ -214,6 +230,7 @@ impl ControlFlowKind {
     pub fn is_some_return(&self) -> bool {
         match self {
             ControlFlowKind::Continue => false,
+            ControlFlowKind::Return => true,
             ControlFlowKind::Exit => true,
         }
     }
@@ -235,6 +252,13 @@ impl KclValue {
         }
     }
 
+    pub(crate) fn return_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: Box::new(self),
+            control: ControlFlowKind::Return,
+        }
+    }
+
     pub(crate) fn exit(self) -> KclValueControlFlow {
         KclValueControlFlow {
             value: Box::new(self),
@@ -247,6 +271,19 @@ impl KclValueControlFlow {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
         self.control.is_some_return()
+    }
+
+    pub(crate) fn is_return(&self) -> bool {
+        matches!(self.control, ControlFlowKind::Return)
+    }
+
+    pub(crate) fn is_exit(&self) -> bool {
+        matches!(self.control, ControlFlowKind::Exit)
+    }
+
+    /// The source ranges of the wrapped value, for error reporting.
+    pub(crate) fn source_ranges(&self) -> Vec<SourceRange> {
+        self.value.metadata().iter().map(|m| m.source_range).collect()
     }
 
     pub(crate) fn into_value(self) -> KclValue {
@@ -329,6 +366,12 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// Source code of each module, for rendering issues against the module
+    /// their source range points into. Not serialized to keep the WASM
+    /// payload small; native callers (e.g. the Python bindings) read it
+    /// directly.
+    #[serde(skip)]
+    pub source_files: IndexMap<ModuleId, ModuleSource>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
 }
@@ -375,7 +418,19 @@ pub enum ConstraintKind {
 /// distinguish this from a genuinely constrained sketch.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SketchConstraintStatus {
-    /// The variable name of the sketch (e.g., "sketch001").
+    /// Name of the variable the sketch was assigned to, for example
+    /// "sketch001". This is the nearest enclosing declaration at the point the
+    /// sketch was created, which is not always the sketch's own name:
+    /// - Empty for a sketch written as an expression statement, because there
+    ///   is no enclosing declaration.
+    /// - The outer variable's name for a sketch passed straight into another
+    ///   call, as in `part = extrude(sketch(on = XY) { ... }, length = 10)`.
+    /// - The same name for two sketches, when a function body declares the
+    ///   sketch and is called more than once.
+    ///
+    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Because
+    /// the report carries no other sketch identifier, rendering returns an
+    /// ambiguity error when multiple sketches share a name.
     pub name: String,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
@@ -486,7 +541,6 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
-
     for obj in scene_objects {
         let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
@@ -531,6 +585,41 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
         sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+
+    /// Render one sketch from this execution result as a PNG, colored by
+    /// solver freedom.
+    pub fn render_sketch_png(
+        &self,
+        sketch_name: &str,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        use crate::front::ObjectKind;
+        use crate::tooling::sketch_visualizer::SketchVisualizationError;
+
+        let sketches = self
+            .scene_objects
+            .iter()
+            .filter_map(|object| match &object.kind {
+                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        let sketch = match sketches.as_slice() {
+            [] => {
+                return Err(SketchVisualizationError::SketchNotFound {
+                    name: sketch_name.to_owned(),
+                });
+            }
+            [sketch] => *sketch,
+            _ => {
+                return Err(SketchVisualizationError::AmbiguousSketchName {
+                    name: sketch_name.to_owned(),
+                    count: sketches.len(),
+                });
+            }
+        };
+
+        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
     }
 }
 
@@ -817,6 +906,13 @@ pub struct ExecutorContext {
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
+    /// Which executor evaluates KCL. Crate-internal: set before the first
+    /// run and immutable during execution (run methods take &self). Cloned
+    /// contexts (fresh roots, Args) inherit the same executor.
+    pub(crate) executor_kind: machine::ExecutorKind,
+    /// Call-depth limit for the machine executor's runaway-recursion guard.
+    /// Crate-internal policy, not user configuration.
+    pub(crate) machine_call_depth_limit: usize,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -827,6 +923,8 @@ impl std::fmt::Debug for ExecutorContext {
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
             .field("execution_callbacks", &self.execution_callbacks)
+            .field("executor_kind", &self.executor_kind)
+            .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
 }
@@ -986,6 +1084,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -997,6 +1097,10 @@ impl ExecutorContext {
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
+            // Imported modules execute on this cloned context; keep them on
+            // the executor selected for the run instead of the default.
+            executor_kind: self.executor_kind,
+            machine_call_depth_limit: self.machine_call_depth_limit,
         }
     }
 
@@ -1052,6 +1156,8 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1064,6 +1170,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1083,6 +1191,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
 
@@ -1095,6 +1205,8 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1249,6 +1361,46 @@ impl ExecutorContext {
         program: &crate::Program,
         mock_config: &MockConfig,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let (exec_state, main_ref) = self.run_mock_returning_state(program, mock_config).await?;
+
+        // Restore any temporary variables, then save any newly created variables back to
+        // memory in case another run wants to use them. Note this is just saved to the preserved
+        // memory, not to the exec_state which is not cached for mock execution.
+
+        let mut stack = exec_state.stack().clone();
+        let module_infos = exec_state.global.module_infos.clone();
+        let path_to_source_id = exec_state.global.path_to_source_id.clone();
+        let id_to_source = exec_state.global.id_to_source.clone();
+        let constraint_state = exec_state.mod_local.constraint_state.clone();
+        let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        let outcome = exec_state
+            .into_exec_outcome(main_ref, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        stack.squash_env(main_ref).map_err(KclErrorWithOutputs::no_outputs)?;
+        let state = cache::SketchModeState {
+            stack,
+            module_infos,
+            path_to_source_id,
+            id_to_source,
+            constraint_state,
+            scene_objects,
+        };
+        cache::write_old_memory(state).await;
+
+        Ok(outcome)
+    }
+
+    /// The mock-execution pipeline through interpretation: set up mock state,
+    /// restore or prepare memory, and execute. Split from [`Self::run_mock`],
+    /// which converts the state to an [`ExecOutcome`], so that tests can
+    /// inspect the [`ExecState`] after a mock run.
+    async fn run_mock_returning_state(
+        &self,
+        program: &crate::Program,
+        mock_config: &MockConfig,
+    ) -> Result<(ExecState, EnvironmentRef), KclErrorWithOutputs> {
         assert!(
             self.is_mock(),
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
@@ -1272,35 +1424,9 @@ impl ExecutorContext {
             .push_new_env_for_scope()
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
+        let (main_ref, _) = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
-        // Restore any temporary variables, then save any newly created variables back to
-        // memory in case another run wants to use them. Note this is just saved to the preserved
-        // memory, not to the exec_state which is not cached for mock execution.
-
-        let mut stack = exec_state.stack().clone();
-        let module_infos = exec_state.global.module_infos.clone();
-        let path_to_source_id = exec_state.global.path_to_source_id.clone();
-        let id_to_source = exec_state.global.id_to_source.clone();
-        let constraint_state = exec_state.mod_local.constraint_state.clone();
-        let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
-        let outcome = exec_state
-            .into_exec_outcome(result.0, self)
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        stack.squash_env(result.0).map_err(KclErrorWithOutputs::no_outputs)?;
-        let state = cache::SketchModeState {
-            stack,
-            module_infos,
-            path_to_source_id,
-            id_to_source,
-            constraint_state,
-            scene_objects,
-        };
-        cache::write_old_memory(state).await;
-
-        Ok(outcome)
+        Ok((exec_state, main_ref))
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
@@ -1586,6 +1712,11 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        // Record the entry point's kclVersion before anything executes;
+        // imported modules pre-execute on clones of this state below and must
+        // inherit it.
+        exec_state.set_entry_point_kcl_version(program);
+
         // Reuse our cached universe if we have one.
 
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
@@ -1689,15 +1820,21 @@ impl ExecutorContext {
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
                         }
                         ModuleRepr::Foreign(geom, _) => {
+                            // The concurrent executor starts from a clone of the root module state.
+                            // Use a fresh artifact state so the import command belongs only to the
+                            // foreign module that issued it.
+                            exec_state.mod_local.artifacts = Default::default();
                             let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
                                 .await
-                                .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                                .map(|geom| Some(KclValue::ImportedGeometry(geom)))
+                                // Label the failure with the import so the
+                                // backtrace names the foreign file (and so
+                                // add_import_backtrace's assumption that the
+                                // immediate frame is present holds).
+                                .map_err(|err| err.add_import_location(&module_path.import_name(), source_range));
+                            let module_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
 
-                            // Foreign modules don't produce their own operations;
-                            // use a fresh artifact state instead of capturing the
-                            // cloned root module's artifacts (which may contain
-                            // early-pushed ModuleInstance operations).
-                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, module_artifacts))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -1778,6 +1915,7 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
+                        let e = import_graph::add_import_backtrace(e, module_id, &universe);
                         return Err(exec_state.error_with_outputs(e, None, default_planes));
                     }
                 }
@@ -1797,7 +1935,24 @@ impl ExecutorContext {
             .root_module_artifacts
             .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
-        self.inner_run(program, exec_state, preserve_mem).await
+        self.inner_run(program, exec_state, preserve_mem)
+            .await
+            .map_err(|mut error| {
+                // Engine rejections of async commands (e.g. foreign imports)
+                // surface after module execution, so they miss the import
+                // frames the eager loop attaches. Without a top-level range
+                // the frontend cannot anchor the error in the root file;
+                // rebuild the ancestry from the outermost range's module.
+                let source_ranges = error.error.source_ranges();
+                if !source_ranges.is_empty()
+                    && !source_ranges.iter().any(|range| range.module_id().is_top_level())
+                    && let Some(outermost) = source_ranges.last()
+                {
+                    error.error =
+                        import_graph::add_import_backtrace_from(error.error.clone(), outermost.module_id(), &universe);
+                }
+                error
+            })
     }
 
     /// Get the universe & universe map of the program.
@@ -1835,6 +1990,11 @@ impl ExecutorContext {
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
+
+        // Record the entry point's kclVersion. Mock execution reaches here
+        // without going through run_concurrent; on the engine path this
+        // re-assigns the same value, which is harmless.
+        exec_state.set_entry_point_kcl_version(program);
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
@@ -2148,9 +2308,18 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    let program = crate::Program::parse_no_errs(code)?;
+    // Differential testing: unit tests run under both executors.
+    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+}
 
-    let exec_ctxt = ExecutorContext {
+/// A mock-engine executor context for tests that need to inspect the context
+/// (e.g. the engine's batch queue) even when execution fails.
+#[cfg(test)]
+pub(crate) fn new_mock_executor_context(
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+) -> ExecutorContext {
+    ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         engine_batch: EngineBatchContext::default(),
         fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
@@ -2160,7 +2329,20 @@ pub(crate) async fn parse_execute_with_project_dir(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-    };
+        executor_kind,
+        machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+    }
+}
+
+#[cfg(test)]
+pub(crate) async fn parse_execute_with_executor_kind(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+) -> Result<ExecTestResults, KclError> {
+    let program = crate::Program::parse_no_errs(code)?;
+
+    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
@@ -2185,6 +2367,25 @@ pub(crate) struct ExecTestResults {
 impl ExecTestResults {
     pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
         &self.exec_state.global.root_module_artifacts.commands
+    }
+
+    /// The diagnostics the run reported. Non-fatal issues, such as use of an
+    /// experimental feature without the opt-in, are recorded here rather than
+    /// returned as an error, so this is the only place a test can see them.
+    pub(crate) fn issues(&self) -> &[CompilationIssue] {
+        self.exec_state.issues()
+    }
+
+    /// The value bound to `name` after the run. Panics when the variable is
+    /// absent, because a test that names a variable the program does not
+    /// declare is broken rather than failing.
+    #[track_caller]
+    pub(crate) fn variable(&self, name: &str) -> KclValue {
+        self.exec_state
+            .stack()
+            .memory
+            .get_from_unchecked(name, self.mem_env)
+            .unwrap()
     }
 }
 
@@ -2236,6 +2437,251 @@ mod tests {
         ($file:literal) => {
             include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
         };
+    }
+
+    #[test]
+    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
+        // Imported modules execute on a context created by
+        // clone_with_fresh_execution_batch. They must stay on the executor
+        // selected for the run instead of silently reverting to the default.
+        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+        ctx.machine_call_depth_limit = 123;
+        let cloned = ctx.clone_with_fresh_execution_batch();
+        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
+        assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn concurrent_foreign_import_preserves_artifact_command() {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_foreign_import_artifact").unwrap();
+        tokio::fs::write(tmpdir.path().join("cube.obj"), "o cube\n")
+            .await
+            .unwrap();
+
+        let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
+        let ctx = new_mock_executor_context(
+            Some(crate::TypedPath(tmpdir.path().into())),
+            machine::ExecutorKind::resolve(),
+        );
+        let mut exec_state = ExecState::new(&ctx);
+        let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(main_ref, &ctx)
+            .await
+            .expect("foreign import execution should produce an outcome");
+        ctx.close().await;
+
+        let KclValueView::ImportedGeometry(imported) = &outcome.variables["model"] else {
+            panic!("model should be imported geometry");
+        };
+        let artifact_id = ArtifactId::new(imported.id);
+        let Some(Artifact::ImportedGeometry(artifact)) = outcome.artifact_graph.get(&artifact_id) else {
+            panic!("foreign import should produce an imported geometry artifact");
+        };
+        assert_eq!(artifact.id, artifact_id);
+        assert!(!artifact.code_ref.node_path.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn nested_import_preserves_inner_error_and_backtrace() {
+        // The imported modules live in an in-memory file system under a
+        // synthetic project directory, so parallel tests share no on-disk
+        // state and there is nothing to clean up even if the process is
+        // killed.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-error");
+        let main_path = project_dir.join("main.kcl");
+        let assembly_path = project_dir.join("assembly.kcl");
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        // Key each module by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [
+            (
+                project_dir.join("broken.kcl").to_string(),
+                b"export brokenValue = missingName + 1\n".to_vec(),
+            ),
+            (
+                assembly_path.to_string(),
+                b"import brokenValue from \"broken.kcl\"\n\nexport assemblyValue = brokenValue\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+        let settings = ExecutorSettings {
+            project_directory: Some(project_dir),
+            current_file: Some(main_path.clone()),
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+
+        let assert_error = |error: &KclErrorWithOutputs| {
+            let KclError::UndefinedValue { details, name } = &error.error else {
+                panic!("expected UndefinedValue, got {:#?}", error.error);
+            };
+            assert_eq!(name.as_deref(), Some("missingName"));
+            assert_eq!(details.message, "`missingName` is not defined");
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("import broken.kcl"), Some("import assembly.kcl"), None]
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("broken.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [assembly_path.to_string(), main_path.to_string()]
+            );
+
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("broken.kcl"));
+            assert!(rendered.contains("assembly.kcl"));
+            assert!(rendered.contains("main.kcl"));
+            assert!(rendered.contains("export brokenValue = missingName + 1"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
+        let mock_error = mock_ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        mock_ctx.close().await;
+        assert_error(&mock_error);
+
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn function_error_across_import_keeps_backtrace_innermost_first() {
+        // A function defined in an imported module fails when the importing
+        // module calls it: function frames and the import frame must stay in
+        // one innermost-first chain.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-fn-error");
+        let main_path = project_dir.join("main.kcl");
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        let files = [
+            (
+                project_dir.join("helper.kcl").to_string(),
+                b"export fn inner() { return missingName }\nexport fn outer() { return inner() }\n".to_vec(),
+            ),
+            (
+                project_dir.join("assembly.kcl").to_string(),
+                b"import outer from \"helper.kcl\"\n\nexport assemblyValue = outer()\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+        let settings = ExecutorSettings {
+            project_directory: Some(project_dir.clone()),
+            current_file: Some(main_path),
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+
+        let assert_error = |error: &KclErrorWithOutputs| {
+            assert!(
+                matches!(&error.error, KclError::UndefinedValue { .. }),
+                "expected UndefinedValue, got {:#?}",
+                error.error
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("inner"), Some("outer"), Some("import assembly.kcl"), None]
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("helper.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [
+                    project_dir.join("assembly.kcl").to_string(),
+                    project_dir.join("main.kcl").to_string()
+                ]
+            );
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("return missingName"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
+        let mock_error = mock_ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        mock_ctx.close().await;
+        assert_error(&mock_error);
+
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
@@ -2297,6 +2743,8 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -2508,25 +2956,6 @@ segLength = segLen(seg01)
         let (_, first_variables) = results.first().expect("expected at least one memory backend");
         assert_number_variable(first_variables, "segLength", 10.0);
         assert_backend_results_match(&results);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn sketch_transpiler_exec_outcome_variables_match_between_memory_backends() {
-        let code = r#"
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-"#;
-        let program = crate::Program::parse_no_errs(code).unwrap();
-
-        let outcomes = collect_backend_results(|kind| execute_outcome_with_backend(code, kind)).await;
-        let mut transpiled = Vec::with_capacity(outcomes.len());
-        for (kind, outcome) in &outcomes {
-            let sketch = transpile_old_sketch_to_new(outcome, &program, "sketch001").unwrap();
-            transpiled.push((*kind, sketch));
-        }
-
-        assert_backend_results_match(&transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3938,7 +4367,13 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        assert!(err.to_string().contains("stack size exceeded"), "actual: {:?}", err);
+        // The recursive executor's native-stack cap and the machine
+        // executor's call-depth guard report differently.
+        let msg = err.to_string();
+        assert!(
+            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
+            "actual: {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4131,6 +4566,90 @@ w = f() + f()
             Ok(res) => res,
             Err(e) => panic!("{}", e.error),
         };
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13319
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_rejects_oob_on_frontend_array() {
+        let code = r#"
+values = [10, 20]
+third = values[2]
+"#;
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(
+            err.error.message().contains("array doesn't have any item at index 2"),
+            "{err:?}"
+        );
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
+    /// i.e.
+    /// If you do a pattern circular 3d in mock execution mode,
+    /// and you ask for 10 instances, you should get 10 instances.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_pattern_circular_number() {
+        let code = kcl_input!("repro_mock_pattern_circular");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let copies = result
+            .variables
+            .get("copies")
+            .expect("no variable called 'copies' found");
+        let value = match copies {
+            KclValueView::Solid { .. } => {
+                panic!("One solid?");
+            }
+            KclValueView::HomArray { value } => value,
+            other => panic!("{other:#?}"),
+        };
+        let actual_instances = value.len();
+        let expected_instances = 10; // from the KCL `instances = `
+        assert_eq!(actual_instances, expected_instances);
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
+    /// i.e.
+    /// If you do a pattern circular 3d in mock execution mode,
+    /// and you ask for 10 instances, you should get 10 instances.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_subtract() {
+        // Run this KCL file, in mock execution.
+        let code = kcl_input!("repro_mock_subtract");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        let result = match result {
+            Ok(x) => x,
+            Err(e) => {
+                let error = e.error;
+                panic!("{error}");
+            }
+        };
+
+        // Get the variable we're interested in, from KCL program memory.
+        let subtracted_parts = result
+            .variables
+            .get("subtractedParts")
+            .expect("no variable called 'subtracted_parts' found");
+        let subtracted_parts = match subtracted_parts {
+            KclValueView::Solid { .. } => {
+                panic!("One solid?");
+            }
+            KclValueView::HomArray { value } => value,
+            other => panic!("{other:#?}"),
+        };
+
+        // Validate the variable.
+        // from the KCL, there's 2 parts being subtracted from.
+        let expected_number_of_parts = 2;
+        let actual_number_of_parts = subtracted_parts.len();
+        assert_eq!(actual_number_of_parts, expected_number_of_parts);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4409,6 +4928,1260 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn entry_point_kcl_version_recorded_only_for_v3() {
+        let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
+            .await
+            .unwrap();
+        assert_eq!(
+            result.exec_state.global.entry_point_kcl_version,
+            Some(KclVersion::V3Preview)
+        );
+        assert!(result.exec_state.entry_point_version_is_v3_or_higher());
+
+        for code in [
+            "x = 1\n",
+            "@settings(kclVersion = 1.0)\nx = 1\n",
+            "@settings(kclVersion = 2.0)\nx = 1\n",
+        ] {
+            let result = parse_execute(code).await.unwrap();
+            assert_eq!(result.exec_state.global.entry_point_kcl_version, None, "code={code}");
+            assert!(!result.exec_state.entry_point_version_is_v3_or_higher(), "code={code}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_version_lookup_prefers_entry_point_over_module_local() {
+        let mut exec_state = parse_execute("x = 1\n").await.unwrap().exec_state;
+
+        // Legacy fallback: the module-local settings.
+        exec_state.global.entry_point_kcl_version = None;
+        exec_state.mod_local.settings.kcl_version = KclVersion::V2;
+        assert_eq!(exec_state.kcl_version(), KclVersion::V2);
+        assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
+
+        // An entry-point KCL 3.0 declaration overrides the module-local
+        // settings for the unified lookup, but not for the legacy one.
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
+        assert_eq!(exec_state.kcl_version(), KclVersion::V3Preview);
+        assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
+    }
+
+    /// Mock execution skips `run_concurrent`, so it relies on `inner_run` to
+    /// record the entry point's kclVersion -- including re-recording it on
+    /// every run when restoring memory preserved from a previous mock run,
+    /// since the preserved memory must not pin the previous program's version.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_records_entry_point_kcl_version() {
+        use futures::FutureExt;
+
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let fresh_memory = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let prev_memory = MockConfig::default();
+
+        let v3_program = crate::Program::parse_no_errs("@settings(kclVersion = \"3.0-preview\")\nx = 1\n").unwrap();
+        let v2_program = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 1\n").unwrap();
+
+        // Close the context and clear the cache even if an assertion panics,
+        // then let the panic continue.
+        let test_result = std::panic::AssertUnwindSafe(async {
+            let (exec_state, _) = ctx.run_mock_returning_state(&v3_program, &fresh_memory).await.unwrap();
+            assert_eq!(
+                exec_state.global.entry_point_kcl_version,
+                Some(KclVersion::V3Preview),
+                "mock execution should record a 3.0-preview entry point"
+            );
+            assert!(exec_state.entry_point_version_is_v3_or_higher());
+
+            // Populate the preserved mock memory with a 3.0-preview run, then
+            // check that a 2.0 run restoring that memory isn't pinned to
+            // 3.0-preview...
+            ctx.run_mock(&v3_program, &fresh_memory).await.unwrap();
+            let (exec_state, _) = ctx.run_mock_returning_state(&v2_program, &prev_memory).await.unwrap();
+            assert_eq!(exec_state.global.entry_point_kcl_version, None);
+            assert!(!exec_state.entry_point_version_is_v3_or_higher());
+
+            // ...and that a 3.0-preview run restoring a 2.0 run's memory
+            // records 3.0-preview.
+            ctx.run_mock(&v2_program, &fresh_memory).await.unwrap();
+            let (exec_state, _) = ctx.run_mock_returning_state(&v3_program, &prev_memory).await.unwrap();
+            assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V3Preview));
+        })
+        .catch_unwind()
+        .await;
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        if let Err(panic) = test_result {
+            std::panic::resume_unwind(panic);
+        }
+    }
+
+    /// Mock execution applies the KCL 3.0 semantics -- early return and
+    /// if-arm scoping -- since it records the entry point's kclVersion via
+    /// `inner_run` rather than `run_concurrent`.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_applies_v3_semantics() {
+        use futures::FutureExt;
+
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let fresh_memory = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+outer = 1
+y = if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+"#,
+        )
+        .unwrap();
+
+        // Close the context and clear the cache even if an assertion panics,
+        // then let the panic continue.
+        let test_result = std::panic::AssertUnwindSafe(async {
+            let (exec_state, env) = ctx.run_mock_returning_state(&program, &fresh_memory).await.unwrap();
+            let var = |name: &str| mem_get_json(exec_state.stack(), env, name).as_f64().unwrap();
+            assert_eq!(var("x"), 1.0, "early return produces the function's value");
+            assert_eq!(var("y"), 12.0, "the branch sees its own shadowing binding");
+            assert_eq!(var("outer"), 1.0, "the outer binding is unchanged after the if");
+        })
+        .catch_unwind()
+        .await;
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        if let Err(panic) = test_result {
+            std::panic::resume_unwind(panic);
+        }
+    }
+
+    /// All fillet algorithm versions sent to the engine during the run,
+    /// across the root module and every imported module. The version emitted
+    /// is the observable for which kclVersion governed the filleting code;
+    /// see `default_edge_cut_version`.
+    fn emitted_fillet_versions_everywhere(
+        result: &ExecTestResults,
+    ) -> Vec<kittycad_modeling_cmds::shared::EdgeCutVersion> {
+        let module_commands = result
+            .exec_state
+            .global
+            .module_infos
+            .values()
+            .filter_map(|info| match &info.repr {
+                ModuleRepr::Kcl(_, Some(outcome)) => Some(outcome.artifacts.commands.iter()),
+                _ => None,
+            })
+            .flatten();
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .chain(module_commands)
+            .filter_map(|artifact_command| match &artifact_command.command {
+                kittycad_modeling_cmds::ModelingCmd::Solid3dCutEdges(command) => Some(command.version),
+                _ => None,
+            })
+            .collect()
+    }
+
+    const FILLET_AT_MODULE_TOP_LEVEL: &str = r#"
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $edge)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+solid = extrude(profile, length = 10)
+fillet(solid, tags = [edge], radius = 1)
+"#;
+
+    const FILLET_IN_EXPORTED_FN: &str = r#"
+export fn filletedBox() {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0], tag = $edge)
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+  solid = extrude(profile, length = 10)
+  return fillet(solid, tags = [edge], radius = 1)
+}
+"#;
+
+    /// A KCL 3.0 entry point pins the kclVersion for the whole execution: an
+    /// imported 2.0 module observes KCL 3.0 both in its module-level code and
+    /// in its functions, wherever they are called from.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn entry_point_v3_pins_kcl_version_for_imported_modules() {
+        use kittycad_modeling_cmds::shared::EdgeCutVersion;
+
+        let dep = format!("@settings(kclVersion = 2.0)\n{FILLET_AT_MODULE_TOP_LEVEL}");
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import "dep.kcl" as dep
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
+
+        let dep = format!("@settings(kclVersion = 2.0)\n{FILLET_IN_EXPORTED_FN}");
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import filletedBox from "dep.kcl"
+box = filletedBox()
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
+    }
+
+    /// Without a KCL 3.0 entry point, the legacy lookup applies unchanged,
+    /// including its quirk: an imported module's module-level code observes the
+    /// module's own declared version, but its functions observe the CALLING
+    /// module's version.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_kcl_version_quirk_applies_without_v3_entry_point() {
+        use kittycad_modeling_cmds::shared::EdgeCutVersion;
+
+        let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_AT_MODULE_TOP_LEVEL}");
+        let main = r#"@settings(kclVersion = 2.0)
+import "dep.kcl" as dep
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
+
+        let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_IN_EXPORTED_FN}");
+        let main = r#"@settings(kclVersion = 2.0)
+import filletedBox from "dep.kcl"
+box = filletedBox()
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V1]);
+    }
+
+    #[track_caller]
+    fn variable_f64(result: &ExecTestResults, name: &str) -> f64 {
+        mem_get_json(result.exec_state.stack(), result.mem_env, name)
+            .as_f64()
+            .unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_terminates_function_early_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn second_return_is_unreachable_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  return 2
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_if_arm_returns_from_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@b) {
+  dummy = if b {
+    return 1
+    0
+  } else {
+    0
+  }
+  return 2
+}
+x = f(true)
+y = f(false)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+        assert_eq!(variable_f64(&result, "y"), 2.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_nested_if_returns_from_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@a, b) {
+  dummy = if a {
+    inner = if b {
+      return 10
+      0
+    } else {
+      1
+    }
+    inner + 1
+  } else {
+    2
+  }
+  return dummy * 100
+}
+x = f(true, b = true)
+y = f(true, b = false)
+z = f(false, b = false)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 10.0);
+        assert_eq!(variable_f64(&result, "y"), 200.0);
+        assert_eq!(variable_f64(&result, "z"), 200.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_closure_returns_only_from_closure_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn outer() {
+  inner = fn() {
+    return 5
+    assert(1, isEqualTo = 2, error = "code after inner return ran")
+  }
+  v = inner()
+  return v + 1
+}
+x = outer()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 6.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_type_coercion_applies_to_early_return_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(): number(mm) {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+
+        // A coercion failure surfaces as an error (on the machine, this
+        // exercises unwind_return's error path).
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(): number(mm) {
+  return "nope"
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.expect_err("coercion failure should error");
+        assert!(err.message().contains("type"), "unexpected message: {}", err.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_at_top_level_errors() {
+        // A return statement at the top level is rejected in all versions.
+        for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
+            let code = format!("{header}return 1\n");
+            assert_eq!(
+                parse_execute(&code).await.expect_err("should error").message(),
+                "Cannot return from outside a function."
+            );
+        }
+
+        // Under KCL 3.0, a return escaping a top-level if-arm is also rejected
+        // (without the setting it is silently ignored; see
+        // top_level_if_arm_return_ignored_without_v3).
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  return 1
+  0
+} else {
+  0
+}
+"#;
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Cannot return from outside a function."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_function_still_exits_program_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  exit()
+  return 1
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_sketch_block_terminates_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  sketch(on = XY) {
+    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+    return 42
+  }
+  return 0
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 42.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_sketch_block_ignored_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: `__return` binds in the sketch block's
+        // child environment and is lost when it pops.
+        let code = r#"@settings(experimentalFeatures = allow)
+fn f() {
+  sketch(on = XY) {
+    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+    return 42
+  }
+  return 0
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 0.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn code_after_return_still_runs_without_v3() {
+        let code = r#"fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("ran past return"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn multiple_returns_error_without_v3() {
+        let code = r#"fn f() {
+  return 1
+  return 2
+}
+x = f()
+"#;
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Multiple returns from a single function."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_return_plus_function_return_errors_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: the if-arm's `return` writes
+        // `__return` into the function's environment, so the function-level
+        // `return` is a second return.
+        let code = r#"fn f() {
+  dummy = if true {
+    return 1
+    0
+  } else {
+    0
+  }
+  return 2
+}
+x = f()
+"#;
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Multiple returns from a single function."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn top_level_if_arm_return_ignored_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: the return silently binds
+        // `__return` in the root environment and the arm yields its trailing
+        // expression.
+        let code = r#"x = if true {
+  return 1
+  0
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 0.0);
+        assert_eq!(variable_f64(&result, memory::RETURN_NAME), 1.0);
+    }
+
+    /// Early return is gated on the entry point's kclVersion, not the
+    /// defining module's.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_semantics_gated_on_entry_point_not_module() {
+        // A 2.0 entry point keeps write-and-continue everywhere, even inside an
+        // imported KCL 3.0 module: its function still runs code after return,
+        // and a return escaping its module-level if-arm is still silently
+        // ignored.
+        let dep = r#"@settings(kclVersion = "3.0-preview")
+ignored = if true {
+  return 1
+  0
+} else {
+  0
+}
+
+export fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+"#;
+        let main = r#"@settings(kclVersion = 2.0)
+import f from "dep.kcl"
+x = f()
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("ran past return"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A KCL 3.0 entry point applies early return everywhere, including
+        // inside an imported 2.0 module.
+        let dep = r#"@settings(kclVersion = 2.0)
+export fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import f from "dep.kcl"
+x = f()
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    /// Early return inside a callback driven by a builtin terminates only
+    /// that callback invocation; the builtin keeps iterating. On the machine
+    /// executor, map/reduce callbacks run behind a Callback-completion call
+    /// boundary, so this exercises unwind_return's resume-the-builtin path,
+    /// unlike a directly called function.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_map_and_reduce_callbacks_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+doubled = map([1, 2, 3], f = fn(@i) {
+  return i * 2
+  assert(1, isEqualTo = 2, error = "code after return ran in the map callback")
+})
+assert(doubled[0], isEqualTo = 2, error = "map result 0")
+assert(doubled[1], isEqualTo = 4, error = "map result 1")
+assert(doubled[2], isEqualTo = 6, error = "map result 2")
+
+total = reduce([1, 2, 3], initial = 0, f = fn(@i, accum) {
+  return accum + i
+  assert(1, isEqualTo = 2, error = "code after return ran in the reduce callback")
+})
+assert(total, isEqualTo = 6, error = "reduce total")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "total"), 6.0);
+    }
+
+    /// unwind_return must decrement the machine call depth like a normal
+    /// call completion; otherwise sequential early-return calls would
+    /// accumulate depth until the runaway guard trips. The recursive
+    /// executor doesn't use the counter, so the bound is trivially true
+    /// there.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn early_returns_do_not_leak_machine_call_depth() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn one() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+total = reduce([1..100], initial = 0, f = fn(@i, accum) {
+  return accum + one()
+})
+assert(total, isEqualTo = 100, error = "each call returns 1")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // Real nesting here is a few levels (reduce callback then one()).
+        // If early returns leaked a level per call, the 100 sequential
+        // calls would push the high water toward 100.
+        let high_water = result.exec_state.global.machine_depth_high_water;
+        assert!(high_water < 10, "high water: {high_water}");
+    }
+
+    /// A return escaping to the top level of an imported module is rejected
+    /// under a KCL 3.0 entry point. The entry module's version governs, so
+    /// the imported module declaring 2.0 doesn't opt back out. (Without a
+    /// KCL 3.0 entry point the return is silently ignored; see
+    /// top_level_if_arm_return_ignored_without_v3.)
+    #[tokio::test(flavor = "multi_thread")]
+    async fn top_level_if_arm_return_in_imported_module_errors_in_v3() {
+        let dep = r#"@settings(kclVersion = 2.0)
+x = if true {
+  return 1
+  0
+} else {
+  0
+}
+export y = x
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import y from "dep.kcl"
+z = y
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("Cannot return from outside a function."),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// exit() in a return's argument still exits the whole program: the
+    /// Exit control flow from evaluating the argument takes precedence over
+    /// turning the statement into an early return. If it were mistakenly
+    /// treated as the function's return value, execution would continue
+    /// after the call and hit the failing assert.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_of_exit_still_exits_program_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return exit()
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_bindings_do_not_leak_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  y = 1
+  y
+} else {
+  0
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_bindings_leak_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: arm bodies share the enclosing
+        // environment, so arm bindings are visible after the if.
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}x = if true {{
+  y = 1
+  y
+}} else {{
+  0
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_shadowing_allowed_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+y = 1
+x = if true {
+  y = 2
+  y + 10
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "y"), 1.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_shadowing_still_errors_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: the arm shares the enclosing
+        // environment, so redeclaring an outer name is an error.
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}y = 1
+x = if true {{
+  y = 2
+  y
+}} else {{
+  0
+}}
+"#
+            );
+            let err = parse_execute(&code).await.expect_err("should error");
+            assert!(
+                err.message().contains("Cannot redefine `y`"),
+                "unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_closure_escape_in_v3() {
+        // A closure declared in an arm captures arm-locals and stays valid
+        // after the arm's scope is popped.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+n = 1
+f = if true {
+  m = 41
+  g = fn() {
+    return m + n
+  }
+  g
+} else {
+  g = fn() {
+    return 0
+  }
+  g
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 42.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn recursive_if_arm_closure_keeps_enclosing_function_frame_alive_in_v3() {
+        // A named recursive closure takes a different snapshot path from an
+        // anonymous closure. Escaping through an arm must retain both the arm
+        // and its enclosing call frame.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn makeCounter() {
+  outer = 40
+  selected = if true {
+    inner = 2
+    fn count(@n) {
+      return if n == 0 {
+        outer + inner
+      } else {
+        count(n - 1) + 1
+      }
+    }
+    count
+  } else {
+    fn fallback(@n) {
+      return n
+    }
+    fallback
+  }
+  return selected
+}
+counter = makeCounter()
+x = counter(3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 45.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_scoped_if_arm_in_v3() {
+        // Early return from inside a scoped arm pops the arm environment on
+        // the way out.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@b) {
+  local = if b {
+    w = 1
+    return w + 9
+    0
+  } else {
+    0
+  }
+  return local
+}
+x = f(true)
+y = f(false)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 10.0);
+        assert_eq!(variable_f64(&result, "y"), 0.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_nested_if_scoping_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if true {
+  a = 1
+  b = if true {
+    c = 2
+    a + c
+  } else {
+    0
+  }
+  a + b
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 4.0);
+
+        // A nested arm's binding is not visible in the enclosing arm.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  b = if true {
+    c = 2
+    c
+  } else {
+    0
+  }
+  b + c
+} else {
+  0
+}
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`c` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// Else-if and final-else arms are isolated exactly like then-arms:
+    /// their bindings are invisible after the if, and they may shadow outer
+    /// bindings without changing them. Pinned per arm kind so a refactor of
+    /// the shared arm dispatch can't silently drop one.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_final_else_arms_are_isolated_in_v3() {
+        // A taken else-if arm's binding doesn't leak.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if true {
+  y = 1
+  y
+} else {
+  0
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A taken final-else arm's binding doesn't leak.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if false {
+  0
+} else {
+  y = 1
+  y
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A taken else-if arm can shadow an outer binding without changing it.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+outer = 1
+x = if false {
+  0
+} else if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "outer"), 1.0);
+
+        // Same from the final-else arm.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+outer = 1
+x = if false {
+  0
+} else if false {
+  0
+} else {
+  outer = 2
+  outer + 10
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "outer"), 1.0);
+    }
+
+    /// Pins the pre-KCL-3.0 behavior for else-if and final-else arms: their
+    /// bindings leak into the enclosing environment, and shadowing an outer
+    /// name is a redefinition error, matching then-arms.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_final_else_arm_bindings_leak_without_v3() {
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}x = if false {{
+  0
+}} else if true {{
+  y = 1
+  y
+}} else {{
+  0
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0, "code={code}");
+
+            let code = format!(
+                r#"{header}x = if false {{
+  0
+}} else if false {{
+  0
+}} else {{
+  y = 1
+  y
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0, "code={code}");
+
+            let code = format!(
+                r#"{header}outer = 1
+x = if false {{
+  0
+}} else if true {{
+  outer = 2
+  outer
+}} else {{
+  0
+}}
+"#
+            );
+            let err = parse_execute(&code).await.expect_err("should error");
+            assert!(
+                err.message().contains("Cannot redefine `outer`"),
+                "unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn error_inside_if_arm_unwinds_balanced_in_v3() {
+        // The user's error surfaces (not an internal environment-imbalance
+        // error), on both executors.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  dummy = if true {
+    assert(1, isEqualTo = 2, error = "boom")
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(err.message().contains("boom"), "unexpected message: {}", err.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_scoped_if_arm_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  dummy = if true {
+    exit()
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    /// If-arm scoping is gated on the entry point's kclVersion, not the
+    /// defining module's.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scoping_gated_on_entry_point_not_module() {
+        // A 2.0 entry point keeps leaking arms everywhere, even inside an
+        // imported KCL 3.0 module.
+        let dep = r#"@settings(kclVersion = "3.0-preview")
+ignored = if true {
+  leaked = 1
+  leaked
+} else {
+  0
+}
+export leakCheck = leaked
+"#;
+        let main = r#"@settings(kclVersion = 2.0)
+import leakCheck from "dep.kcl"
+x = leakCheck
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+
+        // A KCL 3.0 entry point applies arm scoping everywhere,
+        // including inside an imported 2.0 module.
+        let dep = r#"@settings(kclVersion = 2.0)
+ignored = if true {
+  arm = 1
+  arm
+} else {
+  0
+}
+export fn leakCheck() {
+  return arm
+}
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import leakCheck from "dep.kcl"
+x = leakCheck()
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("`arm` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// Unwinding out of a sketch block nested inside a scoped if-arm must
+    /// run the sketch cleanup and then pop the arm's scope environment, in
+    /// that order, on all three unwind paths: error, exit(), and early
+    /// return.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unwind_through_sketch_block_inside_scoped_if_arm_in_v3() {
+        // Error: the user's error surfaces, not an internal
+        // environment-imbalance error.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      q = notDefinedAnywhere
+    }
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        assert!(
+            err.message().contains("`notDefinedAnywhere` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // exit() terminates the program; nothing after it runs.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      e = exit()
+    }
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+
+        // Early return terminates the enclosing function with its value.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn g() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      return 42
+    }
+    0
+  } else {
+    0
+  }
+  return 0
+}
+y = g()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "y"), 42.0);
+    }
+
+    /// A tag declared inside an if-arm is bound like any arm-local: usable
+    /// within its arm, and under KCL 3.0 not visible after the if. Without
+    /// KCL 3.0 it leaks like other arm bindings.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tag_declared_inside_if_arm_is_arm_local_in_v3() {
+        let arm_body = r#"p = if true {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0], tag = $edge)
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+  inArmLen = segLen(edge)
+  assert(inArmLen, isEqualTo = 10, error = "tag is usable within its arm")
+  profile
+} else {
+  startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> close()
+}
+len = segLen(edge)
+"#;
+
+        let code = format!("@settings(kclVersion = \"3.0-preview\")\n{arm_body}");
+        let err = parse_execute(&code).await.unwrap_err();
+        assert!(
+            err.message().contains("`edge` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // Pins the pre-KCL-3.0 behavior: the tag leaks out of the arm.
+        let result = parse_execute(arm_body).await.unwrap();
+        assert_eq!(variable_f64(&result, "len"), 10.0);
+    }
+
+    /// Repeated calls to a function whose body evaluates an if-expression must
+    /// not accumulate retained call frames when nothing escapes the arms: the
+    /// arm's scope environment defers pinning its parent until it is itself
+    /// referenced. Before deferred pinning, each of the 100 calls below
+    /// permanently retained its frame.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scopes_do_not_retain_function_frames_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn pick(@i) {
+  r = if i > 50 {
+    a = i * 2
+    a
+  } else {
+    b = i + 1
+    b
+  }
+  return r
+}
+results = map([1..100], f = fn(@i) { return pick(i) })
+assert(results[0], isEqualTo = 2, error = "pick(1) = 2")
+assert(results[99], isEqualTo = 200, error = "pick(100) = 200")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // Long-lived environments (std prelude modules, the root env, ...) are
+        // a small constant independent of the call count.
+        let retained = result.exec_state.stack().memory.envs_with_bindings();
+        assert!(retained < 20, "retained environments: {retained}");
+    }
+
+    /// An if-expression used as a pipe element gets arm scoping without
+    /// disturbing the ambient pipe value: the arm's result feeds the next
+    /// element's `%` (the parser doesn't accept `%` anywhere inside the if
+    /// element itself), and arm-locals don't leak.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scoping_inside_pipe_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+cond = true
+result = 5
+  |> if cond {
+    a = 20
+    a
+  } else {
+    0
+  }
+  |> max([%, 1])
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // The then-arm's 20 must flow through the pipe into max's `%`. If
+        // the arm's scope push/pop corrupted the ambient pipe value, this
+        // would not be 20.
+        assert_eq!(variable_f64(&result, "result"), 20.0);
+
+        // Arm-locals of a pipe element are invisible after the pipe.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+cond = true
+result = 5
+  |> if cond {
+    a = 20
+    a
+  } else {
+    0
+  }
+leaked = a
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        assert!(
+            err.message().contains("`a` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
 fn inc(@x, @(experimental = true) amount? = 1) {
@@ -4568,6 +6341,29 @@ sketch001 = sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn over_constrained_warning_identifies_signed_vertical_distance_direction() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  fixed([line1.start, [0mm, 10mm]])
+  fixed([line1.end, ORIGIN])
+  verticalDistance([line1.start, line1.end]) == 10mm
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        let Some(warning) = issues.iter().find(|issue| issue.message.contains("over-constrained")) else {
+            panic!("expected over-constrained warning; found {issues:#?}");
+        };
+        assert!(
+            warning.message.contains(
+                "Unsatisfied signed verticalDistance constraint: a positive right-hand side requires the second point to be above the first"
+            ),
+            "expected signed-direction diagnostic; found {warning:#?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn no_warning_when_sketch_is_not_over_constrained() {
         // Under-constrained sketch should not emit the over-constrained warning.
         let code = r#"
@@ -4676,6 +6472,84 @@ s2 = sketch(on = XZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_reports_sketch_names() {
+        // One file holding a fully constrained, an under-constrained, and an
+        // over-constrained sketch. Every entry carries the name of the
+        // variable its sketch was assigned to, so a caller can say which
+        // sketch needs correcting.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+fixedSketch = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+looseSketch = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+
+conflictSketch = sketch(on = XY) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.over_constrained.len(), 1);
+        assert_eq!(report.fully_constrained[0].name, "fixedSketch");
+        assert_eq!(report.under_constrained[0].name, "looseSketch");
+        assert_eq!(report.over_constrained[0].name, "conflictSketch");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_name_empty_without_declaration() {
+        // A sketch written as an expression statement has no enclosing
+        // variable declaration, so there is no name to report. This pins the
+        // documented limitation of SketchConstraintStatus::name.
+        let kcl = r#"
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.under_constrained[0].name, "");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_names_repeat_across_calls() {
+        // Both sketches come from the same declaration inside the function
+        // body, so both entries carry that declaration's name and the report
+        // cannot tell them apart. This pins the documented limitation of
+        // SketchConstraintStatus::name.
+        let kcl = r#"
+fn makeSketch() {
+  inner = sketch(on = XY) {
+    line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  }
+  return inner
+}
+
+first = makeSketch()
+second = makeSketch()
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 2);
+        assert_eq!(report.under_constrained[0].name, "inner");
+        assert_eq!(report.under_constrained[1].name, "inner");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_enum_declaration_is_experimental() {
         // Without opting in, executing a program with an enum declaration
         // fails at the parsing stage with the experimental diagnostic.
@@ -4714,7 +6588,7 @@ type Empty { | }
         // one file would collide. The parser and formatter accept this shape, so
         // execution is the only thing that can reject it.
         //
-        // The rule is about nesting, not about one kind of block, so both routes
+        // The rule is about nesting, not about one kind of block, so all routes
         // to `BodyType::Block` are covered here.
         let allow = "@settings(experimentalFeatures = allow)\n";
         for (case, code) in [
@@ -4727,6 +6601,10 @@ type Empty { | }
                 format!(
                     "{allow}sketch(on = XY) {{\n  type Color {{ | Red }}\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
                 ),
+            ),
+            (
+                "if arm",
+                format!("{allow}x = if true {{\n  type Color {{ | Red }}\n  0\n}} else {{\n  0\n}}\n"),
             ),
         ] {
             assert_eq!(
@@ -4783,6 +6661,144 @@ type Color { | Red | Green | Red }
         }
 
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
+    /// Runs `main` with an empty imported module named `m.kcl` in mock
+    /// execution and returns the recorded compilation issues; the run may
+    /// end in an error (e.g. from operating on the module's missing return
+    /// value).
+    ///
+    /// The `m.kcl` module lives in an in-memory file system under a
+    /// synthetic project directory, so parallel tests share no on-disk
+    /// state and there is nothing to clean up even if the process is
+    /// killed.
+    async fn issues_with_empty_module(main: &str) -> Vec<crate::errors::CompilationIssue> {
+        use futures::FutureExt;
+
+        let project_dir = crate::TypedPath::new("/zma-kcl-member-ranges");
+        // Key the file by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [(project_dir.join("m.kcl").to_string(), Vec::new())]
+            .into_iter()
+            .collect();
+
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
+            settings: ExecutorSettings {
+                project_directory: Some(project_dir),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        // Close the context even if execution panics, then let the panic
+        // continue. An Err from the run itself is expected here (operating
+        // on the module's missing return value) and is deliberately ignored.
+        let run_result = std::panic::AssertUnwindSafe(ctx.run(&program, &mut exec_state))
+            .catch_unwind()
+            .await;
+        ctx.close().await;
+        if let Err(panic) = run_result {
+            std::panic::resume_unwind(panic);
+        }
+        exec_state.issues().to_vec()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_object_diagnostics_use_object_range() {
+        // A diagnostic raised while evaluating a member expression's object
+        // (here, the imported module's missing-return warning) points at the
+        // object's own span, not the whole member expression.
+        let main = "import \"m.kcl\" as m
+x = m.field
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let object_start = main.rfind("m.field").unwrap();
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (object_start, object_start + 1),
+            "warning should point at the object's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_property_diagnostics_use_property_range() {
+        // Same for the computed property: the warning points at the index
+        // expression's span inside the brackets.
+        let main = "import \"m.kcl\" as m
+arr = [1]
+x = arr[m]
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let prop_start = main.rfind("[m]").unwrap() + 1;
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (prop_start, prop_start + 1),
+            "warning should point at the property's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn backtrace_reports_fully_qualified_fn_names() {
+        // An error inside a function called by a qualified name records the
+        // full path (m::f), not just the final segment (f), in the
+        // structured backtrace's unwind locations.
+        let main = "import \"m.kcl\" as m\nx = m::f()\n";
+        let modules = [("m.kcl", "export fn f() {\n  return undefinedVariable\n}\n")];
+        let err = execute_with_modules(main, &modules).await.unwrap_err();
+        let fn_names: Vec<_> = err.backtrace().into_iter().filter_map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, vec!["m::f".to_owned()]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_name_executes_as_operand() {
+        // A whole-module import used as a binary or unary operand executes
+        // the module and operates on its final-expression value, exactly like
+        // using the name in expression position (x = m).
+        let main = r#"import "m.kcl" as m
+sum = m + m
+neg = -m
+"#;
+        let result = execute_with_modules(main, &[("m.kcl", "42\n")]).await.unwrap();
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "sum").as_f64(),
+            Some(84.0)
+        );
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "neg").as_f64(),
+            Some(-42.0)
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_without_return_as_operand_errors() {
+        // Matches expression-position behavior: the module still executes,
+        // the missing-return fallback produces a KclNone, and the binary
+        // operation then rejects it. (A trailing declaration would count as
+        // the module's return value, so the module body must be empty.)
+        let main = "import \"m.kcl\" as m
+x = m + 1
+";
+        let err = execute_with_modules(main, &[("m.kcl", "")]).await.unwrap_err();
+        assert!(
+            err.message().contains("Expected a number, but found none"),
+            "expected the operand to be the module's missing-return KclNone, got: {}",
+            err.message()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4870,6 +6886,177 @@ type Color { | Red | Green | Red }
             };
             assert_eq!(value.qualified_name(), "Color::Red", "case: {case}");
         }
+    }
+
+    // The next five tests pin lexical resolution of signature types: a type
+    // name written in a function signature resolves in the scope where the
+    // declaration executes, never in the caller's scope. Before
+    // definition-time resolution, signature types were looked up at each call
+    // in the caller's environment, so a std or user module whose exported
+    // types a caller had not imported under their bare names was uncallable.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_declaring_module() {
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        // The caller can reach `colors::Color` but never binds the bare name
+        // `Color`, so resolving the signature in the caller's scope would fail.
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_under_import_alias() {
+        // An import alias renames the caller's binding for the module. The
+        // declaring module's scope is unaffected, so the signature must
+        // resolve identically under any alias.
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_ignore_caller_scope() {
+        // `broken.kcl` names a type it does not define. The caller defines
+        // that name, which caller-scope resolution would have used. The
+        // declaration must fail when the module loads, without consulting the
+        // caller's binding.
+        let broken = (
+            "broken.kcl",
+            "@settings(experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
+
+        let err = execute_with_modules(main, &[broken]).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Missing"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_reject_forward_reference() {
+        // Resolution happens when the declaration executes, so a type declared
+        // later in the file is not visible. The function is never called; the
+        // error must surface at the declaration itself.
+        let main = "@settings(experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
+
+        let err = parse_execute(main).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Later"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_enclosing_scope() {
+        // The declaring scope is the closure's scope, not merely the declaring
+        // module: the anonymous function's signature must see the alias in the
+        // enclosing function body. Caller-scope resolution would use the
+        // module-level `Width = string` and fail to coerce `42`.
+        let main = "@settings(experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
+
+        let result = parse_execute(main).await.unwrap();
+        let KclValue::Number { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold a number");
+        };
+        assert_eq!(value, 42.0);
+    }
+
+    // Pins that numeric types in signatures are settings-independent, so
+    // definition-time resolution changed nothing for them: in type
+    // annotations, bare `number` maps to `Any` before the settings-reading
+    // path, and every explicit suffix maps to a settings-free type. A literal
+    // argument therefore takes its unit from the CALLER's module defaults;
+    // the declaring module's defaults (`in` here) must never leak in. If a
+    // future change makes a signature's number type depend on module default
+    // units, the declaring-module scope of definition-time resolution starts
+    // to matter and this pin fails.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_number_types_ignore_module_default_units() {
+        let units_in = (
+            "units_in.kcl",
+            "@settings(defaultLengthUnit = in)\nexport fn passThrough(@x: number(Length)) {\n  return x\n}\n",
+        );
+        // The caller's default length unit is mm (the test default), so the
+        // unitless literal is 42 mm by the time it reaches the parameter.
+        let main = "import \"units_in.kcl\"\na = units_in::passThrough(42)\nb = units_in::passThrough(42mm)\nc = units_in::passThrough(42in)\n";
+
+        let result = execute_with_modules(main, &[units_in]).await.unwrap();
+        for (name, expected_ty) in [
+            // The unitless literal keeps its `Default` type, and that type
+            // records the CALLER's module settings. Declaring-module leakage
+            // would show here as `len: Inches`.
+            //
+            // That the coercion to `number(Length)` leaves the type as
+            // `Default` rather than concretizing it to `Known(Millimeters)`
+            // is pre-existing coercion behavior which this test observes but
+            // does not endorse. If coercion later concretizes, update the
+            // expected type; the pin here is the settings provenance.
+            (
+                "a",
+                kcl_api::NumericType::Default {
+                    len: kcl_api::UnitLength::Millimeters,
+                    angle: kcl_api::UnitAngle::Degrees,
+                },
+            ),
+            (
+                "b",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Millimeters)),
+            ),
+            (
+                "c",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Inches)),
+            ),
+        ] {
+            let KclValue::Number { value, ty, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name)
+            else {
+                panic!("`{name}` should hold a number");
+            };
+            assert_eq!(value, 42.0, "`{name}` should keep its magnitude");
+            assert_eq!(ty, expected_ty, "`{name}` should keep the caller-side unit context");
+        }
+    }
+
+    // Pins the sharpest shadowing case, from a hand-written example during
+    // review: BOTH scopes define the same type name with different meanings,
+    // so the test observes which one the signature uses, not merely whether a
+    // name is present. `m1.kcl`'s `A` is `string` and is NOT exported; the
+    // caller's own `A` is `number(mm)`. The signature must use m1's `A`, so
+    // passing `2mm` is a type error. Caller-scope resolution would have used
+    // the caller's `A` and accepted the call.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_use_declaring_scope_when_both_scopes_define_the_name() {
+        let m1 = (
+            "m1.kcl",
+            "@settings(experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
+        );
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
+
+        let err = execute_with_modules(main, &[m1]).await.unwrap_err();
+        assert_eq!(
+            err.message(),
+            "The input argument of `test` requires a value with type `A`, but found a number (mm) (with type `number(mm)`)."
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

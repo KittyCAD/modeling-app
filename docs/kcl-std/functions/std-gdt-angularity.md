@@ -18,6 +18,7 @@ gdt::angularity(
   framePlane?: Plane,
   leaderScale?: number(_),
   fontSize?: number(Length),
+  annotationName?: string,
 ): [GdtAnnotation; 1+]
 ```
 
@@ -42,6 +43,7 @@ omitting both is an error.
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
+| `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
 
 ### Returns
 
@@ -100,7 +102,13 @@ stampedProfile = sketch(on = XY) {
   angle([datumFace, controlledSurface]) == basicAngle
 }
 
-stampedPart = extrude(region(point = [12mm, 2mm], sketch = stampedProfile), length = 0.8mm)
+stampedPart = extrude(
+  region(segments = [
+    stampedProfile.datumFace,
+    stampedProfile.flangeEnd
+  ]),
+  length = 0.8mm,
+)
 
 gdt::datum(
   face = stampedPart.sketch.tags.datumFace,
@@ -175,7 +183,10 @@ stampedProfile = sketch(on = XY) {
   angle([datumFace, controlledSurface]) == basicAngle
 }
 
-stampedRegion = region(point = [12mm, 2mm], sketch = stampedProfile)
+stampedRegion = region(segments = [
+  stampedProfile.datumFace,
+  stampedProfile.flangeEnd
+])
 hide(stampedProfile)
 stampedPart = extrude(stampedRegion, length = 0.8mm)
 

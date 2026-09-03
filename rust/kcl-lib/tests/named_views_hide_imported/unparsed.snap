@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_imported.kcl
+---
+// Pins that imported geometry is engine-addressable by the id hide() sends
+// (an import has a single engine id, recorded unchanged on the operation).
+// The rendered snapshot must show ONLY the anchor box -- the imported cube
+// must be gone.
+import "../inputs/cube.step" as cube
+
+cube
+
+anchorSketch = sketch(on = XY) {
+  line1 = line(start = [var 1500, var 0], end = [var 2000, var 0])
+  line2 = line(start = [var 2000, var 0], end = [var 2000, var 500])
+  line3 = line(start = [var 2000, var 500], end = [var 1500, var 500])
+  line4 = line(start = [var 1500, var 500], end = [var 1500, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+boxVisible = extrude(region(point = [1750, 250], sketch = anchorSketch), length = 500)
+
+hide(cube)

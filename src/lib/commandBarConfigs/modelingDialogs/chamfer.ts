@@ -10,8 +10,9 @@ import {
   isEditingNodeSelection,
   isUsingModelingDialog,
   modelingDialogLayout,
+  type ModelingDialogContext,
 } from '@src/lib/commandBarConfigs/modelingDialogShared'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { KCL_DEFAULT_DEGREE, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
 export const chamferDialogLayout = modelingDialogLayout(
   [
@@ -30,8 +31,10 @@ export const chamferDialogLayout = modelingDialogLayout(
 export const chamferDialogOverrides = {
   selection: {
     inputType: 'selection',
-    displayName: 'Edges',
-    dialog: compactSelectionDialog('selection', 'Select edges'),
+    dialog: {
+      displayName: 'Edges',
+      ...compactSelectionDialog('selection', 'Select edges'),
+    },
     selectionTypes: [
       'segment',
       'sweepEdge',
@@ -44,7 +47,6 @@ export const chamferDialogOverrides = {
   },
   chamferType: {
     inputType: 'options',
-    displayName: 'Type',
     required: isUsingModelingDialog,
     skip: true,
     defaultValue: ({
@@ -59,16 +61,17 @@ export const chamferDialogOverrides = {
       { name: 'Distance + angle', value: 'distanceAndAngle' },
     ],
     dialog: {
+      displayName: 'Type',
       group: 'size',
       order: -10,
       controlStyle: 'select',
     },
   },
   length: {
-    displayName: 'Distance',
     description: 'Primary chamfer distance.',
     defaultValue: KCL_DEFAULT_LENGTH,
     dialog: {
+      displayName: 'Distance',
       group: 'size',
       order: 0,
     },
@@ -78,10 +81,10 @@ export const chamferDialogOverrides = {
       (argumentsToSubmit) =>
         getChamferType(argumentsToSubmit) === 'twoDistances'
     ),
-    displayName: 'Second distance',
     description: 'Distance cut from the second face.',
     defaultValue: KCL_DEFAULT_LENGTH,
     dialog: {
+      displayName: 'Second distance',
       group: 'size',
       order: 10,
       prepopulate: true,
@@ -92,27 +95,30 @@ export const chamferDialogOverrides = {
       (argumentsToSubmit) =>
         getChamferType(argumentsToSubmit) === 'distanceAndAngle'
     ),
-    displayName: 'Angle',
     description: 'Greater than 0deg and less than 90deg.',
-    defaultValue: '45deg',
+    defaultValue: (context: ModelingDialogContext) =>
+      isUsingModelingDialog(context) ? '45deg' : KCL_DEFAULT_DEGREE,
     dialog: {
+      displayName: 'Angle',
       group: 'size',
       order: 10,
       prepopulate: true,
     },
   },
   tag: {
-    displayName: 'Chamfer tag',
     dialog: {
+      displayName: 'Chamfer tag',
       group: 'advanced',
       order: 0,
     },
   },
   version: {
-    displayName: 'Algorithm version',
+    defaultValue: (context: ModelingDialogContext) =>
+      isUsingModelingDialog(context) ? '' : '1',
     description:
       'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
     dialog: {
+      displayName: 'Algorithm version',
       group: 'advanced',
       order: 10,
     },

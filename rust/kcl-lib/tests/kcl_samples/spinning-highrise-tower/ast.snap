@@ -17149,7 +17149,7 @@ description: Result of parsing spinning-highrise-tower.kcl
         "preComments": [
           "// Spinning Highrise Tower",
           "// A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation",
-          "// Categories: Maker",
+          "// Categories: Architecture & Construction; Art & Design; Parametric",
           "",
           "",
           "// Declare units and version"
@@ -17206,12 +17206,12 @@ description: Result of parsing spinning-highrise-tower.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.0",
+              "raw": "2.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.0,
+                "value": 2.0,
                 "suffix": "None"
               }
             }

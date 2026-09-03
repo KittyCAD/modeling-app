@@ -46,7 +46,7 @@ import {
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
+import { err, trap } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -210,7 +210,7 @@ function getSelectionValidationMessage(
   arg: SelectionCommandArgument,
   selection: Selections | undefined
 ): string {
-  const label = arg.displayName || argName
+  const label = arg.dialog?.displayName ?? arg.displayName ?? argName
   return selection ? `Invalid selection for "${label}".` : `Select "${label}".`
 }
 
@@ -540,6 +540,19 @@ export function ModelingDialog() {
   const dirtyArgNamesRef = useRef(dirtyArgNames)
   const selectionRangesRef = useRef(selectionRanges)
   const initializedCommandRef = useRef<typeof selectedCommand>(undefined)
+  const submissionVersionRef = useRef(0)
+  const hasActivatedSelectionRef = useRef(false)
+
+  useLayoutEffect(() => {
+    if (!selectedCommand) {
+      return
+    }
+    setIsSubmitting(false)
+    hasActivatedSelectionRef.current = false
+    return () => {
+      submissionVersionRef.current += 1
+    }
+  }, [selectedCommand])
 
   useEffect(() => {
     dirtyArgNamesRef.current = dirtyArgNames
@@ -710,7 +723,11 @@ export function ModelingDialog() {
       }
     }
 
-    void initDraftValues()
+    void initDraftValues().catch((error: unknown) => {
+      if (!isCancelled) {
+        trap(error)
+      }
+    })
 
     return () => {
       isCancelled = true
@@ -752,7 +769,7 @@ export function ModelingDialog() {
     }
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!selectedCommandKey) {
       return
     }
@@ -854,6 +871,8 @@ export function ModelingDialog() {
       if (!isSelectionArgument(arg)) {
         return
       }
+      const isInitialSelection = !hasActivatedSelectionRef.current
+      hasActivatedSelectionRef.current = true
       markArgumentDirty(argName)
 
       const savedSelection = getDraftOrSubmittedValue(
@@ -877,7 +896,7 @@ export function ModelingDialog() {
             selection: structuredClone(selectionForArgument as Selections),
           },
         })
-      } else if (arg.clearSelectionFirst) {
+      } else if (arg.clearSelectionFirst || !isInitialSelection) {
         modelingSend({
           type: 'Set selection',
           data: {
@@ -1282,7 +1301,8 @@ export function ModelingDialog() {
               }
             )
             if (err(parsed) || 'errors' in parsed) {
-              const label = arg.displayName || argName
+              const label =
+                arg.dialog?.displayName ?? arg.displayName ?? argName
               const message = `Invalid expression for "${label}"`
               if (showValidationToast) {
                 toast.error(message)
@@ -1294,7 +1314,7 @@ export function ModelingDialog() {
         }
 
         if (isRequired && isMissingRequiredDialogValue(arg, value)) {
-          const label = arg.displayName || argName
+          const label = arg.dialog?.displayName ?? arg.displayName ?? argName
           const message = `Enter "${label}".`
           if (showValidationToast) {
             toast.error(message)
@@ -1343,17 +1363,17 @@ export function ModelingDialog() {
 
     const timeoutId = window.setTimeout(() => {
       void (async () => {
-        const resolvedArguments = await resolveDialogArgumentsForSubmit({
-          stopOnMissingRequired: true,
-        })
-
-        if (isCancelled || !resolvedArguments.ok) {
-          return
-        }
-
-        setReviewValidationState({ status: 'checking' })
-
         try {
+          const resolvedArguments = await resolveDialogArgumentsForSubmit({
+            stopOnMissingRequired: true,
+          })
+
+          if (isCancelled || !resolvedArguments.ok) {
+            return
+          }
+
+          setReviewValidationState({ status: 'checking' })
+
           const result = await selectedCommand.reviewValidation?.(
             {
               ...commandBarState.context,
@@ -1412,6 +1432,7 @@ export function ModelingDialog() {
     e.preventDefault()
 
     if (
+      !selectedCommand ||
       isSubmitting ||
       isCheckingArguments ||
       isCheckingKclFields ||
@@ -1429,22 +1450,35 @@ export function ModelingDialog() {
     }
 
     setIsSubmitting(true)
+    const submissionVersion = submissionVersionRef.current
 
     try {
       const resolvedArguments = await resolveDialogArgumentsForSubmit({
         showValidationToast: true,
       })
 
-      if (!resolvedArguments.ok) {
+      if (
+        !resolvedArguments.ok ||
+        submissionVersion !== submissionVersionRef.current
+      ) {
         return
       }
 
       commands.send({
         type: 'Submit command from dialog',
-        data: { argumentsToSubmit: resolvedArguments.argumentsToSubmit },
+        data: {
+          command: selectedCommand,
+          argumentsToSubmit: resolvedArguments.argumentsToSubmit,
+        },
       })
+    } catch (error) {
+      if (submissionVersion === submissionVersionRef.current) {
+        trap(error)
+      }
     } finally {
-      setIsSubmitting(false)
+      if (submissionVersion === submissionVersionRef.current) {
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -1488,8 +1522,9 @@ export function ModelingDialog() {
       kclManager.astSignal.value,
       capturedSelection
     )
-    const label = arg.displayName
-      ? capitalizeFirstLetter(arg.displayName)
+    const displayName = arg.dialog?.displayName ?? arg.displayName
+    const label = displayName
+      ? capitalizeFirstLetter(displayName)
       : toTitleCase(argName)
 
     if (arg.inputType === 'kcl') {
@@ -1551,7 +1586,11 @@ export function ModelingDialog() {
         controlStyle={arg.dialog?.controlStyle}
         value={value}
         selectionItems={capturedSelectionItems}
-        selectionHeading={arg.dialog?.selectionHeading || arg.displayName}
+        selectionHeading={
+          arg.dialog?.selectionHeading ??
+          arg.dialog?.displayName ??
+          arg.displayName
+        }
         selectionEmptyLabel={arg.dialog?.selectionEmptyLabel}
         selectionHint={arg.dialog?.selectionHint}
         compactSelection={arg.dialog?.compactSelection}

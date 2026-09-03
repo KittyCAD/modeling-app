@@ -42,9 +42,11 @@ use crate::errors::Tag;
 use crate::execution::annotations::DEPRECATED;
 use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::REMOVED_SINCE;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
+use crate::import_format::import_format_from_path;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::PIPE_SUBSTITUTION_OPERATOR;
 use crate::parsing::ast::types::Annotation;
@@ -803,7 +805,7 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
 
 fn literal(i: &mut TokenSlice) -> ModalResult<BoxNode<Literal>> {
     alt((string_literal, unsigned_number_literal, bool_value))
-        .map(Box::new)
+        .map(BoxNode::new)
         .context(expected("a KCL literal, like 'myPart' or 3"))
         .parse_next(i)
 }
@@ -917,7 +919,7 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
 
     Ok(Node::new(
         SketchVar {
-            initial: literal.map(Box::new),
+            initial: literal.map(BoxNode::new),
             digest: None,
         },
         var_token.start,
@@ -1117,9 +1119,9 @@ pub enum NonCodeOr<T> {
 /// Parse a KCL array of elements.
 fn array(i: &mut TokenSlice) -> ModalResult<Expr> {
     alt((
-        array_empty.map(Box::new).map(Expr::ArrayExpression),
-        array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
-        array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
+        array_empty.map(BoxNode::new).map(Expr::ArrayExpression),
+        array_end_start.map(BoxNode::new).map(Expr::ArrayRangeExpression),
+        array_elem_by_elem.map(BoxNode::new).map(Expr::ArrayExpression),
     ))
     .parse_next(i)
 }
@@ -1289,7 +1291,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<Obje
     let module_id = key.module_id;
     Ok(Node::new(
         ObjectProperty {
-            value: Expr::Name(Box::new(key.clone().into())),
+            value: Expr::Name(BoxNode::new(key.clone().into())),
             key,
             digest: None,
         },
@@ -1567,7 +1569,7 @@ fn else_if(i: &mut TokenSlice) -> ModalResult<Node<ElseIf>> {
     let then_val = program
         .verify(|block| block.ends_with_expr())
         .parse_next(i)
-        .map(Box::new)?;
+        .map(BoxNode::new)?;
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
     ignore_whitespace(i);
@@ -1606,7 +1608,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         .verify(|block| block.ends_with_expr())
         .parse_next(i)
         .map_err(|e| e.cut())
-        .map(Box::new)?;
+        .map(BoxNode::new)?;
     ignore_whitespace(i);
     let _ = close_brace(i)?;
     ignore_whitespace(i);
@@ -1658,7 +1660,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
-    let Ok(final_else) = program.parse_next(i).map(Box::new) else {
+    let Ok(final_else) = program.parse_next(i).map(BoxNode::new) else {
         ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
@@ -1703,7 +1705,7 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
         let err = CompilationIssue::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
     }
-    Ok(Expr::FunctionExpression(Box::new(result)))
+    Ok(Expr::FunctionExpression(BoxNode::new(result)))
 }
 
 // Looks like
@@ -1769,7 +1771,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)>
         .map(|p| {
             let ni: Node<Identifier> = *p;
             let nn: Node<Name> = ni.into();
-            Expr::Name(Box::new(nn))
+            Expr::Name(BoxNode::new(nn))
         })
         .parse_next(i)?;
     let end = property.end();
@@ -1824,7 +1826,7 @@ fn build_member_expression(object: Expr, mut members: Vec<(Expr, usize, bool)>) 
         .fold(initial_member_expression, |accumulated, (property, end, computed)| {
             Node::new(
                 MemberExpression {
-                    object: Expr::MemberExpression(Box::new(accumulated)),
+                    object: Expr::MemberExpression(BoxNode::new(accumulated)),
                     computed,
                     property,
                     digest: None,
@@ -2443,7 +2445,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationIssue::fatal(
                     path_range,
-                    "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                    "import path may not start with '..'. Cannot reference a parent module or anything outside the bounds of your project.",
                 )
                 .into(),
             ));
@@ -2459,7 +2461,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationIssue::fatal(
                     path_range,
-                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
                 )
                 .into(),
             ));
@@ -2512,8 +2514,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
-        let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
-        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_lowercase()) {
+        if import_format_from_path(&path_string).is_none() {
             ParseContext::warn(CompilationIssue::err(
                 path_range,
                 format!(
@@ -2672,7 +2673,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     let start = i.checkpoint();
     let mut expr = alt((
-        unary_expression.map(Box::new).map(Expr::UnaryExpression),
+        unary_expression.map(BoxNode::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
@@ -2680,16 +2681,18 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     if has_binary_operator_after_optional_ascription(i) {
         i.reset(&start);
-        expr = Expr::BinaryExpression(Box::new(binary_expression.parse_next(i)?));
+        expr = Expr::BinaryExpression(BoxNode::new(binary_expression.parse_next(i)?));
     }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
+        expr = Expr::AscribedExpression(BoxNode::new(AscribedExpression::new(expr, ty)))
     }
     let label = opt(label).parse_next(i)?;
     match label {
-        Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
+        Some(label) => Ok(Expr::LabelledExpression(BoxNode::new(LabelledExpression::new(
+            expr, label,
+        )))),
         None => Ok(expr),
     }
 }
@@ -2721,15 +2724,15 @@ fn unnecessarily_bracketed(i: &mut TokenSlice) -> ModalResult<Expr> {
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let parsed_expr = alt((
         alt((
-            bool_value.map(Box::new).map(Expr::Literal),
-            tag.map(Box::new).map(Expr::TagDeclarator),
+            bool_value.map(BoxNode::new).map(Expr::Literal),
+            tag.map(BoxNode::new).map(Expr::TagDeclarator),
             literal.map(Expr::Literal),
-            sketch_var.map(Box::new).map(Expr::SketchVar),
+            sketch_var.map(BoxNode::new).map(Expr::SketchVar),
             fn_call_or_sketch_block,
-            name.map(Box::new).map(Expr::Name),
+            name.map(BoxNode::new).map(Expr::Name),
             array,
-            object.map(Box::new).map(Expr::ObjectExpression),
-            pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
+            object.map(BoxNode::new).map(Expr::ObjectExpression),
+            pipe_sub.map(BoxNode::new).map(Expr::PipeSubstitution),
         )),
         alt((function_expr, if_expr.map(Expr::IfExpression), unnecessarily_bracketed)),
     ))
@@ -2738,7 +2741,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     if let Ok(Some(members)) = opt(find_members).parse_next(i) {
         let mem = build_member_expression(parsed_expr, members);
-        return Ok(Expr::MemberExpression(Box::new(mem)));
+        return Ok(Expr::MemberExpression(BoxNode::new(mem)));
     }
     Ok(parsed_expr)
 }
@@ -2748,17 +2751,17 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut expr = alt((
         alt((
             if_expr.map(Expr::IfExpression),
-            unary_expression.map(Box::new).map(Expr::UnaryExpression),
-            bool_value.map(Box::new).map(Expr::Literal),
+            unary_expression.map(BoxNode::new).map(Expr::UnaryExpression),
+            bool_value.map(BoxNode::new).map(Expr::Literal),
             literal.map(Expr::Literal),
-            sketch_var.map(Box::new).map(Expr::SketchVar),
+            sketch_var.map(BoxNode::new).map(Expr::SketchVar),
             fn_call_or_sketch_block,
-            name.map(Box::new).map(Expr::Name),
+            name.map(BoxNode::new).map(Expr::Name),
             array,
-            object.map(Box::new).map(Expr::ObjectExpression),
+            object.map(BoxNode::new).map(Expr::ObjectExpression),
         )),
         alt((
-            binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
+            binary_expr_in_parens.map(BoxNode::new).map(Expr::BinaryExpression),
             unnecessarily_bracketed,
         )),
     ))
@@ -2768,12 +2771,12 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     .parse_next(i)?;
     if let Ok(Some(members)) = opt(find_members).parse_next(i) {
         let mem = build_member_expression(expr, members);
-        expr = Expr::MemberExpression(Box::new(mem));
+        expr = Expr::MemberExpression(BoxNode::new(mem));
     }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
+        expr = Expr::AscribedExpression(BoxNode::new(AscribedExpression::new(expr, ty)))
     }
 
     Ok(expr)
@@ -2838,7 +2841,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
                     func.name = Some(id.clone());
                     func
                 })
-                .map(Box::new)
+                .map(BoxNode::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
                 .parse_next(i);
@@ -2978,7 +2981,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 
         ParseContext::experimental("type aliases", ty.as_source_range());
 
-        TypeDeclarationDefinition::Alias { ty: Box::new(ty) }
+        TypeDeclarationDefinition::Alias { ty: BoxNode::new(ty) }
     } else if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         if let Some(args_range) = args_range {
@@ -3890,12 +3893,12 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
                 if let Some((args, ret)) = tys {
                     if let Some((unnamed, named)) = args {
                         if let Some(unnamed) = unnamed {
-                            ft.unnamed_arg = Some(Box::new(unnamed));
+                            ft.unnamed_arg = Some(BoxNode::new(unnamed));
                         }
                         ft.named_args = named;
                     }
                     if let Some((_, _, ty)) = ret {
-                        ft.return_type = Some(Box::new(ty));
+                        ft.return_type = Some(BoxNode::new(ty));
                     }
                 }
 
@@ -4028,7 +4031,7 @@ fn parameter(i: &mut TokenSlice) -> ModalResult<ParamDescription> {
         arg_name,
         type_,
         default_value: match (question_mark.is_some(), default_literal) {
-            (true, Some(lit)) => Some(DefaultParamVal::Literal(*lit)),
+            (true, Some(lit)) => Some(DefaultParamVal::Literal(lit.into_node())),
             (true, None) => Some(DefaultParamVal::none()),
             (false, None) => None,
             (false, Some(lit)) => {
@@ -4070,6 +4073,7 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                 let mut experimental = false;
                 let mut deprecated = false;
                 let mut deprecated_since = None;
+                let mut removed_since = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
@@ -4101,6 +4105,39 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                             format!("A parameter cannot set both `{DEPRECATED}` and `{DEPRECATED_SINCE}`; only one may be specified"),
                         ));
                     }
+                    if let Some(property) = attr.property(REMOVED_SINCE) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            removed_since = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{REMOVED_SINCE}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{REMOVED_SINCE}` cannot be used on the unlabeled parameter; only labeled parameters can be removed"
+                                ),
+                            ));
+                        } else if default_value.is_none() {
+                            // A caller on the removed version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{REMOVED_SINCE}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
+                        }
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
@@ -4108,6 +4145,7 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     experimental,
                     deprecated,
                     deprecated_since,
+                    removed_since,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -4185,7 +4223,9 @@ fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     let label = opt(label).parse_next(i)?;
     match label {
-        Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
+        Some(label) => Ok(Expr::LabelledExpression(BoxNode::new(LabelledExpression::new(
+            expr, label,
+        )))),
         None => Ok(expr),
     }
 }
@@ -4256,7 +4296,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 ));
             }
         }
-        return Ok(Expr::SketchBlock(Box::new(Node {
+        return Ok(Expr::SketchBlock(BoxNode::new(Node {
             start,
             end,
             module_id,
@@ -4273,7 +4313,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             },
         })));
     }
-    Ok(Expr::CallExpressionKw(Box::new(fn_call)))
+    Ok(Expr::CallExpressionKw(BoxNode::new(fn_call)))
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
@@ -4615,7 +4655,7 @@ e
         let Expr::MemberExpression(expr) = in_ctx(|| expression.parse(tokens)).unwrap() else {
             panic!();
         };
-        let Expr::BinaryExpression(be) = expr.inner.property else {
+        let Expr::BinaryExpression(be) = expr.into_node().inner.property else {
             panic!();
         };
         assert_eq!(be.inner.operator, BinaryOperator::Add);
@@ -4861,11 +4901,11 @@ mySk1 = startSketchOn(XY)
         let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
-        let val = item.inner.declaration.inner.init;
+        let val = item.into_node().inner.declaration.inner.init;
         let Expr::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
-        let mut noncode = pipe.inner.non_code_meta;
+        let mut noncode = pipe.into_node().inner.non_code_meta;
         assert_eq!(noncode.non_code_nodes.len(), 1);
         let comment = noncode.non_code_nodes.remove(&0).unwrap().pop().unwrap();
         assert_eq!(
@@ -4919,7 +4959,10 @@ mySk1 = startSketchOn(XY)
 
         let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
         let (body, non_code_meta) = match in_ctx(|| expression.parse_next(&mut tokens.as_slice())).unwrap() {
-            Expr::PipeExpression(e) => (e.inner.body, e.inner.non_code_meta),
+            Expr::PipeExpression(e) => {
+                let e = e.into_node();
+                (e.inner.body, e.inner.non_code_meta)
+            }
             _ => panic!(),
         };
 
@@ -5166,7 +5209,7 @@ mySk1 = startSketchOn(XY)
         };
 
         assert_eq!(middle.operator, BinaryOperator::Div);
-        let BinaryPart::BinaryExpression(inner) = middle.inner.left else {
+        let BinaryPart::BinaryExpression(inner) = middle.into_node().inner.left else {
             panic!("expected nested binary expression");
         };
         assert_eq!(inner.operator, BinaryOperator::Sub);
@@ -5587,7 +5630,7 @@ mySk1 = startSketchOn(XY)
             },
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(Box::new(Node::with_node_path(
+                left: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                     Literal {
                         value: LiteralValue::Number {
                             value: 5.0,
@@ -5607,7 +5650,7 @@ mySk1 = startSketchOn(XY)
                         ],
                     },
                 ))),
-                right: BinaryPart::Literal(Box::new(Node::with_node_path(
+                right: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -5662,7 +5705,7 @@ mySk1 = startSketchOn(XY)
                                 ],
                             },
                             BinaryExpression {
-                                left: BinaryPart::Literal(Box::new(Node::with_node_path(
+                                left: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 5.0,
@@ -5683,7 +5726,7 @@ mySk1 = startSketchOn(XY)
                                     },
                                 ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(Box::new(Node::with_node_path(
+                                right: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 6.0,
@@ -5907,6 +5950,83 @@ height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_param_removed_since_annotation() {
+        let tokens = crate::parsing::token::lex(
+            r#"fn foo(
+  @(deprecated_since = "2.0", removed_since = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+            ModuleId::default(),
+        )
+        .unwrap();
+        let mut body = in_ctx(|| program.parse(tokens.as_slice())).unwrap().inner.body;
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        let param = &func.params[0];
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_since, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_removed_since_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_since = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `removed_since`",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`removed_since` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `removed_since` must be optional; add `?` after `x`",
+            [37, 38],
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_allows_optional_param_with_default() {
+        crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+    }
+
+    #[test]
     fn test_anon_fn_no_fn() {
         assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
@@ -6029,6 +6149,7 @@ e
                     experimental: Default::default(),
                     deprecated: false,
                     deprecated_since: None,
+                    removed_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6045,6 +6166,7 @@ e
                     experimental: Default::default(),
                     deprecated: false,
                     deprecated_since: None,
+                    removed_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6062,6 +6184,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6075,6 +6198,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6093,6 +6217,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6106,6 +6231,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6184,17 +6310,17 @@ e
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
-            "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '..'. Cannot reference a parent module or anything outside the bounds of your project.",
             [17, 30],
         );
         assert_err(
             r#"import cube from "/cube.kcl""#,
-            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
             [17, 28],
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
             [17, 30],
         );
         assert_err(
@@ -6237,6 +6363,13 @@ e
             "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
+    }
+
+    #[test]
+    fn creo_import_paths() {
+        for path in ["part.prt", "part.prt.1", "parts/part.PRT.23"] {
+            assert_no_err(&format!(r#"import "{path}" as part"#));
+        }
     }
 
     #[test]

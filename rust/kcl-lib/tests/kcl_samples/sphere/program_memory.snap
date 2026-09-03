@@ -8,8 +8,7 @@ description: Variables in memory after executing sphere.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -162,7 +161,7 @@ description: Variables in memory after executing sphere.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -282,7 +281,7 @@ description: Variables in memory after executing sphere.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -339,10 +338,10 @@ description: Variables in memory after executing sphere.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 326,
-                    "end": 331,
+                    "commentStart": 280,
+                    "end": 285,
                     "moduleId": 0,
-                    "start": 326,
+                    "start": 280,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -369,10 +368,10 @@ description: Variables in memory after executing sphere.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 396,
-                    "end": 400,
+                    "commentStart": 350,
+                    "end": 354,
                     "moduleId": 0,
-                    "start": 396,
+                    "start": 350,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -387,7 +386,7 @@ description: Variables in memory after executing sphere.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XY",
+                "kind": "Custom",
                 "objectId": 0,
                 "origin": {
                   "x": 0.0,
@@ -469,10 +468,10 @@ description: Variables in memory after executing sphere.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 326,
-            "end": 331,
+            "commentStart": 280,
+            "end": 285,
             "moduleId": 0,
-            "start": 326,
+            "start": 280,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -499,10 +498,10 @@ description: Variables in memory after executing sphere.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 396,
-            "end": 400,
+            "commentStart": 350,
+            "end": 354,
             "moduleId": 0,
-            "start": 396,
+            "start": 350,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -517,7 +516,7 @@ description: Variables in memory after executing sphere.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
+        "kind": "Custom",
         "objectId": 0,
         "origin": {
           "x": 0.0,
@@ -577,39 +576,6 @@ description: Variables in memory after executing sphere.kcl
       "units": "mm"
     }
   },
-  "sketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
-    }
-  },
   "sphere": {
     "type": "Solid",
     "value": {
@@ -622,10 +588,10 @@ description: Variables in memory after executing sphere.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 396,
-            "end": 400,
+            "commentStart": 350,
+            "end": 354,
             "moduleId": 0,
-            "start": 396,
+            "start": 350,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -647,10 +613,10 @@ description: Variables in memory after executing sphere.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 326,
-              "end": 331,
+              "commentStart": 280,
+              "end": 285,
               "moduleId": 0,
-              "start": 326,
+              "start": 280,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -677,10 +643,10 @@ description: Variables in memory after executing sphere.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 396,
-              "end": 400,
+              "commentStart": 350,
+              "end": 354,
               "moduleId": 0,
-              "start": 396,
+              "start": 350,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -695,7 +661,7 @@ description: Variables in memory after executing sphere.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
+          "kind": "Custom",
           "objectId": 0,
           "origin": {
             "x": 0.0,

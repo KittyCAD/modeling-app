@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties artificial-heart.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -28.966941282025417,
+      "y": 1.0942220478680085,
+      "z": -21.48581115589407
+    },
+    "dimensions": {
+      "x": 157.93388256405083,
+      "y": 73.48414599393286,
+      "z": 144.22634297790384
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 138485.21358110776
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 121.59687846351144
+  }
+}

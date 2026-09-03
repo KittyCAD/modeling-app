@@ -1983,7 +1983,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -1992,8 +1992,10 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -2002,7 +2004,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "elbowCenterlineBendRadius",
+                          "name": "elbowSectionSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -2011,91 +2013,27 @@ description: Result of parsing pipe-elbow-90deg.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "pipeInsideDiameter",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "moduleId": 0,
-                          "operator": "+",
-                          "right": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "pipeWallThickness",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "elbowOuterCircle",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -2103,35 +2041,6 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "elbowSectionSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -3709,7 +3618,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3718,21 +3627,10 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -3741,7 +3639,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "elbowCenterlineBendRadius",
+                          "name": "flangeSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -3750,78 +3648,27 @@ description: Result of parsing pipe-elbow-90deg.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "flangeInsideDiameter",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "moduleId": 0,
-                          "operator": "+",
-                          "right": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "pipeWallThickness",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "flangeOuterCircle",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -3829,35 +3676,6 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "flangeSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -4013,74 +3831,6 @@ description: Result of parsing pipe-elbow-90deg.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "boltHoleSketchPlane",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "YZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "boltHoleSketch",
             "start": 0,
             "type": "Identifier"
@@ -4106,7 +3856,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "boltHoleSketchPlane",
+                    "name": "YZ",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -5629,7 +5379,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -5638,8 +5388,10 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -5648,7 +5400,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "boltCircleDiameter",
+                          "name": "boltHoleSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -5657,42 +5409,27 @@ description: Result of parsing pipe-elbow-90deg.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "boltHoleCircle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "elbowCenterlineBendRadius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -5700,35 +5437,6 @@ description: Result of parsing pipe-elbow-90deg.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "boltHoleSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -6648,12 +6356,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.0",
+              "raw": "2.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.0,
+                "value": 2.0,
                 "suffix": "None"
               }
             }
@@ -6738,7 +6446,19 @@ description: Result of parsing pipe-elbow-90deg.kcl
             }
           }
         ],
-        "18": [
+        "17": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "21": [
           {
             "commentStart": 0,
             "end": 0,
@@ -6751,18 +6471,6 @@ description: Result of parsing pipe-elbow-90deg.kcl
           }
         ],
         "22": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "23": [
           {
             "commentStart": 0,
             "end": 0,
@@ -6797,6 +6505,18 @@ description: Result of parsing pipe-elbow-90deg.kcl
           "value": {
             "type": "blockComment",
             "value": "Quarter-turn elbow with two bolted flanges on a 94 x 71 mm pipe section.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Architecture & Construction; Mechanical Components",
             "style": "line"
           }
         },

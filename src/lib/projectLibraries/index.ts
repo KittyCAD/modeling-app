@@ -1,24 +1,87 @@
+import { PROJECT_FOLDER } from '@src/lib/constants'
 import { hashString } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
-export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Default Projects Directory'
+export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Local Projects'
 export const NEW_PROJECT_LIBRARY_TITLE = 'Project Library'
 export const DIRECTORY_PROJECT_LIBRARY_TYPE = 'directory'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_ID = 'cloud-personal'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE = 'Personal Cloud'
 export const CLOUD_PROJECT_LIBRARY_TYPE = 'cloud'
-export const DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH = '/personal'
+export const LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH = '/personal'
+export const DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH = `/documents/${PROJECT_FOLDER}`
 export const CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX = 'zoo://'
 
 export function formatProjectLibraryPathForDisplay(
-  library: Pick<ProjectLibrarySetting, 'path' | 'type'>
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
 ) {
   if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
     return library.path
   }
 
-  return `${CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX}${library.path.replace(/^\/+/, '')}`
+  const cloudSource =
+    library.source?.trim() || LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH
+  return `${CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX}${cloudSource.replace(/^\/+/, '')}`
+}
+
+export function getProjectLibrarySummaryDescription(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return 'Projects in this library sync to your Zoo account'
+  }
+
+  if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
+    return 'Projects in this library are saved only on this computer'
+  }
+
+  return formatProjectLibraryPathForDisplay(library)
+}
+
+export function getProjectLibraryDetailsDescription(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return [
+      'Projects in this library sync to your Zoo account.',
+      'Storage type and model-training controls depend on your plan.',
+    ].join(' ')
+  }
+
+  if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
+    return 'Projects in this library are saved only on this computer.'
+  }
+
+  return undefined
+}
+
+export function getProjectLibraryLocationLabel(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return 'Technical source'
+  }
+
+  if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
+    return 'Folder'
+  }
+
+  return 'Location'
+}
+
+export function getProjectLibrarySummaryTooltip(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  const description = getProjectLibraryDetailsDescription(library)
+  const locationLabel = getProjectLibraryLocationLabel(library)
+  const technicalLocation = formatProjectLibraryPathForDisplay(library)
+
+  if (description) {
+    return `${description} ${locationLabel}: ${technicalLocation}`
+  }
+
+  return technicalLocation
 }
 
 export type ProjectLibraryType = string
@@ -27,12 +90,28 @@ export interface ProjectLibrarySetting {
   title: string
   path: string
   type: ProjectLibraryType
+  source?: string
 }
 
 export interface ProjectLibrary extends ProjectLibrarySetting {
   id: string
   icon?: string
   order?: number
+}
+
+export interface ProjectLibraryInitialProject {
+  files: readonly {
+    requestedFileName: string
+    requestedData: Uint8Array<ArrayBuffer>
+  }[]
+  entrypointFilePath: string
+}
+
+export type SerializedProjectLibrarySetting = Omit<
+  ProjectLibrarySetting,
+  'path'
+> & {
+  path?: string
 }
 
 export function getDefaultProjectLibrarySettings(
@@ -47,10 +126,12 @@ export function getDefaultProjectLibrarySettings(
   ]
 }
 
-export function getDefaultCloudProjectLibrarySetting(): ProjectLibrarySetting {
+export function getDefaultCloudProjectLibrarySetting(
+  localMaterializationPath = DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH
+): ProjectLibrarySetting {
   return {
     title: PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
-    path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+    path: localMaterializationPath,
     type: CLOUD_PROJECT_LIBRARY_TYPE,
   }
 }
@@ -83,8 +164,45 @@ export function getDefaultDirectoryProjectLibraryPath(
   return getDefaultDirectoryProjectLibrarySetting(libraries)?.path
 }
 
-function normalizeLibraryPath(path: string) {
+export function normalizeLibraryPath(path: string) {
   return path.replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
+function isDefaultPersonalCloudProjectLibraryPath(path: string | undefined) {
+  const normalizedPath = normalizeLibraryPath(path ?? '')
+  return (
+    normalizedPath ===
+      normalizeLibraryPath(LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH) ||
+    normalizedPath ===
+      normalizeLibraryPath(DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH)
+  )
+}
+
+export function isLegacyPersonalCloudProjectLibraryPathSetting(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  return (
+    library.type === CLOUD_PROJECT_LIBRARY_TYPE &&
+    !library.source?.trim() &&
+    normalizeLibraryPath(library.path) ===
+      normalizeLibraryPath(LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH)
+  )
+}
+
+export function isDefaultPersonalCloudProjectLibraryPathSetting(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  return (
+    library.type === CLOUD_PROJECT_LIBRARY_TYPE &&
+    !library.source?.trim() &&
+    isDefaultPersonalCloudProjectLibraryPath(library.path)
+  )
+}
+
+export function isPersonalCloudProjectLibrarySetting(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  return library.type === CLOUD_PROJECT_LIBRARY_TYPE && !library.source?.trim()
 }
 
 export function isPathInDirectoryProjectLibrary(
@@ -136,11 +254,96 @@ export function normalizeProjectLibrarySetting(
   library: ProjectLibrarySetting,
   fallback: ProjectLibrarySetting
 ): ProjectLibrarySetting {
+  const source = library.source?.trim() || fallback.source?.trim()
+  const type = library.type || fallback.type
+  const path = library.path.trim() || fallback.path
+  const normalizedPath =
+    type === CLOUD_PROJECT_LIBRARY_TYPE &&
+    !source &&
+    isDefaultPersonalCloudProjectLibraryPath(path)
+      ? fallback.path
+      : path
+
   return {
     title: library.title.trim() || fallback.title,
-    path: library.path.trim() || fallback.path,
-    type: library.type || fallback.type,
+    path: normalizedPath,
+    type,
+    ...(source ? { source } : {}),
   }
+}
+
+export function projectLibrarySettingsFromSerialized(
+  value: unknown
+): ProjectLibrarySetting[] | undefined {
+  if (!isArray(value)) {
+    return undefined
+  }
+
+  const libraries = value.map((entry) => {
+    if (!entry || typeof entry !== 'object' || isArray(entry)) {
+      return undefined
+    }
+
+    const library = entry as Record<string, unknown>
+    if (
+      typeof library.title !== 'string' ||
+      library.title.length === 0 ||
+      typeof library.type !== 'string' ||
+      library.type.length === 0 ||
+      (Object.hasOwn(library, 'path') && typeof library.path !== 'string') ||
+      (Object.hasOwn(library, 'source') && typeof library.source !== 'string')
+    ) {
+      return undefined
+    }
+
+    const sourceValue =
+      typeof library.source === 'string' ? library.source.trim() : ''
+    const source = sourceValue ? { source: sourceValue } : {}
+    const path = typeof library.path === 'string' ? library.path : ''
+
+    if (
+      (library.type !== CLOUD_PROJECT_LIBRARY_TYPE || sourceValue) &&
+      !path.trim()
+    ) {
+      return undefined
+    }
+
+    return normalizeProjectLibrarySetting(
+      {
+        title: library.title,
+        path,
+        type: library.type,
+        ...source,
+      },
+      library.type === CLOUD_PROJECT_LIBRARY_TYPE
+        ? getDefaultCloudProjectLibrarySetting()
+        : {
+            title: library.title,
+            path,
+            type: library.type,
+            ...source,
+          }
+    )
+  })
+
+  return libraries.every(isProjectLibrarySetting) ? libraries : undefined
+}
+
+export function projectLibrarySettingsToSerialized(
+  libraries: readonly ProjectLibrarySetting[]
+): SerializedProjectLibrarySetting[] {
+  return libraries.map((library) => {
+    const source = library.source?.trim()
+    const path = library.path.trim()
+    return {
+      title: library.title,
+      type: library.type,
+      ...(isDefaultPersonalCloudProjectLibraryPathSetting(library)
+        ? {}
+        : { path }),
+      ...(source ? { source } : {}),
+    }
+  })
 }
 
 export function updateProjectLibrarySettingAt(
@@ -165,7 +368,8 @@ export function areProjectLibrarySettingsEqual(
         otherLibrary !== undefined &&
         library.title === otherLibrary.title &&
         library.path === otherLibrary.path &&
-        library.type === otherLibrary.type
+        library.type === otherLibrary.type &&
+        (library.source ?? '') === (otherLibrary.source ?? '')
       )
     })
   )
@@ -197,7 +401,9 @@ export function moveProjectLibrarySetting(
 }
 
 export function getProjectLibraryIdFromSetting(library: ProjectLibrarySetting) {
-  return `${library.type}-${hashString(`${library.type}:${library.path}`)}`
+  return `${library.type}-${hashString(
+    `${library.type}:${library.path}:${library.source ?? ''}`
+  )}`
 }
 
 export function isProjectLibrarySetting(
@@ -214,7 +420,8 @@ export function isProjectLibrarySetting(
     typeof library.path === 'string' &&
     library.path.length > 0 &&
     typeof library.type === 'string' &&
-    library.type.length > 0
+    library.type.length > 0 &&
+    (!Object.hasOwn(library, 'source') || typeof library.source === 'string')
   )
 }
 
@@ -237,8 +444,7 @@ export function projectLibraryFromSetting(
       library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
       library.path === options.defaultProjectDirectory
         ? DEFAULT_PROJECT_LIBRARY_ID
-        : library.type === CLOUD_PROJECT_LIBRARY_TYPE &&
-            library.path === DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH
+        : isPersonalCloudProjectLibrarySetting(library)
           ? PERSONAL_CLOUD_PROJECT_LIBRARY_ID
           : getProjectLibraryIdFromSetting(library),
     order: index,

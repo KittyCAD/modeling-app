@@ -3,8 +3,9 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import type { MouseEventHandler, useMemo } from 'react'
 
 export enum AreaType {
-  TTC = 'ttc',
+  Zookeeper = 'ttc',
   Bodies = 'bodies',
+  NamedViews = 'namedViews',
   Code = 'codeEditor',
   FeatureTree = 'featureTree',
   Files = 'files',
@@ -29,7 +30,7 @@ export type AreaTypeComponentProps = {
 export type AreaTypeDefinition = {
   hide: () => boolean
   shortcut?: string
-  /** I decided this is where impure stuff like the TTC button's custom styling should live */
+  /** I decided this is where impure stuff like the Zookeeper button's custom styling should live */
   cssClassOverrides?: PaneChildCssOverrides
   useNotifications?: () => ReturnType<
     typeof useMemo<

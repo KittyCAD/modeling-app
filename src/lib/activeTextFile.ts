@@ -4,6 +4,7 @@ import { EDITABLE_TEXT_FILE_EXTENSIONS } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
+import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 
 /**
  * A non-KCL text file (e.g. Markdown or plain text) opened for editing in the
@@ -73,6 +74,16 @@ async function performWrite(path: string, text: string): Promise<void> {
     if (isPathNotFoundError(error)) {
       return
     }
+    reportSystemIOError({
+      error,
+      operation: 'save_text_file',
+      risk: 'write',
+      source: 'ActiveTextFile',
+      extra: {
+        phase: 'write',
+        contentLength: text.length,
+      },
+    })
     // Surface (but never throw) so a transient auto-save failure can't turn into
     // an unhandled rejection.
     reportRejection(error)

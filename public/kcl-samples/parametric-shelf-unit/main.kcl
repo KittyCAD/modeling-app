@@ -1,6 +1,6 @@
 // Parametric Shelf Unit
 // A modular and adjustable 3D shelf model designed for basic furniture design.
-// Categories: Construction
+// Categories: Home & Lifestyle; Parametric
 
 // This model includes:
 // - Two vertical side panels (left and right)
@@ -9,7 +9,7 @@
 // - Optional top board acting as a cover
 // All elements are parametric and adaptable through clearly named variables.
 
-@settings(defaultLengthUnit = m, kclVersion = 1.0)
+@settings(defaultLengthUnit = m, kclVersion = 2.0)
 
 // --- Global Dimensions ---
 unitWidth = 1 // overall external width of the shelf
@@ -95,8 +95,7 @@ baseBlock = extrude(region001, length = baseHeight)
 
 // --- First Shelf Board ---
 firstShelfPlane = offsetPlane(XY, offset = shelfStartZ)
-firstShelfSketch = startSketchOn(firstShelfPlane)
-firstShelfProfile = sketch(on = firstShelfSketch) {
+firstShelfProfile = sketch(on = firstShelfPlane) {
   line1 = line(start = [var -0.48m, var 0m], end = [var -0.48m, var -0.4m])
   line2 = line(start = [var -0.48m, var -0.4m], end = [var 0.48m, var -0.4m])
   coincident([line1.end, line2.start])

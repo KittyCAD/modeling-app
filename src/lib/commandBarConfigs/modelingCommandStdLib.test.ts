@@ -66,10 +66,12 @@ describe('stdlib command semantic fallbacks', () => {
     expect(args.relativeTo).toMatchObject({ defaultValue: 'trajectoryCurve' })
     expect(args.translateProfileToPath).toMatchObject({ defaultValue: false })
     expect(args.version).toMatchObject({
-      description:
-        'What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).',
-      defaultValue: '0',
+      description: expect.stringContaining(
+        'What version of the sweeping algorithm to use.'
+      ),
     })
+    // The runtime chooses the default according to the file's KCL version.
+    expect(args.version).not.toHaveProperty('defaultValue')
   })
 
   it('keeps Sweep product version config ahead of the KCL default', () => {

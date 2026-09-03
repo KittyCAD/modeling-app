@@ -5,6 +5,7 @@ members = [
   "kcl-bumper",
   "kcl-derive-docs",
   "kcl-directory-test-macro",
+  "kcl-engine-codec",
   "kcl-error",
   "kcl-language-server",
   "kcl-language-server-release",
@@ -24,12 +25,12 @@ console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.2.1" }
 http = "1"
 indexmap = "2.13.1"
-ezpz = "0.2.26"
-kittycad = { version = "0.4.13", default-features = false, features = [
+ezpz = "0.2.29"
+kittycad = { version = "0.5.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.219", features = [
+kittycad-modeling-cmds = { version = "0.2.226", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -38,9 +39,9 @@ logos = "0.16.1"
 miette = "7.6.0"
 proptest = "1"
 
-pyo3 = { version = "0.28.3" }
+pyo3 = { version = "0.29.2" }
 # Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
-pyo3-stub-gen = { version = "0.22.3", default-features = false, features = [
+pyo3-stub-gen = { version = "0.23.0", default-features = false, features = [
   "either",
   "numpy",
   "ordered-float",
@@ -64,6 +65,14 @@ tracing-subscriber = { version = "0.3.23", features = [
   "ansi",
   "tracing-log",
   "json",
+] }
+ts-rs = { version = "12.0.1", features = [
+  "uuid-impl",
+  "url-impl",
+  "chrono-impl",
+  "indexmap-impl",
+  "no-serde-warnings",
+  "serde-json-impl",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
 zip = { version = "8.6.0", default-features = false }

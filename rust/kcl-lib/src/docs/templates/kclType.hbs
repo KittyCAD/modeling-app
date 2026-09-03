@@ -28,6 +28,16 @@ layout: manual
 {{{description}}}
 
 
+{{#if variants}}
+### Variants
+
+| Variant | Description |
+|---------|-------------|
+{{#each variants}}
+| `{{name}}` | {{{docs}}} |
+{{/each}}
+
+{{/if}}
 {{#if examples}}
 ### Examples
 
