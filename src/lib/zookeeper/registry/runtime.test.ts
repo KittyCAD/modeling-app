@@ -164,10 +164,12 @@ describe('Zookeeper runtime', () => {
     expect(createZookeeperSessionController).toHaveBeenCalledWith(
       expect.objectContaining({
         kclManager: projectFixture.kclManager,
-        project: services.projectSession.value?.project,
         projectPath: '/project',
       })
     )
+    expect(
+      createZookeeperSessionController.mock.calls[0]?.[0].project.value
+    ).toBe(projectFixture.project)
 
     runtime.dispose()
   })
@@ -296,7 +298,7 @@ describe('Zookeeper runtime', () => {
     runtime.dispose()
   })
 
-  it('replaces the controller when the project session signal is replaced', async () => {
+  it('retains the controller when the project session signal is rewrapped', async () => {
     const { projectFixture, services } = createServices()
     const { controllers, createZookeeperSessionController, loadController } =
       createControllerLoader()
@@ -306,14 +308,21 @@ describe('Zookeeper runtime', () => {
       expect(createZookeeperSessionController).toHaveBeenCalledOnce()
     })
 
+    const replacementProject = createProject(
+      '/project',
+      true,
+      projectFixture.kclManager
+    ).project
     services.projectSession.value = {
-      project: signal(projectFixture.project),
+      project: signal(replacementProject),
     } as ProjectSessionService
 
-    await vi.waitFor(() => {
-      expect(controllers[0]?.dispose).toHaveBeenCalledOnce()
-      expect(createZookeeperSessionController).toHaveBeenCalledTimes(2)
-    })
+    expect(runtime.session.value).toBe(controllers[0]?.controller)
+    expect(controllers[0]?.dispose).not.toHaveBeenCalled()
+    expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    expect(
+      createZookeeperSessionController.mock.calls[0]?.[0].project.value
+    ).toBe(replacementProject)
 
     runtime.dispose()
   })

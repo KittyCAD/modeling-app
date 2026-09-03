@@ -94,7 +94,7 @@ test.describe(
  */
 test.describe(
   'Native file menu',
-  { tag: ['@desktop', '@macos', '@windows', '@zookeeper'] },
+  { tag: ['@desktop', '@macos', '@windows'] },
   () => {
     test('Home page', async ({
       tronApp,

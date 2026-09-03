@@ -34,8 +34,31 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       await expect(copilot.placeHolderResponse).not.toBeVisible({
         timeout: 30_000,
       })
+      await page.evaluate(() => {
+        Reflect.set(
+          window,
+          '__zookeeperActorBeforePaneClose',
+          window.app.debug.zookeeperManagerActor
+        )
+      })
 
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      await page.waitForTimeout(250)
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+      await expect(copilot.conversationInput).toBeVisible()
+      expect(
+        await page.evaluate(
+          () =>
+            window.app.debug.zookeeperManagerActor ===
+            Reflect.get(window, '__zookeeperActorBeforePaneClose')
+        )
+      ).toBe(true)
+      expect(
+        await page.getByTestId('ml-response-chat-bubble').isVisible()
+      ).toBe(true)
+      await page.evaluate(() => {
+        Reflect.deleteProperty(window, '__zookeeperActorBeforePaneClose')
+      })
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await expect(editor.codeContent).toContainText('sketch', {
         timeout: 30_000,

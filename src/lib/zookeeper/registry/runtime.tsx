@@ -101,8 +101,11 @@ export function createZookeeperRuntime(
   loadController: () => Promise<ZookeeperSessionControllerModule> = loadZookeeperSessionController
 ) {
   const session = signal<ZookeeperSessionController | undefined>(undefined)
+  const currentZdsProject = computed(
+    () => services.projectSession.value?.project.value
+  )
   const currentProject = computed(
-    () => services.projectSession.value?.project.value?.projectIORefSignal.value
+    () => currentZdsProject.value?.projectIORefSignal.value
   )
   let activation: ZookeeperActivation | undefined
   let disposed = false
@@ -153,11 +156,9 @@ export function createZookeeperRuntime(
     const auth = services.auth.value
     const billing = services.billing.value
     const debug = services.debug?.value
-    const projectSession = services.projectSession.value
-    const projectSignal = projectSession?.project
     const settings = services.settings.value
     const systemIO = services.systemIO.value
-    const project = projectSignal?.value
+    const project = currentZdsProject.value
     const projectPath = project?.projectIORefSignal.value.path
     const kclManager = project?.executingEditor.value
     const executingFile = project?.executingFileEntry.value
@@ -172,7 +173,6 @@ export function createZookeeperRuntime(
     if (
       activation &&
       (activation.projectPath !== projectPath ||
-        activation.project !== projectSignal ||
         (kclManager !== null &&
           kclManager !== undefined &&
           activation.kclManager !== kclManager))
@@ -205,7 +205,6 @@ export function createZookeeperRuntime(
       !apiToken.trim() ||
       !auth ||
       !billing ||
-      !projectSignal ||
       !settings ||
       !systemIO
     ) {
@@ -215,7 +214,7 @@ export function createZookeeperRuntime(
     const next: ZookeeperActivation = {
       apiToken,
       kclManager,
-      project: projectSignal,
+      project: currentZdsProject,
       projectPath,
     }
     activation = next
