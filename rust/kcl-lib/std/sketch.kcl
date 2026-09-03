@@ -1830,7 +1830,7 @@ export fn sweep(
   tolerance?: number(Length),
   /// Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead.
   /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
-  @(deprecated = true)
+  @(deprecated = true, removed_since = "3.0")
   relativeTo?: string = 'trajectoryCurve',
   /// If true, the profile being swept will be moved to the path being swept along,
   /// before the sweep starts.

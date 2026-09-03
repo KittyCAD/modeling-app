@@ -2,8 +2,8 @@
 
 /**
  * A constraint on a KCL version, e.g. the threshold that `@(deprecated_since =
- * "2.0")` describes. Stored as the parsed component list so comparisons are
- * numeric, not lexical.
+ * "2.0")` or `@(removed_since = "3.0")` describes. Stored as the parsed
+ * component list so comparisons are numeric, not lexical.
  *
  * Distinct from the concrete `kclVersion` set in `@settings(...)`: this type
  * represents a version *boundary*, and we expect to grow more constraint kinds

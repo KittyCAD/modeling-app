@@ -8,7 +8,9 @@
 //!
 //! - C (control): [`Control`] -- either descend into an expression
 //!   ([`Control::Eval`]), hand a finished value to the innermost continuation
-//!   ([`Control::Apply`]), or unwind an `exit()` ([`Control::Exit`]).
+//!   ([`Control::Apply`]), unwind a KCL 3.0 `return` to the nearest call
+//!   boundary ([`Control::Return`]), or unwind an `exit()`
+//!   ([`Control::Exit`]).
 //! - E (environment): already reified as `EnvironmentRef` plus the mutable
 //!   env-stack arena, exactly as the recursive executor uses it.
 //! - K (continuations): a `Vec<Kont>`, one defunctionalized variant per
@@ -26,9 +28,10 @@
 //! Semantics contract: this machine replicates the recursive executor
 //! byte-for-byte -- including evaluation order (ids and engine commands are
 //! order-dependent), the operations log, ambient-state save/restore, error
-//! paths (including their historical asymmetries), and the deliberate
-//! write-and-continue behavior of `return` statements. The simulation-test
-//! suite runs under both executors and requires identical snapshots.
+//! paths (including their historical asymmetries), and the version-gated
+//! `return` semantics (write-and-continue before KCL 3.0; early return under
+//! it). The simulation-test suite runs under both executors and requires
+//! identical snapshots.
 //!
 //! Bounded native re-entry still exists in two places, by design:
 //! - Module execution (imports, module-value results) runs the module body in
@@ -39,6 +42,102 @@
 //!   `call_kw`, which fresh-roots a machine run per callback, adding O(1)
 //!   native frames per callback nesting level (bounded by the recursive
 //!   executor's call-stack cap, which still guards that path).
+//!
+//! # State transitions under KCL 3.0
+//!
+//! In the notation of the CEK/CESK literature (Felleisen and Friedman's
+//! original CEK machine; the presentation in Van Horn and Might's
+//! "Abstracting Abstract Machines"), a state is a triple ⟨C, ρ, κ⟩: control,
+//! environment, continuation. Here ρ is the current `EnvironmentRef`, and the
+//! arena of environments doubles as the store σ (environments are heap
+//! entries addressed by refs); both are ambient in `ExecState` rather than
+//! copied into the state tuple, so ρ is only written below where it changes
+//! (▷ pushes a frame or scope, and the matching pop happens in the rule that
+//! consumes the frame). κ is the `Vec<Kont>`; the innermost frame is written
+//! leftmost (`f :: κ`), which is the end of the vector in code. Apply-mode
+//! states are written ⟨v, κ⟩. The machine is in exactly one of five modes:
+//!
+//! ```text
+//! ⟨e, ρ, κ⟩     eval mode        Control::Eval    dispatch on the expression e
+//! ⟨v, κ⟩        apply mode       Control::Apply   dispatch on the innermost frame
+//! R⟨v, κ⟩       return unwind    Control::Return  KCL 3.0 only
+//! X⟨v, κ⟩       exit unwind      Control::Exit
+//! E⟨err, κ⟩     error unwind     (the Err return path through run_loop)
+//! ```
+//!
+//! Core transitions. The long tail of evaluation frames (Unary, ArrayElems,
+//! ObjectProps, RangeStartDone/RangeEndDone, MemberPropDone/MemberObjDone,
+//! AscribeDone, LabelDone, CallArgs, SketchArgs) follows the same
+//! left-to-right pattern as the binary-operator rules and is omitted.
+//!
+//! ```text
+//! Atoms and names
+//!   ⟨lit, ρ, κ⟩                       ↦  ⟨value(lit), κ⟩
+//!   ⟨x, ρ, κ⟩                         ↦  ⟨ρ(x), κ⟩            lookup via parent refs
+//!
+//! Binary operators (representative of the boilerplate family)
+//!   ⟨e₁ ⊕ e₂, ρ, κ⟩                   ↦  ⟨e₁, ρ, BinaryLhsDone(⊕, e₂) :: κ⟩
+//!   ⟨v₁, BinaryLhsDone(⊕, e₂) :: κ⟩   ↦  ⟨e₂, ρ, BinaryRhsDone(⊕, v₁) :: κ⟩
+//!   ⟨v₂, BinaryRhsDone(⊕, v₁) :: κ⟩   ↦  ⟨v₁ ⊕ v₂, κ⟩
+//!
+//! Blocks (statement sequencing; `last` is the trailing expression value)
+//!   ⟨{s₁ … sₙ}, ρ, κ⟩                 ↦  ⟨s₁, ρ, BlockSeq₁ :: κ⟩
+//!   ⟨v, BlockSeqᵢ :: κ⟩               ↦  ⟨sᵢ₊₁, ρ, BlockSeqᵢ₊₁ :: κ⟩
+//!   ⟨v, BlockSeqₙ :: κ⟩               ↦  ⟨Block(last), κ⟩
+//!
+//! Function calls (user-defined KCL functions)
+//!   ⟨f(args…), ρ, κ⟩                  ↦  ⟨args…, ρ, CallArgs :: κ⟩
+//!   ⟨vargs, CallArgs :: κ⟩            ↦  ⟨body, ρf ▷ frame, CallBoundary :: κ⟩
+//!                                        where ρf is the closure's captured env
+//!   ⟨Block(last), CallBoundary :: κ⟩  ↦  ⟨v, κ⟩    call_finish pops the frame; the
+//!                                        result is a Return absorbed at the boundary
+//!                                        (KCL 3.0) or `__return` read from the frame
+//!                                        (pre-KCL-3.0); `last` itself is ignored
+//!
+//! If-expressions (conditions evaluate in the enclosing ρ)
+//!   ⟨if e₀ {b₀} …, ρ, κ⟩              ↦  ⟨e₀, ρ, IfCondDone₀ :: κ⟩
+//!   ⟨false, IfCondDoneᵢ :: κ⟩         ↦  ⟨eᵢ₊₁, ρ, IfCondDoneᵢ₊₁ :: κ⟩   the next
+//!                                        cond, or the final else body via the
+//!                                        true-rule below when conds are exhausted
+//!   ⟨true, IfCondDoneᵢ :: κ⟩          ↦  ⟨bᵢ, ρ ▷ arm, IfArmDone :: κ⟩
+//!                                        KCL 3.0: the arm body gets its own scope
+//!                                        env (pre-KCL-3.0: bᵢ runs directly in ρ)
+//!   ⟨Block(v), IfArmDone :: κ⟩        ↦  ⟨v, κ⟩    KCL 3.0: pop the arm env; values
+//!                                        escaping the arm stay valid because
+//!                                        referenced envs survive the pop
+//!
+//! return (KCL 3.0: genuine control flow)
+//!   ⟨return e, ρ, κ⟩                  ↦  ⟨e, ρ, BlockSeq{Return} :: κ⟩
+//!   ⟨v, BlockSeq{Return} :: κ⟩        ↦  R⟨v, κ⟩   the rest of the block is dropped
+//!                                        (pre-KCL-3.0: bind `__return` in ρ and
+//!                                        continue with the next statement instead)
+//!   R⟨v, f :: κ⟩                      ↦  R⟨v, κ⟩   non-boundary f runs cleanup(f):
+//!                                        IfArmDone pops its arm env, PipeSeq
+//!                                        restores the pipe value, …
+//!   R⟨v, SketchBody :: κ⟩             ↦  R⟨v, κ⟩   sketch cleanup; finalization
+//!                                        skipped
+//!   R⟨v, CallBoundary :: κ⟩           ↦  ⟨v′, κ⟩   absorbed: call_finish pops the
+//!                                        frame, applies tag updates and return-type
+//!                                        coercion, and the machine resumes
+//!   R⟨v, ∅⟩                           ↦  the fresh root hands the Return upward (a
+//!                                        callback's native frame absorbs it; a Root
+//!                                        block rejects it: "Cannot return from
+//!                                        outside a function")
+//!
+//! exit() (never absorbed at a boundary)
+//!   X⟨v, f :: κ⟩                      ↦  X⟨v, κ⟩   cleanup(f); at CallBoundary the
+//!                                        exit flavor of call_finish (skips tags and
+//!                                        coercion); at SketchBody sketch cleanup
+//!   X⟨v, ∅⟩                           ↦  the program result
+//!
+//! Errors (mirrors X, plus call_finish(Err) and per-boundary backtrace
+//! decoration via add_unwind_location)
+//!   E⟨err, f :: κ⟩                    ↦  E⟨err′, κ⟩
+//! ```
+//!
+//! Pipes thread `%` through ambient state rather than κ: PipeFirstDone and
+//! PipeSeq save and restore `pipe_value` around each element, which is why
+//! the unwind rules must run cleanup on them.
 
 use std::env;
 use std::sync::Arc;
@@ -458,6 +557,10 @@ enum Kont {
     /// An if arm's block completed; unwrap its value as the if's result.
     IfArmDone {
         node: Arc<Node<IfExpression>>,
+        /// True when the arm body runs in its own scope environment (a
+        /// KCL 3.0 entry point), which must be popped on completion and
+        /// on unwind.
+        env_pushed: bool,
     },
     AscribeDone {
         node: Arc<Node<AscribedExpression>>,
@@ -941,6 +1044,13 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
         Kont::PipeSeq { saved_pipe_value, .. } => {
             exec_state.mod_local.pipe_value = saved_pipe_value;
         }
+        Kont::IfArmDone { env_pushed, .. } => {
+            // Pop the arm's scope environment (KCL 3.0) when unwinding
+            // out of the arm via error, exit(), or return.
+            if env_pushed {
+                exec_state.mut_stack().pop_env()?;
+            }
+        }
         // Evaluation-only continuations hold no ambient state.
         Kont::BinaryLhsDone { .. }
         | Kont::BinaryRhsDone { .. }
@@ -952,7 +1062,6 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
         | Kont::MemberPropDone { .. }
         | Kont::MemberObjDone { .. }
         | Kont::IfCondDone { .. }
-        | Kont::IfArmDone { .. }
         | Kont::AscribeDone { .. }
         | Kont::LabelDone { .. }
         | Kont::PipeFirstDone { .. }
@@ -1339,7 +1448,10 @@ async fn step_apply(
                 } else {
                     BlockRef::Program(node.else_ifs[arm - 1].then_val.arc())
                 };
-                konts.push(Kont::IfArmDone { node });
+                // An error here leaves no env pushed and IfArmDone unpushed,
+                // so unwinding stays balanced.
+                let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
+                konts.push(Kont::IfArmDone { node, env_pushed });
                 push_block(block, BodyType::Block, konts);
                 step_block_kick(konts, exec_state, ctx).await
             } else if arm < node.else_ifs.len() {
@@ -1353,12 +1465,19 @@ async fn step_apply(
                 Ok(Control::Eval(Box::new(cond)))
             } else {
                 let block = BlockRef::Program(node.final_else.arc());
-                konts.push(Kont::IfArmDone { node });
+                let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
+                konts.push(Kont::IfArmDone { node, env_pushed });
                 push_block(block, BodyType::Block, konts);
                 step_block_kick(konts, exec_state, ctx).await
             }
         }
-        Kont::IfArmDone { node } => {
+        Kont::IfArmDone { node, env_pushed } => {
+            // Pop the arm scope before unwrapping; values escaping the arm
+            // stay valid because environments that may still be referenced
+            // are preserved.
+            if env_pushed {
+                exec_state.mut_stack().pop_env()?;
+            }
             let block_result = applied.expect_block()?;
             // Blocks used as if arms must end in an expression (enforced by
             // the parser), so this is always Some.
@@ -1559,7 +1678,7 @@ async fn step_block(
                         Vec::new(),
                     )));
                 };
-                if exec_state.use_kcl_v3_control_flow() {
+                if exec_state.entry_point_version_is_v3_or_higher() {
                     // KCL 3.0: early return. The rest of this block is
                     // abandoned (this continuation is already popped and holds
                     // no ambient state); unwind_return absorbs the value at the

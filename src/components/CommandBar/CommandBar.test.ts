@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 import type { Command } from '@src/lib/commandTypes'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 function command(overrides: Partial<Command> = {}): Command {
   return {
@@ -10,6 +11,7 @@ function command(overrides: Partial<Command> = {}): Command {
     needsReview: false,
     onSubmit: () => undefined,
     ...overrides,
+    scopes: overrides.scopes ?? GLOBAL_COMMAND_SCOPES,
   }
 }
 

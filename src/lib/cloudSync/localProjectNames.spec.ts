@@ -75,7 +75,13 @@ function installFetchMock() {
     }
     if (url === remoteProjectDownloadUrl && method === 'GET') {
       return jsonResponse({
-        files: [{ relativePath: 'main.kcl', contents: 'x = 1' }],
+        files: [
+          { relativePath: 'main.kcl', contents: 'x = 1' },
+          {
+            relativePath: PROJECT_SETTINGS_FILE_NAME,
+            contents: cloudProjectToml(),
+          },
+        ],
       })
     }
 

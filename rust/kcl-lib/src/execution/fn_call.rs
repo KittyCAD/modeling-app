@@ -1050,7 +1050,7 @@ fn type_check_params_kw(
     if let Some((Some(label), _)) = args.unlabeled.first()
         && args.unlabeled.len() == 1
         && (fn_def.input_arg.is_none() || args.pipe_value.is_some())
-        && fn_def.named_args.iter().any(|p| p.0 == label)
+        && fn_def.active_named_arg(label, exec_state).is_some()
         && !args.labeled.contains_key(label)
     {
         let Some((label, arg)) = args.unlabeled.pop() else {
@@ -1067,7 +1067,7 @@ fn type_check_params_kw(
     // Apply the `a == a: a` shorthand by desugaring unlabeled args into labeled ones.
     let (labeled_unlabeled, unlabeled_unlabeled) = args.unlabeled.into_iter().partition(|(l, _)| {
         if let Some(l) = l
-            && fn_def.named_args.contains_key(l)
+            && fn_def.active_named_arg(l, exec_state).is_some()
             && !args.labeled.contains_key(l)
         {
             true
@@ -1171,9 +1171,8 @@ fn type_check_params_kw(
         // Not expecting an input arg, but found one or more
         let actuals = args.labeled.keys();
         let formals: Vec<_> = fn_def
-            .named_args
-            .keys()
-            .filter_map(|name| {
+            .active_named_args(exec_state)
+            .filter_map(|(name, _)| {
                 if actuals.clone().any(|a| a == name) {
                     return None;
                 }
@@ -1202,11 +1201,12 @@ fn type_check_params_kw(
     }
 
     for (label, mut arg) in args.labeled {
-        match fn_def.named_args.get(&label) {
+        match fn_def.active_named_arg(&label, exec_state) {
             Some(NamedParam {
                 experimental: _,
                 deprecated: _,
                 deprecated_since: _,
+                removed_since: _,
                 default_value: def,
                 ty,
                 resolved_ty,
@@ -1503,6 +1503,7 @@ mod test {
                 experimental: false,
                 deprecated: false,
                 deprecated_since: None,
+                removed_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -1515,6 +1516,7 @@ mod test {
                 experimental: false,
                 deprecated: false,
                 deprecated_since: None,
+                removed_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,
@@ -2378,6 +2380,147 @@ x = f(1)
         assert!(
             warnings.is_empty(),
             "unused deprecated parameter should not warn: {warnings:#?}"
+        );
+    }
+
+    fn unexpected_arg_errors(result: &ExecTestResults) -> Vec<&CompilationIssue> {
+        result
+            .exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.message.contains("is not an argument of"))
+            .collect()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_removed_param_on_removed_version_errors_like_unknown_arg() {
+        // "3.0-preview" is a pre-release of 3.0, so a parameter removed as of
+        // 3.0 is already gone there.
+        let program = r#"@settings(kclVersion = "3.0-preview")
+fn f(
+  @a: number,
+  @(deprecated_since = "2.0", removed_since = "3.0")
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1, oldArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let errors = unexpected_arg_errors(&result);
+        assert_eq!(
+            errors.len(),
+            1,
+            "expected one unknown-argument error, got {:#?}",
+            result.issues()
+        );
+        assert_eq!(errors[0].severity, Severity::Error);
+        assert_eq!(errors[0].message, "`oldArg` is not an argument of `f`");
+        // The error replaces the deprecation warning rather than adding to it.
+        assert!(
+            deprecation_warnings(&result).is_empty(),
+            "removed parameter should not also warn: {:#?}",
+            result.issues()
+        );
+        // Execution continues as if the argument had not been passed.
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 1.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_removed_param_before_removed_version_still_works() {
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @a: number,
+  @(deprecated_since = "2.0", removed_since = "3.0")
+  oldArg?: number,
+) {
+  return oldArg
+}
+x = f(1, oldArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(
+            unexpected_arg_errors(&result).is_empty(),
+            "parameter is not removed until 3.0: {:#?}",
+            result.issues()
+        );
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert!(
+            warnings[0].message.contains("`f(oldArg)` is deprecated as of KCL 2.0"),
+            "found {}",
+            warnings[0].message
+        );
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 2.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn removed_optional_param_binds_its_default() {
+        let program = r#"@settings(kclVersion = "3.0-preview")
+fn f(
+  @(removed_since = "3.0")
+  oldArg?: number = 7,
+) {
+  return oldArg
+}
+x = f()
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(result.issues().is_empty(), "unexpected issues: {:#?}", result.issues());
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 7.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn removed_param_is_not_matched_by_label_shorthand() {
+        // Before 3.0, `f(oldArg)` desugars to `f(oldArg = oldArg)`. Once the
+        // parameter is removed, the argument is just an unlabeled argument the
+        // function does not accept, and the removed parameter must not be
+        // suggested as a label.
+        let program = r#"@settings(kclVersion = "3.0-preview")
+fn f(
+  @(removed_since = "3.0")
+  oldArg?: number,
+) {
+  return 1
+}
+oldArg = 2
+x = f(oldArg)
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+        assert_eq!(err.message(), "This argument needs a label, but it doesn't have one");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn stdlib_legacy_method_is_removed_in_kcl_3() {
+        let solids = r#"left = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 1)
+right = startSketchOn(XY)
+  |> circle(center = [1, 0], radius = 2)
+  |> extrude(length = 1)
+both = union([left, right], legacyMethod = true)
+"#;
+
+        let program = format!("@settings(kclVersion = \"3.0-preview\")\n{solids}");
+        let result = parse_execute(&program).await.unwrap();
+        let errors = unexpected_arg_errors(&result);
+        assert_eq!(errors.len(), 1, "got {:#?}", result.issues());
+        assert_eq!(errors[0].message, "`legacyMethod` is not an argument of `union`");
+
+        // Still accepted, with a deprecation warning, before KCL 3.0.
+        let program = format!("@settings(kclVersion = 2.0)\n{solids}");
+        let result = parse_execute(&program).await.unwrap();
+        assert!(unexpected_arg_errors(&result).is_empty(), "got {:#?}", result.issues());
+        assert!(
+            deprecation_warnings(&result)
+                .iter()
+                .any(|w| w.message.contains("`union(legacyMethod)` is deprecated as of KCL 2.0")),
+            "got {:#?}",
+            result.issues()
         );
     }
 

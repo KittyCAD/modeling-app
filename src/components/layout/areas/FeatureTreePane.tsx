@@ -22,6 +22,7 @@ import {
   getAllOperations,
 } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
 import {
   type OperationTreeNode,
   buildOperationTree,
@@ -1161,7 +1162,11 @@ const OperationItem = ({
         selectOperation,
         systemDeps,
       }).catch((e) => {
-        toast.error(err(e) ? e.message : JSON.stringify(e))
+        const message = err(e) ? e.message : JSON.stringify(e)
+        toast.error(message, {
+          duration:
+            message === LEGACY_SKETCH_MODE_REMOVED_MESSAGE ? 5_000 : undefined,
+        })
       })
     }
   }, [
