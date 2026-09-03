@@ -782,7 +782,18 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(code.replace('radius = 2.5', 'radius = 2'))
+      expect(newCode).toContain(
+        code.replace(
+          '  |> fillet(tags = getCommonEdge(faces = [rectangleSegmentA001, capEnd001]), radius = 2.5)',
+          `  |> fillet(
+       tags = getCommonEdge(faces = [
+         rectangleSegmentA001,
+         %.faces.capEnd001
+       ]),
+       radius = 2,
+     )`
+        )
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 

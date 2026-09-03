@@ -198,7 +198,6 @@ export function addFillet({
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
-      labeledSelectionArgNames: ['tags'],
       wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
@@ -326,7 +325,6 @@ export function addChamfer({
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
-      labeledSelectionArgNames: ['tags'],
       wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
