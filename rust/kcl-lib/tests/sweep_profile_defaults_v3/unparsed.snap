@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sweep_profile_defaults_v3.kcl
 ---
 // Under KCL 3.0, `orientProfilePerpendicular` defaults to the value of
-// `translateProfileToPath`, and the sweep algorithm defaults to version 2.
+// `translateProfileToPath`, and the sweep always uses algorithm version 2.
 @settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
 
 // Two identical profiles on the XY plane.

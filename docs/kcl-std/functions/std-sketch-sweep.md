@@ -46,7 +46,7 @@ swept along the same path.
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
-| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | What version of the sweeping algorithm to use. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo sweep algorithm, 2 is the newer algorithm. On KCL 2.0 and earlier, the default is 0. On KCL 3.0 and later, the default is 2. | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Removed as of KCL 3.0.** What version of the sweeping algorithm to use. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo sweep algorithm, 2 is the newer algorithm. On KCL 2.0 and earlier, the default is 0. KCL 3.0 and later always use the newest algorithm. | No |
 
 ### Returns
 

@@ -82,6 +82,8 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    // KCL 3.0 removes the version parameter (`removed_since` in sketch.kcl),
+    // so from 3.0 on this is always None, and the newest algorithm is used.
     let version: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     // Replaced by 2 args below.
     let relative_to: Option<String> = args.get_kw_arg_opt("relativeTo", &RuntimeType::string(), exec_state)?;
@@ -166,12 +168,14 @@ impl ProfileTransform {
 }
 
 /// The sweep algorithm version to send when the user does not set `version`.
+/// KCL 3.0 removes the version parameter (`removed_since` in sketch.kcl), so
+/// from 3.0 on this is always what is sent.
 fn default_sweep_version(kcl_version: KclVersion) -> Option<u8> {
     if kcl_version <= KclVersion::V2 {
         // Unspecified, so the engine chooses. It currently chooses version 1.
         None
     } else {
-        // KCL 3.0 and later default to the newer algorithm.
+        // KCL 3.0 and later always use the newest algorithm.
         Some(2)
     }
 }
@@ -384,6 +388,7 @@ async fn inner_sweep(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::execution::ExecTestResults;
     use crate::execution::parse_execute;
 
     /// What each KCL version sends to the engine when the user leaves out
@@ -399,7 +404,7 @@ mod tests {
         assert_eq!(cmd.version, None);
 
         // From KCL 3.0, the two flags are always sent, both false by default,
-        // and the algorithm version defaults to 2.
+        // and the algorithm is always version 2.
         let cmd = emitted_sweep("\"3.0-preview\"", "").await;
         assert_eq!(cmd.relative_to, None);
         assert_eq!(cmd.translate_profile_to_path, Some(false));
@@ -445,15 +450,36 @@ mod tests {
     /// and not use that KCL version's default sweep algorithm version.
     #[tokio::test(flavor = "multi_thread")]
     async fn explicit_sweep_version_overrides_kcl_default() {
-        assert_eq!(emitted_sweep("\"3.0-preview\"", ", version = 1").await.version, Some(1));
-        assert_eq!(emitted_sweep("\"3.0-preview\"", ", version = 0").await.version, Some(0));
         assert_eq!(emitted_sweep("2.0", ", version = 2").await.version, Some(2));
+        assert_eq!(emitted_sweep("2.0", ", version = 0").await.version, Some(0));
+    }
+
+    /// KCL 3.0 removed `sweep(version = )`. Passing it is reported like any
+    /// other unknown argument, and the newest algorithm is used.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sweep_version_is_removed_in_kcl_3() {
+        let result = run_sweep("\"3.0-preview\"", ", version = 1").await;
+        assert!(
+            result
+                .issues()
+                .iter()
+                .any(|issue| issue.message == "`version` is not an argument of `sweep`"),
+            "issues: {:#?}",
+            result.issues()
+        );
+        assert_eq!(emitted_sweep_cmd(&result).version, Some(2));
     }
 
     /// Sweep a circle along a line under the given KCL version, passing
     /// `extra_args` to `sweep`, and return the `Sweep` command sent to the
     /// engine.
     async fn emitted_sweep(kcl_version: &str, extra_args: &str) -> mcmd::Sweep {
+        emitted_sweep_cmd(&run_sweep(kcl_version, extra_args).await)
+    }
+
+    /// Sweep a circle along a line under the given KCL version, passing
+    /// `extra_args` to `sweep`.
+    async fn run_sweep(kcl_version: &str, extra_args: &str) -> ExecTestResults {
         let code = format!(
             r#"@settings(defaultLengthUnit = mm, kclVersion = {kcl_version})
 
@@ -469,7 +495,11 @@ pathSketch = sketch(on = XZ) {{
 sweep(profile, path = pathSketch{extra_args})
 "#
         );
-        let result = parse_execute(&code).await.unwrap();
+        parse_execute(&code).await.unwrap()
+    }
+
+    /// The `Sweep` command the run sent to the engine.
+    fn emitted_sweep_cmd(result: &ExecTestResults) -> mcmd::Sweep {
         result
             .root_module_artifact_commands()
             .iter()

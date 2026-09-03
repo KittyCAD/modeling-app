@@ -9262,13 +9262,13 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the sweeping algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo sweep algorithm, 2 is the newer algorithm. On KCL 2.0 and earlier, the default is 0. On KCL 3.0 and later, the default is 2.",
+        "docs": "What version of the sweeping algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo sweep algorithm, 2 is the newer algorithm. On KCL 2.0 and earlier, the default is 0. KCL 3.0 and later always use the newest algorithm.",
         "required": false,
         "special": false,
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null,
-        "removedSince": null
+        "removedSince": "3.0"
       }
     ]
   },

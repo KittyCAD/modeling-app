@@ -1372,7 +1372,7 @@ description: Result of parsing sweep_profile_defaults_v3.kcl
         },
         "preComments": [
           "// Under KCL 3.0, `orientProfilePerpendicular` defaults to the value of",
-          "// `translateProfileToPath`, and the sweep algorithm defaults to version 2."
+          "// `translateProfileToPath`, and the sweep always uses algorithm version 2."
         ],
         "properties": [
           {

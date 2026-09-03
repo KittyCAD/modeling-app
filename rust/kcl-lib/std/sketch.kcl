@@ -1857,7 +1857,8 @@ export fn sweep(
   /// 1 is the original Zoo sweep algorithm,
   /// 2 is the newer algorithm.
   /// On KCL 2.0 and earlier, the default is 0.
-  /// On KCL 3.0 and later, the default is 2.
+  /// KCL 3.0 and later always use the newest algorithm.
+  @(removed_since = "3.0")
   version?: number(Count),
 ): [Solid; 1+] {}
 
