@@ -42,11 +42,11 @@ swept along the same path.
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | **Deprecated.** **Removed as of KCL 3.0.** Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
 | `translateProfileToPath` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. | No |
-| `orientProfilePerpendicular` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. Defaults to false. | No |
+| `orientProfilePerpendicular` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. On KCL 2.0 and earlier, defaults to false. On KCL 3.0 and later, defaults to the value of `translateProfileToPath`, so a profile that is moved to the path is also oriented perpendicular to it unless you say otherwise. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
-| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm). | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Removed as of KCL 3.0.** What version of the sweeping algorithm to use. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo sweep algorithm, 2 is the newer algorithm. On KCL 2.0 and earlier, the default is 0. KCL 3.0 and later always use the newest algorithm. | No |
 
 ### Returns
 
