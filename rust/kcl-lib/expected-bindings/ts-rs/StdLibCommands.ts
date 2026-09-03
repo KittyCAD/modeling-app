@@ -84,31 +84,9 @@ export default {
         "removedSince": null
       },
       {
-        "name": "maxCamberPercent",
+        "name": "naca4Code",
         "ty": "number(_)",
-        "docs": "Maximum camber as a percentage of the chord. This is the first NACA digit.",
-        "required": true,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedSince": null
-      },
-      {
-        "name": "camberPositionPercent",
-        "ty": "number(_)",
-        "docs": "Chordwise position of maximum camber as a percentage of the chord. This is ten times the second NACA digit.",
-        "required": true,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedSince": null
-      },
-      {
-        "name": "thicknessPercent",
-        "ty": "number(_)",
-        "docs": "Maximum thickness as a percentage of the chord. This is the final two NACA digits.",
+        "docs": "Numeric four-digit NACA designation. Leading zeroes may be omitted.",
         "required": true,
         "special": false,
         "experimental": false,

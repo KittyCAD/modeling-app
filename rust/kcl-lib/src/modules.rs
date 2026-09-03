@@ -327,14 +327,12 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn airfoil_builds_supported_profiles_with_finite_geometry() {
         let code = r#"
-@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 naca0012 = airfoil(
   sketchPlane = XY,
   chordLength = 4in,
-  maxCamberPercent = 0,
-  camberPositionPercent = 0,
-  thicknessPercent = 12,
+  naca4Code = 12,
 )
 
 airfoilRegion = region(point = [2in, 0in], sketch = naca0012)
@@ -343,27 +341,15 @@ extrude(airfoilRegion, length = 0.25in)
 naca2412 = airfoil(
   sketchPlane = XZ,
   chordLength = 100mm,
-  maxCamberPercent = 2,
-  camberPositionPercent = 40,
-  thicknessPercent = 12,
+  naca4Code = 2412,
 )
 camberedAirfoilRegion = region(point = [50mm, 0mm], sketch = naca2412)
 extrude(camberedAirfoilRegion, length = 10mm)
 
-nearCollinear = airfoil(
+thickCambered = airfoil(
   sketchPlane = YZ,
   chordLength = 1m,
-  maxCamberPercent = 9,
-  camberPositionPercent = 40,
-  thicknessPercent = 36,
-)
-
-singular = airfoil(
-  sketchPlane = YZ,
-  chordLength = 1m,
-  maxCamberPercent = 3,
-  camberPositionPercent = 60,
-  thicknessPercent = 39.004115644520543,
+  naca4Code = 9436,
 )
 "#;
 
@@ -372,25 +358,26 @@ singular = airfoil(
         let result = ctx.run_mock(&program, &MockConfig::default()).await;
         ctx.close().await;
         let outcome = result.unwrap();
-        for name in ["nearCollinear", "singular"] {
+        for name in ["naca0012", "naca2412", "thickCambered"] {
             let Some(KclValueView::Sketch { value }) = outcome.variables.get(name) else {
                 panic!("{name} should be a sketch");
             };
-            let mut line_count = 0;
+            assert_eq!(value.synthetic_jump_path_ids.len(), 1);
             let mut arc_count = 0;
             for path in &value.paths {
+                assert!(path.get_base().from.iter().all(|coordinate| coordinate.is_finite()));
+                assert!(path.get_base().to.iter().all(|coordinate| coordinate.is_finite()));
                 match path {
-                    Path::ToPoint { .. } => line_count += 1,
                     Path::Arc { center, radius, .. } => {
                         arc_count += 1;
                         assert!(center.iter().all(|coordinate| coordinate.is_finite()));
                         assert!(radius.is_finite());
                     }
-                    path => panic!("{name} should contain only lines and arcs, found {path:?}"),
+                    Path::ToPoint { .. } if value.synthetic_jump_path_ids.contains(&path.get_id()) => {}
+                    path => panic!("{name} should contain only arcs and a solver pen jump, found {path:?}"),
                 }
             }
-            assert_eq!(line_count, 1);
-            assert_eq!(arc_count, 9);
+            assert_eq!(arc_count, 32);
         }
     }
 
