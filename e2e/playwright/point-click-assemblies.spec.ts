@@ -709,7 +709,6 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
-          @settings(experimentalFeatures = allow)
           @(targetRepresentation = mesh)
           import "cube.step" as cube
         `,

@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.181"
+version = "0.2.182"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -65,11 +65,11 @@ image = { version = "0.25.10", default-features = false, features = ["png"] }
 image-compare = "0.5.0"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.15.0"
-kcl-api = { version = "=0.2.181", path = "../kcl-api" }
-kcl-derive-docs = { version = "=0.2.181", path = "../kcl-derive-docs" }
-kcl-engine-codec = { version = "=0.2.181", path = "../kcl-engine-codec" }
-kcl-error = { version = "=0.2.181", path = "../kcl-error" }
-kcl-syntax = { version = "=0.2.181", path = "../kcl-syntax" }
+kcl-api = { version = "=0.2.182", path = "../kcl-api" }
+kcl-derive-docs = { version = "=0.2.182", path = "../kcl-derive-docs" }
+kcl-engine-codec = { version = "=0.2.182", path = "../kcl-engine-codec" }
+kcl-error = { version = "=0.2.182", path = "../kcl-error" }
+kcl-syntax = { version = "=0.2.182", path = "../kcl-syntax" }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }

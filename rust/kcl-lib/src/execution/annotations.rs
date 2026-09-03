@@ -32,6 +32,7 @@ pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 pub(super) const NO_PRELUDE: &str = "no_std";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const DEPRECATED_SINCE: &str = "deprecated_since";
+pub(crate) const REMOVED_SINCE: &str = "removed_since";
 pub(crate) const DOC_CATEGORY: &str = "doc_category";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
 pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
@@ -304,8 +305,8 @@ impl Default for FnAttrs {
 }
 
 /// A constraint on a KCL version, e.g. the threshold that `@(deprecated_since =
-/// "2.0")` describes. Stored as the parsed component list so comparisons are
-/// numeric, not lexical.
+/// "2.0")` or `@(removed_since = "3.0")` describes. Stored as the parsed
+/// component list so comparisons are numeric, not lexical.
 ///
 /// Distinct from the concrete `kclVersion` set in `@settings(...)`: this type
 /// represents a version *boundary*, and we expect to grow more constraint kinds
