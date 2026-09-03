@@ -288,7 +288,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(cylinderWithEndTag)
       expect(newCode).toContain(
-        `shell001 = shell(extrude001, faces = capEnd001, thickness = 2)`
+        `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

@@ -1806,9 +1806,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind
-          .replace('angle = 360deg', 'angle = angle001')
-          .replace('axis = rectangleSegmentA001', 'axis = X')
+        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
       )
     })
   })
