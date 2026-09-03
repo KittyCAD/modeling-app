@@ -1,6 +1,9 @@
 import { existsSync } from 'node:fs'
 
-import { expect, test } from '@e2e/playwright/zoo-test'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
+import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { setup } from '@e2e/playwright/test-utils'
+import { expect, test } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 type ContractSocket = WebSocket & { isZookeeperContractSocket?: boolean }
@@ -25,17 +28,15 @@ test.describe(
 
     test('shows billing recovery without retrying a non-retryable denial', async ({
       page,
-      homePage,
-      scene,
-      toolbar,
-      copilot,
-    }) => {
+      context,
+    }, testInfo) => {
       if (!contractWebSocketUrl || !contractApiToken || !exhaustedFile) {
         throw new Error('Missing Zookeeper API contract configuration')
       }
-      await page.setBodyDimensions({ width: 1500, height: 1000 })
+      await page.setViewportSize({ width: 1500, height: 1000 })
+      await setup(context, page, testInfo)
 
-      await page.evaluate(
+      await page.addInitScript(
         ({ websocketUrl, apiToken }) => {
           const contractWindow = window as ContractWindow
           const NativeWebSocket = window.WebSocket
@@ -80,8 +81,10 @@ test.describe(
         }
       )
 
-      await homePage.goToModelingScene()
-      await scene.settled()
+      await page.goto('/')
+      const toolbar = new ToolbarFixture(page)
+      const copilot = new CopilotFixture(page)
+      await expect(toolbar.locator).toBeVisible({ timeout: 30_000 })
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await copilot.setMode('fast')
