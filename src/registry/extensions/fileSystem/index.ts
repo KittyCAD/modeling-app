@@ -7,6 +7,7 @@ import {
 import { createFileSystemRuntime } from '@src/lib/fileSystem/runtime'
 import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { fileSystemService } from '@src/registry/contracts/fileSystem'
 
 export const createFileSystemExtension = (backing: IZooDesignStudioFS) =>
@@ -19,6 +20,7 @@ export const createFileSystemExtension = (backing: IZooDesignStudioFS) =>
         id: 'file-system-extension',
         providesServices: [
           provideService(fileSystemService, fileSystem.service),
+          provideService(fileOperationsService, fileSystem.operations),
         ],
         // The registry owns the mounted node; the Effect runtime owns and
         // finalizes every scoped filesystem resource within that node.

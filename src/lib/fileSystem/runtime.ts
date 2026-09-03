@@ -1,4 +1,18 @@
 import {
+  copy as copyOperation,
+  createDirectory as createDirectoryOperation,
+  createFile as createFileOperation,
+  createUniqueDirectory as createUniqueDirectoryOperation,
+  createUniqueFile as createUniqueFileOperation,
+  type FileOperations,
+  fileOperationsLayer,
+  pendingFileOperations,
+  readFile as readFileOperation,
+  remove as removeOperation,
+  rename as renameOperation,
+  writeFile as writeFileOperation,
+} from '@src/lib/fileSystem/fileOperations'
+import {
   copy,
   exists,
   type FileSystem,
@@ -13,11 +27,13 @@ import {
   writeFile,
 } from '@src/lib/fileSystem/fileSystem'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { FileSystemRegistryService } from '@src/registry/contracts/fileSystem'
-import { Effect, Either, ManagedRuntime } from 'effect'
+import { Effect, Either, Layer, ManagedRuntime } from 'effect'
 
 export interface FileSystemRuntime {
   readonly service: FileSystemRegistryService
+  readonly operations: FileOperationsRegistryService
   readonly dispose: () => Promise<void>
 }
 
@@ -31,10 +47,14 @@ export interface FileSystemRuntime {
 export function createFileSystemRuntime(
   backing: IZooDesignStudioFS
 ): FileSystemRuntime {
-  const runtime = ManagedRuntime.make(legacyFileSystemLayer(backing))
+  const fileSystemLayer = legacyFileSystemLayer(backing)
+  const layer = fileOperationsLayer(backing).pipe(
+    Layer.provideMerge(fileSystemLayer)
+  )
+  const runtime = ManagedRuntime.make(layer)
 
-  const runRuntimePromise = async <A, E>(
-    program: Effect.Effect<A, E, FileSystem>
+  const runRuntimePromise = async <A, E, R extends FileSystem | FileOperations>(
+    program: Effect.Effect<A, E, R>
   ): Promise<A> => {
     const result = await runtime.runPromise(program.pipe(Effect.either))
     if (Either.isLeft(result)) {
@@ -56,8 +76,29 @@ export function createFileSystemRuntime(
       runRuntimePromise(rename(source, destination)),
   }
 
+  const operations: FileOperationsRegistryService = {
+    pending: () => runRuntimePromise(pendingFileOperations),
+    readFile: (path) => runRuntimePromise(readFileOperation(path)),
+    copy: (source, destination) =>
+      runRuntimePromise(copyOperation(source, destination)),
+    writeFile: (path, contents) =>
+      runRuntimePromise(writeFileOperation(path, contents)),
+    createFile: (path, contents) =>
+      runRuntimePromise(createFileOperation(path, contents)),
+    createUniqueFile: (parent, name, contents) =>
+      runRuntimePromise(createUniqueFileOperation(parent, name, contents)),
+    createDirectory: (path) =>
+      runRuntimePromise(createDirectoryOperation(path)),
+    createUniqueDirectory: (parent, preferredName) =>
+      runRuntimePromise(createUniqueDirectoryOperation(parent, preferredName)),
+    remove: (path) => runRuntimePromise(removeOperation(path)),
+    rename: (source, destination) =>
+      runRuntimePromise(renameOperation(source, destination)),
+  }
+
   return {
     service,
+    operations,
     dispose: runtime.dispose,
   }
 }
