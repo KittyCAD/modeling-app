@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
@@ -12,16 +12,20 @@ import { useLspContext } from '@src/components/LspProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { APP_NAME } from '@src/lib/constants'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
-import type { IndexLoaderData } from '@src/lib/types'
-import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { IndexLoaderData } from '@src/lib/types'
 
 import fsZds from '@src/lib/fs-zds'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { isStepFileName, stepToKclDraftBroker } from '@src/lib/stepToKcl'
+import toast from 'react-hot-toast'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -108,7 +112,7 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { machineManager, commands, settings } = useApp()
+  const { machineManager, commands, settings, layout } = useApp()
   const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
@@ -117,6 +121,28 @@ function ProjectMenuPopover({
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
+  const stepFileInputRef = useRef<HTMLInputElement>(null)
+
+  const stageStepToKclDraft = (file: File) => {
+    if (!isStepFileName(file.name)) {
+      toast.error('Choose a STEP file with a .step or .stp extension.')
+      return
+    }
+
+    settings.actor.send({
+      type: 'set.app.zookeeperMode',
+      data: { level: 'project', value: 'thoughtful' },
+    })
+    layout.set(
+      togglePaneLayoutNode({
+        rootLayout: structuredClone(layout.signal.value),
+        targetNodeId: DefaultLayoutPaneID.TTC,
+        shouldExpand: true,
+      })
+    )
+    stepToKclDraftBroker.request(file)
+    toast.success('STEP reconstruction is ready to review in Zookeeper.')
+  }
 
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -169,6 +195,19 @@ function ProjectMenuPopover({
               settings.actor,
               commands.actor
             ),
+        },
+        {
+          id: 'convertStepToKcl',
+          Element: 'button',
+          children: (
+            <>
+              <span className="flex-1">Convert STEP to editable KCL...</span>
+              <span className="text-[10px] text-chalkboard-70 dark:text-chalkboard-40">
+                Experimental
+              </span>
+            </>
+          ),
+          onClick: () => stepFileInputRef.current?.click(),
         },
         {
           id: 'export',
@@ -242,6 +281,8 @@ function ProjectMenuPopover({
       platform,
       findCommand,
       machineApiEnabled,
+      layout,
+      settings.actor,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       commands.send,
       kclManager.engineCommandManager,
@@ -262,6 +303,18 @@ function ProjectMenuPopover({
 
   return (
     <Popover className="relative">
+      <input
+        ref={stepFileInputRef}
+        type="file"
+        accept=".step,.stp"
+        className="hidden"
+        data-testid="step-to-kcl-file-input"
+        onChange={(event) => {
+          const file = event.currentTarget.files?.[0]
+          event.currentTarget.value = ''
+          if (file) stageStepToKclDraft(file)
+        }}
+      />
       <Popover.Button
         className="gap-1 rounded-sm mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"

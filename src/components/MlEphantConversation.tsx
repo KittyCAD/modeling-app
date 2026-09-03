@@ -1,21 +1,21 @@
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import Loading from '@src/components/Loading'
-import { type Selections } from '@src/machines/modelingSharedTypes'
-import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover } from '@headlessui/react'
+import type { MlCopilotMode } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import { isExternalFileDrag } from '@src/components/Explorer/utils'
+import Loading from '@src/components/Loading'
+import Tooltip from '@src/components/Tooltip'
+import { useSingletons } from '@src/lib/boot'
+import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import type {
   Conversation,
   Exchange,
 } from '@src/machines/mlEphantManagerMachine'
+import { type Selections } from '@src/machines/modelingSharedTypes'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import { useSingletons } from '@src/lib/boot'
-import Tooltip from '@src/components/Tooltip'
-import { isExternalFileDrag } from '@src/components/Explorer/utils'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
 
 const noop = () => {}
 
@@ -40,6 +40,7 @@ export interface MlEphantConversationProps {
   userAvatarSrc?: string
   blockedReason?: string
   defaultPrompt?: string
+  defaultAttachments?: File[]
   initialMlCopilotMode?: MlCopilotMode // resolved from project settings
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
   isProcessing: boolean
@@ -220,6 +221,7 @@ interface MlEphantConversationInputProps {
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
+  defaultAttachments?: File[]
   hasAlreadySentPrompts: boolean
   initialMlCopilotMode?: MlCopilotMode
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
@@ -242,6 +244,11 @@ export const MlEphantConversationInput = (
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
+
+  useEffect(
+    () => setAttachments(props.defaultAttachments || []),
+    [props.defaultAttachments]
+  )
 
   useEffect(() => {
     const next = props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
@@ -667,6 +674,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               onReconnect={props.onReconnect}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
+              defaultAttachments={props.defaultAttachments}
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0
               }

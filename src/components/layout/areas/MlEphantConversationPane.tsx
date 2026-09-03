@@ -1,30 +1,31 @@
-import { reportRejection } from '@src/lib/trap'
-import { NIL as uuidNIL } from 'uuid'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { KclManager } from '@src/lang/KclManager'
-import { useEffect, useState, useRef, useCallback } from 'react'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
+import type { MlCopilotMode } from '@kittycad/lib'
 import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/components/MlEphantConversation'
+import { type useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import type { FileEntry, Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { stepToKclDraftBroker } from '@src/lib/stepToKcl'
+import { reportRejection } from '@src/lib/trap'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import type { FileEntry, Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
-import type { MlCopilotMode } from '@kittycad/lib'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
-import { type useModelingContext } from '@src/hooks/useModelingContext'
+import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
 
 type MlEphantConversationPaneUser = {
@@ -51,6 +52,7 @@ export const MlEphantConversationPane = (props: {
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
+  const [defaultAttachments, setDefaultAttachments] = useState<File[]>([])
   const [searchParams, setSearchParams] = useSearchParams()
   const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -58,6 +60,15 @@ export const MlEphantConversationPane = (props: {
   const [queue, setQueue] = useState<QueuedMessage[]>([])
   const isSubmittingFromQueue = useRef(false)
   const steeredId = useRef<string | null>(null)
+
+  useEffect(
+    () =>
+      stepToKclDraftBroker.subscribe((draft) => {
+        setDefaultPrompt(draft.prompt)
+        setDefaultAttachments([draft.attachment])
+      }),
+    []
+  )
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -411,6 +422,7 @@ export const MlEphantConversationPane = (props: {
       userAvatarSrc={props.user?.image}
       blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
+      defaultAttachments={defaultAttachments}
       initialMlCopilotMode={props.settings.app.zookeeperMode.current}
       onMlCopilotModeChange={props.onMlCopilotModeChange}
     />

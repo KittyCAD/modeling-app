@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 // Mock modules that access localStorage at import time
 vi.mock('@src/routes/utils', () => ({
@@ -23,11 +23,11 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
-import { MlEphantConversation } from '@src/components/MlEphantConversation'
-import type { Conversation } from '@src/machines/mlEphantManagerMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
+import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import type { Conversation } from '@src/machines/mlEphantManagerMachine'
 
 describe('MlEphantConversation', () => {
   function rendersRequestBubbleThenDisplayResponse(
@@ -247,7 +247,11 @@ describe('MlEphantConversation', () => {
       return new File([content], name, { type })
     }
 
-    const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
+    const renderConversation = (
+      handleProcess = vi.fn(),
+      disabled = false,
+      defaultAttachments?: File[]
+    ) => {
       return render(
         <MlEphantConversation
           isLoading={false}
@@ -264,6 +268,7 @@ describe('MlEphantConversation', () => {
           queue={[]}
           onRemoveFromQueue={() => {}}
           onSteer={() => {}}
+          defaultAttachments={defaultAttachments}
         />
       )
     }
@@ -280,6 +285,18 @@ describe('MlEphantConversation', () => {
       renderConversation()
       expect(
         screen.getByTestId('ml-ephant-attachments-button')
+      ).toBeInTheDocument()
+    })
+
+    test('stages attachments supplied by another app workflow', async () => {
+      const stepFile = createMockFile(
+        'mounting-bracket.step',
+        'application/step'
+      )
+      renderConversation(vi.fn(), false, [stepFile])
+
+      expect(
+        await screen.findByText('mounting-bracket.step')
       ).toBeInTheDocument()
     })
 
