@@ -8786,6 +8786,74 @@ export default {
       }
     ]
   },
+  "sprocket::rollerChain": {
+    "name": "rollerChain",
+    "preferredName": "sprocket::rollerChain",
+    "qualName": "std::sprocket::rollerChain",
+    "moduleName": "sprocket",
+    "returnType": "Solid",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "nTeeth",
+        "ty": "number(_)",
+        "docs": "Number of teeth. Must be a whole number of at least three.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "chainPitch",
+        "ty": "number(Length)",
+        "docs": "Distance between adjacent chain-pin centers.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "rollerWidth",
+        "ty": "number(Length)",
+        "docs": "Internal width of the roller chain. The sprocket is 90 percent of this width.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "rollerDiameter",
+        "ty": "number(Length)",
+        "docs": "Diameter of the chain roller.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "bore",
+        "ty": "number(Length)",
+        "docs": "Diameter of the central shaft bore.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      }
+    ]
+  },
   "sqrt": {
     "name": "sqrt",
     "preferredName": "sqrt",

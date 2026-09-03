@@ -458,6 +458,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-gear-herringbone-0",
     "std-gear-spur-0",
     "std-gear-ring-0",
+    "std-sprocket-rollerChain-0",
     "std-view-oriented-0",
     "std-view-directed-0",
     "std-view-named-0",

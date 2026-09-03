@@ -1,0 +1,111 @@
+/// Define roller-chain sprockets that users can include in their models.
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+/// Create an approximate roller-chain sprocket plate with a central bore and lightening holes.
+///
+/// The sprocket is centered at the origin on the XZ plane and its thickness is
+/// symmetric about that plane. Use `translate()` and `rotate()` to position it.
+///
+/// ```kcl,legacySketch
+/// // A 24-tooth sprocket for ANSI #25 roller chain.
+/// @settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+///
+/// sprocket::rollerChain(
+///   nTeeth = 24,
+///   chainPitch = 0.25in,
+///   rollerWidth = 0.125in,
+///   rollerDiameter = 0.13in,
+///   bore = 0.625in,
+/// )
+/// ```
+@(experimental = true)
+export fn rollerChain(
+  /// Number of teeth. Must be a whole number of at least three.
+  nTeeth: number(Count),
+  /// Distance between adjacent chain-pin centers.
+  chainPitch: number(Length),
+  /// Internal width of the roller chain. The sprocket is 90 percent of this width.
+  rollerWidth: number(Length),
+  /// Diameter of the chain roller.
+  rollerDiameter: number(Length),
+  /// Diameter of the central shaft bore.
+  bore: number(Length),
+): Solid {
+  assert(nTeeth, isGreaterThanOrEqual = 3, error = "nTeeth must be at least 3")
+  assertIs(round(nTeeth) == nTeeth, error = "nTeeth must be a whole number")
+  assert(chainPitch, isGreaterThan = 0, error = "chainPitch must be positive")
+  assert(rollerWidth, isGreaterThan = 0, error = "rollerWidth must be positive")
+  assert(rollerDiameter, isGreaterThan = 0, error = "rollerDiameter must be positive")
+  assert(
+    rollerDiameter,
+    isLessThan = chainPitch,
+    error = "rollerDiameter must be less than chainPitch",
+  )
+  assert(bore, isGreaterThan = 0, error = "bore must be positive")
+
+  pitchDiameter = chainPitch / sin(180deg / nTeeth)
+  rootDiameter = pitchDiameter - rollerDiameter
+  assert(bore, isLessThan = rootDiameter, error = "bore must fit inside the sprocket root diameter")
+
+  // Center the lightening holes in the available annulus. Cap their diameter
+  // in both the radial and circumferential directions so they cannot overlap
+  // the bore, tooth roots, or one another.
+  holePosition = (rootDiameter + bore) / 4
+  holeCount = max([3, 2 * round(sqrt(2 * holePosition / 1in)) + 2])
+  preferredHoleDiameter = max([
+    chainPitch / 4,
+    round(sqrt(holePosition / 1.5in)) * holePosition / 2.5
+  ])
+  radialHoleLimit = 0.8 * (rootDiameter - bore) / 2
+  circumferentialHoleLimit = 1.6 * holePosition * sin(180deg / holeCount)
+  holeDiameter = min([
+    preferredHoleDiameter,
+    radialHoleLimit,
+    circumferentialHoleLimit
+  ])
+
+  lighteningHoles = startSketchOn(XZ)
+    |> circle(center = [0, holePosition], diameter = holeDiameter)
+    |> patternCircular2d(
+         instances = holeCount,
+         center = [0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = true,
+       )
+
+  body = startSketchOn(XZ)
+    |> startProfile(at = [
+         rootDiameter / 2,
+         0
+       ])
+    |> arc(
+         angleStart = 180deg,
+         angleEnd = 90deg + 360deg / nTeeth,
+         diameter = rollerDiameter,
+       )
+    |> tangentialArc(angle = 28deg, radius = chainPitch - (rollerDiameter / 2))
+    |> arc(
+         interiorAbsolute = polar(
+           angle = 170deg / nTeeth,
+           length = sqrt(lastSegX() ^ 2 + lastSegY() ^ 2),
+         ),
+         endAbsolute = polar(
+           angle = 180deg / nTeeth,
+           length = sqrt(lastSegX() ^ 2 + lastSegY() ^ 2),
+         ),
+       )
+    |> mirror2d(axis = X)
+    |> patternCircular2d(
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = true,
+       )
+    |> close()
+    |> subtract2d(tool = circle(center = [0, 0], diameter = bore))
+    |> subtract2d(tool = lighteningHoles)
+    |> extrude(length = rollerWidth * 0.9, symmetric = true)
+
+  return body
+}

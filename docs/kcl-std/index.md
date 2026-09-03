@@ -189,6 +189,8 @@ layout: manual
   * [`solver::tangent`](/docs/kcl-std/functions/std-solver-tangent)
   * [`solver::vertical`](/docs/kcl-std/functions/std-solver-vertical)
   * [`solver::verticalDistance`](/docs/kcl-std/functions/std-solver-verticalDistance)
+* [**std::sprocket**](/docs/kcl-std/modules/std-sprocket) Experimental
+  * [`sprocket::rollerChain`](/docs/kcl-std/functions/std-sprocket-rollerChain) Experimental
 * [**std::string**](/docs/kcl-std/modules/std-string)
   * [`string::isEqual`](/docs/kcl-std/functions/std-string-isEqual)
   * [`string::lowercase`](/docs/kcl-std/functions/std-string-lowercase)
