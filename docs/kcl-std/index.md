@@ -89,6 +89,8 @@ layout: manual
   * [`sin`](/docs/kcl-std/functions/std-math-sin)
   * [`sqrt`](/docs/kcl-std/functions/std-math-sqrt)
   * [`tan`](/docs/kcl-std/functions/std-math-tan)
+* [**std::rail**](/docs/kcl-std/modules/std-rail)
+  * [`rail::tSlot`](/docs/kcl-std/functions/std-rail-tSlot)
 * [**std::runtime**](/docs/kcl-std/modules/std-runtime) Experimental
   * [`exit`](/docs/kcl-std/functions/std-runtime-exit) Experimental
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)

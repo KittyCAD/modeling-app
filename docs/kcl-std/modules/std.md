@@ -24,6 +24,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`gear::gear`](/docs/kcl-std/modules/std-gear)
 * [`hole::hole`](/docs/kcl-std/modules/std-hole)
 * [`math`](/docs/kcl-std/modules/std-math)
+* [`rail::rail`](/docs/kcl-std/modules/std-rail)
 * [`runtime`](/docs/kcl-std/modules/std-runtime)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
 * [`solid`](/docs/kcl-std/modules/std-solid)

@@ -7094,6 +7094,41 @@ export default {
       }
     ]
   },
+  "rail::tSlot": {
+    "name": "tSlot",
+    "preferredName": "rail::tSlot",
+    "qualName": "std::rail::tSlot",
+    "moduleName": "rail",
+    "returnType": "Solid",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "railHeight",
+        "ty": "number(Length)",
+        "docs": "Overall width and height of the square rail profile.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "length",
+        "ty": "number(Length)",
+        "docs": "Extrusion length of the rail.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      }
+    ]
+  },
   "rectangle": {
     "name": "rectangle",
     "preferredName": "rectangle",

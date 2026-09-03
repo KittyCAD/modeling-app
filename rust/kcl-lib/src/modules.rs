@@ -102,6 +102,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "hole" => Some(include_str!("../std/hole.kcl")),
         "gear" => Some(include_str!("../std/gear.kcl")),
         "sprocket" => Some(include_str!("../std/sprocket.kcl")),
+        "rail" => Some(include_str!("../std/rail.kcl")),
         "view" => Some(include_str!("../std/view.kcl")),
         _ => None,
     }
@@ -304,6 +305,8 @@ pub struct ModuleSource {
 
 #[cfg(test)]
 mod tests {
+    use kittycad_modeling_cmds::ModelingCmd;
+
     use super::*;
     use crate::execution::KclValueView;
     use crate::execution::MockConfig;
@@ -405,5 +408,56 @@ sprocket::rollerChain(
             "the stable sprocket API should not emit an experimental warning: {:#?}",
             result.issues()
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn t_slot_rail_builds_a_closed_profile_with_a_bore() {
+        let code = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+railBody = rail::tSlot(
+  railHeight = 38.1mm,
+  length = 2ft,
+)
+"#;
+
+        let result = crate::execution::parse_execute(code)
+            .await
+            .expect("the T-slot rail should execute");
+        let KclValue::Solid { value } = result.variable("railBody") else {
+            panic!("rail::tSlot should return a solid");
+        };
+        let sketch = value.sketch().expect("the rail solid should retain its profile");
+        assert!(!sketch.paths.is_empty(), "the rail should have an outer profile");
+        assert_eq!(sketch.inner_paths.len(), 1, "the rail should have one central bore");
+        assert!(sketch.paths.iter().chain(&sketch.inner_paths).all(|path| {
+            path.get_base().from.iter().all(|coordinate| coordinate.is_finite())
+                && path.get_base().to.iter().all(|coordinate| coordinate.is_finite())
+        }));
+        assert!(
+            !result
+                .issues()
+                .iter()
+                .any(|issue| { issue.message.contains("rail::tSlot") && issue.message.contains("experimental") }),
+            "the stable rail API should not emit an experimental warning: {:#?}",
+            result.issues()
+        );
+
+        let scale = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::SetObjectTransform(command) => {
+                    command.transforms.iter().find_map(|transform| transform.scale.as_ref())
+                }
+                _ => None,
+            })
+            .expect("the rail profile should be scaled to railHeight");
+        for factor in [scale.property.x, scale.property.y, scale.property.z] {
+            assert!(
+                (factor - 1.5).abs() < 1e-9,
+                "38.1mm should scale a 1in profile by 1.5, got {factor}"
+            );
+        }
     }
 }
