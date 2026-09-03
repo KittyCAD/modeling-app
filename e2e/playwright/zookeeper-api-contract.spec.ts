@@ -115,7 +115,9 @@ test.describe(
         activeSocket.close()
       })
 
-      const outOfCreditsBanner = page.getByRole('alert')
+      const outOfCreditsBanner = page.getByRole('alert').filter({
+        hasText: "You're out of Zookeeper credits.",
+      })
       await expect(outOfCreditsBanner).toHaveClass(/border-ml-green/, {
         timeout: 30_000,
       })
