@@ -80,8 +80,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
-  const [isExportingLocalScene, setIsExportingLocalScene] = useState(false)
-  const exportLocalSceneRef = useRef<(() => Promise<void>) | null>(null)
   const settingsValues = settings.useSettings()
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
@@ -593,34 +591,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     setIsLocalRenderVisible(isVisible)
   }, [])
 
-  const handleLocalExportReady = useCallback(
-    (exportScene: (() => Promise<void>) | null) => {
-      exportLocalSceneRef.current = exportScene
-    },
-    []
-  )
-
-  const exportLocalScene = useCallback(async () => {
-    if (isExportingLocalScene || !exportLocalSceneRef.current) {
-      return
-    }
-
-    setIsExportingLocalScene(true)
-    try {
-      await exportLocalSceneRef.current()
-    } catch (error) {
-      EngineDebugger.addLog({
-        label: 'ConnectionStream.tsx',
-        message: 'local Three.js scene GLB export failed',
-        metadata: { error },
-      })
-      reportRejection(error)
-    } finally {
-      setIsExportingLocalScene(false)
-    }
-  }, [isExportingLocalScene])
-
-  const shouldShowLocalWebGpuDebugToggle = LOCAL_WEBGPU_RENDERING_ENABLED
   const shouldShowLocalWebGpuScene =
     LOCAL_WEBGPU_RENDERING_ENABLED && isLocalRenderVisible
   const shouldEnableLocalWebGpuSelectionProxy =
@@ -677,7 +647,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           enableSSAO={settingsValues.modeling.enableSSAO.current}
           highlightEdges={settingsValues.modeling.highlightEdges.current}
           onVisibilityChange={handleLocalVisibilityChange}
-          onExportReady={handleLocalExportReady}
           forceHide={!shouldShowLocalWebGpuScene}
           commandProxyEnabled={shouldEnableLocalWebGpuSelectionProxy}
         />
@@ -705,27 +674,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
-      {shouldShowLocalWebGpuDebugToggle && (
-        <div className="pointer-events-auto absolute left-1/2 top-16 z-40 -translate-x-1/2 rounded-full border border-chalkboard-30/80 bg-chalkboard-10/90 p-1 shadow-md backdrop-blur dark:border-chalkboard-70 dark:bg-chalkboard-90/90">
-          <div className="flex items-center gap-1 text-xs">
-            <span className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-30">
-              WebGPU
-            </span>
-            <button
-              type="button"
-              disabled={!isLocalRenderVisible || isExportingLocalScene}
-              onClick={() => void exportLocalScene()}
-              className={`rounded-full px-3 py-1 transition-colors ${
-                !isLocalRenderVisible || isExportingLocalScene
-                  ? 'cursor-not-allowed opacity-40'
-                  : 'text-chalkboard-80 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
-              }`}
-            >
-              {isExportingLocalScene ? 'Exporting…' : 'Export GLB'}
-            </button>
-          </div>
-        </div>
-      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}

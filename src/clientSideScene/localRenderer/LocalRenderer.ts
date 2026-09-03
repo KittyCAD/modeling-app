@@ -111,7 +111,7 @@ export interface LocalRendererProps {
   enableSSAO: boolean
   highlightEdges: boolean
   onVisibilityChange: (isVisible: boolean) => void
-  onExportReady?: (exportScene: (() => Promise<void>) | null) => void
+  onModelLoadSettled?: () => void
   forceHide?: boolean
   commandProxyEnabled?: boolean
 }
@@ -125,7 +125,7 @@ export class LocalRenderer {
   private forceHide: boolean
   private commandProxyEnabled: boolean
   private onVisibilityChange: LocalRendererProps['onVisibilityChange']
-  private onExportReady: LocalRendererProps['onExportReady']
+  private onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
   private isVisible = false
   private renderer: WebGPURenderer | null = null
   private device: DisposableGpuDevice | null = null
@@ -157,6 +157,7 @@ export class LocalRenderer {
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private currentRefreshId = 0
   private pendingRefreshRequest = false
+  private modelLoadSettledAfterRender = false
   private baseRenderDirty = true
   private disposed = false
 
@@ -173,7 +174,7 @@ export class LocalRenderer {
     this.forceHide = props.forceHide ?? false
     this.commandProxyEnabled = props.commandProxyEnabled ?? true
     this.onVisibilityChange = props.onVisibilityChange
-    this.onExportReady = props.onExportReady
+    this.onModelLoadSettled = props.onModelLoadSettled
 
     if (!LOCAL_WEBGPU_RENDERING_ENABLED) {
       this.onVisibilityChange(false)
@@ -241,18 +242,6 @@ export class LocalRenderer {
     this.onVisibilityChange = onVisibilityChange
   }
 
-  setOnExportReady(onExportReady: LocalRendererProps['onExportReady']) {
-    if (this.onExportReady === onExportReady) {
-      return
-    }
-
-    this.onExportReady?.(null)
-    this.onExportReady = onExportReady
-    if (this.renderer && !this.disposed) {
-      this.onExportReady?.(this.exportCurrentScene)
-    }
-  }
-
   dispose() {
     if (this.disposed) {
       return
@@ -266,7 +255,6 @@ export class LocalRenderer {
     )
     this.container.style.opacity = '0'
     this.isVisible = false
-    this.onExportReady?.(null)
     this.unregisterLocalSelectionProvider?.()
     this.unregisterLocalSelectionProvider = null
     this.unregisterSharedCameraListener?.()
@@ -485,40 +473,6 @@ export class LocalRenderer {
     ).__WEBGPU_POC_SELECTION__ = selectionSummary
   }
 
-  private readonly exportCurrentScene = async () => {
-    if (!this.currentModel) {
-      return
-    }
-
-    const modelToExport = this.currentModel
-    modelToExport.updateMatrixWorld(true)
-    const { GLTFExporter } = await import(
-      'three/examples/jsm/exporters/GLTFExporter.js'
-    )
-    const exporter = new GLTFExporter()
-    const result = await exporter.parseAsync(modelToExport, {
-      binary: true,
-      onlyVisible: true,
-    })
-    if (!(result instanceof ArrayBuffer)) {
-      return Promise.reject(
-        new Error('GLTFExporter did not produce a binary GLB')
-      )
-    }
-
-    const blob = new Blob([result], { type: 'model/gltf-binary' })
-    const downloadUrl = URL.createObjectURL(blob)
-    const downloadLink = document.createElement('a')
-    const timestamp = new Date().toISOString().replaceAll(':', '-')
-    downloadLink.href = downloadUrl
-    downloadLink.download = `render-packet-scene-${timestamp}.glb`
-    downloadLink.style.display = 'none'
-    document.body.appendChild(downloadLink)
-    downloadLink.click()
-    downloadLink.remove()
-    window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
-  }
-
   private readonly handleInitializationError = (error: unknown) => {
     logLocalWebGpuPreview('preview initialization failed', { error })
     console.error('[LocalWebGPUScene] preview initialization failed', error)
@@ -706,6 +660,11 @@ export class LocalRenderer {
       hoverActive: this.hoveredTarget !== null,
       selectionCount: this.selectedTargets.size,
     } satisfies LocalRendererFrameMetrics)
+
+    if (this.modelLoadSettledAfterRender) {
+      this.modelLoadSettledAfterRender = false
+      this.onModelLoadSettled?.()
+    }
   }
 
   private scheduleRender() {
@@ -918,10 +877,12 @@ export class LocalRenderer {
       if (loadedModelStats.meshCount === 0) {
         this.clearModel()
         this.setVisible(false)
+        this.onModelLoadSettled?.()
         return
       }
       this.syncPreviewCameraFromShared()
       this.setVisible(true)
+      this.modelLoadSettledAfterRender = true
       this.scheduleRender()
       return
     }
@@ -932,6 +893,7 @@ export class LocalRenderer {
     this.clearModel()
     this.setVisible(false)
     this.scheduleRender()
+    this.onModelLoadSettled?.()
   }
 
   private async initialize() {
@@ -1037,8 +999,6 @@ export class LocalRenderer {
       this.backgroundColor
     )
     this.performanceMonitor = new LocalRendererPerformanceMonitor(renderer)
-
-    this.onExportReady?.(this.exportCurrentScene)
 
     const sharedCamera = kclManager.sceneInfra.camControls.camera
     const sharedTarget = kclManager.sceneInfra.camControls.target
@@ -1417,6 +1377,7 @@ export class LocalRenderer {
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
     if (!detail.successful) {
       logLocalWebGpuPreview('KCL execution failed', detail)
+      this.onModelLoadSettled?.()
       return
     }
 
