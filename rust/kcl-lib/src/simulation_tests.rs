@@ -7915,3 +7915,24 @@ mod sketch_on_chamfer_two_times_different_order_v3 {
         super::execute(TEST_NAME, true).await
     }
 }
+mod get_opposite_edge_after_fillet_v3 {
+    const TEST_NAME: &str = "get_opposite_edge_after_fillet_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
