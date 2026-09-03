@@ -10,7 +10,7 @@ on:
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_STAGING: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.head_ref == 'step-to-kcl-import-demo') }}
+  IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
   FORCE_RELEASE_BUILD: false # Set to true to enable codesign in a PR
 
 concurrency:
