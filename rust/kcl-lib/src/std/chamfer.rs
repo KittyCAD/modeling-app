@@ -39,6 +39,9 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
+    // KCL 3.0 removes the version parameter (`removed_since` in solid.kcl),
+    // so from 3.0 on this is always the default: the newest edge cut
+    // algorithm, which cuts all edges at once in a single engine command.
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     let edge_cut_version: EdgeCutVersion = edge_cut_number
         .map(|num| {
@@ -87,45 +90,44 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             .await?;
             Ok(KclValue::Solid { value })
         }
-        super::fillet::TaggedEdgeInputs::Tags(tags) => {
-            match edge_cut_version {
-                EdgeCutVersion::V2 => {
-                    let value = inner_chamfer_v2(
-                        solid,
-                        length,
-                        tags,
-                        second_length,
-                        angle,
-                        None,
-                        tag,
-                        csg_algorithm,
-                        edge_cut_version,
-                        exec_state,
-                        args,
-                    )
-                    .await?;
-                    Ok(KclValue::Solid { value })
-                }
-                // TODO: When we change the default algorithm to V2, we need to make it so that V0 (default) takes the route above
-                _ => {
-                    let value = inner_chamfer(
-                        solid,
-                        length,
-                        tags,
-                        second_length,
-                        angle,
-                        None,
-                        tag,
-                        csg_algorithm,
-                        edge_cut_version,
-                        exec_state,
-                        args,
-                    )
-                    .await?;
-                    Ok(KclValue::Solid { value })
-                }
+        super::fillet::TaggedEdgeInputs::Tags(tags) => match edge_cut_version {
+            // TODO: When we change the default algorithm to V2, we need to make
+            // it so that V0 (default) takes the route below.
+            EdgeCutVersion::V0 | EdgeCutVersion::V1 => {
+                let value = inner_chamfer(
+                    solid,
+                    length,
+                    tags,
+                    second_length,
+                    angle,
+                    None,
+                    tag,
+                    csg_algorithm,
+                    edge_cut_version,
+                    exec_state,
+                    args,
+                )
+                .await?;
+                Ok(KclValue::Solid { value })
             }
-        }
+            EdgeCutVersion::V2 | _ => {
+                let value = inner_chamfer_v2(
+                    solid,
+                    length,
+                    tags,
+                    second_length,
+                    angle,
+                    None,
+                    tag,
+                    csg_algorithm,
+                    edge_cut_version,
+                    exec_state,
+                    args,
+                )
+                .await?;
+                Ok(KclValue::Solid { value })
+            }
+        },
     }
 }
 
@@ -528,4 +530,93 @@ async fn inner_chamfer_with_engine_refs(
     }
 
     Ok(solid)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::execution::ExecTestResults;
+    use crate::execution::parse_execute;
+
+    /// Test what version of chamfer each KCL version uses by default.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn chamfer_default_depends_on_kcl_version() {
+        assert_eq!(emitted_chamfer_version("2.0", None).await, EdgeCutVersion::V1);
+        assert_eq!(
+            emitted_chamfer_version("\"3.0-preview\"", None).await,
+            EdgeCutVersion::V2
+        );
+    }
+
+    /// If the user chooses a chamfer algorithm version, KCL should respect it,
+    /// and not use that KCL version's default chamfer algorithm version.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn explicit_chamfer_version_overrides_kcl_default() {
+        assert_eq!(emitted_chamfer_version("2.0", Some(2)).await, EdgeCutVersion::V2);
+    }
+
+    /// KCL 3.0 removed `chamfer(version = )`. Passing it is reported like any
+    /// other unknown argument, and the default algorithm is used.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn chamfer_version_is_removed_in_kcl_3() {
+        let result = run_chamfer("\"3.0-preview\"", Some(1)).await;
+        assert!(
+            result
+                .issues()
+                .iter()
+                .any(|issue| {
+                    issue.message
+                        == "`version` is not an argument of `chamfer`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+                }),
+            "issues: {:#?}",
+            result.issues()
+        );
+        assert_eq!(emitted_cut_edges_version(&result), EdgeCutVersion::V2);
+    }
+
+    /// For a given KCL version, and optional `chamfer(version = )` version,
+    /// show what chamfer algorithm version the runtime sent to the engine.
+    async fn emitted_chamfer_version(kcl_version: &str, explicit_version: Option<u32>) -> EdgeCutVersion {
+        emitted_cut_edges_version(&run_chamfer(kcl_version, explicit_version).await)
+    }
+
+    /// Chamfer one edge of a box under the given KCL version, optionally
+    /// passing `chamfer(version = )`.
+    async fn run_chamfer(kcl_version: &str, explicit_version: Option<u32>) -> ExecTestResults {
+        let version_arg = explicit_version
+            .map(|version| format!(", version = {version}"))
+            .unwrap_or_default();
+        let code = format!(
+            r#"@settings(kclVersion = {kcl_version}, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {{
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+solid = extrude(profileRegion, length = 10mm, tagEnd = $top)
+chamfer(solid, tags = [getCommonEdge(faces = [profileRegion.tags.edge1, top])], length = 1mm{version_arg})
+"#
+        );
+
+        parse_execute(&code).await.unwrap()
+    }
+
+    /// The chamfer algorithm version the runtime sent to the engine.
+    fn emitted_cut_edges_version(result: &ExecTestResults) -> EdgeCutVersion {
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command.version),
+                _ => None,
+            })
+            .expect("chamfer should emit a Solid3dCutEdges command")
+    }
 }

@@ -2,6 +2,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
+  createAnnotation,
   createCallExpressionStdLibKw,
   createIdentifier,
   createLabeledArg,
@@ -14,6 +15,7 @@ import {
   findUniqueName,
 } from '@src/lang/create'
 import {
+  addModuleImport,
   addSketchTo,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
@@ -112,6 +114,17 @@ describe('Testing createIdentifier', () => {
     const result = createIdentifier('myVar')
     expect(result.type).toBe('Identifier')
     expect(result.name).toBe('myVar')
+  })
+})
+describe('Testing createAnnotation', () => {
+  it('should create an anonymous annotation', () => {
+    const result = createAnnotation({
+      targetRepresentation: createLocalName('mesh'),
+    })
+    expect(result.type).toBe('Annotation')
+    expect(result.name).toBeNull()
+    expect(result.properties?.[0].key.name).toBe('targetRepresentation')
+    expect(result.properties?.[0].value).toEqual(createLocalName('mesh'))
   })
 })
 describe('Testing createObjectExpression', () => {
@@ -288,6 +301,26 @@ describe('Testing addSketchTo', () => {
   |> line(end = "default")
 `)
   })
+})
+
+describe('Testing addModuleImport', () => {
+  const emptyProgram = () => assertParse('', instanceInThisFile)
+
+  it.each(['mesh', 'brep'] as const)(
+    'adds the %s STEP representation annotation',
+    (representation) => {
+      const result = addModuleImport({
+        ast: emptyProgram(),
+        path: 'cube.step',
+        localName: 'cube',
+        representation,
+      })
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
+        `@(targetRepresentation = ${representation})\nimport "cube.step" as cube\n`
+      )
+    }
+  )
 })
 
 function giveSketchFnCallTagTestHelper(
@@ -820,6 +853,162 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
     if (err(result)) throw result
     const newCode = recast(result, instanceInThisFile)
     expect(newCode).not.toContain('extrude001 = extrude')
+  })
+
+  it('deletes an unused planeOf helper when deleting a face-derived offset plane', async () => {
+    const codeBefore = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -2.6mm, var 2.85mm], end = [var 2.6mm, var 2.85mm])
+  line2 = line(start = [var 2.6mm, var 2.85mm], end = [var 2.6mm, var -2.85mm])
+  line3 = line(start = [var 2.6mm, var -2.85mm], end = [var -2.6mm, var -2.85mm])
+  line4 = line(start = [var -2.6mm, var -2.85mm], end = [var -2.6mm, var 2.85mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 5mm, tagEnd = $capEnd001)
+plane001 = planeOf(extrude001, face = capEnd001)
+plane002 = offsetPlane(plane001, offset = 5)`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const offsetPlaneOperation = getAllOperations(execState.operations).find(
+      (op) => op.type === 'StdLibCall' && op.name === 'offsetPlane'
+    )
+    if (!offsetPlaneOperation || offsetPlaneOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find offsetPlane operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        offsetPlaneOperation.sourceRange,
+        execState.artifactGraph
+      ) ?? undefined
+    expect(artifact?.type).toBe('plane')
+
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(offsetPlaneOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).toContain('extrude001 = extrude(')
+    expect(newCode).not.toContain('plane001 = planeOf(')
+    expect(newCode).not.toContain('plane002 = offsetPlane(')
+    await enginelessExecutor(result, rustContextInThisFile)
+  })
+
+  it('preserves a planeOf helper when another offset plane still references it', async () => {
+    const codeBefore = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -2.6mm, var 2.85mm], end = [var 2.6mm, var 2.85mm])
+  line2 = line(start = [var 2.6mm, var 2.85mm], end = [var 2.6mm, var -2.85mm])
+  line3 = line(start = [var 2.6mm, var -2.85mm], end = [var -2.6mm, var -2.85mm])
+  line4 = line(start = [var -2.6mm, var -2.85mm], end = [var -2.6mm, var 2.85mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 5mm, tagEnd = $capEnd001)
+plane001 = planeOf(extrude001, face = capEnd001)
+plane002 = offsetPlane(plane001, offset = 5)
+plane003 = offsetPlane(plane001, offset = 10)`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const offsetPlaneOperation = getAllOperations(execState.operations).find(
+      (op) => op.type === 'StdLibCall' && op.name === 'offsetPlane'
+    )
+    if (!offsetPlaneOperation || offsetPlaneOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find offsetPlane operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        offsetPlaneOperation.sourceRange,
+        execState.artifactGraph
+      ) ?? undefined
+    expect(artifact?.type).toBe('plane')
+
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(offsetPlaneOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).toContain('plane001 = planeOf(')
+    expect(newCode).not.toContain('plane002 = offsetPlane(')
+    expect(newCode).toContain('plane003 = offsetPlane(plane001, offset = 10)')
+    await enginelessExecutor(result, rustContextInThisFile)
+  })
+
+  it('deletes a KCL named view selected from the feature tree operation range', async () => {
+    const codeBefore = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+}
+region001 = region(segments = [sketch001.line1])
+extrude001 = extrude(region001, length = 5mm)
+generatedTopView = view::named(
+  "Generated top",
+  camera = view::oriented(view::Orientation::Top, distance = 200mm),
+  baseline = view::Visibility::Show,
+)`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const namedViewOperation = getAllOperations(execState.operations).find(
+      (op) => op.type === 'StdLibCall' && op.name === 'view::named'
+    )
+    if (!namedViewOperation || namedViewOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find named view operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        namedViewOperation.sourceRange,
+        execState.artifactGraph
+      ) ?? undefined
+    expect(artifact?.type).toBe('namedView')
+
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(namedViewOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).toContain('extrude001 = extrude')
+    expect(newCode).not.toContain('generatedTopView = view::named')
+    expect(newCode).not.toContain('"Generated top"')
   })
 
   it.each([

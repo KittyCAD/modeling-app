@@ -102,16 +102,13 @@ bump-kcl-crate-versions bump='patch':
     ./target/debug/kcl-bumper --bump {{ bump }}
     cargo check -p kcl-bumper # this way Cargo.lock gets updated
 
-publish-kcl-part1:
+publish-kcl version:
+    git tag kcl-{{ version }} -m "Release kcl-{{ version }}"
     cargo publish -p kcl-error
     cargo publish -p kcl-api
-    @echo "You should now update the transitive kcl-api dependency and commit this."
-    @echo "    cargo update -p kcl-api@<old-version>"
-
-publish-kcl-part2 version:
-    git tag kcl-{{ version }} -m "Release kcl-{{ version }}"
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
+    cargo publish -p kcl-engine-codec
     cargo publish -p kcl-syntax
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server

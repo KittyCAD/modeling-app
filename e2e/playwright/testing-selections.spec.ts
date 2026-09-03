@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 
 const bracket = fs.readFileSync(
   path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
@@ -9,6 +10,9 @@ const bracket = fs.readFileSync(
 )
 
 test.describe('Testing selections', { tag: '@desktop' }, () => {
+  // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
     editor,

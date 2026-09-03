@@ -13,6 +13,7 @@ gdt::note(
   framePlane?: Plane,
   framePosition?: Point2d,
   fontSize?: number(Length),
+  annotationName?: string,
 ): GdtAnnotation
 ```
 
@@ -28,6 +29,7 @@ and is placed directly on a plane. By default it lives on the world `XY` plane, 
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane the note lies in. The default is `XY`. Other standard planes like `XZ` and `YZ`, or a user-defined plane, can also be used. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The 2D position of the note within the plane, in the plane's local coordinates. The default is `[100mm, 100mm]`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for the note text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
+| `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
 
 ### Returns
 

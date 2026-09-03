@@ -55,17 +55,30 @@ pub struct Snapshot3d {
     pub gltf: Vec<RawFile>,
 }
 
+async fn export_gltf_if_requested<F, Fut>(request_gltf: bool, export: F) -> Result<Vec<RawFile>, KclError>
+where
+    F: FnOnce() -> Fut,
+    Fut: std::future::Future<Output = Result<Vec<RawFile>, KclError>>,
+{
+    if request_gltf { export().await } else { Ok(Vec::new()) }
+}
+
 /// Executes a kcl program and takes a snapshot of the result.
-pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
+pub async fn execute_and_snapshot_3d(
+    code: &str,
+    current_file: Option<PathBuf>,
+    request_gltf: bool,
+) -> Result<Snapshot3d, ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let image = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error)?;
-    let gltf_res = ctx
-        .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
-        .await;
+    let gltf_res = export_gltf_if_requested(request_gltf, || {
+        ctx.export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
+    })
+    .await;
     let gltf = match gltf_res {
         Err(err) if err.message() == "Nothing to export" => Vec::new(),
         Err(err) => {
@@ -77,6 +90,7 @@ pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) 
     ctx.close().await;
     Ok(Snapshot3d { image, gltf })
 }
+
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]
@@ -95,7 +109,67 @@ pub async fn execute_and_snapshot_ast(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context(true, current_file).await?;
+    let result = execute_and_snapshot_ast_with_heartbeats(
+        ast,
+        current_file,
+        with_export_step,
+        deprecation_version_override,
+        None,
+    )
+    .await;
+    if let Ok((_, ctx, _, _, _)) = &result {
+        ctx.close().await;
+    }
+    result
+}
+
+/// Executes a KCL program and takes a snapshot without closing the engine
+/// connection. If OK, the caller must close the returned context.
+/// If Err, the context will already be closed within this function.
+#[cfg(test)]
+pub async fn execute_and_snapshot_ast_no_close(
+    ast: Program,
+    current_file: Option<PathBuf>,
+    with_export_step: bool,
+    deprecation_version_override: Option<&str>,
+) -> Result<
+    (
+        ExecState,
+        ExecutorContext,
+        EnvironmentRef,
+        image::DynamicImage,
+        Option<Vec<u8>>,
+    ),
+    ExecErrorWithState,
+> {
+    execute_and_snapshot_ast_with_heartbeats(
+        ast,
+        current_file,
+        with_export_step,
+        deprecation_version_override,
+        Some(5),
+    )
+    .await
+}
+
+#[cfg(test)]
+async fn execute_and_snapshot_ast_with_heartbeats(
+    ast: Program,
+    current_file: Option<PathBuf>,
+    with_export_step: bool,
+    deprecation_version_override: Option<&str>,
+    heartbeats: Option<u64>,
+) -> Result<
+    (
+        ExecState,
+        ExecutorContext,
+        EnvironmentRef,
+        image::DynamicImage,
+        Option<Vec<u8>>,
+    ),
+    ExecErrorWithState,
+> {
+    let ctx = new_context_with_heartbeats(true, current_file, heartbeats).await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast, deprecation_version_override).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
         Err(err) => {
@@ -122,7 +196,6 @@ pub async fn execute_and_snapshot_ast(
 
         step = files.into_iter().next().map(|f| f.contents);
     }
-    ctx.close().await;
     Ok((exec_state, ctx, env, img, step))
 }
 
@@ -197,6 +270,14 @@ async fn do_execute_and_snapshot(
 }
 
 pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Result<ExecutorContext, ConnectionError> {
+    new_context_with_heartbeats(with_auth, current_file, None).await
+}
+
+async fn new_context_with_heartbeats(
+    with_auth: bool,
+    current_file: Option<PathBuf>,
+    heartbeats: Option<u64>,
+) -> Result<ExecutorContext, ConnectionError> {
     let mut client = new_zoo_client(if with_auth { None } else { Some("bad_token".to_string()) }, None)
         .map_err(ConnectionError::CouldNotMakeClient)?;
     if !with_auth {
@@ -215,7 +296,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         current_file: None,
         fixed_size_grid: true,
         skip_artifact_graph: false,
-        heartbeats: None,
+        heartbeats,
         default_backface_color: Some("#00D5FF".to_owned()),
     };
     if let Some(current_file) = current_file {
@@ -271,4 +352,26 @@ pub async fn execute_and_export_step(
     ctx.close().await;
 
     Ok((exec_state, result.0, files))
+}
+
+#[cfg(test)]
+mod tests {
+    use std::cell::Cell;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn disabled_gltf_export_does_not_call_exporter() {
+        let called = Cell::new(false);
+
+        let files = export_gltf_if_requested(false, || async {
+            called.set(true);
+            Ok::<_, KclError>(Vec::new())
+        })
+        .await
+        .unwrap();
+
+        assert!(files.is_empty());
+        assert!(!called.get());
+    }
 }

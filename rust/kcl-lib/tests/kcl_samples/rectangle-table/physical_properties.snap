@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties rectangle-table.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 275.0,
+      "y": 725.0,
+      "z": 375.0
+    },
+    "dimensions": {
+      "x": 650.0,
+      "y": 1550.0,
+      "z": 750.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2435200.0954095274
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 40544.030140154064
+  }
+}
