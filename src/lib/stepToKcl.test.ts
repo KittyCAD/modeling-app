@@ -21,6 +21,9 @@ describe('STEP-to-KCL draft', () => {
     const prompt = buildStepToKclPrompt('mounting-bracket.step')
     expect(prompt).toContain('standalone, editable KCL')
     expect(prompt).toContain('mounting-bracket.generated.kcl')
+    expect(prompt).toContain(
+      'Activate the step-to-kcl skill before inspecting the source.'
+    )
     expect(prompt).toContain('Do not modify or delete existing project files')
     expect(prompt).toContain('do not import or reference the STEP file')
   })
