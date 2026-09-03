@@ -211,6 +211,9 @@ where
 #[derive(Debug, Clone, PartialEq)]
 pub struct NamedParam {
     pub experimental: bool,
+    /// Constraint marking the KCL version in which this parameter was added.
+    /// See [`NamedParam::unavailable_reason`].
+    pub added_in: Option<VersionConstraint>,
     /// If true, this parameter is deprecated regardless of the KCL version.
     pub deprecated: bool,
     /// Constraint marking the KCL version at or after which this parameter is deprecated.
@@ -234,6 +237,9 @@ pub struct NamedParam {
 /// exists.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ParamUnavailable<'a> {
+    /// The parameter was added in this KCL version, and the executing version
+    /// is before it.
+    NotYetAdded(&'a VersionConstraint),
     /// The parameter was removed as of this KCL version, and the executing
     /// version is at or after it.
     Removed(&'a VersionConstraint),
@@ -245,6 +251,11 @@ impl NamedParam {
     /// "3.0-preview" counts as the release it precedes.
     pub(crate) fn unavailable_reason(&self, exec_state: &ExecState) -> Option<ParamUnavailable<'_>> {
         let version = exec_state.kcl_version().as_str();
+        if let Some(added) = &self.added_in
+            && !crate::execution::annotations::version_ge(version, added)
+        {
+            return Some(ParamUnavailable::NotYetAdded(added));
+        }
         if let Some(since) = &self.removed_since
             && crate::execution::annotations::version_ge(version, since)
         {
@@ -352,6 +363,7 @@ impl FunctionSource {
                 p.identifier.name.clone(),
                 NamedParam {
                     experimental: p.experimental,
+                    added_in: p.added_in.clone(),
                     deprecated: p.deprecated,
                     deprecated_since: p.deprecated_since.clone(),
                     removed_since: p.removed_since.clone(),
