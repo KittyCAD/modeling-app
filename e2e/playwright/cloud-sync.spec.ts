@@ -46,6 +46,11 @@ test(
   'materializes a remote-only project through the OPFS worker write fallback',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
+    test.skip(
+      process.platform !== 'linux',
+      'CI Chrome only exposes OPFS on Linux'
+    )
+
     const remoteProject: CloudProject = {
       id: 'remote-worker-fallback',
       title: 'Remote worker fallback',
