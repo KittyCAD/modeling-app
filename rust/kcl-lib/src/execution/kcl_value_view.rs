@@ -497,6 +497,7 @@ impl SolidViewExt for SolidView {
 pub trait ExtrudeSurfaceViewExt {
     fn get_id(&self) -> uuid::Uuid;
     fn get_tag(&self) -> Option<TagDeclaratorView>;
+    fn face_id(&self) -> uuid::Uuid;
 }
 
 impl ExtrudeSurfaceViewExt for ExtrudeSurfaceView {
@@ -515,6 +516,15 @@ impl ExtrudeSurfaceViewExt for ExtrudeSurfaceView {
             | Self::ExtrudeArc(surface)
             | Self::Chamfer(surface)
             | Self::Fillet(surface) => surface.tag.clone(),
+        }
+    }
+
+    fn face_id(&self) -> uuid::Uuid {
+        match self {
+            Self::ExtrudePlane(surface)
+            | Self::ExtrudeArc(surface)
+            | Self::Chamfer(surface)
+            | Self::Fillet(surface) => surface.face_id,
         }
     }
 }

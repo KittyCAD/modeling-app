@@ -655,9 +655,10 @@ impl ExecState {
     ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        let variables = self
-            .mod_local
-            .variables(main_ref)?
+        let variables = self.mod_local.variables(main_ref)?;
+        #[cfg(test)]
+        let test_program_memory = variables.clone();
+        let variables = variables
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
@@ -673,6 +674,8 @@ impl ExecState {
             issues: self.global.issues,
             source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
+            #[cfg(test)]
+            test_program_memory,
         })
     }
 

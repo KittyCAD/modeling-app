@@ -511,6 +511,7 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::SolidCreatorView;
     use kcl_api::SolidView;
     use kcl_api::artifact::SweepSubType;
     use kittycad_modeling_cmds::shared::BodyType;
@@ -520,11 +521,24 @@ mod tests {
     use crate::exec::KclValueView;
     use crate::execution::Artifact;
     use crate::execution::ArtifactGraph;
-    use crate::execution::SolidCreator;
     use crate::execution::EdgeCutViewExt;
+    use crate::execution::ExecOutcome;
     use crate::execution::ExtrudeSurfaceViewExt;
+    use crate::execution::KclValue;
     use crate::execution::PathViewExt;
+    use crate::execution::Solid;
     use crate::execution::SolidViewExt;
+
+    fn runtime_solid<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a Solid {
+        let value = outcome
+            .test_program_memory
+            .get(name)
+            .unwrap_or_else(|| panic!("Expected runtime value for {name}"));
+        let KclValue::Solid { value } = value else {
+            panic!("Expected {name} to be a runtime solid, got: {value:?}");
+        };
+        value
+    }
 
     fn assert_cloned_composite_topology(artifact_graph: &ArtifactGraph, cloned_composite: &SolidView) {
         let Some(Artifact::CompositeSolid(cloned_artifact)) = artifact_graph.get(&cloned_composite.artifact_id) else {
@@ -714,8 +728,11 @@ surfaceLoftClone = clone(surfaceLoft)
             };
 
             assert_ne!(source.id, cloned.id);
-            assert_eq!(cloned.best_guess_body_type, Some(BodyType::Surface));
-            assert!(matches!(cloned.creator, SolidCreator::Sketch(_)));
+            assert_eq!(
+                runtime_solid(&result, clone_name).best_guess_body_type,
+                Some(BodyType::Surface)
+            );
+            assert!(matches!(cloned.creator, SolidCreatorView::Sketch(_)));
             assert!(!cloned.value.is_empty());
         }
 
@@ -755,17 +772,28 @@ cloned = clone(source)
         let KclValueView::Solid { value: cloned } = result.variables.get("cloned").unwrap() else {
             panic!("Expected a cloned edge-created surface");
         };
-        let SolidCreator::Edge(source_creator) = &source.creator else {
+        let SolidCreatorView::Edge {
+            edge_id: source_edge_id,
+            ..
+        } = &source.creator
+        else {
             panic!("Expected the source surface to retain its edge creator");
         };
-        let SolidCreator::Edge(cloned_creator) = &cloned.creator else {
+        let SolidCreatorView::Edge {
+            edge_id: cloned_edge_id,
+            body_id: cloned_body_id,
+        } = &cloned.creator
+        else {
             panic!("Expected the cloned surface to retain its edge creator");
         };
 
         assert_ne!(source.id, cloned.id);
-        assert_eq!(cloned.best_guess_body_type, Some(BodyType::Surface));
-        assert_eq!(cloned_creator.body_id, cloned.id);
-        assert_ne!(source_creator.edge_id, cloned_creator.edge_id);
+        assert_eq!(
+            runtime_solid(&result, "cloned").best_guess_body_type,
+            Some(BodyType::Surface)
+        );
+        assert_eq!(*cloned_body_id, cloned.id);
+        assert_ne!(source_edge_id, cloned_edge_id);
         assert_ne!(source.value[0].get_id(), cloned.value[0].get_id());
         assert_ne!(source.value[0].face_id(), cloned.value[0].face_id());
 
@@ -793,18 +821,28 @@ cloned = clone(source)
         let KclValueView::Solid { value: cloned } = result.variables.get("cloned").unwrap() else {
             panic!("Expected a cloned face-created body");
         };
-        let SolidCreator::Face(source_creator) = &source.creator else {
+        let SolidCreatorView::Face {
+            face_id: source_face_id,
+            solid_id: source_solid_id,
+            sketch: source_sketch,
+        } = &source.creator
+        else {
             panic!("Expected the source body to retain its face creator");
         };
-        let SolidCreator::Face(cloned_creator) = &cloned.creator else {
+        let SolidCreatorView::Face {
+            face_id: cloned_face_id,
+            solid_id: cloned_solid_id,
+            sketch: cloned_sketch,
+        } = &cloned.creator
+        else {
             panic!("Expected the cloned body to retain its face creator");
         };
 
         assert_ne!(source.id, cloned.id);
-        assert_ne!(source_creator.face_id, cloned_creator.face_id);
-        assert_ne!(source_creator.solid_id, cloned_creator.solid_id);
-        assert_ne!(source_creator.sketch.id, cloned_creator.sketch.id);
-        assert_ne!(source_creator.sketch.original_id, cloned_creator.sketch.original_id);
+        assert_ne!(source_face_id, cloned_face_id);
+        assert_ne!(source_solid_id, cloned_solid_id);
+        assert_ne!(source_sketch.id, cloned_sketch.id);
+        assert_ne!(source_sketch.original_id, cloned_sketch.original_id);
 
         ctx.close().await;
     }
@@ -852,8 +890,11 @@ bridgeClone = clone(bridge)
         };
 
         assert_ne!(bridge.id, cloned.id);
-        assert_eq!(cloned.best_guess_body_type, Some(BodyType::Surface));
-        assert!(matches!(cloned.creator, SolidCreator::Procedural));
+        assert_eq!(
+            runtime_solid(&result, "bridgeClone").best_guess_body_type,
+            Some(BodyType::Surface)
+        );
+        assert!(matches!(cloned.creator, SolidCreatorView::Procedural));
         let Some(Artifact::Sweep(cloned_sweep)) = result.artifact_graph.get(&cloned.artifact_id) else {
             panic!("Expected the blend clone to have a sweep artifact");
         };
@@ -907,9 +948,9 @@ joinedClone = clone(joined)
         };
 
         assert_ne!(joined.id, cloned.id);
-        assert!(joined.best_guess_body_type.is_none());
-        assert!(cloned.best_guess_body_type.is_some());
-        assert!(matches!(cloned.creator, SolidCreator::Procedural));
+        assert!(runtime_solid(&result, "joined").best_guess_body_type.is_none());
+        assert!(runtime_solid(&result, "joinedClone").best_guess_body_type.is_some());
+        assert!(matches!(cloned.creator, SolidCreatorView::Procedural));
 
         ctx.close().await;
     }

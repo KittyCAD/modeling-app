@@ -350,6 +350,11 @@ impl PreserveMem {
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
     pub variables: IndexMap<String, KclValueView>,
+    /// Runtime memory retained only for tests that need to verify internal behavior.
+    #[cfg(test)]
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) test_program_memory: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.
     pub operations: OperationsByModule,

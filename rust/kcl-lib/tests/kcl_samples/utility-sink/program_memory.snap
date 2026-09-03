@@ -6167,15 +6167,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6361,15 +6354,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6555,15 +6541,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6749,15 +6728,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7624,8 +7596,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -7798,8 +7770,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -7972,8 +7944,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -8146,8 +8118,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -8325,8 +8297,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -8499,8 +8471,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -8743,15 +8715,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8937,15 +8902,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9193,15 +9151,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9387,15 +9338,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -10425,8 +10369,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -10599,8 +10543,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -10775,8 +10719,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "lowerBeltYProfile": {
@@ -11739,8 +11683,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -11913,8 +11857,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -23553,15 +23497,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -23747,15 +23684,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -24003,15 +23933,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -24197,15 +24120,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-<<<<<<< HEAD
-            "originSketchId": "[uuid]",
-            "units": "mm"
-||||||| parent of adc00ea235 (WIP)
-            "units": "mm"
-=======
             "units": "mm",
             "isClosed": "explicitly"
->>>>>>> adc00ea235 (WIP)
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -25096,8 +25012,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -25270,8 +25186,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -26236,8 +26152,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -26410,8 +26326,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
