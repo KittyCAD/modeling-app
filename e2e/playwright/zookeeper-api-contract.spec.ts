@@ -87,7 +87,6 @@ test.describe(
       await expect(toolbar.locator).toBeVisible({ timeout: 30_000 })
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-      await copilot.setMode('fast')
 
       const prompt = 'Complete my final credited Zookeeper prompt.'
       await copilot.conversationInput.fill(prompt)
