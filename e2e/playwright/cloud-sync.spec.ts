@@ -62,26 +62,45 @@ test(
       remoteProjects: [remoteProject],
     })
     await context.addInitScript(() => {
-      const fileHandlePrototype = globalThis.FileSystemFileHandle?.prototype
-      if (fileHandlePrototype) {
-        Object.defineProperty(fileHandlePrototype, 'createWritable', {
-          configurable: true,
-          value: undefined,
-        })
+      const getDirectory = navigator.storage.getDirectory.bind(
+        navigator.storage
+      )
+      let forceFallback: Promise<void> | undefined
+
+      navigator.storage.getDirectory = async () => {
+        const root = await getDirectory()
+        forceFallback ??= (async () => {
+          const probeName = '.opfs-worker-fallback-probe'
+          const fileHandle = await root.getFileHandle(probeName, {
+            create: true,
+          })
+          const fileHandlePrototype = Object.getPrototypeOf(fileHandle) as {
+            createWritable?: unknown
+          }
+          Object.defineProperty(fileHandlePrototype, 'createWritable', {
+            configurable: true,
+            value: undefined,
+          })
+          await root.removeEntry(probeName)
+        })()
+        await forceFallback
+        return root
       }
     })
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
-    const fallbackSupport = await page.evaluate(() => ({
-      hasFileHandleConstructor:
-        typeof globalThis.FileSystemFileHandle === 'function',
-      createWritableType:
-        typeof globalThis.FileSystemFileHandle?.prototype.createWritable,
-    }))
-    expect(fallbackSupport).toEqual({
-      hasFileHandleConstructor: true,
-      createWritableType: 'undefined',
+    const createWritableType = await page.evaluate(async () => {
+      const root = await navigator.storage.getDirectory()
+      const probeName = '.opfs-worker-fallback-assertion'
+      const fileHandle = await root.getFileHandle(probeName, { create: true })
+      const fileHandlePrototype = Object.getPrototypeOf(fileHandle) as {
+        createWritable?: unknown
+      }
+      const methodType = typeof fileHandlePrototype.createWritable
+      await root.removeEntry(probeName)
+      return methodType
     })
+    expect(createWritableType).toBe('undefined')
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
     await openHomeProject(page, remoteProject.title)
