@@ -6,8 +6,8 @@ description: Variables in memory after executing radius_circle_native.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing radius_circle_native.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -118,8 +118,8 @@ description: Variables in memory after executing radius_circle_native.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -148,7 +148,7 @@ description: Variables in memory after executing radius_circle_native.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c"
@@ -165,11 +165,11 @@ description: Variables in memory after executing radius_circle_native.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -199,8 +199,8 @@ description: Variables in memory after executing radius_circle_native.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -241,7 +241,7 @@ description: Variables in memory after executing radius_circle_native.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41c630c9-9d44-581b-98af-caee575bea48",
                   "sourceRange": []
                 }
               },
@@ -251,8 +251,8 @@ description: Variables in memory after executing radius_circle_native.kcl
                   "value": "c"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+              "originalId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
               "units": "mm",
               "isClosed": "no"
             }
@@ -267,12 +267,12 @@ description: Variables in memory after executing radius_circle_native.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+      "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
+          "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
           "sourceRange": [],
           "tag": {
             "commentStart": 308,
@@ -288,11 +288,11 @@ description: Variables in memory after executing radius_circle_native.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
               "sourceRange": []
             },
             "ccw": true,
@@ -322,8 +322,8 @@ description: Variables in memory after executing radius_circle_native.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -364,7 +364,7 @@ description: Variables in memory after executing radius_circle_native.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "41c630c9-9d44-581b-98af-caee575bea48",
             "sourceRange": []
           }
         },
@@ -374,13 +374,13 @@ description: Variables in memory after executing radius_circle_native.kcl
             "value": "c"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+        "originalId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+        "originSketchId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
+      "endCapId": "688fd424-1de4-51a2-b455-344b29542d3f",
       "units": "mm",
       "sectional": false
     }

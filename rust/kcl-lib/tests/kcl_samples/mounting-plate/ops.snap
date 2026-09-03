@@ -2376,11 +2376,11 @@ description: Operations executed mounting-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2410,7 +2410,7 @@ description: Operations executed mounting-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
           }
         },
         "sourceRange": []
@@ -2452,7 +2452,7 @@ description: Operations executed mounting-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
           }
         },
         "sourceRange": []
@@ -2476,19 +2476,19 @@ description: Operations executed mounting-plate.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "37246835-6ec6-5f96-a6f2-9a36b01199f0"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "e7569603-9502-562d-b474-5eaed3222038"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "3c87d2b8-2980-55db-b1f4-e70f900939ac"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "6a6d2cd8-580d-5243-9e9b-0cc867839802"
               }
             ]
           },
@@ -2518,7 +2518,7 @@ description: Operations executed mounting-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []

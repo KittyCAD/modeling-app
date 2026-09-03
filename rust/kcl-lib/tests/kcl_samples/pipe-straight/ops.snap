@@ -710,7 +710,7 @@ description: Operations executed pipe-straight.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -740,7 +740,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
           }
         },
         "sourceRange": []
@@ -789,7 +789,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
           }
         },
         "sourceRange": []
@@ -1224,7 +1224,7 @@ description: Operations executed pipe-straight.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               }
             ]
           },
@@ -1254,7 +1254,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
           }
         },
         "sourceRange": []
@@ -1303,7 +1303,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
           }
         },
         "sourceRange": []
@@ -1769,7 +1769,7 @@ description: Operations executed pipe-straight.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
               }
             ]
           },
@@ -1799,7 +1799,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -1848,7 +1848,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
           }
         },
         "sourceRange": []
@@ -1964,7 +1964,7 @@ description: Operations executed pipe-straight.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
               }
             }
           ]
@@ -1979,97 +1979,97 @@ description: Operations executed pipe-straight.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3450c48f-3d4a-57c7-871b-e3bd614bcbf4"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "0472ea51-aa3f-5458-945e-f0e6713d3b2b"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "adce3691-f4a2-5b4b-8b97-005271c17a50"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d2aeb297-eff2-5763-b4a0-d2e4a8378b2c"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "997407b6-c34d-53a9-b417-758aff870eb4"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "151f577d-89c9-57d2-9e80-70d3947c8bbf"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c6e7f420-60e1-5672-8956-a2f5216ef49a"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "80d9cfa2-7e37-52d4-b4d1-735fde220693"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "5dafa22d-7710-59be-af57-c2c7540e6558"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1ce0e02e-52ff-5bd8-b258-0209c20e3c37"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c8fd3fce-f7ce-5063-a2e0-681af6ad93ae"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "20f78557-d752-5b3c-94e6-337c67a2a326"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3941e672-3550-56e2-a8eb-596032a230f7"
                 }
               }
             ]
@@ -2100,7 +2100,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
           }
         },
         "sourceRange": []
@@ -2126,7 +2126,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
           }
         },
         "sourceRange": []
@@ -2179,7 +2179,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
           }
         },
         "sourceRange": []
@@ -2212,7 +2212,7 @@ description: Operations executed pipe-straight.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
           }
         },
         "sourceRange": []

@@ -10,7 +10,7 @@ description: Operations executed subtract_regression00.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed subtract_regression00.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -91,7 +91,7 @@ description: Operations executed subtract_regression00.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -134,7 +134,7 @@ description: Operations executed subtract_regression00.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
         },
         "sourceRange": []
       },
@@ -162,7 +162,7 @@ description: Operations executed subtract_regression00.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
           }
         },
         "sourceRange": []
@@ -204,7 +204,7 @@ description: Operations executed subtract_regression00.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -214,7 +214,7 @@ description: Operations executed subtract_regression00.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
             }
           },
           "sourceRange": []

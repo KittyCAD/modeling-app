@@ -10,7 +10,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -88,7 +88,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
           }
         },
         "sourceRange": []
@@ -113,11 +113,11 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
               {
                 "type": "TagIdentifier",
                 "value": "thing3",
-                "artifact_id": "[uuid]"
+                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "76e97e85-e537-578b-ac43-e32d1b685418"
               }
             ]
           },

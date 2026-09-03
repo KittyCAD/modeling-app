@@ -9,7 +9,7 @@ description: Variables in memory after executing import_foreign.kcl
   },
   "model": {
     "type": "ImportedGeometry",
-    "id": "[uuid]",
+    "id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
     "value": [
       "cube.gltf"
     ]

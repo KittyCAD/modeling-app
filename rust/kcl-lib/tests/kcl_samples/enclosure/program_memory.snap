@@ -6,8 +6,8 @@ description: Variables in memory after executing enclosure.kcl
   "__sketch_143_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+      "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
       "objectId": 142,
       "value": "end",
       "xAxis": {
@@ -23,14 +23,14 @@ description: Variables in memory after executing enclosure.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+        "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
         "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "8eada7d4-6cff-576e-9660-4b58911de9a7",
+          "8eada7d4-6cff-576e-9660-4b58911de9a7",
+          "8eada7d4-6cff-576e-9660-4b58911de9a7",
+          "8eada7d4-6cff-576e-9660-4b58911de9a7"
         ]
       },
       "units": "mm"
@@ -39,8 +39,8 @@ description: Variables in memory after executing enclosure.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,8 +71,8 @@ description: Variables in memory after executing enclosure.kcl
   "__sketch_26_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+      "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "kind": "Custom",
       "origin": {
         "x": 13.0,
@@ -103,8 +103,8 @@ description: Variables in memory after executing enclosure.kcl
   "__sketch_50_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+      "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "kind": "Custom",
       "origin": {
         "x": 150.0,
@@ -136,12 +136,12 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 357,
@@ -154,8 +154,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 428,
@@ -168,8 +168,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 542,
@@ -182,8 +182,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 656,
@@ -199,11 +199,11 @@ description: Variables in memory after executing enclosure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -227,7 +227,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -251,7 +251,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -275,7 +275,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -299,8 +299,8 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -341,7 +341,7 @@ description: Variables in memory after executing enclosure.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
             "sourceRange": []
           }
         },
@@ -363,17 +363,17 @@ description: Variables in memory after executing enclosure.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "originSketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -382,12 +382,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -396,12 +396,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -410,12 +410,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "db427524-76a6-553d-bb6b-6ac873083b95",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -424,7 +424,7 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "d5187f6e-f4ca-53c7-bdee-80c0ba5cbb59",
           "tag": null
         }
       ],
@@ -441,7 +441,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -515,8 +515,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -545,7 +545,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -561,7 +561,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -635,8 +635,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -665,7 +665,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -681,7 +681,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -755,8 +755,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -785,7 +785,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -801,7 +801,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -875,8 +875,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -905,7 +905,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -922,11 +922,11 @@ description: Variables in memory after executing enclosure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -950,7 +950,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -974,7 +974,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -998,7 +998,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1022,8 +1022,8 @@ description: Variables in memory after executing enclosure.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1064,7 +1064,7 @@ description: Variables in memory after executing enclosure.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                   "sourceRange": []
                 }
               },
@@ -1086,8 +1086,8 @@ description: Variables in memory after executing enclosure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+              "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1102,11 +1102,11 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -1130,7 +1130,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -1154,7 +1154,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -1178,7 +1178,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -1202,8 +1202,8 @@ description: Variables in memory after executing enclosure.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1244,7 +1244,7 @@ description: Variables in memory after executing enclosure.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
           "sourceRange": []
         }
       },
@@ -1266,9 +1266,9 @@ description: Variables in memory after executing enclosure.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "originSketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "units": "mm"
     }
   },
@@ -1355,12 +1355,12 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+      "artifactId": "388597b8-4546-5655-b3a3-c3a0bba239ad",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6a2f29dc-9ae3-5c58-9322-8d847dddd46a",
+          "id": "e9bc3b3b-2bf7-582c-a1f2-e1ed76aabef7",
           "sourceRange": [],
           "tag": {
             "commentStart": 8591,
@@ -1373,8 +1373,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4047b46f-58f3-5a0e-b013-b4d64d23b25d",
+          "id": "b1c635b5-c191-54e1-bafd-064ad343aa71",
           "sourceRange": [],
           "tag": {
             "commentStart": 8664,
@@ -1387,8 +1387,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2ec4f085-03c8-5cb9-abca-80ad15ea1ab1",
+          "id": "80e1ba1a-c93e-590f-9dfe-a4f0a96855d5",
           "sourceRange": [],
           "tag": {
             "commentStart": 8778,
@@ -1401,8 +1401,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "04c7f477-531d-56ea-9213-cfc938fcd5a8",
+          "id": "3322287e-66fd-5832-ab72-7c91f54c206e",
           "sourceRange": [],
           "tag": {
             "commentStart": 8894,
@@ -1415,8 +1415,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d2a6680c-d3cc-5854-abf6-4c81af8affea",
+          "id": "e169cfe8-acf5-5d8e-83f3-91473065efe2",
           "sourceRange": [],
           "tag": {
             "commentStart": 10692,
@@ -1429,8 +1429,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb1015e1-e222-5898-8634-2cad212608a1",
+          "id": "e67a67ea-5f1f-5862-a36a-07d866946a36",
           "sourceRange": [],
           "tag": {
             "commentStart": 11242,
@@ -1443,8 +1443,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a16a2228-05d6-5061-a9f1-b1dfc6ee66de",
+          "id": "5f4caef9-7b30-503b-88d9-14fd96c17d8d",
           "sourceRange": [],
           "tag": {
             "commentStart": 11793,
@@ -1457,8 +1457,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af614eb9-0070-513c-b116-b51ef636f61f",
+          "id": "bf9c1295-f225-54bb-8d53-6c03b0358717",
           "sourceRange": [],
           "tag": {
             "commentStart": 12334,
@@ -1474,11 +1474,11 @@ description: Variables in memory after executing enclosure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e9bc3b3b-2bf7-582c-a1f2-e1ed76aabef7",
               "sourceRange": []
             },
             "from": [
@@ -1502,7 +1502,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b1c635b5-c191-54e1-bafd-064ad343aa71",
               "sourceRange": []
             },
             "from": [
@@ -1526,7 +1526,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "80e1ba1a-c93e-590f-9dfe-a4f0a96855d5",
               "sourceRange": []
             },
             "from": [
@@ -1550,7 +1550,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3322287e-66fd-5832-ab72-7c91f54c206e",
               "sourceRange": []
             },
             "from": [
@@ -1574,7 +1574,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e169cfe8-acf5-5d8e-83f3-91473065efe2",
               "sourceRange": []
             },
             "ccw": true,
@@ -1604,7 +1604,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e67a67ea-5f1f-5862-a36a-07d866946a36",
               "sourceRange": []
             },
             "ccw": true,
@@ -1634,7 +1634,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5f4caef9-7b30-503b-88d9-14fd96c17d8d",
               "sourceRange": []
             },
             "ccw": true,
@@ -1664,7 +1664,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf9c1295-f225-54bb-8d53-6c03b0358717",
               "sourceRange": []
             },
             "ccw": true,
@@ -1695,8 +1695,8 @@ description: Variables in memory after executing enclosure.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+          "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
           "objectId": 142,
           "value": "end",
           "xAxis": {
@@ -1712,14 +1712,14 @@ description: Variables in memory after executing enclosure.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+            "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
             "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
-              "[uuid]",
-              "[uuid]",
-              "[uuid]",
-              "[uuid]"
+              "8eada7d4-6cff-576e-9660-4b58911de9a7",
+              "8eada7d4-6cff-576e-9660-4b58911de9a7",
+              "8eada7d4-6cff-576e-9660-4b58911de9a7",
+              "8eada7d4-6cff-576e-9660-4b58911de9a7"
             ]
           },
           "units": "mm"
@@ -1736,7 +1736,7 @@ description: Variables in memory after executing enclosure.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
             "sourceRange": []
           }
         },
@@ -1774,17 +1774,17 @@ description: Variables in memory after executing enclosure.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+        "originalId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+        "originSketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bcc080cc-4bf0-53b1-a8e0-50310c1a3ae8",
+      "endCapId": "cfe21e1d-5af7-559f-92a4-f0ffcef5db7d",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "14466b86-e358-553e-8c66-6fd171fc4f2f",
           "radius": {
             "n": 9.0,
             "ty": {
@@ -1793,12 +1793,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e461d7e9-a7ff-5a9e-a21d-0062adddc06e",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "14466b86-e358-553e-8c66-6fd171fc4f2f",
           "radius": {
             "n": 9.0,
             "ty": {
@@ -1807,12 +1807,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "a08aca96-7a77-5507-ae4d-1de0c00fb24a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "14466b86-e358-553e-8c66-6fd171fc4f2f",
           "radius": {
             "n": 9.0,
             "ty": {
@@ -1821,12 +1821,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "6965eafa-2611-51fd-bda2-6577942bd4a5",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "14466b86-e358-553e-8c66-6fd171fc4f2f",
           "radius": {
             "n": 9.0,
             "ty": {
@@ -1835,7 +1835,7 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "2a4836ec-0f6c-53a6-92ba-6d1592fad36b",
           "tag": null
         }
       ],
@@ -1874,11 +1874,11 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e9bc3b3b-2bf7-582c-a1f2-e1ed76aabef7",
             "sourceRange": []
           },
           "from": [
@@ -1902,7 +1902,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b1c635b5-c191-54e1-bafd-064ad343aa71",
             "sourceRange": []
           },
           "from": [
@@ -1926,7 +1926,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "80e1ba1a-c93e-590f-9dfe-a4f0a96855d5",
             "sourceRange": []
           },
           "from": [
@@ -1950,7 +1950,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3322287e-66fd-5832-ab72-7c91f54c206e",
             "sourceRange": []
           },
           "from": [
@@ -1974,7 +1974,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e169cfe8-acf5-5d8e-83f3-91473065efe2",
             "sourceRange": []
           },
           "ccw": true,
@@ -2004,7 +2004,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e67a67ea-5f1f-5862-a36a-07d866946a36",
             "sourceRange": []
           },
           "ccw": true,
@@ -2034,7 +2034,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5f4caef9-7b30-503b-88d9-14fd96c17d8d",
             "sourceRange": []
           },
           "ccw": true,
@@ -2064,7 +2064,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bf9c1295-f225-54bb-8d53-6c03b0358717",
             "sourceRange": []
           },
           "ccw": true,
@@ -2095,8 +2095,8 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+        "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
         "objectId": 142,
         "value": "end",
         "xAxis": {
@@ -2112,14 +2112,14 @@ description: Variables in memory after executing enclosure.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+          "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
           "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
-            "[uuid]",
-            "[uuid]",
-            "[uuid]",
-            "[uuid]"
+            "8eada7d4-6cff-576e-9660-4b58911de9a7",
+            "8eada7d4-6cff-576e-9660-4b58911de9a7",
+            "8eada7d4-6cff-576e-9660-4b58911de9a7",
+            "8eada7d4-6cff-576e-9660-4b58911de9a7"
           ]
         },
         "units": "mm"
@@ -2136,7 +2136,7 @@ description: Variables in memory after executing enclosure.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
           "sourceRange": []
         }
       },
@@ -2174,9 +2174,9 @@ description: Variables in memory after executing enclosure.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+      "originalId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+      "originSketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
       "units": "mm"
     }
   },
@@ -2189,7 +2189,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "94906884-1803-5336-93e6-0aca938f73f1",
                 "objectId": 232,
                 "kind": {
                   "circle": {
@@ -2264,8 +2264,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -2281,19 +2281,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeBackLeft"
@@ -2309,7 +2309,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
                 "objectId": 221,
                 "kind": {
                   "circle": {
@@ -2384,8 +2384,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -2401,19 +2401,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeBackRight"
@@ -2429,7 +2429,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "objectId": 199,
                 "kind": {
                   "circle": {
@@ -2504,8 +2504,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -2521,19 +2521,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeFrontLeft"
@@ -2549,7 +2549,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
                 "objectId": 210,
                 "kind": {
                   "circle": {
@@ -2624,8 +2624,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -2641,19 +2641,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeFrontRight"
@@ -2669,7 +2669,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "objectId": 226,
                 "kind": {
                   "line": {
@@ -2745,8 +2745,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -2762,19 +2762,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideBackLeft"
@@ -2790,7 +2790,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
                 "objectId": 215,
                 "kind": {
                   "line": {
@@ -2866,8 +2866,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -2883,19 +2883,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideBackRight"
@@ -2911,7 +2911,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
                 "objectId": 193,
                 "kind": {
                   "line": {
@@ -2987,8 +2987,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3004,19 +3004,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideFrontLeft"
@@ -3032,7 +3032,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
                 "objectId": 204,
                 "kind": {
                   "line": {
@@ -3108,8 +3108,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3125,19 +3125,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideFrontRight"
@@ -3153,7 +3153,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
                 "objectId": 169,
                 "kind": {
                   "line": {
@@ -3229,8 +3229,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3246,19 +3246,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectBottom"
@@ -3274,7 +3274,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
                 "objectId": 180,
                 "kind": {
                   "line": {
@@ -3350,8 +3350,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3367,19 +3367,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectLeft"
@@ -3395,7 +3395,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
                 "objectId": 172,
                 "kind": {
                   "line": {
@@ -3471,8 +3471,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3488,19 +3488,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectRight"
@@ -3516,7 +3516,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                 "objectId": 176,
                 "kind": {
                   "line": {
@@ -3592,8 +3592,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3609,19 +3609,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectTop"
@@ -3637,7 +3637,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "objectId": 146,
                 "kind": {
                   "line": {
@@ -3712,8 +3712,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3729,19 +3729,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3757,7 +3757,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                 "objectId": 149,
                 "kind": {
                   "line": {
@@ -3832,8 +3832,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3849,19 +3849,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3877,7 +3877,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
                 "objectId": 153,
                 "kind": {
                   "line": {
@@ -3952,8 +3952,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -3969,19 +3969,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3997,7 +3997,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
                 "objectId": 157,
                 "kind": {
                   "line": {
@@ -4072,8 +4072,8 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                  "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                   "objectId": 142,
                   "value": "end",
                   "xAxis": {
@@ -4089,19 +4089,19 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]",
-                      "[uuid]"
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                      "8eada7d4-6cff-576e-9660-4b58911de9a7"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c0a92fa6-be55-5cfb-a650-710b68437549",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4118,11 +4118,11 @@ description: Variables in memory after executing enclosure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c0a92fa6-be55-5cfb-a650-710b68437549",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                     "sourceRange": []
                   },
                   "from": [
@@ -4146,7 +4146,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                     "sourceRange": []
                   },
                   "from": [
@@ -4170,7 +4170,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
                     "sourceRange": []
                   },
                   "from": [
@@ -4194,7 +4194,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
                     "sourceRange": []
                   },
                   "from": [
@@ -4218,7 +4218,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
                     "sourceRange": []
                   },
                   "from": [
@@ -4235,7 +4235,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4265,7 +4265,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "77202593-ebf9-50c7-b715-41557309d9ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -4282,7 +4282,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4312,7 +4312,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                     "sourceRange": []
                   },
                   "from": [
@@ -4329,7 +4329,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4359,7 +4359,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc243886-5941-5a64-8a15-a0b50bb063cb",
                     "sourceRange": []
                   },
                   "from": [
@@ -4376,7 +4376,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "94906884-1803-5336-93e6-0aca938f73f1",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4407,8 +4407,8 @@ description: Variables in memory after executing enclosure.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+                "artifactId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
                 "objectId": 142,
                 "value": "end",
                 "xAxis": {
@@ -4424,14 +4424,14 @@ description: Variables in memory after executing enclosure.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                  "creatorSketchId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
                   "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
-                    "[uuid]",
-                    "[uuid]",
-                    "[uuid]",
-                    "[uuid]"
+                    "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                    "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                    "8eada7d4-6cff-576e-9660-4b58911de9a7",
+                    "8eada7d4-6cff-576e-9660-4b58911de9a7"
                   ]
                 },
                 "units": "mm"
@@ -4448,7 +4448,7 @@ description: Variables in memory after executing enclosure.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
                   "sourceRange": []
                 }
               },
@@ -4486,8 +4486,8 @@ description: Variables in memory after executing enclosure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c0a92fa6-be55-5cfb-a650-710b68437549",
+              "originalId": "c0a92fa6-be55-5cfb-a650-710b68437549",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -4622,12 +4622,12 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+      "artifactId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "003cbca6-380a-56ee-a99a-695df364486e",
+          "id": "c64f3b2b-bc4b-5abb-ab28-044037b5778d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3834,
@@ -4640,8 +4640,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f8f8d3d4-f2de-5583-9098-ba210f1ce7f3",
+          "id": "cd5fa627-08de-5579-9bf3-74797d83b66a",
           "sourceRange": [],
           "tag": {
             "commentStart": 3905,
@@ -4654,8 +4654,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ec28cfc6-53e5-5c96-b0b0-5565732e0f4e",
+          "id": "b2396d73-28c3-5aaf-b6ec-046678199846",
           "sourceRange": [],
           "tag": {
             "commentStart": 4019,
@@ -4668,8 +4668,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "226c86ac-24b0-52cd-8c2f-fdf16c6ef239",
+          "id": "c80018b6-2dda-5251-b21b-8bb12ad4147f",
           "sourceRange": [],
           "tag": {
             "commentStart": 4133,
@@ -4682,8 +4682,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53c66ad8-ce0b-5e66-a0f4-f23d99bd1337",
+          "id": "ada6f7b0-7ab2-59d1-a787-89634037a034",
           "sourceRange": [],
           "tag": {
             "commentStart": 5818,
@@ -4696,8 +4696,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4394f705-7354-511b-924f-fb2fae85aaf0",
+          "id": "200de1c0-3671-5ec5-b21b-bb81a52e2d0d",
           "sourceRange": [],
           "tag": {
             "commentStart": 6352,
@@ -4710,8 +4710,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "06bdd975-98c9-5cac-a447-92b039ea2906",
+          "id": "6bc0a3aa-5b59-5ea1-be43-f129da9b7901",
           "sourceRange": [],
           "tag": {
             "commentStart": 6889,
@@ -4724,8 +4724,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "113dba88-4564-563e-b9ac-61352ed1d77c",
+          "id": "1d15dc7a-3a12-5331-bdfd-b309d2ee5bd7",
           "sourceRange": [],
           "tag": {
             "commentStart": 7414,
@@ -4741,11 +4741,11 @@ description: Variables in memory after executing enclosure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c64f3b2b-bc4b-5abb-ab28-044037b5778d",
               "sourceRange": []
             },
             "from": [
@@ -4769,7 +4769,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cd5fa627-08de-5579-9bf3-74797d83b66a",
               "sourceRange": []
             },
             "from": [
@@ -4793,7 +4793,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b2396d73-28c3-5aaf-b6ec-046678199846",
               "sourceRange": []
             },
             "from": [
@@ -4817,7 +4817,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c80018b6-2dda-5251-b21b-8bb12ad4147f",
               "sourceRange": []
             },
             "from": [
@@ -4841,7 +4841,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ada6f7b0-7ab2-59d1-a787-89634037a034",
               "sourceRange": []
             },
             "ccw": true,
@@ -4871,7 +4871,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "200de1c0-3671-5ec5-b21b-bb81a52e2d0d",
               "sourceRange": []
             },
             "ccw": true,
@@ -4901,7 +4901,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6bc0a3aa-5b59-5ea1-be43-f129da9b7901",
               "sourceRange": []
             },
             "ccw": true,
@@ -4931,7 +4931,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d15dc7a-3a12-5331-bdfd-b309d2ee5bd7",
               "sourceRange": []
             },
             "ccw": true,
@@ -4961,8 +4961,8 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+          "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
           "kind": "Custom",
           "objectId": 49,
           "origin": {
@@ -5003,7 +5003,7 @@ description: Variables in memory after executing enclosure.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
             "sourceRange": []
           }
         },
@@ -5041,17 +5041,17 @@ description: Variables in memory after executing enclosure.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+        "originalId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+        "originSketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "1973de48-25ad-5914-81ac-166e7281813f",
+      "endCapId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -5060,12 +5060,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "5a955067-100e-56d3-8894-08353d092b4a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -5074,12 +5074,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "446478cc-d8ba-5ba2-8261-707a337911f8",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -5088,12 +5088,12 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "f1f2adfb-c995-51a3-9ce1-b1ec641a4279",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -5102,7 +5102,7 @@ description: Variables in memory after executing enclosure.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "3dd9195d-8bad-5cde-bfcb-de6998ce3695",
           "tag": null
         }
       ],
@@ -5114,11 +5114,11 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c64f3b2b-bc4b-5abb-ab28-044037b5778d",
             "sourceRange": []
           },
           "from": [
@@ -5142,7 +5142,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cd5fa627-08de-5579-9bf3-74797d83b66a",
             "sourceRange": []
           },
           "from": [
@@ -5166,7 +5166,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b2396d73-28c3-5aaf-b6ec-046678199846",
             "sourceRange": []
           },
           "from": [
@@ -5190,7 +5190,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c80018b6-2dda-5251-b21b-8bb12ad4147f",
             "sourceRange": []
           },
           "from": [
@@ -5214,7 +5214,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ada6f7b0-7ab2-59d1-a787-89634037a034",
             "sourceRange": []
           },
           "ccw": true,
@@ -5244,7 +5244,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "200de1c0-3671-5ec5-b21b-bb81a52e2d0d",
             "sourceRange": []
           },
           "ccw": true,
@@ -5274,7 +5274,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6bc0a3aa-5b59-5ea1-be43-f129da9b7901",
             "sourceRange": []
           },
           "ccw": true,
@@ -5304,7 +5304,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1d15dc7a-3a12-5331-bdfd-b309d2ee5bd7",
             "sourceRange": []
           },
           "ccw": true,
@@ -5334,8 +5334,8 @@ description: Variables in memory after executing enclosure.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+        "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
         "kind": "Custom",
         "objectId": 49,
         "origin": {
@@ -5376,7 +5376,7 @@ description: Variables in memory after executing enclosure.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
           "sourceRange": []
         }
       },
@@ -5414,9 +5414,9 @@ description: Variables in memory after executing enclosure.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+      "originalId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+      "originSketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "units": "mm"
     }
   },
@@ -5429,7 +5429,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
                 "objectId": 139,
                 "kind": {
                   "circle": {
@@ -5503,8 +5503,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -5533,7 +5533,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeBackLeft"
@@ -5549,7 +5549,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
                 "objectId": 128,
                 "kind": {
                   "circle": {
@@ -5623,8 +5623,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -5653,7 +5653,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeBackRight"
@@ -5669,7 +5669,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "objectId": 106,
                 "kind": {
                   "circle": {
@@ -5743,8 +5743,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -5773,7 +5773,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeFrontLeft"
@@ -5789,7 +5789,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "020035cf-ab88-50f3-91b0-886b7f399647",
                 "objectId": 117,
                 "kind": {
                   "circle": {
@@ -5863,8 +5863,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -5893,7 +5893,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeFrontRight"
@@ -5909,7 +5909,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bee9909d-abbf-534c-b266-2c2c04133834",
                 "objectId": 133,
                 "kind": {
                   "line": {
@@ -5984,8 +5984,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6014,7 +6014,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideBackLeft"
@@ -6030,7 +6030,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2489202c-0475-5b18-97c8-c3f239bd1947",
                 "objectId": 122,
                 "kind": {
                   "line": {
@@ -6105,8 +6105,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6135,7 +6135,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideBackRight"
@@ -6151,7 +6151,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
                 "objectId": 100,
                 "kind": {
                   "line": {
@@ -6226,8 +6226,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6256,7 +6256,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideFrontLeft"
@@ -6272,7 +6272,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
                 "objectId": 111,
                 "kind": {
                   "line": {
@@ -6347,8 +6347,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6377,7 +6377,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeGuideFrontRight"
@@ -6393,7 +6393,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                 "objectId": 76,
                 "kind": {
                   "line": {
@@ -6468,8 +6468,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6498,7 +6498,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectBottom"
@@ -6514,7 +6514,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                 "objectId": 87,
                 "kind": {
                   "line": {
@@ -6589,8 +6589,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6619,7 +6619,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectLeft"
@@ -6635,7 +6635,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -6710,8 +6710,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6740,7 +6740,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectRight"
@@ -6756,7 +6756,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                 "objectId": 83,
                 "kind": {
                   "line": {
@@ -6831,8 +6831,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6861,7 +6861,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRectTop"
@@ -6877,7 +6877,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
                 "objectId": 53,
                 "kind": {
                   "line": {
@@ -6951,8 +6951,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -6981,7 +6981,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6997,7 +6997,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
                 "objectId": 56,
                 "kind": {
                   "line": {
@@ -7071,8 +7071,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -7101,7 +7101,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7117,7 +7117,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
                 "objectId": 60,
                 "kind": {
                   "line": {
@@ -7191,8 +7191,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -7221,7 +7221,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7237,7 +7237,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -7311,8 +7311,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                  "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -7341,7 +7341,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7358,11 +7358,11 @@ description: Variables in memory after executing enclosure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
                     "sourceRange": []
                   },
                   "from": [
@@ -7386,7 +7386,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
                     "sourceRange": []
                   },
                   "from": [
@@ -7410,7 +7410,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
                     "sourceRange": []
                   },
                   "from": [
@@ -7434,7 +7434,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
                     "sourceRange": []
                   },
                   "from": [
@@ -7458,7 +7458,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -7475,7 +7475,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7505,7 +7505,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
                     "sourceRange": []
                   },
                   "from": [
@@ -7522,7 +7522,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "020035cf-ab88-50f3-91b0-886b7f399647",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7552,7 +7552,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
                     "sourceRange": []
                   },
                   "from": [
@@ -7569,7 +7569,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7599,7 +7599,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
                     "sourceRange": []
                   },
                   "from": [
@@ -7616,7 +7616,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7646,8 +7646,8 @@ description: Variables in memory after executing enclosure.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+                "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                 "kind": "Custom",
                 "objectId": 49,
                 "origin": {
@@ -7688,7 +7688,7 @@ description: Variables in memory after executing enclosure.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                   "sourceRange": []
                 }
               },
@@ -7726,8 +7726,8 @@ description: Variables in memory after executing enclosure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+              "originalId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -7767,12 +7767,12 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+      "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a3733cb2-93d9-5eed-89e6-e95cbe9239b3",
+          "id": "97bef68c-82d3-52d4-8ae8-ab36e513da44",
           "sourceRange": [],
           "tag": {
             "commentStart": 2451,
@@ -7785,8 +7785,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1d856b4a-8fd2-57df-95a6-eceda972e15b",
+          "id": "4dce0a1d-0057-50c1-8b89-4fdea8fdb175",
           "sourceRange": [],
           "tag": {
             "commentStart": 2864,
@@ -7802,11 +7802,11 @@ description: Variables in memory after executing enclosure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "97bef68c-82d3-52d4-8ae8-ab36e513da44",
               "sourceRange": []
             },
             "ccw": true,
@@ -7836,7 +7836,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4dce0a1d-0057-50c1-8b89-4fdea8fdb175",
               "sourceRange": []
             },
             "ccw": true,
@@ -7866,8 +7866,8 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "kind": "Custom",
           "objectId": 25,
           "origin": {
@@ -7908,7 +7908,7 @@ description: Variables in memory after executing enclosure.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
             "sourceRange": []
           }
         },
@@ -7922,13 +7922,13 @@ description: Variables in memory after executing enclosure.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6",
+        "originalId": "1da187cf-4f25-596d-a170-2007a75f41c6",
+        "originSketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "3ce175c0-1722-5fa0-a718-9594abb72c3a",
+      "endCapId": "3ca0b242-a803-522a-9448-aea6b70c3bec",
       "units": "mm",
       "sectional": false
     }
@@ -7937,17 +7937,17 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+      "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6ee9f4c0-d7b2-56e7-92b9-7a0d3d63ac0e",
               "sourceRange": []
             },
             "ccw": true,
@@ -7977,7 +7977,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a51efcc9-9a8b-5066-9320-f2965bb56887",
               "sourceRange": []
             },
             "ccw": true,
@@ -8007,8 +8007,8 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "kind": "Custom",
           "objectId": 25,
           "origin": {
@@ -8049,7 +8049,7 @@ description: Variables in memory after executing enclosure.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
             "sourceRange": []
           }
         },
@@ -8063,9 +8063,9 @@ description: Variables in memory after executing enclosure.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+        "originalId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+        "originSketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "units": "mm"
       },
       "startCapId": null,
@@ -8078,12 +8078,12 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c51767b7-0e15-5ffe-99f8-e9b846276226",
+          "id": "12600e6d-13a9-5b0a-9aae-03009abbe130",
           "sourceRange": [],
           "tag": {
             "commentStart": 2451,
@@ -8096,8 +8096,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "32b19f78-20c2-515f-997f-a8489dd306d7",
+          "id": "c625eacf-0237-5177-b0c2-e658078b9577",
           "sourceRange": [],
           "tag": {
             "commentStart": 2864,
@@ -8113,11 +8113,11 @@ description: Variables in memory after executing enclosure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "12600e6d-13a9-5b0a-9aae-03009abbe130",
               "sourceRange": []
             },
             "ccw": true,
@@ -8147,7 +8147,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c625eacf-0237-5177-b0c2-e658078b9577",
               "sourceRange": []
             },
             "ccw": true,
@@ -8177,8 +8177,8 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "kind": "Custom",
           "objectId": 25,
           "origin": {
@@ -8219,7 +8219,7 @@ description: Variables in memory after executing enclosure.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
             "sourceRange": []
           }
         },
@@ -8233,13 +8233,13 @@ description: Variables in memory after executing enclosure.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "originalId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "originSketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "3f992052-15af-5276-8662-c45d39f7293b",
+      "endCapId": "eab5be22-c4b0-5ac1-8ff1-dfc4318fc855",
       "units": "mm",
       "sectional": false
     }
@@ -8248,12 +8248,12 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb55b727-9e5b-5309-95d6-816a6246988e",
+          "id": "dc335a6f-03d0-5ea0-a253-b7bc9151e54f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2451,
@@ -8266,8 +8266,8 @@ description: Variables in memory after executing enclosure.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "275ab3ae-eabd-5168-9ef3-c95757bfb624",
+          "id": "53a5d4cf-2981-56a3-a4c2-669de2e2248d",
           "sourceRange": [],
           "tag": {
             "commentStart": 2864,
@@ -8283,11 +8283,11 @@ description: Variables in memory after executing enclosure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d5eaf678-0440-563f-ac19-e473850b9270",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dc335a6f-03d0-5ea0-a253-b7bc9151e54f",
               "sourceRange": []
             },
             "ccw": true,
@@ -8317,7 +8317,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53a5d4cf-2981-56a3-a4c2-669de2e2248d",
               "sourceRange": []
             },
             "ccw": true,
@@ -8347,8 +8347,8 @@ description: Variables in memory after executing enclosure.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "kind": "Custom",
           "objectId": 25,
           "origin": {
@@ -8389,7 +8389,7 @@ description: Variables in memory after executing enclosure.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
             "sourceRange": []
           }
         },
@@ -8403,13 +8403,13 @@ description: Variables in memory after executing enclosure.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "originSketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0b1e086c-2397-5114-a384-20c4b1c47716",
+      "endCapId": "4a967eb9-91ab-5507-be53-85ccd60fd523",
       "units": "mm",
       "sectional": false
     }
@@ -8538,11 +8538,11 @@ description: Variables in memory after executing enclosure.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "12600e6d-13a9-5b0a-9aae-03009abbe130",
             "sourceRange": []
           },
           "ccw": true,
@@ -8572,7 +8572,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c625eacf-0237-5177-b0c2-e658078b9577",
             "sourceRange": []
           },
           "ccw": true,
@@ -8602,8 +8602,8 @@ description: Variables in memory after executing enclosure.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
         "kind": "Custom",
         "objectId": 25,
         "origin": {
@@ -8644,7 +8644,7 @@ description: Variables in memory after executing enclosure.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
           "sourceRange": []
         }
       },
@@ -8658,9 +8658,9 @@ description: Variables in memory after executing enclosure.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "originalId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "originSketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "units": "mm"
     }
   },
@@ -8673,7 +8673,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "objectId": 45,
                 "kind": {
                   "circle": {
@@ -8747,8 +8747,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
@@ -8777,7 +8777,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerCircle"
@@ -8793,7 +8793,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -8868,8 +8868,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
@@ -8898,7 +8898,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerGuide"
@@ -8915,11 +8915,11 @@ description: Variables in memory after executing enclosure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8949,7 +8949,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                     "sourceRange": []
                   },
                   "from": [
@@ -8966,7 +8966,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8996,8 +8996,8 @@ description: Variables in memory after executing enclosure.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "kind": "Custom",
                 "objectId": 25,
                 "origin": {
@@ -9038,7 +9038,7 @@ description: Variables in memory after executing enclosure.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
                   "sourceRange": []
                 }
               },
@@ -9052,8 +9052,8 @@ description: Variables in memory after executing enclosure.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+              "originalId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
               "units": "mm",
               "isClosed": "no"
             }
@@ -9067,7 +9067,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "objectId": 34,
                 "kind": {
                   "circle": {
@@ -9141,8 +9141,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
@@ -9171,7 +9171,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"
@@ -9187,7 +9187,7 @@ description: Variables in memory after executing enclosure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -9262,8 +9262,8 @@ description: Variables in memory after executing enclosure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
@@ -9292,7 +9292,7 @@ description: Variables in memory after executing enclosure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerGuide"

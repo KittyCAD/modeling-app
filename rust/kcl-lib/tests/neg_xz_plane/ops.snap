@@ -10,7 +10,7 @@ description: Operations executed neg_xz_plane.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed neg_xz_plane.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03"
           }
         },
         "sourceRange": []

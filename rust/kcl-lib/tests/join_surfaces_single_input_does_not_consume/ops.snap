@@ -722,11 +722,11 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "meta": {
                 "type": "Object",
@@ -734,18 +734,18 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             }
           },
@@ -778,7 +778,7 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -823,7 +823,7 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
               }
             }
           ]
@@ -1565,11 +1565,11 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "907cac50-3701-5367-b35c-4ec2132c824f"
               },
               "meta": {
                 "type": "Object",
@@ -1577,18 +1577,18 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
               }
             }
           },
@@ -1621,7 +1621,7 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
           }
         },
         "sourceRange": []
@@ -1663,7 +1663,7 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []
@@ -1676,7 +1676,7 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
                 }
               }
             ]

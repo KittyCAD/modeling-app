@@ -6,8 +6,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_123_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "kind": "Custom",
       "objectId": 122,
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_148_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "kind": "Custom",
       "objectId": 122,
       "origin": {
@@ -72,8 +72,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_168_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+      "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
       "objectId": 167,
       "value": "start",
       "xAxis": {
@@ -89,12 +89,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+        "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
         "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
-          "[uuid]",
-          "[uuid]"
+          "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+          "44d94cee-dac7-5b9f-829d-112d277b8975"
         ]
       },
       "units": "in"
@@ -103,8 +103,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -135,8 +135,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_221_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+      "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
       "objectId": 220,
       "value": "start",
       "xAxis": {
@@ -152,8 +152,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+        "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
@@ -162,8 +162,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_52_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -194,8 +194,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_66_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -226,8 +226,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "__sketch_86_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -277,12 +277,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+      "artifactId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8f13bc12-f09b-5a85-bc34-a7e2bc6d6cad",
+          "id": "abce8398-9cc9-5754-8eec-5620a0d1cb98",
           "sourceRange": [],
           "tag": {
             "commentStart": 10226,
@@ -295,8 +295,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8836a276-4bfd-5cfb-ab40-c9a2bd8a894e",
+          "id": "e52a734e-11d0-5132-a4ae-4f07228c7c43",
           "sourceRange": [],
           "tag": {
             "commentStart": 10306,
@@ -309,8 +309,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b1c8c3f3-5985-51db-b236-ceef38e6bbe7",
+          "id": "d0aec4a8-f7e2-50de-97fd-23ab360de3bb",
           "sourceRange": [],
           "tag": {
             "commentStart": 10429,
@@ -323,8 +323,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6ec4db5e-fcc5-57ad-a3c0-4016e31608d1",
+          "id": "027617a0-f077-5f4f-a6b3-c0e158ef2166",
           "sourceRange": [],
           "tag": {
             "commentStart": 10549,
@@ -337,8 +337,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f71390d-1521-5cb0-9f75-7b706586faef",
+          "id": "c67dc1b5-1851-5df2-b4be-af34cf2e8da7",
           "sourceRange": [],
           "tag": {
             "commentStart": 10670,
@@ -351,8 +351,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0e2aad5d-691e-5f6f-a670-0c77fdcce75b",
+          "id": "6a27caf4-e91b-5c63-b8f9-dea8c0fd9686",
           "sourceRange": [],
           "tag": {
             "commentStart": 10795,
@@ -368,11 +368,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "abce8398-9cc9-5754-8eec-5620a0d1cb98",
               "sourceRange": []
             },
             "from": [
@@ -396,7 +396,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e52a734e-11d0-5132-a4ae-4f07228c7c43",
               "sourceRange": []
             },
             "from": [
@@ -420,7 +420,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d0aec4a8-f7e2-50de-97fd-23ab360de3bb",
               "sourceRange": []
             },
             "from": [
@@ -444,7 +444,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "027617a0-f077-5f4f-a6b3-c0e158ef2166",
               "sourceRange": []
             },
             "from": [
@@ -468,7 +468,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c67dc1b5-1851-5df2-b4be-af34cf2e8da7",
               "sourceRange": []
             },
             "from": [
@@ -492,7 +492,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6a27caf4-e91b-5c63-b8f9-dea8c0fd9686",
               "sourceRange": []
             },
             "from": [
@@ -517,8 +517,8 @@ description: Variables in memory after executing wheel-hub.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+          "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
           "objectId": 167,
           "value": "start",
           "xAxis": {
@@ -534,12 +534,12 @@ description: Variables in memory after executing wheel-hub.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+            "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
             "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
-              "[uuid]",
-              "[uuid]"
+              "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+              "44d94cee-dac7-5b9f-829d-112d277b8975"
             ]
           },
           "units": "in"
@@ -556,7 +556,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "75786bd7-c284-566d-b238-3f6b11158ab4",
             "sourceRange": []
           }
         },
@@ -586,13 +586,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+        "originalId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+        "originSketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+      "endCapId": "e44a60bc-d2eb-58de-bbc3-2b1442c3e7a1",
       "units": "in",
       "sectional": false
     }
@@ -606,7 +606,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
                 "objectId": 174,
                 "kind": {
                   "circle": {
@@ -682,8 +682,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -699,17 +699,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltHeadCircle"
@@ -725,7 +725,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
                 "objectId": 213,
                 "kind": {
                   "line": {
@@ -801,8 +801,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -818,17 +818,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltHeadRadiusGuide"
@@ -844,7 +844,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
                 "objectId": 171,
                 "kind": {
                   "line": {
@@ -920,8 +920,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -937,17 +937,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -963,7 +963,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
                 "objectId": 177,
                 "kind": {
                   "line": {
@@ -1038,8 +1038,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -1055,17 +1055,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1081,7 +1081,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
                 "objectId": 180,
                 "kind": {
                   "line": {
@@ -1156,8 +1156,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -1173,17 +1173,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1199,7 +1199,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "96889f64-587b-51f2-b62f-b230408206cc",
                 "objectId": 184,
                 "kind": {
                   "line": {
@@ -1274,8 +1274,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -1291,17 +1291,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1317,7 +1317,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
                 "objectId": 188,
                 "kind": {
                   "line": {
@@ -1392,8 +1392,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -1409,17 +1409,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1435,7 +1435,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
                 "objectId": 192,
                 "kind": {
                   "line": {
@@ -1510,8 +1510,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -1527,17 +1527,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1553,7 +1553,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
                 "objectId": 196,
                 "kind": {
                   "line": {
@@ -1628,8 +1628,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                  "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                   "objectId": 167,
                   "value": "start",
                   "xAxis": {
@@ -1645,17 +1645,17 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                    "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]",
-                      "[uuid]"
+                      "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                      "44d94cee-dac7-5b9f-829d-112d277b8975"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1672,11 +1672,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
                     "sourceRange": []
                   },
                   "from": [
@@ -1700,7 +1700,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
                     "sourceRange": []
                   },
                   "from": [
@@ -1724,7 +1724,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "96889f64-587b-51f2-b62f-b230408206cc",
                     "sourceRange": []
                   },
                   "from": [
@@ -1748,7 +1748,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
                     "sourceRange": []
                   },
                   "from": [
@@ -1772,7 +1772,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
                     "sourceRange": []
                   },
                   "from": [
@@ -1796,7 +1796,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
                     "sourceRange": []
                   },
                   "from": [
@@ -1821,8 +1821,8 @@ description: Variables in memory after executing wheel-hub.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+                "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
                 "objectId": 167,
                 "value": "start",
                 "xAxis": {
@@ -1838,12 +1838,12 @@ description: Variables in memory after executing wheel-hub.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+                  "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
                   "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
-                    "[uuid]",
-                    "[uuid]"
+                    "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                    "44d94cee-dac7-5b9f-829d-112d277b8975"
                   ]
                 },
                 "units": "in"
@@ -1860,7 +1860,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "75786bd7-c284-566d-b238-3f6b11158ab4",
                   "sourceRange": []
                 }
               },
@@ -1890,8 +1890,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
+              "originalId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1906,11 +1906,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "abce8398-9cc9-5754-8eec-5620a0d1cb98",
             "sourceRange": []
           },
           "from": [
@@ -1934,7 +1934,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e52a734e-11d0-5132-a4ae-4f07228c7c43",
             "sourceRange": []
           },
           "from": [
@@ -1958,7 +1958,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d0aec4a8-f7e2-50de-97fd-23ab360de3bb",
             "sourceRange": []
           },
           "from": [
@@ -1982,7 +1982,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "027617a0-f077-5f4f-a6b3-c0e158ef2166",
             "sourceRange": []
           },
           "from": [
@@ -2006,7 +2006,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c67dc1b5-1851-5df2-b4be-af34cf2e8da7",
             "sourceRange": []
           },
           "from": [
@@ -2030,7 +2030,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6a27caf4-e91b-5c63-b8f9-dea8c0fd9686",
             "sourceRange": []
           },
           "from": [
@@ -2055,8 +2055,8 @@ description: Variables in memory after executing wheel-hub.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+        "artifactId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
         "objectId": 167,
         "value": "start",
         "xAxis": {
@@ -2072,12 +2072,12 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "95d80984-dc84-541c-af31-df26752c9fd4",
+          "creatorSketchId": "95d80984-dc84-541c-af31-df26752c9fd4",
           "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
-            "[uuid]",
-            "[uuid]"
+            "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+            "44d94cee-dac7-5b9f-829d-112d277b8975"
           ]
         },
         "units": "in"
@@ -2094,7 +2094,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "75786bd7-c284-566d-b238-3f6b11158ab4",
           "sourceRange": []
         }
       },
@@ -2124,9 +2124,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+      "originalId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+      "originSketchId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
       "units": "in"
     }
   },
@@ -2137,12 +2137,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+          "artifactId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b950473f-4e68-5f6f-81d1-85a3bcf04f4c",
+              "id": "45274228-db51-52f4-9404-ab36e7707312",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12499,
@@ -2158,11 +2158,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "45274228-db51-52f4-9404-ab36e7707312",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2193,8 +2193,8 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+              "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
               "objectId": 220,
               "value": "start",
               "xAxis": {
@@ -2210,8 +2210,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -2228,7 +2228,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
                 "sourceRange": []
               }
             },
@@ -2238,13 +2238,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originalId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originSketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
             "units": "in"
           },
           "startCapId": null,
-          "endCapId": "[uuid]",
+          "endCapId": "e6419463-b063-5809-9ae8-9ee927c7f497",
           "units": "in",
           "sectional": false
         }
@@ -2253,12 +2253,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9b055810-5e13-5508-b9b8-ed77ffb614b0",
+          "artifactId": "9b055810-5e13-5508-b9b8-ed77ffb614b0",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b950473f-4e68-5f6f-81d1-85a3bcf04f4c",
+              "id": "45274228-db51-52f4-9404-ab36e7707312",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12499,
@@ -2274,11 +2274,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9b055810-5e13-5508-b9b8-ed77ffb614b0",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "45274228-db51-52f4-9404-ab36e7707312",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2309,8 +2309,8 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+              "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
               "objectId": 220,
               "value": "start",
               "xAxis": {
@@ -2326,8 +2326,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -2344,7 +2344,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
                 "sourceRange": []
               }
             },
@@ -2354,13 +2354,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originalId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originSketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
             "units": "in"
           },
           "startCapId": null,
-          "endCapId": "[uuid]",
+          "endCapId": "e6419463-b063-5809-9ae8-9ee927c7f497",
           "units": "in",
           "sectional": false
         }
@@ -2369,12 +2369,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b3d742f8-976e-5ec0-bf9f-a48dd80e3149",
+          "artifactId": "b3d742f8-976e-5ec0-bf9f-a48dd80e3149",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b950473f-4e68-5f6f-81d1-85a3bcf04f4c",
+              "id": "45274228-db51-52f4-9404-ab36e7707312",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12499,
@@ -2390,11 +2390,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "b3d742f8-976e-5ec0-bf9f-a48dd80e3149",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "45274228-db51-52f4-9404-ab36e7707312",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2425,8 +2425,8 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+              "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
               "objectId": 220,
               "value": "start",
               "xAxis": {
@@ -2442,8 +2442,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -2460,7 +2460,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
                 "sourceRange": []
               }
             },
@@ -2470,13 +2470,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originalId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originSketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
             "units": "in"
           },
           "startCapId": null,
-          "endCapId": "[uuid]",
+          "endCapId": "e6419463-b063-5809-9ae8-9ee927c7f497",
           "units": "in",
           "sectional": false
         }
@@ -2485,12 +2485,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3c50e707-3a92-5fa4-ac20-651debccac42",
+          "artifactId": "3c50e707-3a92-5fa4-ac20-651debccac42",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b950473f-4e68-5f6f-81d1-85a3bcf04f4c",
+              "id": "45274228-db51-52f4-9404-ab36e7707312",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12499,
@@ -2506,11 +2506,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "3c50e707-3a92-5fa4-ac20-651debccac42",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "45274228-db51-52f4-9404-ab36e7707312",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2541,8 +2541,8 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+              "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
               "objectId": 220,
               "value": "start",
               "xAxis": {
@@ -2558,8 +2558,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -2576,7 +2576,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
                 "sourceRange": []
               }
             },
@@ -2586,13 +2586,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originalId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originSketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
             "units": "in"
           },
           "startCapId": null,
-          "endCapId": "[uuid]",
+          "endCapId": "e6419463-b063-5809-9ae8-9ee927c7f497",
           "units": "in",
           "sectional": false
         }
@@ -2601,12 +2601,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "52d1c4f4-2885-51e6-b6ae-bf45e85307f0",
+          "artifactId": "52d1c4f4-2885-51e6-b6ae-bf45e85307f0",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b950473f-4e68-5f6f-81d1-85a3bcf04f4c",
+              "id": "45274228-db51-52f4-9404-ab36e7707312",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12499,
@@ -2622,11 +2622,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "52d1c4f4-2885-51e6-b6ae-bf45e85307f0",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "45274228-db51-52f4-9404-ab36e7707312",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2657,8 +2657,8 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+              "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
               "objectId": 220,
               "value": "start",
               "xAxis": {
@@ -2674,8 +2674,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -2692,7 +2692,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
                 "sourceRange": []
               }
             },
@@ -2702,13 +2702,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originalId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+            "originSketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
             "units": "in"
           },
           "startCapId": null,
-          "endCapId": "[uuid]",
+          "endCapId": "e6419463-b063-5809-9ae8-9ee927c7f497",
           "units": "in",
           "sectional": false
         }
@@ -2724,7 +2724,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
                 "objectId": 224,
                 "kind": {
                   "line": {
@@ -2800,8 +2800,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+                  "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
                   "objectId": 220,
                   "value": "start",
                   "xAxis": {
@@ -2817,13 +2817,13 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                    "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -2839,7 +2839,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e6ed3605-69e2-53c9-bebb-df82937c0962",
                 "objectId": 230,
                 "kind": {
                   "circle": {
@@ -2914,8 +2914,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+                  "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
                   "objectId": 220,
                   "value": "start",
                   "xAxis": {
@@ -2931,13 +2931,13 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                    "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2954,11 +2954,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e6ed3605-69e2-53c9-bebb-df82937c0962",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2989,8 +2989,8 @@ description: Variables in memory after executing wheel-hub.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+                "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
                 "objectId": 220,
                 "value": "start",
                 "xAxis": {
@@ -3006,8 +3006,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                  "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
@@ -3024,7 +3024,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
                   "sourceRange": []
                 }
               },
@@ -3034,8 +3034,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+              "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
               "units": "in",
               "isClosed": "no"
             }
@@ -3049,7 +3049,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
                 "objectId": 227,
                 "kind": {
                   "line": {
@@ -3125,8 +3125,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+                  "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
                   "objectId": 220,
                   "value": "start",
                   "xAxis": {
@@ -3142,13 +3142,13 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+                    "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide"
@@ -3165,11 +3165,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "45274228-db51-52f4-9404-ab36e7707312",
             "sourceRange": []
           },
           "ccw": true,
@@ -3200,8 +3200,8 @@ description: Variables in memory after executing wheel-hub.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
+        "artifactId": "1b5a8665-7339-5a71-aedc-82c3e9a2904b",
         "objectId": 220,
         "value": "start",
         "xAxis": {
@@ -3217,8 +3217,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+          "creatorSketchId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
@@ -3235,7 +3235,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
           "sourceRange": []
         }
       },
@@ -3245,9 +3245,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+      "originalId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+      "originSketchId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "units": "in"
     }
   },
@@ -3270,12 +3270,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d95a7cb-585e-5f0b-a215-e2559551bb9a",
+          "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
           "sourceRange": [],
           "tag": {
             "commentStart": 7249,
@@ -3288,8 +3288,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fa5da852-5a83-5cd3-9ead-00eec9b10538",
+          "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
           "sourceRange": [],
           "tag": {
             "commentStart": 7329,
@@ -3302,8 +3302,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+          "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
           "sourceRange": [],
           "tag": {
             "commentStart": 8328,
@@ -3316,8 +3316,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
+          "id": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
           "sourceRange": [],
           "tag": {
             "commentStart": 8353,
@@ -3343,11 +3343,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
               "sourceRange": []
             },
             "ccw": true,
@@ -3377,7 +3377,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
               "sourceRange": []
             },
             "ccw": true,
@@ -3407,8 +3407,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+          "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
           "kind": "Custom",
           "objectId": 122,
           "origin": {
@@ -3449,7 +3449,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
             "sourceRange": []
           }
         },
@@ -3471,17 +3471,17 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originalId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+      "endCapId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
           "length": {
             "n": 3.81,
             "ty": {
@@ -3490,7 +3490,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
           "tag": null
         }
       ],
@@ -3502,12 +3502,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d95a7cb-585e-5f0b-a215-e2559551bb9a",
+          "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
           "sourceRange": [],
           "tag": {
             "commentStart": 7249,
@@ -3520,8 +3520,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fa5da852-5a83-5cd3-9ead-00eec9b10538",
+          "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
           "sourceRange": [],
           "tag": {
             "commentStart": 7329,
@@ -3534,8 +3534,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+          "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
           "sourceRange": [],
           "tag": {
             "commentStart": 8328,
@@ -3548,8 +3548,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
+          "id": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
           "sourceRange": [],
           "tag": {
             "commentStart": 8353,
@@ -3575,11 +3575,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
               "sourceRange": []
             },
             "ccw": true,
@@ -3609,7 +3609,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
               "sourceRange": []
             },
             "ccw": true,
@@ -3639,8 +3639,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+          "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
           "kind": "Custom",
           "objectId": 122,
           "origin": {
@@ -3681,7 +3681,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
             "sourceRange": []
           }
         },
@@ -3703,17 +3703,17 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originalId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+      "endCapId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
           "length": {
             "n": 3.81,
             "ty": {
@@ -3722,12 +3722,12 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
           "length": {
             "n": 5.715,
             "ty": {
@@ -3736,7 +3736,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "cec0c690-7230-50be-914f-cbf3425bd64a",
           "tag": null
         }
       ],
@@ -3762,12 +3762,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+          "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
           "sourceRange": [],
           "tag": {
             "commentStart": 8646,
@@ -3783,11 +3783,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ff863943-02de-5b48-baf7-471ff32b980f",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": []
             },
             "ccw": true,
@@ -3817,8 +3817,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+          "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
           "kind": "Custom",
           "objectId": 122,
           "origin": {
@@ -3859,7 +3859,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
             "sourceRange": []
           }
         },
@@ -3869,13 +3869,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+      "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
       "units": "in",
       "sectional": false
     }
@@ -3887,12 +3887,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+          "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -3908,11 +3908,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "ff863943-02de-5b48-baf7-471ff32b980f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3942,8 +3942,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -3984,7 +3984,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -3994,13 +3994,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4009,12 +4009,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "0d0c0005-e6eb-5436-a53c-5f71fee2f8e5",
+          "artifactId": "0d0c0005-e6eb-5436-a53c-5f71fee2f8e5",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4030,11 +4030,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "0d0c0005-e6eb-5436-a53c-5f71fee2f8e5",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4064,8 +4064,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4106,7 +4106,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4116,13 +4116,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4131,12 +4131,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "6976d837-791e-5c86-a9b1-4040ddc36b6f",
+          "artifactId": "6976d837-791e-5c86-a9b1-4040ddc36b6f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4152,11 +4152,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "6976d837-791e-5c86-a9b1-4040ddc36b6f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4186,8 +4186,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4228,7 +4228,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4238,13 +4238,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4253,12 +4253,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "ca7fd9d7-638b-50b2-ae09-89f99f923537",
+          "artifactId": "ca7fd9d7-638b-50b2-ae09-89f99f923537",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4274,11 +4274,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "ca7fd9d7-638b-50b2-ae09-89f99f923537",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4308,8 +4308,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4350,7 +4350,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4360,13 +4360,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4375,12 +4375,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "1421b8a4-f732-5bd2-a43e-716715359a85",
+          "artifactId": "1421b8a4-f732-5bd2-a43e-716715359a85",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4396,11 +4396,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "1421b8a4-f732-5bd2-a43e-716715359a85",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4430,8 +4430,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4472,7 +4472,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4482,13 +4482,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4497,12 +4497,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "37446193-cfdd-5604-a607-5ad6582e408e",
+          "artifactId": "37446193-cfdd-5604-a607-5ad6582e408e",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4518,11 +4518,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "37446193-cfdd-5604-a607-5ad6582e408e",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4552,8 +4552,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4594,7 +4594,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4604,13 +4604,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4619,12 +4619,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "f3ce191a-a5ed-57e5-ae45-492cef2d9d46",
+          "artifactId": "f3ce191a-a5ed-57e5-ae45-492cef2d9d46",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4640,11 +4640,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "f3ce191a-a5ed-57e5-ae45-492cef2d9d46",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4674,8 +4674,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4716,7 +4716,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4726,13 +4726,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4741,12 +4741,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "6fc8600d-2f16-5e1c-833b-1b114e02fb66",
+          "artifactId": "6fc8600d-2f16-5e1c-833b-1b114e02fb66",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4762,11 +4762,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "6fc8600d-2f16-5e1c-833b-1b114e02fb66",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4796,8 +4796,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4838,7 +4838,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4848,13 +4848,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4863,12 +4863,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "84b7eed5-0b74-5c1c-a311-004a66762519",
+          "artifactId": "84b7eed5-0b74-5c1c-a311-004a66762519",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -4884,11 +4884,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "84b7eed5-0b74-5c1c-a311-004a66762519",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4918,8 +4918,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -4960,7 +4960,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -4970,13 +4970,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -4985,12 +4985,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "d1824a3d-c6ff-56c1-b981-eb609c81f228",
+          "artifactId": "d1824a3d-c6ff-56c1-b981-eb609c81f228",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c59696fa-6709-5301-9aea-200b0f9fd765",
+              "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8646,
@@ -5006,11 +5006,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "d1824a3d-c6ff-56c1-b981-eb609c81f228",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5040,8 +5040,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "kind": "Custom",
               "objectId": 122,
               "origin": {
@@ -5082,7 +5082,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                 "sourceRange": []
               }
             },
@@ -5092,13 +5092,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "765212ba-a1b5-5151-8710-d2e0d826bd0c",
+          "endCapId": "3228a624-e62b-5828-8459-51e9a01f41c7",
           "units": "in",
           "sectional": false
         }
@@ -5114,7 +5114,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
                 "objectId": 151,
                 "kind": {
                   "line": {
@@ -5189,8 +5189,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                  "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -5219,7 +5219,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -5235,7 +5235,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
                 "objectId": 157,
                 "kind": {
                   "circle": {
@@ -5309,8 +5309,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                  "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -5339,7 +5339,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -5356,11 +5356,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5390,8 +5390,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                 "kind": "Custom",
                 "objectId": 122,
                 "origin": {
@@ -5432,7 +5432,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
                   "sourceRange": []
                 }
               },
@@ -5442,8 +5442,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2ab8a671-6218-5516-901a-d1a83480ded7",
+              "originalId": "2ab8a671-6218-5516-901a-d1a83480ded7",
               "units": "in",
               "isClosed": "no"
             }
@@ -5457,7 +5457,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
                 "objectId": 154,
                 "kind": {
                   "line": {
@@ -5532,8 +5532,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                  "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -5562,7 +5562,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide"
@@ -5579,11 +5579,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ff863943-02de-5b48-baf7-471ff32b980f",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4905aa4a-e947-5dd0-a3cb-6a3d931919b9",
             "sourceRange": []
           },
           "ccw": true,
@@ -5613,8 +5613,8 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "kind": "Custom",
         "objectId": 122,
         "origin": {
@@ -5655,7 +5655,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
           "sourceRange": []
         }
       },
@@ -5665,9 +5665,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "units": "in"
     }
   },
@@ -5683,8 +5683,8 @@ description: Variables in memory after executing wheel-hub.kcl
   "flangePlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "kind": "Custom",
       "objectId": 122,
       "origin": {
@@ -5726,12 +5726,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+      "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "62684c29-0407-5629-a0ad-98dc86578e27",
+          "id": "8889df79-ab82-59a2-90bb-e41402b1fd15",
           "sourceRange": [],
           "tag": {
             "commentStart": 3556,
@@ -5747,11 +5747,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8889df79-ab82-59a2-90bb-e41402b1fd15",
               "sourceRange": []
             },
             "ccw": true,
@@ -5781,8 +5781,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "kind": "Custom",
           "objectId": 51,
           "origin": {
@@ -5823,7 +5823,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
             "sourceRange": []
           }
         },
@@ -5833,13 +5833,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "originalId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "originSketchId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "9a397f2a-9e8a-53e5-8c19-5cdb08492c95",
+      "endCapId": "5b010224-2823-5bc8-b783-67a1d63cd2d0",
       "units": "in",
       "sectional": false
     }
@@ -5853,7 +5853,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                 "objectId": 58,
                 "kind": {
                   "circle": {
@@ -5927,8 +5927,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                  "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                   "kind": "Custom",
                   "objectId": 51,
                   "origin": {
@@ -5957,7 +5957,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -5974,11 +5974,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6008,8 +6008,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "kind": "Custom",
                 "objectId": 51,
                 "origin": {
@@ -6050,7 +6050,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                   "sourceRange": []
                 }
               },
@@ -6060,8 +6060,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+              "originalId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
               "units": "in",
               "isClosed": "no"
             }
@@ -6075,7 +6075,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                 "objectId": 55,
                 "kind": {
                   "line": {
@@ -6150,8 +6150,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                  "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                   "kind": "Custom",
                   "objectId": 51,
                   "origin": {
@@ -6180,7 +6180,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide"
@@ -6197,11 +6197,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8889df79-ab82-59a2-90bb-e41402b1fd15",
             "sourceRange": []
           },
           "ccw": true,
@@ -6231,8 +6231,8 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+        "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "kind": "Custom",
         "objectId": 51,
         "origin": {
@@ -6273,7 +6273,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
           "sourceRange": []
         }
       },
@@ -6283,9 +6283,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+      "originalId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+      "originSketchId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "units": "in"
     }
   },
@@ -6401,12 +6401,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+          "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
           "sourceRange": [],
           "tag": {
             "commentStart": 4288,
@@ -6422,11 +6422,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
               "sourceRange": []
             },
             "ccw": true,
@@ -6456,8 +6456,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
           "kind": "Custom",
           "objectId": 65,
           "origin": {
@@ -6498,7 +6498,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
             "sourceRange": []
           }
         },
@@ -6508,13 +6508,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+        "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+        "originSketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+      "endCapId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
       "units": "in",
       "sectional": false
     }
@@ -6526,12 +6526,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+          "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+              "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4288,
@@ -6547,11 +6547,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -6581,8 +6581,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+              "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
               "kind": "Custom",
               "objectId": 65,
               "origin": {
@@ -6623,7 +6623,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
                 "sourceRange": []
               }
             },
@@ -6633,13 +6633,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+            "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+            "originSketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+          "endCapId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
           "units": "in",
           "sectional": false
         }
@@ -6648,12 +6648,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "16dd7845-22f7-5810-8b38-91d4f6acf94a",
+          "artifactId": "16dd7845-22f7-5810-8b38-91d4f6acf94a",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+              "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4288,
@@ -6669,11 +6669,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "16dd7845-22f7-5810-8b38-91d4f6acf94a",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -6703,8 +6703,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+              "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
               "kind": "Custom",
               "objectId": 65,
               "origin": {
@@ -6745,7 +6745,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
                 "sourceRange": []
               }
             },
@@ -6755,13 +6755,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+            "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+            "originSketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+          "endCapId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
           "units": "in",
           "sectional": false
         }
@@ -6770,12 +6770,12 @@ description: Variables in memory after executing wheel-hub.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "76c0a404-c12b-56cc-b5c8-22be52d01f6a",
+          "artifactId": "76c0a404-c12b-56cc-b5c8-22be52d01f6a",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+              "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4288,
@@ -6791,11 +6791,11 @@ description: Variables in memory after executing wheel-hub.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "76c0a404-c12b-56cc-b5c8-22be52d01f6a",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -6825,8 +6825,8 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+              "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
               "kind": "Custom",
               "objectId": 65,
               "origin": {
@@ -6867,7 +6867,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
                 "sourceRange": []
               }
             },
@@ -6877,13 +6877,13 @@ description: Variables in memory after executing wheel-hub.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+            "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+            "originSketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+          "endCapId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
           "units": "in",
           "sectional": false
         }
@@ -6899,7 +6899,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
                 "objectId": 69,
                 "kind": {
                   "line": {
@@ -6974,8 +6974,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+                  "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                   "kind": "Custom",
                   "objectId": 65,
                   "origin": {
@@ -7004,7 +7004,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -7020,7 +7020,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                 "objectId": 75,
                 "kind": {
                   "circle": {
@@ -7094,8 +7094,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+                  "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                   "kind": "Custom",
                   "objectId": 65,
                   "origin": {
@@ -7124,7 +7124,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -7141,11 +7141,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7175,8 +7175,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+                "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                 "kind": "Custom",
                 "objectId": 65,
                 "origin": {
@@ -7217,7 +7217,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
                   "sourceRange": []
                 }
               },
@@ -7227,8 +7227,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
               "units": "in",
               "isClosed": "no"
             }
@@ -7242,7 +7242,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
                 "objectId": 72,
                 "kind": {
                   "line": {
@@ -7317,8 +7317,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+                  "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                   "kind": "Custom",
                   "objectId": 65,
                   "origin": {
@@ -7347,7 +7347,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide"
@@ -7364,11 +7364,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a80ee3fc-cc50-5f00-ac10-0c1b36d66a62",
             "sourceRange": []
           },
           "ccw": true,
@@ -7398,8 +7398,8 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "kind": "Custom",
         "objectId": 65,
         "origin": {
@@ -7440,7 +7440,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
           "sourceRange": []
         }
       },
@@ -7450,9 +7450,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "originSketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "units": "in"
     }
   },
@@ -7487,12 +7487,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "95d80984-dc84-541c-af31-df26752c9fd4",
+      "artifactId": "95d80984-dc84-541c-af31-df26752c9fd4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d95a7cb-585e-5f0b-a215-e2559551bb9a",
+          "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
           "sourceRange": [],
           "tag": {
             "commentStart": 7249,
@@ -7505,8 +7505,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fa5da852-5a83-5cd3-9ead-00eec9b10538",
+          "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
           "sourceRange": [],
           "tag": {
             "commentStart": 7329,
@@ -7519,8 +7519,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+          "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
           "sourceRange": [],
           "tag": {
             "commentStart": 8328,
@@ -7533,8 +7533,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
+          "id": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
           "sourceRange": [],
           "tag": {
             "commentStart": 8353,
@@ -7560,11 +7560,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "95d80984-dc84-541c-af31-df26752c9fd4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
               "sourceRange": []
             },
             "ccw": true,
@@ -7594,7 +7594,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
               "sourceRange": []
             },
             "ccw": true,
@@ -7624,8 +7624,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+          "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
           "kind": "Custom",
           "objectId": 122,
           "origin": {
@@ -7666,7 +7666,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
             "sourceRange": []
           }
         },
@@ -7688,17 +7688,17 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originalId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+      "endCapId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
           "length": {
             "n": 3.81,
             "ty": {
@@ -7707,12 +7707,12 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
           "length": {
             "n": 5.715,
             "ty": {
@@ -7721,7 +7721,7 @@ description: Variables in memory after executing wheel-hub.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "cec0c690-7230-50be-914f-cbf3425bd64a",
           "tag": null
         }
       ],
@@ -7733,12 +7733,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d95a7cb-585e-5f0b-a215-e2559551bb9a",
+          "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
           "sourceRange": [],
           "tag": {
             "commentStart": 7249,
@@ -7751,8 +7751,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fa5da852-5a83-5cd3-9ead-00eec9b10538",
+          "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
           "sourceRange": [],
           "tag": {
             "commentStart": 7329,
@@ -7765,8 +7765,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+          "id": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
           "sourceRange": [],
           "tag": {
             "commentStart": 8328,
@@ -7779,8 +7779,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
+          "id": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
           "sourceRange": [],
           "tag": {
             "commentStart": 8353,
@@ -7806,11 +7806,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
               "sourceRange": []
             },
             "ccw": true,
@@ -7840,7 +7840,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
               "sourceRange": []
             },
             "ccw": true,
@@ -7870,8 +7870,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+          "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
           "kind": "Custom",
           "objectId": 122,
           "origin": {
@@ -7912,7 +7912,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
             "sourceRange": []
           }
         },
@@ -7934,13 +7934,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originalId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+        "originSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "621b81ad-9aa6-5a77-bc9c-7bffb0e64894",
+      "endCapId": "b57c42b7-c8a9-58a4-85c9-65bfc40e07ee",
       "units": "in",
       "sectional": false
     }
@@ -7954,7 +7954,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
                 "objectId": 135,
                 "kind": {
                   "circle": {
@@ -8028,8 +8028,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                  "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -8058,7 +8058,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerBoreCircle"
@@ -8074,7 +8074,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4ea8409b-834f-5214-b812-e276f2ff01f4",
                 "objectId": 129,
                 "kind": {
                   "line": {
@@ -8149,8 +8149,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                  "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -8179,7 +8179,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerBoreRadiusGuide"
@@ -8196,11 +8196,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8230,7 +8230,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
                     "sourceRange": []
                   },
                   "from": [
@@ -8247,7 +8247,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8277,8 +8277,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                 "kind": "Custom",
                 "objectId": 122,
                 "origin": {
@@ -8319,7 +8319,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
                   "sourceRange": []
                 }
               },
@@ -8333,8 +8333,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+              "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
               "units": "in",
               "isClosed": "no"
             }
@@ -8348,7 +8348,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                 "objectId": 132,
                 "kind": {
                   "circle": {
@@ -8422,8 +8422,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                  "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -8452,7 +8452,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"
@@ -8468,7 +8468,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
                 "objectId": 126,
                 "kind": {
                   "line": {
@@ -8543,8 +8543,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                  "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -8573,7 +8573,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerRadiusGuide"
@@ -8590,11 +8590,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e6f35f3f-7d5b-54e5-9c7b-239bb225e899",
             "sourceRange": []
           },
           "ccw": true,
@@ -8624,7 +8624,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9fc6195c-3f95-5077-b50c-c84bffd2fcdf",
             "sourceRange": []
           },
           "ccw": true,
@@ -8654,8 +8654,8 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "kind": "Custom",
         "objectId": 122,
         "origin": {
@@ -8696,7 +8696,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
           "sourceRange": []
         }
       },
@@ -8718,9 +8718,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "originalId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "originSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "units": "in"
     }
   },
@@ -8733,12 +8733,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+      "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c3c9d1b-e1d8-505b-954b-155e069e484d",
+          "id": "a7d5dd5c-c99c-5211-8abd-b7f4bd5c4c44",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -8751,8 +8751,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4e2075b3-008a-58a5-8d30-a638594f8a38",
+          "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
           "sourceRange": [],
           "tag": {
             "commentStart": 1114,
@@ -8765,8 +8765,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
+          "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
           "sourceRange": [],
           "tag": {
             "commentStart": 1200,
@@ -8779,8 +8779,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de815b4c-817e-5265-b7b5-30ae92f19673",
+          "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1322,
@@ -8793,8 +8793,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8177f6e6-dcf5-5bdd-9c32-019a793c40e4",
+          "id": "4dc86c7a-81e1-5699-8fe8-17df399f4de9",
           "sourceRange": [],
           "tag": {
             "commentStart": 1407,
@@ -8807,8 +8807,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "34ac3e23-e114-551a-bea6-86bc44865a42",
+          "id": "fa11205a-08d3-5ec2-86b1-c80f6708a6fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -8824,11 +8824,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7d5dd5c-c99c-5211-8abd-b7f4bd5c4c44",
               "sourceRange": []
             },
             "ccw": true,
@@ -8858,7 +8858,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
               "sourceRange": []
             },
             "from": [
@@ -8882,7 +8882,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
               "sourceRange": []
             },
             "ccw": true,
@@ -8912,7 +8912,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
               "sourceRange": []
             },
             "from": [
@@ -8936,7 +8936,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4dc86c7a-81e1-5699-8fe8-17df399f4de9",
               "sourceRange": []
             },
             "ccw": true,
@@ -8966,7 +8966,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fa11205a-08d3-5ec2-86b1-c80f6708a6fb",
               "sourceRange": []
             },
             "from": [
@@ -8990,8 +8990,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -9032,7 +9032,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
             "sourceRange": []
           }
         },
@@ -9062,13 +9062,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "upperSlope"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
+      "endCapId": "da726907-370c-5450-98c0-57d934b2f51d",
       "units": "in",
       "sectional": false
     }
@@ -9077,12 +9077,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c3c9d1b-e1d8-505b-954b-155e069e484d",
+          "id": "a7d5dd5c-c99c-5211-8abd-b7f4bd5c4c44",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -9095,8 +9095,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4e2075b3-008a-58a5-8d30-a638594f8a38",
+          "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
           "sourceRange": [],
           "tag": {
             "commentStart": 1114,
@@ -9109,8 +9109,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
+          "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
           "sourceRange": [],
           "tag": {
             "commentStart": 1200,
@@ -9123,8 +9123,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de815b4c-817e-5265-b7b5-30ae92f19673",
+          "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1322,
@@ -9137,8 +9137,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8177f6e6-dcf5-5bdd-9c32-019a793c40e4",
+          "id": "4dc86c7a-81e1-5699-8fe8-17df399f4de9",
           "sourceRange": [],
           "tag": {
             "commentStart": 1407,
@@ -9151,8 +9151,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "34ac3e23-e114-551a-bea6-86bc44865a42",
+          "id": "fa11205a-08d3-5ec2-86b1-c80f6708a6fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -9168,11 +9168,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7d5dd5c-c99c-5211-8abd-b7f4bd5c4c44",
               "sourceRange": []
             },
             "ccw": true,
@@ -9202,7 +9202,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
               "sourceRange": []
             },
             "from": [
@@ -9226,7 +9226,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
               "sourceRange": []
             },
             "ccw": true,
@@ -9256,7 +9256,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
               "sourceRange": []
             },
             "from": [
@@ -9280,7 +9280,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4dc86c7a-81e1-5699-8fe8-17df399f4de9",
               "sourceRange": []
             },
             "ccw": true,
@@ -9310,7 +9310,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fa11205a-08d3-5ec2-86b1-c80f6708a6fb",
               "sourceRange": []
             },
             "from": [
@@ -9334,8 +9334,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -9376,7 +9376,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
             "sourceRange": []
           }
         },
@@ -9406,13 +9406,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "upperSlope"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
+      "endCapId": "da726907-370c-5450-98c0-57d934b2f51d",
       "units": "in",
       "sectional": false
     }
@@ -9421,12 +9421,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c3c9d1b-e1d8-505b-954b-155e069e484d",
+          "id": "a7d5dd5c-c99c-5211-8abd-b7f4bd5c4c44",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -9439,8 +9439,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4e2075b3-008a-58a5-8d30-a638594f8a38",
+          "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
           "sourceRange": [],
           "tag": {
             "commentStart": 1114,
@@ -9453,8 +9453,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
+          "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
           "sourceRange": [],
           "tag": {
             "commentStart": 1200,
@@ -9467,8 +9467,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de815b4c-817e-5265-b7b5-30ae92f19673",
+          "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1322,
@@ -9481,8 +9481,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8177f6e6-dcf5-5bdd-9c32-019a793c40e4",
+          "id": "4dc86c7a-81e1-5699-8fe8-17df399f4de9",
           "sourceRange": [],
           "tag": {
             "commentStart": 1407,
@@ -9495,8 +9495,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "34ac3e23-e114-551a-bea6-86bc44865a42",
+          "id": "fa11205a-08d3-5ec2-86b1-c80f6708a6fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -9512,11 +9512,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7d5dd5c-c99c-5211-8abd-b7f4bd5c4c44",
               "sourceRange": []
             },
             "ccw": true,
@@ -9546,7 +9546,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
               "sourceRange": []
             },
             "from": [
@@ -9570,7 +9570,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
               "sourceRange": []
             },
             "ccw": true,
@@ -9600,7 +9600,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
               "sourceRange": []
             },
             "from": [
@@ -9624,7 +9624,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4dc86c7a-81e1-5699-8fe8-17df399f4de9",
               "sourceRange": []
             },
             "ccw": true,
@@ -9654,7 +9654,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fa11205a-08d3-5ec2-86b1-c80f6708a6fb",
               "sourceRange": []
             },
             "from": [
@@ -9678,8 +9678,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -9720,7 +9720,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
             "sourceRange": []
           }
         },
@@ -9750,13 +9750,13 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "upperSlope"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
+      "endCapId": "da726907-370c-5450-98c0-57d934b2f51d",
       "units": "in",
       "sectional": false
     }
@@ -9779,7 +9779,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -9853,8 +9853,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9883,7 +9883,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftWall"
@@ -9899,7 +9899,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 19,
                 "kind": {
                   "arc": {
@@ -10005,8 +10005,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10035,7 +10035,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerLeftArc"
@@ -10051,7 +10051,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 22,
                 "kind": {
                   "line": {
@@ -10125,8 +10125,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10155,7 +10155,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerSlope"
@@ -10172,11 +10172,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10206,7 +10206,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -10230,7 +10230,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10260,7 +10260,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -10284,7 +10284,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10314,7 +10314,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -10338,8 +10338,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -10380,7 +10380,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                   "sourceRange": []
                 }
               },
@@ -10410,8 +10410,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "upperSlope"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+              "originalId": "53a9149e-1246-5c44-9e3c-558201ff438c",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -10425,7 +10425,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -10531,8 +10531,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10561,7 +10561,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightArc"
@@ -10577,7 +10577,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 12,
                 "kind": {
                   "arc": {
@@ -10683,8 +10683,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10713,7 +10713,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperLeftArc"
@@ -10729,7 +10729,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "line": {
@@ -10803,8 +10803,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10833,7 +10833,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperSlope"
@@ -10850,11 +10850,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a7d5dd5c-c99c-5211-8abd-b7f4bd5c4c44",
             "sourceRange": []
           },
           "ccw": true,
@@ -10884,7 +10884,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
             "sourceRange": []
           },
           "from": [
@@ -10908,7 +10908,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
             "sourceRange": []
           },
           "ccw": true,
@@ -10938,7 +10938,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
             "sourceRange": []
           },
           "from": [
@@ -10962,7 +10962,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4dc86c7a-81e1-5699-8fe8-17df399f4de9",
             "sourceRange": []
           },
           "ccw": true,
@@ -10992,7 +10992,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fa11205a-08d3-5ec2-86b1-c80f6708a6fb",
             "sourceRange": []
           },
           "from": [
@@ -11016,8 +11016,8 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -11058,7 +11058,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "sourceRange": []
         }
       },
@@ -11088,9 +11088,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "upperSlope"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "units": "in"
     }
   },
@@ -11098,12 +11098,12 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+      "artifactId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0e4fc502-d9b5-594c-aaea-7c437bc5d52e",
+          "id": "3164a3a3-fc3c-5622-a3eb-ff2520903b7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 5435,
@@ -11116,8 +11116,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "61edf5c5-a068-58fe-b2a0-fd2eb95870b3",
+          "id": "eb2710b6-8c9d-504d-bf15-7c53768a8966",
           "sourceRange": [],
           "tag": {
             "commentStart": 5517,
@@ -11130,8 +11130,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "52344122-d895-5c37-bb71-0c0ef9d0bd7f",
+          "id": "c8f120ff-b0b6-5f38-911b-934beab77ccf",
           "sourceRange": [],
           "tag": {
             "commentStart": 5600,
@@ -11144,8 +11144,8 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b06e0aa7-c0e9-50d2-b15a-a4cf3e6f10ff",
+          "id": "a82b4fd5-c960-5066-bdff-bcd7c56924c1",
           "sourceRange": [],
           "tag": {
             "commentStart": 5682,
@@ -11161,11 +11161,11 @@ description: Variables in memory after executing wheel-hub.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3164a3a3-fc3c-5622-a3eb-ff2520903b7a",
               "sourceRange": []
             },
             "from": [
@@ -11189,7 +11189,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb2710b6-8c9d-504d-bf15-7c53768a8966",
               "sourceRange": []
             },
             "from": [
@@ -11213,7 +11213,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c8f120ff-b0b6-5f38-911b-934beab77ccf",
               "sourceRange": []
             },
             "from": [
@@ -11237,7 +11237,7 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a82b4fd5-c960-5066-bdff-bcd7c56924c1",
               "sourceRange": []
             },
             "from": [
@@ -11261,8 +11261,8 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+          "id": "40d8c462-7810-5666-bb09-1db7308cf666",
           "kind": "Custom",
           "objectId": 85,
           "origin": {
@@ -11303,7 +11303,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
             "sourceRange": []
           }
         },
@@ -11325,9 +11325,9 @@ description: Variables in memory after executing wheel-hub.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+        "originalId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+        "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "units": "in"
       },
       "startCapId": null,
@@ -11368,7 +11368,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                 "objectId": 95,
                 "kind": {
                   "line": {
@@ -11442,8 +11442,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "kind": "Custom",
                   "objectId": 85,
                   "origin": {
@@ -11472,7 +11472,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -11488,7 +11488,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                 "objectId": 98,
                 "kind": {
                   "line": {
@@ -11562,8 +11562,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "kind": "Custom",
                   "objectId": 85,
                   "origin": {
@@ -11592,7 +11592,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -11608,7 +11608,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                 "objectId": 101,
                 "kind": {
                   "line": {
@@ -11682,8 +11682,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "kind": "Custom",
                   "objectId": 85,
                   "origin": {
@@ -11712,7 +11712,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -11728,7 +11728,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                 "objectId": 104,
                 "kind": {
                   "line": {
@@ -11802,8 +11802,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "kind": "Custom",
                   "objectId": 85,
                   "origin": {
@@ -11832,7 +11832,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -11849,11 +11849,11 @@ description: Variables in memory after executing wheel-hub.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                     "sourceRange": []
                   },
                   "from": [
@@ -11877,7 +11877,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                     "sourceRange": []
                   },
                   "from": [
@@ -11901,7 +11901,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -11925,7 +11925,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                     "sourceRange": []
                   },
                   "from": [
@@ -11949,8 +11949,8 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                 "kind": "Custom",
                 "objectId": 85,
                 "origin": {
@@ -11991,7 +11991,7 @@ description: Variables in memory after executing wheel-hub.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
                   "sourceRange": []
                 }
               },
@@ -12013,8 +12013,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+              "originalId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -12028,7 +12028,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                 "objectId": 89,
                 "kind": {
                   "line": {
@@ -12103,8 +12103,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "kind": "Custom",
                   "objectId": 85,
                   "origin": {
@@ -12133,7 +12133,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "startHeightGuide"
@@ -12149,7 +12149,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                 "objectId": 92,
                 "kind": {
                   "line": {
@@ -12224,8 +12224,8 @@ description: Variables in memory after executing wheel-hub.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "kind": "Custom",
                   "objectId": 85,
                   "origin": {
@@ -12254,7 +12254,7 @@ description: Variables in memory after executing wheel-hub.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "startOffsetGuide"
@@ -12271,11 +12271,11 @@ description: Variables in memory after executing wheel-hub.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3164a3a3-fc3c-5622-a3eb-ff2520903b7a",
             "sourceRange": []
           },
           "from": [
@@ -12299,7 +12299,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb2710b6-8c9d-504d-bf15-7c53768a8966",
             "sourceRange": []
           },
           "from": [
@@ -12323,7 +12323,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c8f120ff-b0b6-5f38-911b-934beab77ccf",
             "sourceRange": []
           },
           "from": [
@@ -12347,7 +12347,7 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a82b4fd5-c960-5066-bdff-bcd7c56924c1",
             "sourceRange": []
           },
           "from": [
@@ -12371,8 +12371,8 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "kind": "Custom",
         "objectId": 85,
         "origin": {
@@ -12413,7 +12413,7 @@ description: Variables in memory after executing wheel-hub.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
           "sourceRange": []
         }
       },
@@ -12435,9 +12435,9 @@ description: Variables in memory after executing wheel-hub.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+      "originalId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+      "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "units": "in"
     }
   },

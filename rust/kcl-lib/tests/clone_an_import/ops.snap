@@ -578,7 +578,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e9d624ea-f34a-57d6-8df3-e1630dccf82c"
           }
         },
         "sourceRange": []
@@ -637,11 +637,11 @@ description: Operations executed clone_an_import.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "63baedff-9c3f-5a6b-8a94-11cf90ee8228"
               },
               "meta": {
                 "type": "Object",
@@ -649,7 +649,7 @@ description: Operations executed clone_an_import.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "e9d624ea-f34a-57d6-8df3-e1630dccf82c"
                     }
                   }
                 }
@@ -682,7 +682,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "458bd166-3b39-5b82-86b7-0d0cfea550b1"
           }
         },
         "sourceRange": []
@@ -2819,7 +2819,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5d7142ef-8d1b-5e78-9ddc-3a6f9daf9b30"
           }
         },
         "sourceRange": []
@@ -2878,39 +2878,39 @@ description: Operations executed clone_an_import.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9b99ca90-0a7d-5513-9fe2-78f9f02080f6"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "63a9b8ac-f73c-549b-a7c1-f95f204b52ba"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "190011fc-d8c2-5fa2-a1cb-07cdee06a35f"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cdf71102-1413-5687-a9d5-62aa8b6df4f5"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9a63a812-66b1-5d30-8da0-7db48301c2c5"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "10fd0cff-141a-5640-901e-ebc660cdd424"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "01368a3b-0bb5-5372-a5ea-e40d2685c401"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fdefd451-2e31-5260-bcdb-1a6e3eeb631d"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "74eb2c69-253d-5f77-a793-45f91cee32fe"
               },
               "meta": {
                 "type": "Object",
@@ -2918,7 +2918,7 @@ description: Operations executed clone_an_import.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "5d7142ef-8d1b-5e78-9ddc-3a6f9daf9b30"
                     }
                   }
                 }
@@ -2951,7 +2951,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef5d07ed-ec75-547f-b122-54717e4473f3"
           }
         },
         "sourceRange": []
@@ -3050,13 +3050,13 @@ description: Operations executed clone_an_import.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6855157b-d2a8-5dab-98fa-09614b8d40e8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f66f07e8-66a0-5d11-898d-525cd0c0e77d"
               }
             }
           ]
@@ -3120,13 +3120,13 @@ description: Operations executed clone_an_import.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d7c3c182-9055-5974-aed5-8c6a26dd830a"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b3f571cf-a507-5510-a6c4-b3754477a444"
               }
             }
           ]
@@ -3218,7 +3218,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d7c3c182-9055-5974-aed5-8c6a26dd830a"
           }
         },
         "sourceRange": []
@@ -3264,7 +3264,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -3330,7 +3330,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b3f571cf-a507-5510-a6c4-b3754477a444"
           }
         },
         "sourceRange": []
@@ -3376,7 +3376,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe"
           }
         },
         "sourceRange": []
@@ -4007,7 +4007,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "285b46c2-67a0-58e7-aa1c-058eda0088b6"
           }
         },
         "sourceRange": []
@@ -4066,11 +4066,11 @@ description: Operations executed clone_an_import.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5a82876-56b8-5012-910a-c84983933af0"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1bf790e2-f95c-55fb-b54e-5f935605e3c6"
               },
               "meta": {
                 "type": "Object",
@@ -4078,7 +4078,7 @@ description: Operations executed clone_an_import.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "285b46c2-67a0-58e7-aa1c-058eda0088b6"
                     }
                   }
                 }
@@ -4111,7 +4111,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "28006c95-3b9c-5732-a899-10c8e6ab53bc"
           }
         },
         "sourceRange": []
@@ -4159,7 +4159,7 @@ description: Operations executed clone_an_import.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "fb1b9d2c-879e-5437-a1c1-c974deb8143f"
         },
         "sourceRange": []
       },
@@ -4482,7 +4482,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "dc4b990b-a469-560a-85f1-1e2a11920ea0"
           }
         },
         "sourceRange": []
@@ -4541,7 +4541,7 @@ description: Operations executed clone_an_import.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "674f25b9-302a-5e51-94da-a4568c7fcf27"
               },
               "meta": {
                 "type": "Object",
@@ -4549,7 +4549,7 @@ description: Operations executed clone_an_import.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "dc4b990b-a469-560a-85f1-1e2a11920ea0"
                     }
                   }
                 }
@@ -4582,7 +4582,7 @@ description: Operations executed clone_an_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8bdf2e11-34d1-55fe-952c-a08aa30ae2d3"
           }
         },
         "sourceRange": []
@@ -4627,13 +4627,13 @@ description: Operations executed clone_an_import.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "645a4310-7ed7-5f61-bc8b-599ccb33e782"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0f9a24ce-7d25-5b28-9e7f-165eed61034f"
               }
             }
           ]

@@ -26,7 +26,7 @@ description: Operations executed nested_assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
         },
         "sourceRange": []
       },
@@ -55,7 +55,7 @@ description: Operations executed nested_assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b5a82876-56b8-5012-910a-c84983933af0"
           }
         },
         "sourceRange": []

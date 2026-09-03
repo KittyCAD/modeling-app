@@ -5,7 +5,7 @@ description: Artifact commands nested_assembly.kcl
 {
   "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/imported.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e24d3b1-23b0-5737-82c9-f5aee2198f63",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands nested_assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9e24d3b1-23b0-5737-82c9-f5aee2198f63",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -46,18 +46,18 @@ description: Artifact commands nested_assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a82876-56b8-5012-910a-c84983933af0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a93807f2-bb75-552f-8f69-73c95b73e483",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b5a82876-56b8-5012-910a-c84983933af0",
         "to": {
           "x": 20.0,
           "y": 0.0,
@@ -66,18 +66,18 @@ description: Artifact commands nested_assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1bf790e2-f95c-55fb-b54e-5f935605e3c6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b3363643-a2a3-53f3-840f-ce40f523e89d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b5a82876-56b8-5012-910a-c84983933af0",
         "segment": {
           "type": "arc",
           "center": {
@@ -98,19 +98,19 @@ description: Artifact commands nested_assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b3363643-a2a3-53f3-840f-ce40f523e89d",
       "range": [],
       "command": {
         "type": "close_path",
-        "path_id": "[uuid]"
+        "path_id": "b5a82876-56b8-5012-910a-c84983933af0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "b5a82876-56b8-5012-910a-c84983933af0",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -132,29 +132,29 @@ description: Artifact commands nested_assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3746f557-24fd-506d-9263-6b5f1f69d66a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b5a82876-56b8-5012-910a-c84983933af0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "735ba40d-6218-51a7-b8d0-3d545c98ae2d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b5a82876-56b8-5012-910a-c84983933af0",
+        "edge_id": "b3363643-a2a3-53f3-840f-ce40f523e89d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "285b46c2-67a0-58e7-aa1c-058eda0088b6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b5a82876-56b8-5012-910a-c84983933af0",
+        "edge_id": "b3363643-a2a3-53f3-840f-ce40f523e89d"
       }
     }
   ]

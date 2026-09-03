@@ -185,7 +185,7 @@ description: Operations executed torus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -215,7 +215,7 @@ description: Operations executed torus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []

@@ -3186,11 +3186,11 @@ description: Operations executed m4-insert.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -3220,7 +3220,7 @@ description: Operations executed m4-insert.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270"
           }
         },
         "sourceRange": []
@@ -3316,7 +3316,7 @@ description: Operations executed m4-insert.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
           }
         },
         "sourceRange": []
@@ -3375,7 +3375,7 @@ description: Operations executed m4-insert.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead"
           }
         },
         "sourceRange": []

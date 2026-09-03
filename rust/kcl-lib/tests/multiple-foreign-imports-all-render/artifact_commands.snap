@@ -5,7 +5,7 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
 {
   "rust/kcl-lib/tests/inputs/cube.step": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
       "range": [],
       "command": {
         "type": "import_files",
@@ -35,37 +35,37 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
   ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/anothercube.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "37dccfff-51c8-54b8-ad35-58f377eb2c42",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
       }
     }
   ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "transforms": [
           {
             "translate": {
@@ -87,11 +87,11 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "color": {
           "r": 1.0,
           "g": 0.0,
@@ -104,11 +104,11 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "transforms": [
           {
             "translate": {
@@ -130,11 +130,11 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "color": {
           "r": 1.0,
           "g": 0.0,
@@ -149,27 +149,27 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
   ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/othercube.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e24d3b1-23b0-5737-82c9-f5aee2198f63",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a82876-56b8-5012-910a-c84983933af0",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
       }
     }
   ]

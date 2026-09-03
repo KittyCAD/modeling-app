@@ -1011,11 +1011,11 @@ description: Operations executed enclosure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1045,7 +1045,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30"
           }
         },
         "sourceRange": []
@@ -1091,7 +1091,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1115,19 +1115,19 @@ description: Operations executed enclosure.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "db427524-76a6-553d-bb6b-6ac873083b95"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "d5187f6e-f4ca-53c7-bdee-80c0ba5cbb59"
               }
             ]
           },
@@ -1161,7 +1161,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1219,7 +1219,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
           }
         },
         "sourceRange": []
@@ -2251,7 +2251,7 @@ description: Operations executed enclosure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
               }
             ]
           },
@@ -2281,7 +2281,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
           }
         },
         "sourceRange": []
@@ -2323,7 +2323,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
           }
         },
         "sourceRange": []
@@ -2349,7 +2349,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
           }
         },
         "sourceRange": []
@@ -2382,7 +2382,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
           }
         },
         "sourceRange": []
@@ -2435,7 +2435,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
           }
         },
         "sourceRange": []
@@ -2468,7 +2468,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
           }
         },
         "sourceRange": []
@@ -2521,7 +2521,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
           }
         },
         "sourceRange": []
@@ -2554,7 +2554,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
           }
         },
         "sourceRange": []
@@ -6017,11 +6017,11 @@ description: Operations executed enclosure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "129583cc-c953-5cdf-8ea4-5e7d50b41896"
               }
             ]
           },
@@ -6051,7 +6051,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37"
           }
         },
         "sourceRange": []
@@ -6097,7 +6097,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ae192af4-cbf2-5f1b-a2e5-767390f86588"
           }
         },
         "sourceRange": []
@@ -6121,19 +6121,19 @@ description: Operations executed enclosure.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5a955067-100e-56d3-8894-08353d092b4a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "446478cc-d8ba-5ba2-8261-707a337911f8"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "f1f2adfb-c995-51a3-9ce1-b1ec641a4279"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "3dd9195d-8bad-5cde-bfcb-de6998ce3695"
               }
             ]
           },
@@ -6167,7 +6167,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
           }
         },
         "sourceRange": []
@@ -9632,11 +9632,11 @@ description: Operations executed enclosure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326"
               }
             ]
           },
@@ -9666,7 +9666,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c"
           }
         },
         "sourceRange": []
@@ -9712,7 +9712,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "388597b8-4546-5655-b3a3-c3a0bba239ad"
           }
         },
         "sourceRange": []
@@ -9736,19 +9736,19 @@ description: Operations executed enclosure.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "e461d7e9-a7ff-5a9e-a21d-0062adddc06e"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a08aca96-7a77-5507-ae4d-1de0c00fb24a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "6965eafa-2611-51fd-bda2-6577942bd4a5"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "2a4836ec-0f6c-53a6-92ba-6d1592fad36b"
               }
             ]
           },
@@ -9782,7 +9782,7 @@ description: Operations executed enclosure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c0a92fa6-be55-5cfb-a650-710b68437549"
           }
         },
         "sourceRange": []

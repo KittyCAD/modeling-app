@@ -1940,11 +1940,11 @@ description: Operations executed field-monitor-stand.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1974,7 +1974,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
           }
         },
         "sourceRange": []
@@ -2030,7 +2030,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
           }
         },
         "sourceRange": []
@@ -2778,11 +2778,11 @@ description: Operations executed field-monitor-stand.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7d4c814d-f292-503d-a012-68ab58c77524"
               }
             ]
           },
@@ -2812,7 +2812,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
           }
         },
         "sourceRange": []
@@ -2854,7 +2854,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
           }
         },
         "sourceRange": []
@@ -3224,7 +3224,7 @@ description: Operations executed field-monitor-stand.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1a0ade6f-d355-5121-9adb-351976a78284"
               }
             ]
           },
@@ -3254,7 +3254,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8"
           }
         },
         "sourceRange": []
@@ -3296,7 +3296,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -3322,7 +3322,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
           }
         },
         "sourceRange": []
@@ -3413,13 +3413,13 @@ description: Operations executed field-monitor-stand.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bc41d237-68b1-51dc-80cd-3b50086848a0"
               }
             }
           ]
@@ -3509,7 +3509,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
           }
         },
         "sourceRange": []
@@ -3522,25 +3522,25 @@ description: Operations executed field-monitor-stand.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "57e4d63c-996c-52fb-8ff8-a79554d72e21"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "bc41d237-68b1-51dc-80cd-3b50086848a0"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "b13562c9-405a-52be-97f0-e4595e4e1546"
                 }
               }
             ]
@@ -3571,7 +3571,7 @@ description: Operations executed field-monitor-stand.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b"
           }
         },
         "sourceRange": []
@@ -3595,19 +3595,19 @@ description: Operations executed field-monitor-stand.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "71a72feb-bdc7-50b4-97fd-9fa2630226d6"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515"
               }
             ]
           },

@@ -590,11 +590,11 @@ description: Operations executed consumed_solid_binary_subtract.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "meta": {
                 "type": "Object",
@@ -602,18 +602,18 @@ description: Operations executed consumed_solid_binary_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             }
           },
@@ -646,7 +646,7 @@ description: Operations executed consumed_solid_binary_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           }
         },
         "sourceRange": []
@@ -1267,11 +1267,11 @@ description: Operations executed consumed_solid_binary_subtract.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "53a9149e-1246-5c44-9e3c-558201ff438c"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
               },
               "meta": {
                 "type": "Object",
@@ -1279,18 +1279,18 @@ description: Operations executed consumed_solid_binary_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b680fe3e-a804-583c-99d9-1693b2432aeb"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
               }
             }
           },
@@ -1323,7 +1323,7 @@ description: Operations executed consumed_solid_binary_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
           }
         },
         "sourceRange": []
@@ -1944,11 +1944,11 @@ description: Operations executed consumed_solid_binary_subtract.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
               },
               "meta": {
                 "type": "Object",
@@ -1956,18 +1956,18 @@ description: Operations executed consumed_solid_binary_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f87eb95-71f2-5911-bdbf-6255b335334d"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "01e801cc-22ef-5071-814b-847d3fcf22d5"
               }
             }
           },
@@ -2000,7 +2000,7 @@ description: Operations executed consumed_solid_binary_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284"
           }
         },
         "sourceRange": []
@@ -2042,7 +2042,7 @@ description: Operations executed consumed_solid_binary_subtract.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -2055,7 +2055,7 @@ description: Operations executed consumed_solid_binary_subtract.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
                 }
               }
             ]

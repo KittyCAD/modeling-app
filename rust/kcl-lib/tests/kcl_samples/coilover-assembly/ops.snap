@@ -488,7 +488,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "63822c13-f07f-5b31-907f-4dd6fa311b4a"
               }
             ]
           },
@@ -518,7 +518,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6"
           }
         },
         "sourceRange": []
@@ -571,7 +571,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d160926-1aee-5802-99f3-2f5145efb260"
           }
         },
         "sourceRange": []
@@ -595,7 +595,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "c41dd226-b1f2-5d54-9164-5f59f81535c7"
               }
             ]
           },
@@ -629,7 +629,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6418bd17-8278-546c-a76e-c9e46933af75"
           }
         },
         "sourceRange": []
@@ -1117,7 +1117,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e94090c7-1202-5385-8abd-ebb644f303c7"
               }
             ]
           },
@@ -1147,7 +1147,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e"
           }
         },
         "sourceRange": []
@@ -1189,7 +1189,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9e5ac066-03c0-5d08-aa73-281135f0051b"
           }
         },
         "sourceRange": []
@@ -1677,7 +1677,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1dbf2c11-0540-50fe-8243-58ffa27a5471"
               }
             ]
           },
@@ -1707,7 +1707,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d09d825b-0219-5bc0-b181-18ddb49f3ffe"
           }
         },
         "sourceRange": []
@@ -1760,7 +1760,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "119fc69d-a017-5296-bc1f-8f8261c68502"
           }
         },
         "sourceRange": []
@@ -1784,7 +1784,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "acb2a8ff-4c96-5e0b-9dbf-b2ace0e55c95"
               }
             ]
           },
@@ -1818,7 +1818,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "915c226b-6220-58f1-a18b-ad408905f6af"
           }
         },
         "sourceRange": []
@@ -2306,7 +2306,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1261aabb-691e-5c4e-a553-418b2f3586e3"
               }
             ]
           },
@@ -2336,7 +2336,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c17a4fed-a24c-5bd4-b74e-411833c26da9"
           }
         },
         "sourceRange": []
@@ -2396,7 +2396,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a6ff2397-09f8-57e7-86c0-b276e982bcc6"
           }
         },
         "sourceRange": []
@@ -2420,7 +2420,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "2775e3bd-8b39-560f-ab03-334989bf4ef1"
               }
             ]
           },
@@ -2454,7 +2454,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a6ff2397-09f8-57e7-86c0-b276e982bcc6"
           }
         },
         "sourceRange": []
@@ -2478,7 +2478,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "ee95e1d7-63a8-590c-941d-d073b4bbc769"
               }
             ]
           },
@@ -2512,7 +2512,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef5d07ed-ec75-547f-b122-54717e4473f3"
           }
         },
         "sourceRange": []
@@ -5160,7 +5160,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "472c4710-fd5c-551b-99c6-0e1aae2760e2"
               }
             ]
           },
@@ -5190,7 +5190,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3"
           }
         },
         "sourceRange": []
@@ -5242,7 +5242,7 @@ description: Operations executed coilover-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a6ff2397-09f8-57e7-86c0-b276e982bcc6"
               }
             }
           ]
@@ -5257,7 +5257,7 @@ description: Operations executed coilover-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9d7e19de-23a0-5ef9-a70a-4d2b6462d6d3"
                 }
               }
             ]
@@ -5288,7 +5288,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f60ccf94-45b7-533c-a7e3-f7b263036fcf"
           }
         },
         "sourceRange": []
@@ -5342,7 +5342,7 @@ description: Operations executed coilover-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
         },
         "sourceRange": []
       },
@@ -5898,7 +5898,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4841d46b-a8c5-5beb-8491-de79bcfc0d5e"
               }
             ]
           },
@@ -5928,7 +5928,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5"
           }
         },
         "sourceRange": []
@@ -5980,7 +5980,7 @@ description: Operations executed coilover-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "99f639da-4c6d-5758-a745-6cf4d4abb4fd"
               }
             }
           ]
@@ -5995,7 +5995,7 @@ description: Operations executed coilover-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "6d997ab3-f3ed-505c-9791-8ec32639e47d"
                 }
               }
             ]
@@ -6026,7 +6026,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a58a14f2-c137-584c-ae28-d2602bdbca9e"
           }
         },
         "sourceRange": []
@@ -6514,7 +6514,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a7c81ca8-5a4d-54f9-a4cd-6ac823fb33f3"
               }
             ]
           },
@@ -6544,7 +6544,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "36f739ad-44ec-54a1-a253-1897aeafb909"
           }
         },
         "sourceRange": []
@@ -6586,7 +6586,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "70956a22-6873-550b-b803-039d42b7d712"
           }
         },
         "sourceRange": []
@@ -7074,7 +7074,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0931f2f4-8119-5874-b381-906c616420b3"
               }
             ]
           },
@@ -7104,7 +7104,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cbc74e70-6a54-530b-989d-cf74f1da82c5"
           }
         },
         "sourceRange": []
@@ -7156,7 +7156,7 @@ description: Operations executed coilover-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8de60ed6-22ad-5c48-9321-45a0c9ccb127"
               }
             }
           ]
@@ -7171,7 +7171,7 @@ description: Operations executed coilover-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f5c07dd0-a2d1-5d95-8d2c-295e4c2e3659"
                 }
               }
             ]
@@ -7202,7 +7202,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2df46e97-fd71-5f2c-a67a-ce99a18727c2"
           }
         },
         "sourceRange": []
@@ -7231,13 +7231,13 @@ description: Operations executed coilover-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a243d600-7a89-58c0-b391-f49fa60311b2"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4d39730b-3991-5e1e-9144-46b864ad6974"
               }
             }
           ]
@@ -7747,7 +7747,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f1634645-3502-580b-a84b-0466ff4d66c4"
               }
             ]
           },
@@ -7777,7 +7777,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "694dfa80-ac26-5d24-beac-f480b73cb763"
           }
         },
         "sourceRange": []
@@ -7830,7 +7830,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "60de322d-bf9a-5235-a2a1-64013dd61264"
           }
         },
         "sourceRange": []
@@ -7854,7 +7854,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "33a382ff-4e43-5c58-a0ae-cf68ce924f55"
               }
             ]
           },
@@ -7888,7 +7888,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "edccd9f4-f441-5e37-8c81-63f16ccfa985"
           }
         },
         "sourceRange": []
@@ -8376,7 +8376,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbbbb2df-3f42-5bc0-a765-f67f028bbad0"
               }
             ]
           },
@@ -8406,7 +8406,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "601dbb56-735e-5539-9adf-396f13e5255e"
           }
         },
         "sourceRange": []
@@ -8448,7 +8448,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1f878ac8-aa13-5c62-9e2e-1c2c5c890ea6"
           }
         },
         "sourceRange": []
@@ -8936,7 +8936,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a9110f55-6b3e-5074-a6ff-f5db965ee01b"
               }
             ]
           },
@@ -8966,7 +8966,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "781c48e5-9a88-580f-a953-0c524fe7ad05"
           }
         },
         "sourceRange": []
@@ -9019,7 +9019,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1b85218a-560d-50ab-9b5e-02ced5877ec0"
           }
         },
         "sourceRange": []
@@ -9043,7 +9043,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "ec8d6cce-59df-5143-94cf-9997e5e195b6"
               }
             ]
           },
@@ -9077,7 +9077,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "08d3b429-5ffc-57db-8f9a-be455c2f7f2f"
           }
         },
         "sourceRange": []
@@ -9565,7 +9565,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0"
               }
             ]
           },
@@ -9595,7 +9595,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4f02c872-a65a-5add-bdcb-a8186428c0d7"
           }
         },
         "sourceRange": []
@@ -9648,7 +9648,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d9ab2263-7770-54af-a414-a342353f20ff"
           }
         },
         "sourceRange": []
@@ -9672,7 +9672,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "15b1192d-db8b-5740-9f36-845efe4af7d8"
               }
             ]
           },
@@ -9706,7 +9706,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1edf3e97-cc0d-5442-8700-7debb1169632"
           }
         },
         "sourceRange": []
@@ -12078,11 +12078,11 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "80331198-6fe6-5e5f-9b3d-56d79c4e33f6"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "92c1eaf2-665a-5a02-9d2d-1cc6a7865d18"
               }
             ]
           },
@@ -12112,7 +12112,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
           }
         },
         "sourceRange": []
@@ -12164,7 +12164,7 @@ description: Operations executed coilover-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d9ab2263-7770-54af-a414-a342353f20ff"
               }
             }
           ]
@@ -12179,7 +12179,7 @@ description: Operations executed coilover-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "743a178f-d494-5f7c-99b0-4af042ce416c"
                 }
               }
             ]
@@ -12210,7 +12210,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0f61d88c-eed8-545d-8409-f88123872135"
           }
         },
         "sourceRange": []
@@ -12235,7 +12235,7 @@ description: Operations executed coilover-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
         },
         "sourceRange": []
       },
@@ -12791,7 +12791,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "149063af-53e8-5239-97f8-43946249a9cd"
               }
             ]
           },
@@ -12821,7 +12821,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b4488d7a-289b-5f7a-ad51-dd02763e12ea"
           }
         },
         "sourceRange": []
@@ -12873,7 +12873,7 @@ description: Operations executed coilover-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6c58d6c7-ba6f-5dcd-8210-fe29b1040afa"
               }
             }
           ]
@@ -12888,7 +12888,7 @@ description: Operations executed coilover-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "ffc5c763-91d5-536e-beab-6fea4ede929f"
                 }
               }
             ]
@@ -12923,7 +12923,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "afd1bca6-3aa2-5503-ba55-98490b005876"
           }
         },
         "sourceRange": []
@@ -12986,7 +12986,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e94ed706-b3a8-5199-aade-614a6dfc54b6"
           }
         },
         "sourceRange": []
@@ -13012,7 +13012,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a6511e8-9390-5980-a26f-d8e5f9296384"
           }
         },
         "sourceRange": []
@@ -13054,7 +13054,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1b85218a-560d-50ab-9b5e-02ced5877ec0"
           }
         },
         "sourceRange": []
@@ -13096,7 +13096,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "60de322d-bf9a-5235-a2a1-64013dd61264"
           }
         },
         "sourceRange": []
@@ -13138,7 +13138,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "afd1bca6-3aa2-5503-ba55-98490b005876"
           }
         },
         "sourceRange": []
@@ -14921,7 +14921,7 @@ description: Operations executed coilover-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "782a6a40-2456-5e7d-9296-7cc2489d740e"
               }
             ]
           },
@@ -14951,7 +14951,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "754e5e64-bf24-52cf-9f8c-962e4cc9e527"
           }
         },
         "sourceRange": []
@@ -14961,7 +14961,7 @@ description: Operations executed coilover-assembly.kcl
           "value": {
             "type": "Helix",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
             }
           },
           "sourceRange": []
@@ -14994,7 +14994,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a58fb782-b253-5b3f-99b2-36f8fe81cfef"
           }
         },
         "sourceRange": []
@@ -15057,7 +15057,7 @@ description: Operations executed coilover-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8d5831f8-cfb6-55d6-8689-9eba26b90a80"
           }
         },
         "sourceRange": []

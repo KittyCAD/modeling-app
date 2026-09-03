@@ -10,7 +10,7 @@ description: Operations executed face_api_fillet_chamfer_tags_and_edge_refs.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed face_api_fillet_chamfer_tags_and_edge_refs.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -91,7 +91,7 @@ description: Operations executed face_api_fillet_chamfer_tags_and_edge_refs.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -110,12 +110,12 @@ description: Operations executed face_api_fillet_chamfer_tags_and_edge_refs.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "e1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capEnd001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc"
                       }
                     ]
                   }
@@ -144,7 +144,7 @@ description: Operations executed face_api_fillet_chamfer_tags_and_edge_refs.kcl
               {
                 "type": "TagIdentifier",
                 "value": "e1",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               }
             ]
           },

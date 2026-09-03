@@ -6,8 +6,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
   "__sketch_15_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "kind": "Custom",
       "objectId": 14,
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -101,11 +101,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f084ad07-5777-5607-a544-c69f455c2aab",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
             "sourceRange": []
           },
           "ccw": true,
@@ -135,7 +135,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
             "sourceRange": []
           },
           "ccw": true,
@@ -165,8 +165,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -207,7 +207,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": []
         }
       },
@@ -221,9 +221,9 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "originalId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "originSketchId": "41c630c9-9d44-581b-98af-caee575bea48",
       "units": "mm"
     }
   },
@@ -236,12 +236,12 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+      "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
+          "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
           "sourceRange": [],
           "tag": {
             "commentStart": 361,
@@ -254,8 +254,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c8c7308-3a35-5560-adc8-fa0d351181c5",
+          "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
           "sourceRange": [],
           "tag": {
             "commentStart": 441,
@@ -271,11 +271,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
               "sourceRange": []
             },
             "ccw": true,
@@ -305,7 +305,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
               "sourceRange": []
             },
             "ccw": true,
@@ -335,8 +335,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -377,7 +377,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           }
         },
@@ -391,13 +391,13 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+        "originalId": "f084ad07-5777-5607-a544-c69f455c2aab",
+        "originSketchId": "41c630c9-9d44-581b-98af-caee575bea48",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
+      "endCapId": "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
       "units": "mm",
       "sectional": false
     }
@@ -429,12 +429,12 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
+          "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
           "sourceRange": [],
           "tag": {
             "commentStart": 361,
@@ -447,8 +447,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c8c7308-3a35-5560-adc8-fa0d351181c5",
+          "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
           "sourceRange": [],
           "tag": {
             "commentStart": 441,
@@ -464,11 +464,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f084ad07-5777-5607-a544-c69f455c2aab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
               "sourceRange": []
             },
             "ccw": true,
@@ -498,7 +498,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
               "sourceRange": []
             },
             "ccw": true,
@@ -528,8 +528,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -570,7 +570,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           }
         },
@@ -584,13 +584,13 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+        "originalId": "f084ad07-5777-5607-a544-c69f455c2aab",
+        "originSketchId": "41c630c9-9d44-581b-98af-caee575bea48",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
+      "endCapId": "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
       "units": "mm",
       "sectional": false
     }
@@ -604,7 +604,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "circle": {
@@ -678,8 +678,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -708,7 +708,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerCircle"
@@ -725,11 +725,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -759,7 +759,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -776,7 +776,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -806,8 +806,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -848,7 +848,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                   "sourceRange": []
                 }
               },
@@ -862,8 +862,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
+              "originalId": "41c630c9-9d44-581b-98af-caee575bea48",
               "units": "mm",
               "isClosed": "no"
             }
@@ -877,7 +877,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -951,8 +951,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -981,7 +981,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"
@@ -1016,12 +1016,12 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8091992f-d696-5c70-85e2-55be71238c7d",
+          "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 1127,
@@ -1034,8 +1034,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "03e0304d-28d5-5776-a25c-d35ffc1c9609",
+          "id": "09298752-a17f-548a-a3ea-1672df9d21b0",
           "sourceRange": [],
           "tag": {
             "commentStart": 1204,
@@ -1048,8 +1048,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e66a1c79-c9a1-542a-98cc-4150cf291605",
+          "id": "7b08fb01-658f-5ea7-bd1f-a6b091f7b205",
           "sourceRange": [],
           "tag": {
             "commentStart": 1281,
@@ -1062,8 +1062,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6aa346c0-96aa-5b25-8fae-25b2e876c642",
+          "id": "1a96810d-38b0-53b7-87d7-40ffbc8d46bd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1363,
@@ -1079,11 +1079,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
               "sourceRange": []
             },
             "from": [
@@ -1107,7 +1107,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "09298752-a17f-548a-a3ea-1672df9d21b0",
               "sourceRange": []
             },
             "from": [
@@ -1131,7 +1131,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b08fb01-658f-5ea7-bd1f-a6b091f7b205",
               "sourceRange": []
             },
             "from": [
@@ -1155,7 +1155,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1a96810d-38b0-53b7-87d7-40ffbc8d46bd",
               "sourceRange": []
             },
             "from": [
@@ -1179,8 +1179,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "kind": "Custom",
           "objectId": 14,
           "origin": {
@@ -1221,7 +1221,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc312d38-2fa6-5583-a605-44880f646499",
             "sourceRange": []
           }
         },
@@ -1243,13 +1243,13 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "originSketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bfe04b81-663a-55d7-8788-5a7380ac597a",
+      "endCapId": "a482a947-4981-5156-af0e-3e21229913be",
       "units": "mm",
       "sectional": false
     }
@@ -1276,11 +1276,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
             "sourceRange": []
           },
           "from": [
@@ -1304,7 +1304,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "09298752-a17f-548a-a3ea-1672df9d21b0",
             "sourceRange": []
           },
           "from": [
@@ -1328,7 +1328,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7b08fb01-658f-5ea7-bd1f-a6b091f7b205",
             "sourceRange": []
           },
           "from": [
@@ -1352,7 +1352,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1a96810d-38b0-53b7-87d7-40ffbc8d46bd",
             "sourceRange": []
           },
           "from": [
@@ -1376,8 +1376,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+        "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "kind": "Custom",
         "objectId": 14,
         "origin": {
@@ -1418,7 +1418,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "cc312d38-2fa6-5583-a605-44880f646499",
           "sourceRange": []
         }
       },
@@ -1440,9 +1440,9 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "originSketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "units": "mm"
     }
   },
@@ -1455,7 +1455,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -1529,8 +1529,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "kind": "Custom",
                   "objectId": 14,
                   "origin": {
@@ -1559,7 +1559,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -1575,7 +1575,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "objectId": 18,
                 "kind": {
                   "line": {
@@ -1649,8 +1649,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "kind": "Custom",
                   "objectId": 14,
                   "origin": {
@@ -1679,7 +1679,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -1696,11 +1696,11 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "from": [
@@ -1724,7 +1724,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                     "sourceRange": []
                   },
                   "from": [
@@ -1748,7 +1748,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                     "sourceRange": []
                   },
                   "from": [
@@ -1772,7 +1772,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -1796,8 +1796,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "kind": "Custom",
                 "objectId": 14,
                 "origin": {
@@ -1838,7 +1838,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cc312d38-2fa6-5583-a605-44880f646499",
                   "sourceRange": []
                 }
               },
@@ -1860,8 +1860,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+              "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1875,7 +1875,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -1949,8 +1949,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "kind": "Custom",
                   "objectId": 14,
                   "origin": {
@@ -1979,7 +1979,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -1995,7 +1995,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -2069,8 +2069,8 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "kind": "Custom",
                   "objectId": 14,
                   "origin": {
@@ -2099,7 +2099,7 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"

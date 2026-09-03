@@ -6,8 +6,8 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -150,8 +150,8 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -180,7 +180,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "a"
@@ -196,7 +196,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 9,
                 "kind": {
                   "arc": {
@@ -302,8 +302,8 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -332,7 +332,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "b"
@@ -349,11 +349,11 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -383,7 +383,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -413,8 +413,8 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -455,7 +455,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                   "sourceRange": []
                 }
               },
@@ -469,8 +469,8 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                   "value": "b"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "units": "mm",
               "isClosed": "no"
             }

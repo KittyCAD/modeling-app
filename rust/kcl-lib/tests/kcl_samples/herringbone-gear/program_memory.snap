@@ -6,8 +6,8 @@ description: Variables in memory after executing herringbone-gear.kcl
   "__sketch_3_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,12 +44,12 @@ description: Variables in memory after executing herringbone-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53f1d6c9-a4cd-520b-9dd2-2faeebcc1972",
+          "id": "ba77f1c6-f92e-5c7a-b2f5-6d8f99878d67",
           "sourceRange": [],
           "tag": {
             "commentStart": 398,
@@ -65,11 +65,11 @@ description: Variables in memory after executing herringbone-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ba77f1c6-f92e-5c7a-b2f5-6d8f99878d67",
               "sourceRange": []
             },
             "ccw": true,
@@ -99,8 +99,8 @@ description: Variables in memory after executing herringbone-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+          "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
           "kind": "Custom",
           "objectId": 2,
           "origin": {
@@ -141,7 +141,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
             "sourceRange": []
           }
         },
@@ -151,13 +151,13 @@ description: Variables in memory after executing herringbone-gear.kcl
             "value": "bore"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "originSketchId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e1d90eb6-13c9-5eb7-bc8f-fd39898e89a8",
+      "endCapId": "5c0fa22a-fa52-594d-a843-19f2cb8dd9e4",
       "units": "mm",
       "sectional": false
     }
@@ -171,7 +171,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "objectId": 6,
                 "kind": {
                   "circle": {
@@ -245,8 +245,8 @@ description: Variables in memory after executing herringbone-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+                  "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                   "kind": "Custom",
                   "objectId": 2,
                   "origin": {
@@ -275,7 +275,7 @@ description: Variables in memory after executing herringbone-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bore"
@@ -292,11 +292,11 @@ description: Variables in memory after executing herringbone-gear.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -326,8 +326,8 @@ description: Variables in memory after executing herringbone-gear.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+                "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "kind": "Custom",
                 "objectId": 2,
                 "origin": {
@@ -368,7 +368,7 @@ description: Variables in memory after executing herringbone-gear.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "sourceRange": []
                 }
               },
@@ -378,8 +378,8 @@ description: Variables in memory after executing herringbone-gear.kcl
                   "value": "bore"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+              "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
               "units": "mm",
               "isClosed": "no"
             }
@@ -394,12 +394,12 @@ description: Variables in memory after executing herringbone-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c9afedb-3ce1-5410-8c52-83aeed3bdec0",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1163,
@@ -412,22 +412,22 @@ description: Variables in memory after executing herringbone-gear.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb2ffb25-10db-5055-a26f-65b2b5825ef8",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "38d0ed39-ac27-5b30-8816-55e1723f44d4",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ff3004f3-ce92-5fbe-a742-41ec1a3a1a3e",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -436,11 +436,11 @@ description: Variables in memory after executing herringbone-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -464,7 +464,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -481,7 +481,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -498,7 +498,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "sourceRange": []
             },
             "from": [
@@ -515,7 +515,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
               "sourceRange": []
             },
             "from": [
@@ -532,8 +532,8 @@ description: Variables in memory after executing herringbone-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -574,7 +574,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           }
         },
@@ -584,12 +584,12 @@ description: Variables in memory after executing herringbone-gear.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "8e6558e7-cdcb-576c-b043-15e3dc4c430d",
+      "endCapId": "65460011-d48c-569c-9fd2-0ec778ab270e",
       "units": "mm",
       "sectional": false
     }
@@ -607,12 +607,12 @@ description: Variables in memory after executing herringbone-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c9afedb-3ce1-5410-8c52-83aeed3bdec0",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1163,
@@ -625,22 +625,22 @@ description: Variables in memory after executing herringbone-gear.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb2ffb25-10db-5055-a26f-65b2b5825ef8",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "38d0ed39-ac27-5b30-8816-55e1723f44d4",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ff3004f3-ce92-5fbe-a742-41ec1a3a1a3e",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -649,11 +649,11 @@ description: Variables in memory after executing herringbone-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -677,7 +677,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -694,7 +694,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -711,7 +711,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "sourceRange": []
             },
             "from": [
@@ -728,7 +728,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
               "sourceRange": []
             },
             "from": [
@@ -745,8 +745,8 @@ description: Variables in memory after executing herringbone-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -787,7 +787,7 @@ description: Variables in memory after executing herringbone-gear.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           }
         },
@@ -797,12 +797,12 @@ description: Variables in memory after executing herringbone-gear.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "8e6558e7-cdcb-576c-b043-15e3dc4c430d",
+      "endCapId": "65460011-d48c-569c-9fd2-0ec778ab270e",
       "units": "mm",
       "sectional": false
     }

@@ -1777,7 +1777,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1807,7 +1807,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
           }
         },
         "sourceRange": []
@@ -1860,7 +1860,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -1901,7 +1901,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -3555,7 +3555,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
               }
             ]
           },
@@ -3585,7 +3585,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
           }
         },
         "sourceRange": []
@@ -3634,7 +3634,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -3660,7 +3660,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3693,7 +3693,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
           }
         },
         "sourceRange": []
@@ -3770,7 +3770,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3803,7 +3803,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
           }
         },
         "sourceRange": []
@@ -3880,7 +3880,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3913,7 +3913,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
           }
         },
         "sourceRange": []
@@ -3990,7 +3990,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -4067,7 +4067,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -4080,25 +4080,25 @@ description: Operations executed stylized-dump-truck.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
                 }
               }
             ]
@@ -4133,7 +4133,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62"
           }
         },
         "sourceRange": []
@@ -5099,7 +5099,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
               }
             ]
           },
@@ -5129,7 +5129,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5182,7 +5182,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
           }
         },
         "sourceRange": []
@@ -5223,7 +5223,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
           }
         },
         "sourceRange": []
@@ -6232,7 +6232,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               }
             ]
           },
@@ -6262,7 +6262,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83"
           }
         },
         "sourceRange": []
@@ -6315,7 +6315,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a"
           }
         },
         "sourceRange": []
@@ -6356,7 +6356,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86"
           }
         },
         "sourceRange": []
@@ -7782,7 +7782,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
               }
             ]
           },
@@ -7812,7 +7812,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0601c0a1-df6b-5d1b-be74-e551a56e758a"
           }
         },
         "sourceRange": []
@@ -7865,7 +7865,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664"
           }
         },
         "sourceRange": []
@@ -7906,7 +7906,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8"
           }
         },
         "sourceRange": []
@@ -8857,7 +8857,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7"
               }
             ]
           },
@@ -8887,7 +8887,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf"
           }
         },
         "sourceRange": []
@@ -8940,7 +8940,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "33d4ddb8-e281-5429-897a-8b34342e4a06"
           }
         },
         "sourceRange": []
@@ -8981,7 +8981,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
           }
         },
         "sourceRange": []
@@ -9808,7 +9808,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "edad1eb5-5562-5615-b23f-ee6623df14ee"
               }
             ]
           },
@@ -9842,7 +9842,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9e7bf977-5ef0-5034-a49f-a9e7744d4434"
               }
             ]
           },
@@ -9872,7 +9872,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "84468ff1-4b26-5c88-8618-6cea09661aac"
           }
         },
         "sourceRange": []
@@ -9918,7 +9918,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
           }
         },
         "sourceRange": []
@@ -9959,7 +9959,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04"
           }
         },
         "sourceRange": []
@@ -10005,7 +10005,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "77202593-ebf9-50c7-b715-41557309d9ab"
           }
         },
         "sourceRange": []
@@ -10046,7 +10046,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1"
           }
         },
         "sourceRange": []
@@ -10075,13 +10075,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "77202593-ebf9-50c7-b715-41557309d9ab"
               }
             }
           ]
@@ -10119,13 +10119,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639"
               }
             }
           ]
@@ -10207,13 +10207,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "77202593-ebf9-50c7-b715-41557309d9ab"
               }
             }
           ]
@@ -10251,13 +10251,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "aa91dc3c-d764-5550-a1d4-5f081872a206"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fa6d2791-9aa8-5817-aa05-d99d3e67163d"
               }
             }
           ]
@@ -10339,13 +10339,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "77202593-ebf9-50c7-b715-41557309d9ab"
               }
             }
           ]
@@ -10383,13 +10383,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3160ffad-2e46-5554-be76-1b632140926c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "27284bc1-5676-5b5a-baa2-003a7224d266"
               }
             }
           ]
@@ -10471,13 +10471,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3160ffad-2e46-5554-be76-1b632140926c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "27284bc1-5676-5b5a-baa2-003a7224d266"
               }
             }
           ]
@@ -10559,13 +10559,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "77202593-ebf9-50c7-b715-41557309d9ab"
               }
             }
           ]
@@ -10647,13 +10647,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "77202593-ebf9-50c7-b715-41557309d9ab"
               }
             }
           ]
@@ -10731,7 +10731,7 @@ description: Operations executed stylized-dump-truck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -11116,7 +11116,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1b9cdc28-653e-5139-abe4-4635e2e7f594"
               }
             ]
           },
@@ -11153,13 +11153,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d1e38581-6d4a-5346-9b30-84adae73d10c"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c67d9b21-4aeb-5541-ab33-913d015f8586"
               }
             }
           ]
@@ -11210,13 +11210,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0b959a9c-ff6d-5ea4-9bd6-d41bfb0c0525"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9deb8b6d-7844-5e18-8757-8a0874e53b4d"
               }
             }
           ]
@@ -11259,7 +11259,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "74c604d2-64d2-5caf-b93b-367875a63c5c"
           }
         },
         "sourceRange": []
@@ -11284,7 +11284,7 @@ description: Operations executed stylized-dump-truck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -12250,7 +12250,7 @@ description: Operations executed stylized-dump-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97"
               }
             ]
           },
@@ -12287,13 +12287,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e6e62a43-bd44-5278-ba8a-920293303adb"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8e2b3fc2-c3c7-5a3a-903e-a542132d1282"
               }
             }
           ]
@@ -12344,13 +12344,13 @@ description: Operations executed stylized-dump-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f4765855-7134-5064-a88e-19f1cd4e84de"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "eab0138f-4d34-5ad1-be64-4c06e431cd98"
               }
             }
           ]
@@ -12393,7 +12393,7 @@ description: Operations executed stylized-dump-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ff6fd0ca-a481-5cbb-8b3d-176becebb4aa"
           }
         },
         "sourceRange": []

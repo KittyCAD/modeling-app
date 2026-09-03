@@ -2362,7 +2362,7 @@ description: Operations executed propeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -2392,7 +2392,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
           }
         },
         "sourceRange": []
@@ -2455,7 +2455,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
           }
         },
         "sourceRange": []
@@ -2479,11 +2479,11 @@ description: Operations executed propeller.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "e9bbf44e-1eef-5329-a4fc-f40c8b5ff076"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "2034f34c-e44b-514f-93e3-639cc60dc840"
               }
             ]
           },
@@ -3575,11 +3575,11 @@ description: Operations executed propeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
               }
             ]
           },
@@ -3609,7 +3609,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501"
           }
         },
         "sourceRange": []
@@ -3693,7 +3693,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
           }
         },
         "sourceRange": []
@@ -3703,7 +3703,7 @@ description: Operations executed propeller.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
             }
           },
           "sourceRange": []
@@ -5190,11 +5190,11 @@ description: Operations executed propeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
               }
             ]
           },
@@ -5224,7 +5224,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d"
           }
         },
         "sourceRange": []
@@ -5527,7 +5527,7 @@ description: Operations executed propeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6"
               }
             ]
           },
@@ -5557,7 +5557,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c8da3189-2eee-5307-9477-076b12db84a5"
           }
         },
         "sourceRange": []
@@ -5606,7 +5606,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f58fd62a-578c-542c-94f8-dd627caab5d0"
           }
         },
         "sourceRange": []
@@ -5628,7 +5628,7 @@ description: Operations executed propeller.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
             }
           },
           "sourceRange": []
@@ -7574,11 +7574,11 @@ description: Operations executed propeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6f85cbad-5e6d-549c-850d-909283a25e83"
               }
             ]
           },
@@ -7608,7 +7608,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bb771349-7de5-54b4-b74b-b946bb9dbc58"
           }
         },
         "sourceRange": []
@@ -7665,13 +7665,13 @@ description: Operations executed propeller.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bae7e631-b71d-5980-89ea-29b2140a8a32"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
               }
             }
           ]
@@ -7715,7 +7715,7 @@ description: Operations executed propeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8f72543d-c84d-5018-865e-36a2fd66854c"
           }
         },
         "sourceRange": []
@@ -7866,7 +7866,7 @@ description: Operations executed propeller.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62"
               }
             },
             {
@@ -7875,13 +7875,13 @@ description: Operations executed propeller.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "8f72543d-c84d-5018-865e-36a2fd66854c"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "183d2209-b8e0-5d9f-8892-db5d926ad0aa"
                   }
                 }
               ]
@@ -7926,31 +7926,31 @@ description: Operations executed propeller.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "95b7331f-664e-5be5-b9c0-fdd7570bf701"
               }
             }
           ]

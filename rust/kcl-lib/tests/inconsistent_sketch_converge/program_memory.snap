@@ -6,8 +6,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -53,7 +53,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -127,8 +127,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -157,7 +157,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -173,7 +173,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 8,
                 "kind": {
                   "line": {
@@ -247,8 +247,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -277,7 +277,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -294,11 +294,11 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -322,7 +322,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b681387-29ea-57f1-8713-d63280827139",
                     "sourceRange": []
                   },
                   "from": [
@@ -339,7 +339,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -363,8 +363,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -405,7 +405,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                   "sourceRange": []
                 }
               },
@@ -419,8 +419,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                   "value": "line2"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "units": "mm",
               "isClosed": "no"
             }

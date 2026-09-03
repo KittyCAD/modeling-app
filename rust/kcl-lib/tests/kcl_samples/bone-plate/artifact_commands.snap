@@ -5,7 +5,7 @@ description: Artifact commands bone-plate.kcl
 {
   "public/kcl-samples/bone-plate/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "to": {
           "x": 23.191224720987304,
           "y": 8.370509163843481,
@@ -75,18 +75,18 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "to": {
           "x": 23.191224720987304,
           "y": 8.370509163843481,
@@ -120,11 +120,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -145,11 +145,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -170,11 +170,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -195,11 +195,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -220,11 +220,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -245,11 +245,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -270,11 +270,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -295,11 +295,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -320,11 +320,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "line",
           "end": {
@@ -337,11 +337,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -362,11 +362,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "line",
           "end": {
@@ -379,11 +379,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -404,11 +404,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "arc",
           "center": {
@@ -429,11 +429,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "line",
           "end": {
@@ -446,11 +446,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "segment": {
           "type": "line",
           "end": {
@@ -463,24 +463,24 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -502,42 +502,42 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "edge_id": "fa347f31-bb54-52bd-b1e6-826e5139c84a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "edge_id": "fa347f31-bb54-52bd-b1e6-826e5139c84a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -562,20 +562,20 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -587,18 +587,18 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "to": {
           "x": 2.25,
           "y": 12.25,
@@ -607,18 +607,18 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "segment": {
           "type": "arc",
           "center": {
@@ -639,24 +639,24 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "segment": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+        "intersection_segment": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -668,11 +668,11 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "bee9909d-abbf-534c-b266-2c2c04133834",
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
@@ -681,108 +681,108 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "resultArtifactId": "fa75438f-b2d0-5142-b452-608454e1806a",
+        "sourceTopologyId": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
         "transforms": [
           {
             "translate": {
@@ -804,66 +804,66 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "resultArtifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
+        "sourceTopologyId": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
         "transforms": [
           {
             "translate": {
@@ -885,66 +885,66 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "resultArtifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+        "sourceTopologyId": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
         "transforms": [
           {
             "translate": {
@@ -966,66 +966,66 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "resultArtifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
+        "sourceTopologyId": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
         "transforms": [
           {
             "translate": {
@@ -1047,66 +1047,66 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "resultArtifactId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
+        "sourceTopologyId": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "fbbcaed5-0a21-593e-a7bc-e653364344a4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fbbcaed5-0a21-593e-a7bc-e653364344a4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
         "transforms": [
           {
             "translate": {
@@ -1128,66 +1128,66 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "resultArtifactId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+        "sourceTopologyId": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
         "transforms": [
           {
             "translate": {
@@ -1209,66 +1209,66 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "resultArtifactId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "sourceTopologyId": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "edge_id": "872c9e21-88bc-50ac-8c71-9b3950316368"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "transforms": [
           {
             "translate": {
@@ -1290,22 +1290,22 @@ description: Artifact commands bone-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "f9290fd4-5c3f-5c2e-8173-812972a413d9"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "bee9909d-abbf-534c-b266-2c2c04133834",
+          "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+          "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+          "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+          "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+          "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+          "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+          "ba769d4c-3a67-5309-824d-fd59f263bb46"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001

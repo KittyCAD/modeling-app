@@ -304,7 +304,7 @@ description: Operations executed rotate_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55"
           }
         },
         "sourceRange": []
@@ -495,7 +495,7 @@ description: Operations executed rotate_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03"
           }
         },
         "sourceRange": []
@@ -544,13 +544,13 @@ description: Operations executed rotate_helix.kcl
             {
               "type": "Helix",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55"
               }
             },
             {
               "type": "Helix",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             }
           ]
@@ -739,7 +739,7 @@ description: Operations executed rotate_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []

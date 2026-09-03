@@ -1777,7 +1777,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1807,7 +1807,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
           }
         },
         "sourceRange": []
@@ -1860,7 +1860,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -1901,7 +1901,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -3555,7 +3555,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
               }
             ]
           },
@@ -3585,7 +3585,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
           }
         },
         "sourceRange": []
@@ -3634,7 +3634,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -3660,7 +3660,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3693,7 +3693,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
           }
         },
         "sourceRange": []
@@ -3770,7 +3770,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3803,7 +3803,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
           }
         },
         "sourceRange": []
@@ -3880,7 +3880,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3913,7 +3913,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
           }
         },
         "sourceRange": []
@@ -3990,7 +3990,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -4067,7 +4067,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -4080,25 +4080,25 @@ description: Operations executed stylized-cybertruck.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
                 }
               }
             ]
@@ -4133,7 +4133,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62"
           }
         },
         "sourceRange": []
@@ -5099,7 +5099,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
               }
             ]
           },
@@ -5129,7 +5129,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5182,7 +5182,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
           }
         },
         "sourceRange": []
@@ -5223,7 +5223,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
           }
         },
         "sourceRange": []
@@ -6029,15 +6029,15 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d7522563-c424-5aea-962e-3d6a85a0b99d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f58fd62a-578c-542c-94f8-dd627caab5d0"
               }
             ]
           },
@@ -6067,7 +6067,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9"
           }
         },
         "sourceRange": []
@@ -6116,7 +6116,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
           }
         },
         "sourceRange": []
@@ -7136,7 +7136,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2b45af9b-6b90-5530-b9b7-b193031152d8"
               }
             ]
           },
@@ -7166,7 +7166,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7239bb75-ea9c-5e04-812d-426e933ce851"
           }
         },
         "sourceRange": []
@@ -7215,7 +7215,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "95b7331f-664e-5be5-b9c0-fdd7570bf701"
           }
         },
         "sourceRange": []
@@ -7244,13 +7244,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc"
               }
             }
           ]
@@ -7285,7 +7285,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bd2c7879-5553-55c3-bc25-46df0c8081fc"
           }
         },
         "sourceRange": []
@@ -8127,7 +8127,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d4cbda13-cf30-51b5-adde-debccd5ae685"
               }
             ]
           },
@@ -8161,7 +8161,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98"
               }
             ]
           },
@@ -8191,7 +8191,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad"
           }
         },
         "sourceRange": []
@@ -8237,7 +8237,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
           }
         },
         "sourceRange": []
@@ -8278,7 +8278,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1583b450-a578-582f-8d23-686bccf95d8b"
           }
         },
         "sourceRange": []
@@ -8324,7 +8324,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
           }
         },
         "sourceRange": []
@@ -8365,7 +8365,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
           }
         },
         "sourceRange": []
@@ -8394,13 +8394,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
               }
             }
           ]
@@ -8438,13 +8438,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "94906884-1803-5336-93e6-0aca938f73f1"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "af94b4da-da53-5386-a65f-ed75c251c9ff"
               }
             }
           ]
@@ -8526,13 +8526,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
               }
             }
           ]
@@ -8570,13 +8570,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "887f8b95-6182-5637-a45b-e92f2860796c"
               }
             }
           ]
@@ -8658,13 +8658,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
               }
             }
           ]
@@ -8702,13 +8702,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
               }
             }
           ]
@@ -8790,13 +8790,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
               }
             }
           ]
@@ -8878,13 +8878,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
               }
             }
           ]
@@ -8966,13 +8966,13 @@ description: Operations executed stylized-cybertruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
               }
             }
           ]
@@ -9050,7 +9050,7 @@ description: Operations executed stylized-cybertruck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -10016,7 +10016,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "77202593-ebf9-50c7-b715-41557309d9ab"
               }
             ]
           },
@@ -10046,7 +10046,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16"
           }
         },
         "sourceRange": []
@@ -10092,7 +10092,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aa0e2533-e8d9-5b33-ac82-b003e1e03207"
           }
         },
         "sourceRange": []
@@ -10133,7 +10133,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639"
           }
         },
         "sourceRange": []
@@ -10158,7 +10158,7 @@ description: Operations executed stylized-cybertruck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -11124,7 +11124,7 @@ description: Operations executed stylized-cybertruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "27284bc1-5676-5b5a-baa2-003a7224d266"
               }
             ]
           },
@@ -11154,7 +11154,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79"
           }
         },
         "sourceRange": []
@@ -11200,7 +11200,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7a96966c-8df1-5353-a0a1-c191f9108448"
           }
         },
         "sourceRange": []
@@ -11241,7 +11241,7 @@ description: Operations executed stylized-cybertruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "13284012-5aa9-5cfb-8236-12f94ca6550e"
           }
         },
         "sourceRange": []

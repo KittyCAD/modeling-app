@@ -10,7 +10,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -50,7 +50,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -90,7 +90,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -130,7 +130,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "f7696437-0c54-515c-9a57-315967ca9a9d"
         },
         "sourceRange": []
       },

@@ -7,19 +7,19 @@ description: Variables in memory after executing angled_line.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8137b0af-17a3-570f-907a-7da80b56d36d",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": {
             "commentStart": 133,
@@ -32,29 +32,29 @@ description: Variables in memory after executing angled_line.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e2ca6ecd-9d7a-5faf-b88f-3babf10b2238",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "66ece012-dcba-5a2a-a7b4-b2f7e2744623",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "58521071-ebef-572d-8b0c-72ca92ea5777",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -63,11 +63,11 @@ description: Variables in memory after executing angled_line.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -84,7 +84,7 @@ description: Variables in memory after executing angled_line.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -108,7 +108,7 @@ description: Variables in memory after executing angled_line.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -125,7 +125,7 @@ description: Variables in memory after executing angled_line.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -142,7 +142,7 @@ description: Variables in memory after executing angled_line.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -159,7 +159,7 @@ description: Variables in memory after executing angled_line.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "sourceRange": []
             },
             "from": [
@@ -176,8 +176,8 @@ description: Variables in memory after executing angled_line.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "kind": "XY",
           "objectId": 0,
           "origin": {
@@ -218,7 +218,7 @@ description: Variables in memory after executing angled_line.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
@@ -228,12 +228,12 @@ description: Variables in memory after executing angled_line.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "747ead14-4b3c-582f-bd9b-60a361193164",
+      "endCapId": "c5d18838-435b-51c6-bdc5-10a9ff2bc999",
       "units": "mm",
       "sectional": false
     }

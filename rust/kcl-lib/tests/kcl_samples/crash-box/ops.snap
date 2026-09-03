@@ -1526,11 +1526,11 @@ description: Operations executed crash-box.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1560,7 +1560,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
           }
         },
         "sourceRange": []
@@ -1602,7 +1602,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -1626,19 +1626,19 @@ description: Operations executed crash-box.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "1084cca5-0297-5dc3-92ac-287642feefac"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "1ea630fe-9406-5262-a2d2-c618a59c9710"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac"
               }
             ]
           },
@@ -1668,7 +1668,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -1726,7 +1726,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
           }
         },
         "sourceRange": []
@@ -2677,11 +2677,11 @@ description: Operations executed crash-box.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0917d07d-5996-5994-8a06-602d43e2b6f3"
               }
             ]
           },
@@ -2711,7 +2711,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd"
           }
         },
         "sourceRange": []
@@ -2774,7 +2774,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
           }
         },
         "sourceRange": []
@@ -2798,11 +2798,11 @@ description: Operations executed crash-box.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "691b8c76-5891-5a28-bdac-73fb42581964"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "f68d346d-bc83-5d4f-9d87-65036ce694b4"
               }
             ]
           },
@@ -2832,7 +2832,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab"
           }
         },
         "sourceRange": []
@@ -2858,7 +2858,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -2868,7 +2868,7 @@ description: Operations executed crash-box.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
             }
           },
           "sourceRange": []
@@ -2896,7 +2896,7 @@ description: Operations executed crash-box.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -3140,7 +3140,7 @@ description: Operations executed crash-box.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
               }
             ]
           },
@@ -3174,7 +3174,7 @@ description: Operations executed crash-box.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5f95e913-96e4-58df-abe6-125bedd61cad"
               }
             ]
           },
@@ -3203,7 +3203,7 @@ description: Operations executed crash-box.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -3251,13 +3251,13 @@ description: Operations executed crash-box.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
               }
             }
           ]
@@ -3275,7 +3275,7 @@ description: Operations executed crash-box.kcl
         "to": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
           },
           "sourceRange": []
         }
@@ -3303,7 +3303,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f"
           }
         },
         "sourceRange": []
@@ -3329,7 +3329,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896"
           }
         },
         "sourceRange": []
@@ -3342,13 +3342,13 @@ description: Operations executed crash-box.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
                 }
               }
             ]
@@ -3379,7 +3379,7 @@ description: Operations executed crash-box.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba"
           }
         },
         "sourceRange": []

@@ -6,8 +6,8 @@ description: Variables in memory after executing lego.kcl
   "__sketch_18_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
       "objectId": 17,
       "value": "start",
       "xAxis": {
@@ -23,8 +23,8 @@ description: Variables in memory after executing lego.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
@@ -33,8 +33,8 @@ description: Variables in memory after executing lego.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -65,8 +65,8 @@ description: Variables in memory after executing lego.kcl
   "__sketch_35_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "objectId": 34,
       "value": "end",
       "xAxis": {
@@ -82,8 +82,8 @@ description: Variables in memory after executing lego.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
@@ -92,8 +92,8 @@ description: Variables in memory after executing lego.kcl
   "__sketch_48_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+      "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
       "objectId": 47,
       "value": "start",
       "xAxis": {
@@ -109,8 +109,8 @@ description: Variables in memory after executing lego.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
@@ -120,12 +120,12 @@ description: Variables in memory after executing lego.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1039,
@@ -138,8 +138,8 @@ description: Variables in memory after executing lego.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1121,
@@ -152,8 +152,8 @@ description: Variables in memory after executing lego.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 1240,
@@ -166,8 +166,8 @@ description: Variables in memory after executing lego.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1359,
@@ -183,11 +183,11 @@ description: Variables in memory after executing lego.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -211,7 +211,7 @@ description: Variables in memory after executing lego.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -235,7 +235,7 @@ description: Variables in memory after executing lego.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -259,7 +259,7 @@ description: Variables in memory after executing lego.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -283,8 +283,8 @@ description: Variables in memory after executing lego.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -325,7 +325,7 @@ description: Variables in memory after executing lego.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
             "sourceRange": []
           }
         },
@@ -347,13 +347,13 @@ description: Variables in memory after executing lego.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "originSketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "in",
       "sectional": false
     }
@@ -462,12 +462,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+          "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "94568877-321c-5e90-b395-9057c219e75b",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2537,
@@ -483,11 +483,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -518,8 +518,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+              "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
               "objectId": 34,
               "value": "end",
               "xAxis": {
@@ -535,8 +535,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -553,7 +553,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                 "sourceRange": []
               }
             },
@@ -563,13 +563,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "pegCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "endCapId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
           "units": "in",
           "sectional": false
         }
@@ -578,12 +578,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "23426665-465b-5270-a582-495a8376d30f",
+          "artifactId": "23426665-465b-5270-a582-495a8376d30f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "94568877-321c-5e90-b395-9057c219e75b",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2537,
@@ -599,11 +599,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "23426665-465b-5270-a582-495a8376d30f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -634,8 +634,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+              "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
               "objectId": 34,
               "value": "end",
               "xAxis": {
@@ -651,8 +651,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -669,7 +669,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                 "sourceRange": []
               }
             },
@@ -679,13 +679,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "pegCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "endCapId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
           "units": "in",
           "sectional": false
         }
@@ -694,12 +694,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "5f28331c-87e4-56a9-beb5-2acec58303fc",
+          "artifactId": "5f28331c-87e4-56a9-beb5-2acec58303fc",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "94568877-321c-5e90-b395-9057c219e75b",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2537,
@@ -715,11 +715,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "5f28331c-87e4-56a9-beb5-2acec58303fc",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -750,8 +750,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+              "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
               "objectId": 34,
               "value": "end",
               "xAxis": {
@@ -767,8 +767,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -785,7 +785,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                 "sourceRange": []
               }
             },
@@ -795,13 +795,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "pegCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "endCapId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
           "units": "in",
           "sectional": false
         }
@@ -810,12 +810,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b310682a-0fff-517f-aba0-d685332987e8",
+          "artifactId": "b310682a-0fff-517f-aba0-d685332987e8",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "94568877-321c-5e90-b395-9057c219e75b",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2537,
@@ -831,11 +831,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "b310682a-0fff-517f-aba0-d685332987e8",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -866,8 +866,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+              "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
               "objectId": 34,
               "value": "end",
               "xAxis": {
@@ -883,8 +883,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -901,7 +901,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                 "sourceRange": []
               }
             },
@@ -911,13 +911,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "pegCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "endCapId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
           "units": "in",
           "sectional": false
         }
@@ -926,12 +926,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9c5d011b-8f8a-5414-b289-662e288968ab",
+          "artifactId": "9c5d011b-8f8a-5414-b289-662e288968ab",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "94568877-321c-5e90-b395-9057c219e75b",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2537,
@@ -947,11 +947,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9c5d011b-8f8a-5414-b289-662e288968ab",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -982,8 +982,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+              "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
               "objectId": 34,
               "value": "end",
               "xAxis": {
@@ -999,8 +999,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -1017,7 +1017,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                 "sourceRange": []
               }
             },
@@ -1027,13 +1027,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "pegCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "endCapId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
           "units": "in",
           "sectional": false
         }
@@ -1042,12 +1042,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "cbd591e1-2ba8-5f98-b6ab-520e3bc91cca",
+          "artifactId": "cbd591e1-2ba8-5f98-b6ab-520e3bc91cca",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "94568877-321c-5e90-b395-9057c219e75b",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2537,
@@ -1063,11 +1063,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "cbd591e1-2ba8-5f98-b6ab-520e3bc91cca",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1098,8 +1098,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+              "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
               "objectId": 34,
               "value": "end",
               "xAxis": {
@@ -1115,8 +1115,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -1133,7 +1133,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                 "sourceRange": []
               }
             },
@@ -1143,13 +1143,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "pegCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "endCapId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
           "units": "in",
           "sectional": false
         }
@@ -1160,11 +1160,11 @@ description: Variables in memory after executing lego.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
             "sourceRange": []
           },
           "ccw": true,
@@ -1195,8 +1195,8 @@ description: Variables in memory after executing lego.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+        "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
         "objectId": 34,
         "value": "end",
         "xAxis": {
@@ -1212,8 +1212,8 @@ description: Variables in memory after executing lego.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
@@ -1230,7 +1230,7 @@ description: Variables in memory after executing lego.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
           "sourceRange": []
         }
       },
@@ -1240,9 +1240,9 @@ description: Variables in memory after executing lego.kcl
           "value": "pegCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "units": "in"
     }
   },
@@ -1250,12 +1250,12 @@ description: Variables in memory after executing lego.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "94568877-321c-5e90-b395-9057c219e75b",
+          "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2537,
@@ -1271,11 +1271,11 @@ description: Variables in memory after executing lego.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": []
             },
             "ccw": true,
@@ -1306,8 +1306,8 @@ description: Variables in memory after executing lego.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+          "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
           "objectId": 34,
           "value": "end",
           "xAxis": {
@@ -1323,8 +1323,8 @@ description: Variables in memory after executing lego.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+            "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
@@ -1341,7 +1341,7 @@ description: Variables in memory after executing lego.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
             "sourceRange": []
           }
         },
@@ -1351,13 +1351,13 @@ description: Variables in memory after executing lego.kcl
             "value": "pegCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+      "endCapId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
       "units": "in",
       "sectional": false
     }
@@ -1372,11 +1372,11 @@ description: Variables in memory after executing lego.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1407,8 +1407,8 @@ description: Variables in memory after executing lego.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+                "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
                 "objectId": 34,
                 "value": "end",
                 "xAxis": {
@@ -1424,8 +1424,8 @@ description: Variables in memory after executing lego.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                  "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
@@ -1442,7 +1442,7 @@ description: Variables in memory after executing lego.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                   "sourceRange": []
                 }
               },
@@ -1452,8 +1452,8 @@ description: Variables in memory after executing lego.kcl
                   "value": "pegCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+              "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
               "units": "in",
               "isClosed": "no"
             }
@@ -1467,7 +1467,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -1543,8 +1543,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+                  "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
                   "objectId": 34,
                   "value": "end",
                   "xAxis": {
@@ -1560,13 +1560,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pegCenterGuide"
@@ -1582,7 +1582,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
                 "objectId": 38,
                 "kind": {
                   "circle": {
@@ -1657,8 +1657,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+                  "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
                   "objectId": 34,
                   "value": "end",
                   "xAxis": {
@@ -1674,13 +1674,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pegCircle"
@@ -1696,8 +1696,8 @@ description: Variables in memory after executing lego.kcl
   "pegSketchPlane": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "artifactId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "objectId": 34,
       "value": "end",
       "xAxis": {
@@ -1713,8 +1713,8 @@ description: Variables in memory after executing lego.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
@@ -1742,11 +1742,11 @@ description: Variables in memory after executing lego.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -1770,7 +1770,7 @@ description: Variables in memory after executing lego.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -1794,7 +1794,7 @@ description: Variables in memory after executing lego.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -1818,7 +1818,7 @@ description: Variables in memory after executing lego.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -1842,8 +1842,8 @@ description: Variables in memory after executing lego.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1884,7 +1884,7 @@ description: Variables in memory after executing lego.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
           "sourceRange": []
         }
       },
@@ -1906,9 +1906,9 @@ description: Variables in memory after executing lego.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "originSketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "units": "in"
     }
   },
@@ -1916,11 +1916,11 @@ description: Variables in memory after executing lego.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
             "sourceRange": []
           },
           "from": [
@@ -1944,7 +1944,7 @@ description: Variables in memory after executing lego.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
             "sourceRange": []
           },
           "from": [
@@ -1968,7 +1968,7 @@ description: Variables in memory after executing lego.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
             "sourceRange": []
           },
           "from": [
@@ -1992,7 +1992,7 @@ description: Variables in memory after executing lego.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
             "sourceRange": []
           },
           "from": [
@@ -2017,8 +2017,8 @@ description: Variables in memory after executing lego.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+        "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
         "objectId": 17,
         "value": "start",
         "xAxis": {
@@ -2034,8 +2034,8 @@ description: Variables in memory after executing lego.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
@@ -2052,7 +2052,7 @@ description: Variables in memory after executing lego.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "sourceRange": []
         }
       },
@@ -2074,9 +2074,9 @@ description: Variables in memory after executing lego.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "originalId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "originSketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "units": "in"
     }
   },
@@ -2084,12 +2084,12 @@ description: Variables in memory after executing lego.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1823,
@@ -2102,8 +2102,8 @@ description: Variables in memory after executing lego.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1905,
@@ -2116,8 +2116,8 @@ description: Variables in memory after executing lego.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "sourceRange": [],
           "tag": {
             "commentStart": 2024,
@@ -2130,8 +2130,8 @@ description: Variables in memory after executing lego.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "sourceRange": [],
           "tag": {
             "commentStart": 2143,
@@ -2147,11 +2147,11 @@ description: Variables in memory after executing lego.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -2175,7 +2175,7 @@ description: Variables in memory after executing lego.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
               "sourceRange": []
             },
             "from": [
@@ -2199,7 +2199,7 @@ description: Variables in memory after executing lego.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": []
             },
             "from": [
@@ -2223,7 +2223,7 @@ description: Variables in memory after executing lego.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": []
             },
             "from": [
@@ -2248,8 +2248,8 @@ description: Variables in memory after executing lego.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+          "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
           "objectId": 17,
           "value": "start",
           "xAxis": {
@@ -2265,8 +2265,8 @@ description: Variables in memory after executing lego.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+            "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
@@ -2283,7 +2283,7 @@ description: Variables in memory after executing lego.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
             "sourceRange": []
           }
         },
@@ -2305,12 +2305,12 @@ description: Variables in memory after executing lego.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "originalId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "originSketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "units": "in"
       },
-      "startCapId": "[uuid]",
+      "startCapId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
       "endCapId": null,
       "units": "in",
       "sectional": false
@@ -2325,7 +2325,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2399,8 +2399,8 @@ description: Variables in memory after executing lego.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2429,7 +2429,7 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2445,7 +2445,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -2519,8 +2519,8 @@ description: Variables in memory after executing lego.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2549,7 +2549,7 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2565,7 +2565,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -2639,8 +2639,8 @@ description: Variables in memory after executing lego.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2669,7 +2669,7 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2685,7 +2685,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -2759,8 +2759,8 @@ description: Variables in memory after executing lego.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2789,7 +2789,7 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2806,11 +2806,11 @@ description: Variables in memory after executing lego.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2834,7 +2834,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -2858,7 +2858,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -2882,7 +2882,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -2906,8 +2906,8 @@ description: Variables in memory after executing lego.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2948,7 +2948,7 @@ description: Variables in memory after executing lego.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                   "sourceRange": []
                 }
               },
@@ -2970,8 +2970,8 @@ description: Variables in memory after executing lego.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -2991,7 +2991,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -3066,8 +3066,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+                  "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
                   "objectId": 17,
                   "value": "start",
                   "xAxis": {
@@ -3083,13 +3083,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3105,7 +3105,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -3180,8 +3180,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+                  "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
                   "objectId": 17,
                   "value": "start",
                   "xAxis": {
@@ -3197,13 +3197,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3219,7 +3219,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -3294,8 +3294,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+                  "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
                   "objectId": 17,
                   "value": "start",
                   "xAxis": {
@@ -3311,13 +3311,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3333,7 +3333,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "deb86259-17a0-5782-a352-d25992246cc0",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -3408,8 +3408,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+                  "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
                   "objectId": 17,
                   "value": "start",
                   "xAxis": {
@@ -3425,13 +3425,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3448,11 +3448,11 @@ description: Variables in memory after executing lego.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -3476,7 +3476,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                     "sourceRange": []
                   },
                   "from": [
@@ -3500,7 +3500,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                     "sourceRange": []
                   },
                   "from": [
@@ -3524,7 +3524,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "deb86259-17a0-5782-a352-d25992246cc0",
                     "sourceRange": []
                   },
                   "from": [
@@ -3549,8 +3549,8 @@ description: Variables in memory after executing lego.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+                "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
                 "objectId": 17,
                 "value": "start",
                 "xAxis": {
@@ -3566,8 +3566,8 @@ description: Variables in memory after executing lego.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                  "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
@@ -3584,7 +3584,7 @@ description: Variables in memory after executing lego.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "sourceRange": []
                 }
               },
@@ -3606,8 +3606,8 @@ description: Variables in memory after executing lego.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+              "originalId": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -3675,12 +3675,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d0ecd543-b198-55be-b0f5-354ae8570862",
+              "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3499,
@@ -3696,11 +3696,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3731,8 +3731,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+              "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
               "objectId": 47,
               "value": "start",
               "xAxis": {
@@ -3748,8 +3748,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -3766,7 +3766,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                 "sourceRange": []
               }
             },
@@ -3776,13 +3776,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "tubeCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "originSketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "3105452f-7db3-57c1-9953-0b13163d0db4",
+          "endCapId": "6a859edc-0d1f-5a1b-81f9-ccef4f8e8497",
           "units": "in",
           "sectional": false
         }
@@ -3791,12 +3791,12 @@ description: Variables in memory after executing lego.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "21502088-8844-5886-bc5d-1ba6bbadbe34",
+          "artifactId": "21502088-8844-5886-bc5d-1ba6bbadbe34",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d0ecd543-b198-55be-b0f5-354ae8570862",
+              "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3499,
@@ -3812,11 +3812,11 @@ description: Variables in memory after executing lego.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "21502088-8844-5886-bc5d-1ba6bbadbe34",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3847,8 +3847,8 @@ description: Variables in memory after executing lego.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+              "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
               "objectId": 47,
               "value": "start",
               "xAxis": {
@@ -3864,8 +3864,8 @@ description: Variables in memory after executing lego.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -3882,7 +3882,7 @@ description: Variables in memory after executing lego.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                 "sourceRange": []
               }
             },
@@ -3892,13 +3892,13 @@ description: Variables in memory after executing lego.kcl
                 "value": "tubeCircle"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "originSketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "3105452f-7db3-57c1-9953-0b13163d0db4",
+          "endCapId": "6a859edc-0d1f-5a1b-81f9-ccef4f8e8497",
           "units": "in",
           "sectional": false
         }
@@ -3909,11 +3909,11 @@ description: Variables in memory after executing lego.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
             "sourceRange": []
           },
           "ccw": true,
@@ -3944,8 +3944,8 @@ description: Variables in memory after executing lego.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+        "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
         "objectId": 47,
         "value": "start",
         "xAxis": {
@@ -3961,8 +3961,8 @@ description: Variables in memory after executing lego.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
@@ -3979,7 +3979,7 @@ description: Variables in memory after executing lego.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
           "sourceRange": []
         }
       },
@@ -3989,9 +3989,9 @@ description: Variables in memory after executing lego.kcl
           "value": "tubeCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "originSketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "units": "in"
     }
   },
@@ -3999,12 +3999,12 @@ description: Variables in memory after executing lego.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0ecd543-b198-55be-b0f5-354ae8570862",
+          "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
           "sourceRange": [],
           "tag": {
             "commentStart": 3499,
@@ -4020,11 +4020,11 @@ description: Variables in memory after executing lego.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
               "sourceRange": []
             },
             "ccw": true,
@@ -4055,8 +4055,8 @@ description: Variables in memory after executing lego.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+          "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
           "objectId": 47,
           "value": "start",
           "xAxis": {
@@ -4072,8 +4072,8 @@ description: Variables in memory after executing lego.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+            "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
@@ -4090,7 +4090,7 @@ description: Variables in memory after executing lego.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
             "sourceRange": []
           }
         },
@@ -4100,13 +4100,13 @@ description: Variables in memory after executing lego.kcl
             "value": "tubeCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "originSketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "3105452f-7db3-57c1-9953-0b13163d0db4",
+      "endCapId": "6a859edc-0d1f-5a1b-81f9-ccef4f8e8497",
       "units": "in",
       "sectional": false
     }
@@ -4121,11 +4121,11 @@ description: Variables in memory after executing lego.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4156,8 +4156,8 @@ description: Variables in memory after executing lego.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+                "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
                 "objectId": 47,
                 "value": "start",
                 "xAxis": {
@@ -4173,8 +4173,8 @@ description: Variables in memory after executing lego.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                  "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
@@ -4191,7 +4191,7 @@ description: Variables in memory after executing lego.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                   "sourceRange": []
                 }
               },
@@ -4201,8 +4201,8 @@ description: Variables in memory after executing lego.kcl
                   "value": "tubeCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "originalId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
               "units": "in",
               "isClosed": "no"
             }
@@ -4216,7 +4216,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
                 "objectId": 54,
                 "kind": {
                   "line": {
@@ -4292,8 +4292,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+                  "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
                   "objectId": 47,
                   "value": "start",
                   "xAxis": {
@@ -4309,13 +4309,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tubeCenterGuide"
@@ -4331,7 +4331,7 @@ description: Variables in memory after executing lego.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                 "objectId": 51,
                 "kind": {
                   "circle": {
@@ -4406,8 +4406,8 @@ description: Variables in memory after executing lego.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+                  "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
                   "objectId": 47,
                   "value": "start",
                   "xAxis": {
@@ -4423,13 +4423,13 @@ description: Variables in memory after executing lego.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tubeCircle"
@@ -4445,8 +4445,8 @@ description: Variables in memory after executing lego.kcl
   "tubeSketchPlane": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+      "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
       "objectId": 47,
       "value": "start",
       "xAxis": {
@@ -4462,8 +4462,8 @@ description: Variables in memory after executing lego.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "creatorSketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"

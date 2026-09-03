@@ -6,8 +6,8 @@ description: Variables in memory after executing bone-plate.kcl
   "__sketch_119_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing bone-plate.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -131,12 +131,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1470a802-2fe7-57b1-bd3a-06f513618193",
+          "id": "872c9e21-88bc-50ac-8c71-9b3950316368",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -152,11 +152,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bee9909d-abbf-534c-b266-2c2c04133834",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "872c9e21-88bc-50ac-8c71-9b3950316368",
               "sourceRange": []
             },
             "ccw": true,
@@ -186,8 +186,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -228,7 +228,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -238,13 +238,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "originalId": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "1dabba86-af7b-509e-a061-3b6ec303238f",
+      "endCapId": "b7393e7b-412e-5b34-80bd-6a3fe745339c",
       "units": "mm",
       "sectional": false
     }
@@ -267,12 +267,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+      "artifactId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6c57a54e-ef63-5e67-9c15-a54892632a58",
+          "id": "9d07f1f8-34cf-5097-adf1-ae0d853bc49d",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -288,11 +288,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9d07f1f8-34cf-5097-adf1-ae0d853bc49d",
               "sourceRange": []
             },
             "ccw": true,
@@ -322,8 +322,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -364,7 +364,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -374,13 +374,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+        "originalId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "abca37e9-4653-57bb-8979-912492ba05d4",
+      "endCapId": "23a647b0-7826-526e-8bfa-04f5a3913f46",
       "units": "mm",
       "sectional": false
     }
@@ -389,12 +389,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0963b58a-34f1-5e3e-9970-65ad939734bf",
+          "id": "8c74828f-57f1-5c3e-b18a-16915e3236ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -410,11 +410,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8c74828f-57f1-5c3e-b18a-16915e3236ac",
               "sourceRange": []
             },
             "ccw": true,
@@ -444,8 +444,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -486,7 +486,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -496,13 +496,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b808846a-b522-5431-a6a8-af316f49c488",
+      "endCapId": "0b6e5e4a-2be1-549b-b26b-727a8267f3a4",
       "units": "mm",
       "sectional": false
     }
@@ -511,12 +511,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+      "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e4f462d1-ccb0-5adf-8207-a51ddd9a341f",
+          "id": "27618e1a-b2d9-51af-ba2e-b4f02b4f78ff",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -532,11 +532,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "27618e1a-b2d9-51af-ba2e-b4f02b4f78ff",
               "sourceRange": []
             },
             "ccw": true,
@@ -566,8 +566,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -608,7 +608,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -618,13 +618,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+        "originalId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2bea55cb-20cd-55e2-993a-989aa82cad75",
+      "endCapId": "0845e57d-59a1-57aa-bcbb-1abe7b82b73c",
       "units": "mm",
       "sectional": false
     }
@@ -633,12 +633,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+      "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "658f139b-cd23-5eb5-80f1-6712a1590a28",
+          "id": "0d9d56dc-3827-510d-8adf-628e866dab37",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -654,11 +654,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0d9d56dc-3827-510d-8adf-628e866dab37",
               "sourceRange": []
             },
             "ccw": true,
@@ -688,8 +688,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -730,7 +730,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -740,13 +740,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+        "originalId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "453e67a0-b972-53f0-b149-b4eb91778c9a",
+      "endCapId": "1574d83e-db42-5e01-b999-4e900cd051ec",
       "units": "mm",
       "sectional": false
     }
@@ -755,12 +755,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+      "artifactId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d265353-40e9-5b15-9572-1aaff6a25391",
+          "id": "52a58279-4e4c-5e63-8a25-c76e002b85fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -776,11 +776,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "52a58279-4e4c-5e63-8a25-c76e002b85fc",
               "sourceRange": []
             },
             "ccw": true,
@@ -810,8 +810,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -852,7 +852,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -862,13 +862,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+        "originalId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "50bb129a-2074-53e5-836b-50d9bc2f19b5",
+      "endCapId": "026a3019-da52-563f-be80-e12f24283734",
       "units": "mm",
       "sectional": false
     }
@@ -877,12 +877,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+      "artifactId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0c755463-b825-58e1-b1e1-006300265923",
+          "id": "691d53b1-2028-525c-82b9-f61e602c8797",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -898,11 +898,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "691d53b1-2028-525c-82b9-f61e602c8797",
               "sourceRange": []
             },
             "ccw": true,
@@ -932,8 +932,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -974,7 +974,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -984,13 +984,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+        "originalId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "f63b9d49-9d60-5835-b764-93c3d37595af",
+      "endCapId": "e5f72904-38d0-5d1b-a5ea-1cdb6c481085",
       "units": "mm",
       "sectional": false
     }
@@ -999,12 +999,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+      "artifactId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4ec278c2-fedd-55fe-9270-95f85c5e6a1c",
+          "id": "f00c8f98-363d-5862-a96f-8cf649cde3ea",
           "sourceRange": [],
           "tag": {
             "commentStart": 4613,
@@ -1020,11 +1020,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f00c8f98-363d-5862-a96f-8cf649cde3ea",
               "sourceRange": []
             },
             "ccw": true,
@@ -1054,8 +1054,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -1096,7 +1096,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
             "sourceRange": []
           }
         },
@@ -1106,13 +1106,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "circle01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+        "originalId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+        "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "308f89f4-e3a9-5e12-85a1-d480b7c4b378",
+      "endCapId": "1fefd36e-3568-5767-8806-44fa4eb957f8",
       "units": "mm",
       "sectional": false
     }
@@ -1121,11 +1121,11 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bee9909d-abbf-534c-b266-2c2c04133834",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "872c9e21-88bc-50ac-8c71-9b3950316368",
             "sourceRange": []
           },
           "ccw": true,
@@ -1155,8 +1155,8 @@ description: Variables in memory after executing bone-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+        "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
         "kind": "Custom",
         "objectId": 118,
         "origin": {
@@ -1197,7 +1197,7 @@ description: Variables in memory after executing bone-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "93954f29-a246-54bd-ac2a-62572f26d508",
           "sourceRange": []
         }
       },
@@ -1207,9 +1207,9 @@ description: Variables in memory after executing bone-plate.kcl
           "value": "circle01"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "originalId": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "originSketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "units": "mm"
     }
   },
@@ -1222,7 +1222,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
                 "objectId": 122,
                 "kind": {
                   "line": {
@@ -1297,8 +1297,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+                  "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                   "kind": "Custom",
                   "objectId": 118,
                   "origin": {
@@ -1327,7 +1327,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide01"
@@ -1343,7 +1343,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
                 "objectId": 128,
                 "kind": {
                   "circle": {
@@ -1417,8 +1417,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+                  "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                   "kind": "Custom",
                   "objectId": 118,
                   "origin": {
@@ -1447,7 +1447,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle01"
@@ -1464,11 +1464,11 @@ description: Variables in memory after executing bone-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1498,8 +1498,8 @@ description: Variables in memory after executing bone-plate.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+                "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                 "kind": "Custom",
                 "objectId": 118,
                 "origin": {
@@ -1540,7 +1540,7 @@ description: Variables in memory after executing bone-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "93954f29-a246-54bd-ac2a-62572f26d508",
                   "sourceRange": []
                 }
               },
@@ -1550,8 +1550,8 @@ description: Variables in memory after executing bone-plate.kcl
                   "value": "circle01"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+              "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1565,7 +1565,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                 "objectId": 125,
                 "kind": {
                   "line": {
@@ -1640,8 +1640,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+                  "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                   "kind": "Custom",
                   "objectId": 118,
                   "origin": {
@@ -1670,7 +1670,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide01"
@@ -1707,12 +1707,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5e3a4b21-0722-59b8-9583-afccaab8b9ba",
+          "id": "fa347f31-bb54-52bd-b1e6-826e5139c84a",
           "sourceRange": [],
           "tag": {
             "commentStart": 596,
@@ -1725,8 +1725,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d85f8074-848b-5748-97c7-823dc4fb0849",
+          "id": "53ffc363-b625-5e2f-a3a3-c5f321b3a2bf",
           "sourceRange": [],
           "tag": {
             "commentStart": 706,
@@ -1739,8 +1739,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "08850d13-d15b-5f1f-88b8-f456f81ea165",
+          "id": "6d5b4894-755f-5079-a757-1568700d5d2b",
           "sourceRange": [],
           "tag": {
             "commentStart": 863,
@@ -1753,8 +1753,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cc17bdc1-3e9e-5f5f-b663-8c983a96d61e",
+          "id": "4116c875-bdbc-56ab-a81a-bc705a70f516",
           "sourceRange": [],
           "tag": {
             "commentStart": 1019,
@@ -1767,8 +1767,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0c4aa5ad-8f4f-5408-b175-9a2eda59653b",
+          "id": "c282bc4f-5ade-54e5-9703-756a9bea87e6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1178,
@@ -1781,8 +1781,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b4e69b8d-ad06-513f-80ef-2ceaf795de5d",
+          "id": "e9a5e6af-6834-521d-9004-05abae30dbdd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1334,
@@ -1795,8 +1795,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "77b4ae87-93f4-5d86-b9d2-ea4d9c59f34b",
+          "id": "4c78139f-2bda-5c75-8121-26fba609f7d5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1492,
@@ -1809,8 +1809,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9712c09c-a552-5770-b5a4-829e19497eac",
+          "id": "ad94bacf-5c64-59bc-b96a-922c6fa5336f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1646,
@@ -1823,8 +1823,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fc984451-660d-5c31-a558-8dc793bf0b15",
+          "id": "209f23e4-753a-5196-b295-e380fc40589d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1803,
@@ -1837,8 +1837,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "78741544-2720-5948-86a0-e3d7bb627a1f",
+          "id": "245e94e9-dead-58c1-b997-17191922a7c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1964,
@@ -1851,8 +1851,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a018330b-7af2-5793-bae2-34c6d514960b",
+          "id": "ecbff008-b319-54c6-88cc-c210250c307f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2091,
@@ -1865,8 +1865,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "550b9356-04f9-5892-85ee-ad25a2167181",
+          "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2252,
@@ -1879,8 +1879,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "29c0884e-bd33-5146-a460-b46c670dc0ef",
+          "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
           "sourceRange": [],
           "tag": {
             "commentStart": 2382,
@@ -1893,8 +1893,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "570c2e80-fb2d-5b61-a06e-2a476f8f64fd",
+          "id": "87387f1f-8159-5da2-abb6-d044596e4909",
           "sourceRange": [],
           "tag": {
             "commentStart": 2542,
@@ -1907,8 +1907,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bf12374d-29ff-5265-b123-8d3a5886303d",
+          "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
           "sourceRange": [],
           "tag": {
             "commentStart": 2703,
@@ -1921,8 +1921,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3d279891-4297-52c1-a309-653444cd0cea",
+          "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
           "sourceRange": [],
           "tag": {
             "commentStart": 2828,
@@ -1938,11 +1938,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fa347f31-bb54-52bd-b1e6-826e5139c84a",
               "sourceRange": []
             },
             "ccw": true,
@@ -1972,7 +1972,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53ffc363-b625-5e2f-a3a3-c5f321b3a2bf",
               "sourceRange": []
             },
             "ccw": true,
@@ -2002,7 +2002,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6d5b4894-755f-5079-a757-1568700d5d2b",
               "sourceRange": []
             },
             "ccw": false,
@@ -2032,7 +2032,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4116c875-bdbc-56ab-a81a-bc705a70f516",
               "sourceRange": []
             },
             "ccw": true,
@@ -2062,7 +2062,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c282bc4f-5ade-54e5-9703-756a9bea87e6",
               "sourceRange": []
             },
             "ccw": false,
@@ -2092,7 +2092,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e9a5e6af-6834-521d-9004-05abae30dbdd",
               "sourceRange": []
             },
             "ccw": true,
@@ -2122,7 +2122,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4c78139f-2bda-5c75-8121-26fba609f7d5",
               "sourceRange": []
             },
             "ccw": false,
@@ -2152,7 +2152,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad94bacf-5c64-59bc-b96a-922c6fa5336f",
               "sourceRange": []
             },
             "ccw": false,
@@ -2182,7 +2182,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "209f23e4-753a-5196-b295-e380fc40589d",
               "sourceRange": []
             },
             "ccw": true,
@@ -2212,7 +2212,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "245e94e9-dead-58c1-b997-17191922a7c5",
               "sourceRange": []
             },
             "from": [
@@ -2236,7 +2236,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ecbff008-b319-54c6-88cc-c210250c307f",
               "sourceRange": []
             },
             "ccw": false,
@@ -2266,7 +2266,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
               "sourceRange": []
             },
             "from": [
@@ -2290,7 +2290,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
               "sourceRange": []
             },
             "ccw": false,
@@ -2320,7 +2320,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87387f1f-8159-5da2-abb6-d044596e4909",
               "sourceRange": []
             },
             "ccw": true,
@@ -2350,7 +2350,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
               "sourceRange": []
             },
             "from": [
@@ -2374,7 +2374,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
               "sourceRange": []
             },
             "from": [
@@ -2398,8 +2398,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2440,7 +2440,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
             "sourceRange": []
           }
         },
@@ -2510,13 +2510,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "line16"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "originSketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "15174cb2-36ef-5bf8-a94f-73e786ddde4f",
+      "endCapId": "b96c4bc9-a990-5246-97a3-591c1a49e743",
       "units": "mm",
       "sectional": false
     }
@@ -2525,11 +2525,11 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fa347f31-bb54-52bd-b1e6-826e5139c84a",
             "sourceRange": []
           },
           "ccw": true,
@@ -2559,7 +2559,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "53ffc363-b625-5e2f-a3a3-c5f321b3a2bf",
             "sourceRange": []
           },
           "ccw": true,
@@ -2589,7 +2589,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6d5b4894-755f-5079-a757-1568700d5d2b",
             "sourceRange": []
           },
           "ccw": false,
@@ -2619,7 +2619,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4116c875-bdbc-56ab-a81a-bc705a70f516",
             "sourceRange": []
           },
           "ccw": true,
@@ -2649,7 +2649,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c282bc4f-5ade-54e5-9703-756a9bea87e6",
             "sourceRange": []
           },
           "ccw": false,
@@ -2679,7 +2679,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e9a5e6af-6834-521d-9004-05abae30dbdd",
             "sourceRange": []
           },
           "ccw": true,
@@ -2709,7 +2709,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4c78139f-2bda-5c75-8121-26fba609f7d5",
             "sourceRange": []
           },
           "ccw": false,
@@ -2739,7 +2739,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad94bacf-5c64-59bc-b96a-922c6fa5336f",
             "sourceRange": []
           },
           "ccw": false,
@@ -2769,7 +2769,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "209f23e4-753a-5196-b295-e380fc40589d",
             "sourceRange": []
           },
           "ccw": true,
@@ -2799,7 +2799,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "245e94e9-dead-58c1-b997-17191922a7c5",
             "sourceRange": []
           },
           "from": [
@@ -2823,7 +2823,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ecbff008-b319-54c6-88cc-c210250c307f",
             "sourceRange": []
           },
           "ccw": false,
@@ -2853,7 +2853,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
             "sourceRange": []
           },
           "from": [
@@ -2877,7 +2877,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
             "sourceRange": []
           },
           "ccw": false,
@@ -2907,7 +2907,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "87387f1f-8159-5da2-abb6-d044596e4909",
             "sourceRange": []
           },
           "ccw": true,
@@ -2937,7 +2937,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
             "sourceRange": []
           },
           "from": [
@@ -2961,7 +2961,7 @@ description: Variables in memory after executing bone-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
             "sourceRange": []
           },
           "from": [
@@ -2985,8 +2985,8 @@ description: Variables in memory after executing bone-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -3027,7 +3027,7 @@ description: Variables in memory after executing bone-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
           "sourceRange": []
         }
       },
@@ -3097,9 +3097,9 @@ description: Variables in memory after executing bone-plate.kcl
           "value": "line16"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "originSketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "units": "mm"
     }
   },
@@ -3112,7 +3112,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -3218,8 +3218,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3248,7 +3248,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -3264,7 +3264,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 53,
                 "kind": {
                   "arc": {
@@ -3370,8 +3370,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3400,7 +3400,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc11"
@@ -3416,7 +3416,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 62,
                 "kind": {
                   "arc": {
@@ -3522,8 +3522,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3552,7 +3552,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc13"
@@ -3568,7 +3568,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "objectId": 67,
                 "kind": {
                   "arc": {
@@ -3674,8 +3674,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3704,7 +3704,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc14"
@@ -3720,7 +3720,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 9,
                 "kind": {
                   "arc": {
@@ -3826,8 +3826,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3856,7 +3856,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -3872,7 +3872,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 14,
                 "kind": {
                   "arc": {
@@ -3978,8 +3978,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4008,7 +4008,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -4024,7 +4024,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 19,
                 "kind": {
                   "arc": {
@@ -4130,8 +4130,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4160,7 +4160,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -4176,7 +4176,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 24,
                 "kind": {
                   "arc": {
@@ -4282,8 +4282,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4312,7 +4312,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc5"
@@ -4328,7 +4328,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 29,
                 "kind": {
                   "arc": {
@@ -4434,8 +4434,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4464,7 +4464,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -4480,7 +4480,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 34,
                 "kind": {
                   "arc": {
@@ -4586,8 +4586,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4616,7 +4616,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc7"
@@ -4632,7 +4632,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 39,
                 "kind": {
                   "arc": {
@@ -4738,8 +4738,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4768,7 +4768,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc8"
@@ -4784,7 +4784,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 44,
                 "kind": {
                   "arc": {
@@ -4890,8 +4890,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4920,7 +4920,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc9"
@@ -4936,7 +4936,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
                 "objectId": 109,
                 "kind": {
                   "line": {
@@ -5011,8 +5011,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5041,7 +5041,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5057,7 +5057,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 48,
                 "kind": {
                   "line": {
@@ -5131,8 +5131,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5161,7 +5161,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -5177,7 +5177,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 57,
                 "kind": {
                   "line": {
@@ -5251,8 +5251,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5281,7 +5281,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -5297,7 +5297,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 71,
                 "kind": {
                   "line": {
@@ -5371,8 +5371,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5401,7 +5401,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -5417,7 +5417,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 75,
                 "kind": {
                   "line": {
@@ -5491,8 +5491,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5521,7 +5521,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line16"
@@ -5537,7 +5537,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "objectId": 88,
                 "kind": {
                   "line": {
@@ -5612,8 +5612,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5642,7 +5642,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5658,7 +5658,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                 "objectId": 93,
                 "kind": {
                   "line": {
@@ -5733,8 +5733,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5763,7 +5763,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5779,7 +5779,7 @@ description: Variables in memory after executing bone-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
                 "objectId": 101,
                 "kind": {
                   "line": {
@@ -5854,8 +5854,8 @@ description: Variables in memory after executing bone-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5884,7 +5884,7 @@ description: Variables in memory after executing bone-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5901,11 +5901,11 @@ description: Variables in memory after executing bone-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5935,7 +5935,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -5952,7 +5952,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5982,7 +5982,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6012,7 +6012,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6042,7 +6042,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6072,7 +6072,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6102,7 +6102,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6132,7 +6132,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6162,7 +6162,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6192,7 +6192,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -6216,7 +6216,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6246,7 +6246,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -6270,7 +6270,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6300,7 +6300,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6330,7 +6330,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -6354,7 +6354,7 @@ description: Variables in memory after executing bone-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "from": [
@@ -6378,8 +6378,8 @@ description: Variables in memory after executing bone-plate.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -6420,7 +6420,7 @@ description: Variables in memory after executing bone-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                   "sourceRange": []
                 }
               },
@@ -6490,8 +6490,8 @@ description: Variables in memory after executing bone-plate.kcl
                   "value": "line16"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "originalId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "units": "mm",
               "isClosed": "no"
             }
@@ -6506,12 +6506,12 @@ description: Variables in memory after executing bone-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+      "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5e3a4b21-0722-59b8-9583-afccaab8b9ba",
+          "id": "fa347f31-bb54-52bd-b1e6-826e5139c84a",
           "sourceRange": [],
           "tag": {
             "commentStart": 596,
@@ -6524,8 +6524,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d85f8074-848b-5748-97c7-823dc4fb0849",
+          "id": "53ffc363-b625-5e2f-a3a3-c5f321b3a2bf",
           "sourceRange": [],
           "tag": {
             "commentStart": 706,
@@ -6538,8 +6538,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "08850d13-d15b-5f1f-88b8-f456f81ea165",
+          "id": "6d5b4894-755f-5079-a757-1568700d5d2b",
           "sourceRange": [],
           "tag": {
             "commentStart": 863,
@@ -6552,8 +6552,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cc17bdc1-3e9e-5f5f-b663-8c983a96d61e",
+          "id": "4116c875-bdbc-56ab-a81a-bc705a70f516",
           "sourceRange": [],
           "tag": {
             "commentStart": 1019,
@@ -6566,8 +6566,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0c4aa5ad-8f4f-5408-b175-9a2eda59653b",
+          "id": "c282bc4f-5ade-54e5-9703-756a9bea87e6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1178,
@@ -6580,8 +6580,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b4e69b8d-ad06-513f-80ef-2ceaf795de5d",
+          "id": "e9a5e6af-6834-521d-9004-05abae30dbdd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1334,
@@ -6594,8 +6594,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "77b4ae87-93f4-5d86-b9d2-ea4d9c59f34b",
+          "id": "4c78139f-2bda-5c75-8121-26fba609f7d5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1492,
@@ -6608,8 +6608,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9712c09c-a552-5770-b5a4-829e19497eac",
+          "id": "ad94bacf-5c64-59bc-b96a-922c6fa5336f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1646,
@@ -6622,8 +6622,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fc984451-660d-5c31-a558-8dc793bf0b15",
+          "id": "209f23e4-753a-5196-b295-e380fc40589d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1803,
@@ -6636,8 +6636,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "78741544-2720-5948-86a0-e3d7bb627a1f",
+          "id": "245e94e9-dead-58c1-b997-17191922a7c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1964,
@@ -6650,8 +6650,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a018330b-7af2-5793-bae2-34c6d514960b",
+          "id": "ecbff008-b319-54c6-88cc-c210250c307f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2091,
@@ -6664,8 +6664,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "550b9356-04f9-5892-85ee-ad25a2167181",
+          "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2252,
@@ -6678,8 +6678,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "29c0884e-bd33-5146-a460-b46c670dc0ef",
+          "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
           "sourceRange": [],
           "tag": {
             "commentStart": 2382,
@@ -6692,8 +6692,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "570c2e80-fb2d-5b61-a06e-2a476f8f64fd",
+          "id": "87387f1f-8159-5da2-abb6-d044596e4909",
           "sourceRange": [],
           "tag": {
             "commentStart": 2542,
@@ -6706,8 +6706,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bf12374d-29ff-5265-b123-8d3a5886303d",
+          "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
           "sourceRange": [],
           "tag": {
             "commentStart": 2703,
@@ -6720,8 +6720,8 @@ description: Variables in memory after executing bone-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3d279891-4297-52c1-a309-653444cd0cea",
+          "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
           "sourceRange": [],
           "tag": {
             "commentStart": 2828,
@@ -6737,11 +6737,11 @@ description: Variables in memory after executing bone-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fa347f31-bb54-52bd-b1e6-826e5139c84a",
               "sourceRange": []
             },
             "ccw": true,
@@ -6771,7 +6771,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53ffc363-b625-5e2f-a3a3-c5f321b3a2bf",
               "sourceRange": []
             },
             "ccw": true,
@@ -6801,7 +6801,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6d5b4894-755f-5079-a757-1568700d5d2b",
               "sourceRange": []
             },
             "ccw": false,
@@ -6831,7 +6831,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4116c875-bdbc-56ab-a81a-bc705a70f516",
               "sourceRange": []
             },
             "ccw": true,
@@ -6861,7 +6861,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c282bc4f-5ade-54e5-9703-756a9bea87e6",
               "sourceRange": []
             },
             "ccw": false,
@@ -6891,7 +6891,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e9a5e6af-6834-521d-9004-05abae30dbdd",
               "sourceRange": []
             },
             "ccw": true,
@@ -6921,7 +6921,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4c78139f-2bda-5c75-8121-26fba609f7d5",
               "sourceRange": []
             },
             "ccw": false,
@@ -6951,7 +6951,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad94bacf-5c64-59bc-b96a-922c6fa5336f",
               "sourceRange": []
             },
             "ccw": false,
@@ -6981,7 +6981,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "209f23e4-753a-5196-b295-e380fc40589d",
               "sourceRange": []
             },
             "ccw": true,
@@ -7011,7 +7011,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "245e94e9-dead-58c1-b997-17191922a7c5",
               "sourceRange": []
             },
             "from": [
@@ -7035,7 +7035,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ecbff008-b319-54c6-88cc-c210250c307f",
               "sourceRange": []
             },
             "ccw": false,
@@ -7065,7 +7065,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
               "sourceRange": []
             },
             "from": [
@@ -7089,7 +7089,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
               "sourceRange": []
             },
             "ccw": false,
@@ -7119,7 +7119,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87387f1f-8159-5da2-abb6-d044596e4909",
               "sourceRange": []
             },
             "ccw": true,
@@ -7149,7 +7149,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e711b6a-4c37-523e-a8cf-04d951186d84",
               "sourceRange": []
             },
             "from": [
@@ -7173,7 +7173,7 @@ description: Variables in memory after executing bone-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c365e282-38bb-54b5-b47b-cb2f86e69500",
               "sourceRange": []
             },
             "from": [
@@ -7197,8 +7197,8 @@ description: Variables in memory after executing bone-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -7239,7 +7239,7 @@ description: Variables in memory after executing bone-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
             "sourceRange": []
           }
         },
@@ -7309,13 +7309,13 @@ description: Variables in memory after executing bone-plate.kcl
             "value": "line16"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "originSketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "15174cb2-36ef-5bf8-a94f-73e786ddde4f",
+      "endCapId": "b96c4bc9-a990-5246-97a3-591c1a49e743",
       "units": "mm",
       "sectional": false
     }

@@ -2773,11 +2773,11 @@ description: Operations executed countersunk-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2807,7 +2807,7 @@ description: Operations executed countersunk-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
           }
         },
         "sourceRange": []
@@ -2856,7 +2856,7 @@ description: Operations executed countersunk-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
           }
         },
         "sourceRange": []
@@ -2892,7 +2892,7 @@ description: Operations executed countersunk-plate.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "topFace",
-            "artifact_id": "[uuid]"
+            "artifact_id": "cbd591e1-2ba8-5f98-b6ab-520e3bc91cca"
           },
           "sourceRange": []
         },
@@ -3007,7 +3007,7 @@ description: Operations executed countersunk-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
           }
         },
         "sourceRange": []
@@ -3043,7 +3043,7 @@ description: Operations executed countersunk-plate.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "topFace",
-            "artifact_id": "[uuid]"
+            "artifact_id": "cbd591e1-2ba8-5f98-b6ab-520e3bc91cca"
           },
           "sourceRange": []
         },

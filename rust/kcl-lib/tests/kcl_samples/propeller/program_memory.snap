@@ -6,8 +6,8 @@ description: Variables in memory after executing propeller.kcl
   "__sketch_123_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing propeller.kcl
   "__sketch_130_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing propeller.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -102,8 +102,8 @@ description: Variables in memory after executing propeller.kcl
   "__sketch_58_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -134,8 +134,8 @@ description: Variables in memory after executing propeller.kcl
   "__sketch_85_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -172,12 +172,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
+      "artifactId": "8f72543d-c84d-5018-865e-36a2fd66854c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3ee69437-fcc3-5161-8739-b2c43c37497e",
+          "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
           "sourceRange": [],
           "tag": {
             "commentStart": 5248,
@@ -190,8 +190,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d74a61b2-a50a-5f81-bcaf-32ef6b864eb9",
+          "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 5485,
@@ -204,8 +204,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d66829fb-666f-5f43-8c7c-886acb4eff84",
+          "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
           "sourceRange": [],
           "tag": {
             "commentStart": 5720,
@@ -218,8 +218,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7a14441a-0ab6-5a27-b281-2bc2cadadcdb",
+          "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
           "sourceRange": [],
           "tag": {
             "commentStart": 5948,
@@ -232,8 +232,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0edd421-4430-5273-857b-227545a0cfe6",
+          "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
           "sourceRange": [],
           "tag": {
             "commentStart": 6306,
@@ -249,11 +249,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
               "sourceRange": []
             },
             "ccw": true,
@@ -283,7 +283,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
               "sourceRange": []
             },
             "ccw": false,
@@ -313,7 +313,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
               "sourceRange": []
             },
             "ccw": true,
@@ -343,7 +343,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
               "sourceRange": []
             },
             "from": [
@@ -367,7 +367,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "02946f9b-8ef1-5f91-ab16-64374dcf18cd",
               "sourceRange": []
             },
             "from": [
@@ -391,7 +391,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
               "sourceRange": []
             },
             "from": [
@@ -415,8 +415,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+          "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
           "kind": "Custom",
           "objectId": 84,
           "origin": {
@@ -457,7 +457,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fa75438f-b2d0-5142-b452-608454e1806a",
             "sourceRange": []
           }
         },
@@ -487,9 +487,9 @@ description: Variables in memory after executing propeller.kcl
             "value": "wideArc"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+        "originalId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+        "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "units": "in"
       },
       "startCapId": null,
@@ -575,12 +575,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "artifactId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3ee69437-fcc3-5161-8739-b2c43c37497e",
+          "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
           "sourceRange": [],
           "tag": {
             "commentStart": 5248,
@@ -593,8 +593,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d74a61b2-a50a-5f81-bcaf-32ef6b864eb9",
+          "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 5485,
@@ -607,8 +607,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d66829fb-666f-5f43-8c7c-886acb4eff84",
+          "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
           "sourceRange": [],
           "tag": {
             "commentStart": 5720,
@@ -621,8 +621,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7a14441a-0ab6-5a27-b281-2bc2cadadcdb",
+          "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
           "sourceRange": [],
           "tag": {
             "commentStart": 5948,
@@ -635,8 +635,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0edd421-4430-5273-857b-227545a0cfe6",
+          "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
           "sourceRange": [],
           "tag": {
             "commentStart": 6306,
@@ -652,11 +652,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
               "sourceRange": []
             },
             "ccw": true,
@@ -686,7 +686,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
               "sourceRange": []
             },
             "ccw": false,
@@ -716,7 +716,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
               "sourceRange": []
             },
             "ccw": true,
@@ -746,7 +746,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
               "sourceRange": []
             },
             "from": [
@@ -770,7 +770,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "02946f9b-8ef1-5f91-ab16-64374dcf18cd",
               "sourceRange": []
             },
             "from": [
@@ -794,7 +794,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
               "sourceRange": []
             },
             "from": [
@@ -818,8 +818,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+          "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
           "kind": "Custom",
           "objectId": 84,
           "origin": {
@@ -860,7 +860,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fa75438f-b2d0-5142-b452-608454e1806a",
             "sourceRange": []
           }
         },
@@ -890,9 +890,9 @@ description: Variables in memory after executing propeller.kcl
             "value": "wideArc"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+        "originalId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+        "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "units": "in"
       },
       "startCapId": null,
@@ -905,11 +905,11 @@ description: Variables in memory after executing propeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
             "sourceRange": []
           },
           "ccw": true,
@@ -939,7 +939,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
             "sourceRange": []
           },
           "ccw": false,
@@ -969,7 +969,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
             "sourceRange": []
           },
           "ccw": true,
@@ -999,7 +999,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
             "sourceRange": []
           },
           "from": [
@@ -1023,7 +1023,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "02946f9b-8ef1-5f91-ab16-64374dcf18cd",
             "sourceRange": []
           },
           "from": [
@@ -1047,7 +1047,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
             "sourceRange": []
           },
           "from": [
@@ -1071,8 +1071,8 @@ description: Variables in memory after executing propeller.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "kind": "Custom",
         "objectId": 84,
         "origin": {
@@ -1113,7 +1113,7 @@ description: Variables in memory after executing propeller.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "fa75438f-b2d0-5142-b452-608454e1806a",
           "sourceRange": []
         }
       },
@@ -1143,9 +1143,9 @@ description: Variables in memory after executing propeller.kcl
           "value": "wideArc"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "originalId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "units": "in"
     }
   },
@@ -1159,11 +1159,11 @@ description: Variables in memory after executing propeller.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1193,7 +1193,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1223,7 +1223,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
                     "sourceRange": []
                   },
                   "from": [
@@ -1240,7 +1240,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1270,7 +1270,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                     "sourceRange": []
                   },
                   "from": [
@@ -1287,7 +1287,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                     "sourceRange": []
                   },
                   "from": [
@@ -1311,7 +1311,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
                     "sourceRange": []
                   },
                   "from": [
@@ -1335,7 +1335,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                     "sourceRange": []
                   },
                   "from": [
@@ -1359,8 +1359,8 @@ description: Variables in memory after executing propeller.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                 "kind": "Custom",
                 "objectId": 84,
                 "origin": {
@@ -1401,7 +1401,7 @@ description: Variables in memory after executing propeller.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                   "sourceRange": []
                 }
               },
@@ -1431,8 +1431,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "wideArc"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+              "originalId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1446,7 +1446,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
                 "objectId": 114,
                 "kind": {
                   "line": {
@@ -1520,8 +1520,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -1550,7 +1550,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "neutralEdge"
@@ -1566,7 +1566,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                 "objectId": 89,
                 "kind": {
                   "arc": {
@@ -1672,8 +1672,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -1702,7 +1702,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootArc"
@@ -1718,7 +1718,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                 "objectId": 119,
                 "kind": {
                   "line": {
@@ -1792,8 +1792,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -1822,7 +1822,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootEdge"
@@ -1838,7 +1838,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
                 "objectId": 103,
                 "kind": {
                   "arc": {
@@ -1944,8 +1944,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -1974,7 +1974,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipArc"
@@ -1990,7 +1990,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                 "objectId": 109,
                 "kind": {
                   "line": {
@@ -2064,8 +2064,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -2094,7 +2094,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipDrop"
@@ -2110,7 +2110,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                 "objectId": 96,
                 "kind": {
                   "arc": {
@@ -2216,8 +2216,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -2246,7 +2246,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "wideArc"
@@ -2263,12 +2263,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+      "artifactId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3ee69437-fcc3-5161-8739-b2c43c37497e",
+          "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
           "sourceRange": [],
           "tag": {
             "commentStart": 5248,
@@ -2281,8 +2281,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d74a61b2-a50a-5f81-bcaf-32ef6b864eb9",
+          "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 5485,
@@ -2295,8 +2295,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d66829fb-666f-5f43-8c7c-886acb4eff84",
+          "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
           "sourceRange": [],
           "tag": {
             "commentStart": 5720,
@@ -2309,8 +2309,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7a14441a-0ab6-5a27-b281-2bc2cadadcdb",
+          "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
           "sourceRange": [],
           "tag": {
             "commentStart": 5948,
@@ -2323,8 +2323,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0edd421-4430-5273-857b-227545a0cfe6",
+          "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
           "sourceRange": [],
           "tag": {
             "commentStart": 6306,
@@ -2340,11 +2340,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
               "sourceRange": []
             },
             "ccw": true,
@@ -2374,7 +2374,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
               "sourceRange": []
             },
             "ccw": false,
@@ -2404,7 +2404,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
               "sourceRange": []
             },
             "ccw": true,
@@ -2434,7 +2434,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
               "sourceRange": []
             },
             "from": [
@@ -2458,7 +2458,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "02946f9b-8ef1-5f91-ab16-64374dcf18cd",
               "sourceRange": []
             },
             "from": [
@@ -2482,7 +2482,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
               "sourceRange": []
             },
             "from": [
@@ -2506,8 +2506,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+          "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
           "kind": "Custom",
           "objectId": 84,
           "origin": {
@@ -2548,7 +2548,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fa75438f-b2d0-5142-b452-608454e1806a",
             "sourceRange": []
           }
         },
@@ -2578,9 +2578,9 @@ description: Variables in memory after executing propeller.kcl
             "value": "wideArc"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+        "originalId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+        "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "units": "in"
       },
       "startCapId": null,
@@ -2616,11 +2616,11 @@ description: Variables in memory after executing propeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e733bebd-6bda-56de-94f5-092ce0dbfe0a",
             "sourceRange": []
           },
           "ccw": true,
@@ -2650,7 +2650,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "180327d2-acff-5f14-8c8f-0e683004d9b7",
             "sourceRange": []
           },
           "ccw": true,
@@ -2680,7 +2680,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "532ac417-088a-5118-bbe9-ff323a4e84fe",
             "sourceRange": []
           },
           "ccw": true,
@@ -2710,7 +2710,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2cf4252c-9b46-5ce1-a73b-8393babb04d8",
             "sourceRange": []
           },
           "ccw": true,
@@ -2740,7 +2740,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "af9d0744-2eac-57a1-8613-cbc9458f1881",
             "sourceRange": []
           },
           "ccw": true,
@@ -2770,7 +2770,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f77267eb-873c-5f46-b794-af195ff199df",
             "sourceRange": []
           },
           "ccw": true,
@@ -2800,8 +2800,8 @@ description: Variables in memory after executing propeller.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+        "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
         "kind": "Custom",
         "objectId": 129,
         "origin": {
@@ -2842,7 +2842,7 @@ description: Variables in memory after executing propeller.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
           "sourceRange": []
         }
       },
@@ -2872,9 +2872,9 @@ description: Variables in memory after executing propeller.kcl
           "value": "upperTail"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
+      "originalId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
+      "originSketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "units": "in"
     }
   },
@@ -2887,7 +2887,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                 "objectId": 162,
                 "kind": {
                   "arc": {
@@ -2993,8 +2993,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                  "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
@@ -3023,7 +3023,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerCamber"
@@ -3039,7 +3039,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
                 "objectId": 169,
                 "kind": {
                   "arc": {
@@ -3145,8 +3145,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                  "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
@@ -3175,7 +3175,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerNose"
@@ -3191,7 +3191,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                 "objectId": 155,
                 "kind": {
                   "arc": {
@@ -3297,8 +3297,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                  "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
@@ -3327,7 +3327,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerTail"
@@ -3344,11 +3344,11 @@ description: Variables in memory after executing propeller.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3378,7 +3378,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
                     "sourceRange": []
                   },
                   "from": [
@@ -3395,7 +3395,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3425,7 +3425,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
                     "sourceRange": []
                   },
                   "from": [
@@ -3442,7 +3442,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "08138142-a558-56a4-a23f-2f334e02b011",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3472,7 +3472,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4608674b-5141-508f-8ee7-95c7819212bb",
                     "sourceRange": []
                   },
                   "from": [
@@ -3489,7 +3489,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3519,7 +3519,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
                     "sourceRange": []
                   },
                   "from": [
@@ -3536,7 +3536,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3566,7 +3566,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9209892e-e35e-575e-b305-9935eac5ab33",
                     "sourceRange": []
                   },
                   "from": [
@@ -3583,7 +3583,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3613,8 +3613,8 @@ description: Variables in memory after executing propeller.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                 "kind": "Custom",
                 "objectId": 129,
                 "origin": {
@@ -3655,7 +3655,7 @@ description: Variables in memory after executing propeller.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
                   "sourceRange": []
                 }
               },
@@ -3685,8 +3685,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "upperTail"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
+              "originalId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
               "units": "in",
               "isClosed": "no"
             }
@@ -3700,7 +3700,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
                 "objectId": 141,
                 "kind": {
                   "arc": {
@@ -3806,8 +3806,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                  "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
@@ -3836,7 +3836,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperCamber"
@@ -3852,7 +3852,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
                 "objectId": 134,
                 "kind": {
                   "arc": {
@@ -3958,8 +3958,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                  "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
@@ -3988,7 +3988,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperNose"
@@ -4004,7 +4004,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "08138142-a558-56a4-a23f-2f334e02b011",
                 "objectId": 148,
                 "kind": {
                   "arc": {
@@ -4110,8 +4110,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                  "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
@@ -4140,7 +4140,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperTail"
@@ -4180,12 +4180,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
+      "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "180437b7-30cf-5846-b0e1-2994eabb0ed2",
+          "id": "e733bebd-6bda-56de-94f5-092ce0dbfe0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 7834,
@@ -4198,8 +4198,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b08d8a5a-f9a6-50b4-b759-4f9acc616cd9",
+          "id": "180327d2-acff-5f14-8c8f-0e683004d9b7",
           "sourceRange": [],
           "tag": {
             "commentStart": 8140,
@@ -4212,8 +4212,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c41eb13-112e-5787-8fc7-67538fb322d6",
+          "id": "532ac417-088a-5118-bbe9-ff323a4e84fe",
           "sourceRange": [],
           "tag": {
             "commentStart": 8423,
@@ -4226,8 +4226,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f8884e93-5cba-595e-92d8-6e711e87b75d",
+          "id": "2cf4252c-9b46-5ce1-a73b-8393babb04d8",
           "sourceRange": [],
           "tag": {
             "commentStart": 8737,
@@ -4240,8 +4240,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f7eed1d7-4ba6-5c6b-b80b-264239406ba3",
+          "id": "af9d0744-2eac-57a1-8613-cbc9458f1881",
           "sourceRange": [],
           "tag": {
             "commentStart": 9069,
@@ -4254,8 +4254,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d84feccb-c190-51f4-9545-6f5dcad6b348",
+          "id": "f77267eb-873c-5f46-b794-af195ff199df",
           "sourceRange": [],
           "tag": {
             "commentStart": 9370,
@@ -4271,11 +4271,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e733bebd-6bda-56de-94f5-092ce0dbfe0a",
               "sourceRange": []
             },
             "ccw": true,
@@ -4305,7 +4305,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "180327d2-acff-5f14-8c8f-0e683004d9b7",
               "sourceRange": []
             },
             "ccw": true,
@@ -4335,7 +4335,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "532ac417-088a-5118-bbe9-ff323a4e84fe",
               "sourceRange": []
             },
             "ccw": true,
@@ -4365,7 +4365,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2cf4252c-9b46-5ce1-a73b-8393babb04d8",
               "sourceRange": []
             },
             "ccw": true,
@@ -4395,7 +4395,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af9d0744-2eac-57a1-8613-cbc9458f1881",
               "sourceRange": []
             },
             "ccw": true,
@@ -4425,7 +4425,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f77267eb-873c-5f46-b794-af195ff199df",
               "sourceRange": []
             },
             "ccw": true,
@@ -4455,8 +4455,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+          "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
           "kind": "Custom",
           "objectId": 129,
           "origin": {
@@ -4497,7 +4497,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
             "sourceRange": []
           }
         },
@@ -4527,13 +4527,13 @@ description: Variables in memory after executing propeller.kcl
             "value": "upperTail"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
+        "originalId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
+        "originSketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "8a28d58b-b363-5d11-a190-081c2ead4896",
+      "endCapId": "41719af6-7b4a-5630-9b3f-a617ea0b35d6",
       "units": "in",
       "sectional": false
     }
@@ -4568,12 +4568,12 @@ description: Variables in memory after executing propeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
+          "artifactId": "8f72543d-c84d-5018-865e-36a2fd66854c",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3ee69437-fcc3-5161-8739-b2c43c37497e",
+              "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5248,
@@ -4586,8 +4586,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d74a61b2-a50a-5f81-bcaf-32ef6b864eb9",
+              "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5485,
@@ -4600,8 +4600,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d66829fb-666f-5f43-8c7c-886acb4eff84",
+              "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5720,
@@ -4614,8 +4614,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "7a14441a-0ab6-5a27-b281-2bc2cadadcdb",
+              "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5948,
@@ -4628,8 +4628,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d0edd421-4430-5273-857b-227545a0cfe6",
+              "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6306,
@@ -4645,11 +4645,11 @@ description: Variables in memory after executing propeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4679,7 +4679,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -4709,7 +4709,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4739,7 +4739,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
                   "sourceRange": []
                 },
                 "from": [
@@ -4763,7 +4763,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "02946f9b-8ef1-5f91-ab16-64374dcf18cd",
                   "sourceRange": []
                 },
                 "from": [
@@ -4787,7 +4787,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
                   "sourceRange": []
                 },
                 "from": [
@@ -4811,8 +4811,8 @@ description: Variables in memory after executing propeller.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+              "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
               "kind": "Custom",
               "objectId": 84,
               "origin": {
@@ -4853,7 +4853,7 @@ description: Variables in memory after executing propeller.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                 "sourceRange": []
               }
             },
@@ -4883,9 +4883,9 @@ description: Variables in memory after executing propeller.kcl
                 "value": "wideArc"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+            "originalId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+            "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
             "units": "in"
           },
           "startCapId": null,
@@ -4898,12 +4898,12 @@ description: Variables in memory after executing propeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "183d2209-b8e0-5d9f-8892-db5d926ad0aa",
+          "artifactId": "183d2209-b8e0-5d9f-8892-db5d926ad0aa",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3ee69437-fcc3-5161-8739-b2c43c37497e",
+              "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5248,
@@ -4916,8 +4916,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d74a61b2-a50a-5f81-bcaf-32ef6b864eb9",
+              "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5485,
@@ -4930,8 +4930,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d66829fb-666f-5f43-8c7c-886acb4eff84",
+              "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5720,
@@ -4944,8 +4944,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "7a14441a-0ab6-5a27-b281-2bc2cadadcdb",
+              "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5948,
@@ -4958,8 +4958,8 @@ description: Variables in memory after executing propeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d0edd421-4430-5273-857b-227545a0cfe6",
+              "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6306,
@@ -4975,11 +4975,11 @@ description: Variables in memory after executing propeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "183d2209-b8e0-5d9f-8892-db5d926ad0aa",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ae718403-9227-5da9-a576-fcb74e628cb3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5009,7 +5009,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7e6a56e8-3ddc-5c49-b55e-8d8decbe75d9",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -5039,7 +5039,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c123a5c9-65f4-5178-891f-1ecad99c0db4",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5069,7 +5069,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fbac7678-241d-56bc-87e1-27ceca74998f",
                   "sourceRange": []
                 },
                 "from": [
@@ -5093,7 +5093,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "02946f9b-8ef1-5f91-ab16-64374dcf18cd",
                   "sourceRange": []
                 },
                 "from": [
@@ -5117,7 +5117,7 @@ description: Variables in memory after executing propeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2038ef5e-1b69-5885-b448-71d9d4d499ec",
                   "sourceRange": []
                 },
                 "from": [
@@ -5141,8 +5141,8 @@ description: Variables in memory after executing propeller.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+              "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
               "kind": "Custom",
               "objectId": 84,
               "origin": {
@@ -5183,7 +5183,7 @@ description: Variables in memory after executing propeller.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                 "sourceRange": []
               }
             },
@@ -5213,9 +5213,9 @@ description: Variables in memory after executing propeller.kcl
                 "value": "wideArc"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+            "originalId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+            "originSketchId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
             "units": "in"
           },
           "startCapId": null,
@@ -5239,12 +5239,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+      "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ffe6cb91-c00d-540d-8406-caa79eed6933",
+          "id": "befdad20-0589-54cd-9ed6-835317e36318",
           "sourceRange": [],
           "tag": {
             "commentStart": 3440,
@@ -5257,8 +5257,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9768e689-7447-56f6-a080-d83dee369018",
+          "id": "333f8f9f-f610-58dc-ab49-09ff0cae24d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 3518,
@@ -5271,8 +5271,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b38fb7c1-8d24-5628-937b-65b8846aebc4",
+          "id": "69ee03aa-67bf-5e18-b569-44b403d8bb64",
           "sourceRange": [],
           "tag": {
             "commentStart": 3593,
@@ -5285,8 +5285,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0145b279-213b-5a62-a3e5-cede11bc2a06",
+          "id": "ddc87cfd-82bb-55b6-8885-13180a7fbe3d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3672,
@@ -5302,11 +5302,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "befdad20-0589-54cd-9ed6-835317e36318",
               "sourceRange": []
             },
             "from": [
@@ -5330,7 +5330,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "333f8f9f-f610-58dc-ab49-09ff0cae24d9",
               "sourceRange": []
             },
             "from": [
@@ -5354,7 +5354,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "69ee03aa-67bf-5e18-b569-44b403d8bb64",
               "sourceRange": []
             },
             "from": [
@@ -5378,7 +5378,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ddc87cfd-82bb-55b6-8885-13180a7fbe3d",
               "sourceRange": []
             },
             "from": [
@@ -5402,7 +5402,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5ec3f46d-6855-5c86-a9c5-1a15b30c2e04",
               "sourceRange": []
             },
             "from": [
@@ -5426,8 +5426,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+          "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
           "kind": "Custom",
           "objectId": 57,
           "origin": {
@@ -5468,7 +5468,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
             "sourceRange": []
           }
         },
@@ -5494,9 +5494,9 @@ description: Variables in memory after executing propeller.kcl
             "value": "topRadius"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+        "originalId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+        "originSketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
         "units": "in"
       },
       "startCapId": null,
@@ -5509,11 +5509,11 @@ description: Variables in memory after executing propeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "befdad20-0589-54cd-9ed6-835317e36318",
             "sourceRange": []
           },
           "from": [
@@ -5537,7 +5537,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "333f8f9f-f610-58dc-ab49-09ff0cae24d9",
             "sourceRange": []
           },
           "from": [
@@ -5561,7 +5561,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "69ee03aa-67bf-5e18-b569-44b403d8bb64",
             "sourceRange": []
           },
           "from": [
@@ -5585,7 +5585,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ddc87cfd-82bb-55b6-8885-13180a7fbe3d",
             "sourceRange": []
           },
           "from": [
@@ -5609,7 +5609,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5ec3f46d-6855-5c86-a9c5-1a15b30c2e04",
             "sourceRange": []
           },
           "from": [
@@ -5633,8 +5633,8 @@ description: Variables in memory after executing propeller.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+        "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
         "kind": "Custom",
         "objectId": 57,
         "origin": {
@@ -5675,7 +5675,7 @@ description: Variables in memory after executing propeller.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
           "sourceRange": []
         }
       },
@@ -5701,9 +5701,9 @@ description: Variables in memory after executing propeller.kcl
           "value": "topRadius"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+      "originalId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+      "originSketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "units": "in"
     }
   },
@@ -5716,7 +5716,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
                 "objectId": 73,
                 "kind": {
                   "line": {
@@ -5790,8 +5790,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
@@ -5820,7 +5820,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "axisEdge"
@@ -5836,7 +5836,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -5910,8 +5910,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
@@ -5940,7 +5940,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boreWall"
@@ -5956,7 +5956,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "objectId": 61,
                 "kind": {
                   "line": {
@@ -6030,8 +6030,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
@@ -6060,7 +6060,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomRadius"
@@ -6076,7 +6076,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "objectId": 67,
                 "kind": {
                   "line": {
@@ -6150,8 +6150,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
@@ -6180,7 +6180,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "chamferEdge"
@@ -6197,11 +6197,11 @@ description: Variables in memory after executing propeller.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                     "sourceRange": []
                   },
                   "from": [
@@ -6225,7 +6225,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                     "sourceRange": []
                   },
                   "from": [
@@ -6249,7 +6249,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
                     "sourceRange": []
                   },
                   "from": [
@@ -6273,7 +6273,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
                     "sourceRange": []
                   },
                   "from": [
@@ -6297,7 +6297,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
                     "sourceRange": []
                   },
                   "from": [
@@ -6321,8 +6321,8 @@ description: Variables in memory after executing propeller.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                 "kind": "Custom",
                 "objectId": 57,
                 "origin": {
@@ -6363,7 +6363,7 @@ description: Variables in memory after executing propeller.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
                   "sourceRange": []
                 }
               },
@@ -6389,8 +6389,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "topRadius"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -6404,7 +6404,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
                 "objectId": 70,
                 "kind": {
                   "line": {
@@ -6478,8 +6478,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
@@ -6508,7 +6508,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topRadius"
@@ -6617,12 +6617,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+      "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9aef0fe0-2d59-5c2a-806d-e62130a84ebc",
+          "id": "2034f34c-e44b-514f-93e3-639cc60dc840",
           "sourceRange": [],
           "tag": {
             "commentStart": 549,
@@ -6635,8 +6635,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "32942065-b002-5363-a87a-b25759434136",
+          "id": "fbb06a9d-a46c-5683-8ff9-e1225dc799c7",
           "sourceRange": [],
           "tag": {
             "commentStart": 714,
@@ -6649,8 +6649,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "edec2c64-58e0-51c3-aed5-222991a5ce75",
+          "id": "87283dda-1e0b-54f6-a1b5-8cb77ed64395",
           "sourceRange": [],
           "tag": {
             "commentStart": 923,
@@ -6663,8 +6663,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b1f72f37-fc78-583d-ac92-69cb3f6e64bf",
+          "id": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 1139,
@@ -6677,8 +6677,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1989f550-9d1b-5d17-af0e-5b239bfb98dd",
+          "id": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1355,
@@ -6691,8 +6691,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "60237b43-6bcb-5c1c-b418-5ad9ee5416cb",
+          "id": "e4aa1bf0-88ec-51a6-920b-d4dce57cdd2e",
           "sourceRange": [],
           "tag": {
             "commentStart": 1573,
@@ -6705,8 +6705,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7dbdbe6a-9400-5528-be30-3effcd44881b",
+          "id": "548e75bb-df37-54cf-ab29-559aa9505f30",
           "sourceRange": [],
           "tag": {
             "commentStart": 1791,
@@ -6719,8 +6719,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2d592898-71b7-580a-9407-65789be786da",
+          "id": "072f1b7d-3c8c-5c16-84a7-d2d4f22cda8f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2003,
@@ -6733,8 +6733,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c0856ebf-0518-591c-aa14-405bea03f204",
+          "id": "e0d05a38-4f87-5155-8a77-6cf42ef32170",
           "sourceRange": [],
           "tag": {
             "commentStart": 2219,
@@ -6747,8 +6747,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c17bb3df-2e17-5fc7-82a5-423b6d54e563",
+          "id": "7120f68f-3588-50c0-a736-15db32ca4dbe",
           "sourceRange": [],
           "tag": {
             "commentStart": 2435,
@@ -6761,8 +6761,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f92e5b0-5200-5173-8fe3-3a0b27309f3f",
+          "id": "531d6d20-4484-5075-b6d9-deeb5266f9cd",
           "sourceRange": [],
           "tag": {
             "commentStart": 2648,
@@ -6775,8 +6775,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
+          "id": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3027,
@@ -6789,8 +6789,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
+          "id": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
           "sourceRange": [],
           "tag": {
             "commentStart": 3005,
@@ -6816,11 +6816,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2034f34c-e44b-514f-93e3-639cc60dc840",
               "sourceRange": []
             },
             "ccw": true,
@@ -6850,7 +6850,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbb06a9d-a46c-5683-8ff9-e1225dc799c7",
               "sourceRange": []
             },
             "ccw": true,
@@ -6880,7 +6880,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87283dda-1e0b-54f6-a1b5-8cb77ed64395",
               "sourceRange": []
             },
             "ccw": true,
@@ -6910,7 +6910,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
               "sourceRange": []
             },
             "ccw": true,
@@ -6940,7 +6940,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
               "sourceRange": []
             },
             "ccw": true,
@@ -6970,7 +6970,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4aa1bf0-88ec-51a6-920b-d4dce57cdd2e",
               "sourceRange": []
             },
             "ccw": true,
@@ -7000,7 +7000,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "548e75bb-df37-54cf-ab29-559aa9505f30",
               "sourceRange": []
             },
             "ccw": true,
@@ -7030,7 +7030,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "072f1b7d-3c8c-5c16-84a7-d2d4f22cda8f",
               "sourceRange": []
             },
             "ccw": true,
@@ -7060,7 +7060,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0d05a38-4f87-5155-8a77-6cf42ef32170",
               "sourceRange": []
             },
             "ccw": true,
@@ -7090,7 +7090,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7120f68f-3588-50c0-a736-15db32ca4dbe",
               "sourceRange": []
             },
             "ccw": true,
@@ -7120,7 +7120,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "531d6d20-4484-5075-b6d9-deeb5266f9cd",
               "sourceRange": []
             },
             "ccw": true,
@@ -7150,8 +7150,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -7192,7 +7192,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
             "sourceRange": []
           }
         },
@@ -7250,17 +7250,17 @@ description: Variables in memory after executing propeller.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "originalId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "originSketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
+      "endCapId": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
           "radius": {
             "n": 0.6666666666666666,
             "ty": {
@@ -7269,12 +7269,12 @@ description: Variables in memory after executing propeller.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e9bbf44e-1eef-5329-a4fc-f40c8b5ff076",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
           "radius": {
             "n": 0.6666666666666666,
             "ty": {
@@ -7283,7 +7283,7 @@ description: Variables in memory after executing propeller.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "2034f34c-e44b-514f-93e3-639cc60dc840",
           "tag": null
         }
       ],
@@ -7295,12 +7295,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9aef0fe0-2d59-5c2a-806d-e62130a84ebc",
+          "id": "2034f34c-e44b-514f-93e3-639cc60dc840",
           "sourceRange": [],
           "tag": {
             "commentStart": 549,
@@ -7313,8 +7313,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "32942065-b002-5363-a87a-b25759434136",
+          "id": "fbb06a9d-a46c-5683-8ff9-e1225dc799c7",
           "sourceRange": [],
           "tag": {
             "commentStart": 714,
@@ -7327,8 +7327,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "edec2c64-58e0-51c3-aed5-222991a5ce75",
+          "id": "87283dda-1e0b-54f6-a1b5-8cb77ed64395",
           "sourceRange": [],
           "tag": {
             "commentStart": 923,
@@ -7341,8 +7341,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b1f72f37-fc78-583d-ac92-69cb3f6e64bf",
+          "id": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 1139,
@@ -7355,8 +7355,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1989f550-9d1b-5d17-af0e-5b239bfb98dd",
+          "id": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1355,
@@ -7369,8 +7369,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "60237b43-6bcb-5c1c-b418-5ad9ee5416cb",
+          "id": "e4aa1bf0-88ec-51a6-920b-d4dce57cdd2e",
           "sourceRange": [],
           "tag": {
             "commentStart": 1573,
@@ -7383,8 +7383,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7dbdbe6a-9400-5528-be30-3effcd44881b",
+          "id": "548e75bb-df37-54cf-ab29-559aa9505f30",
           "sourceRange": [],
           "tag": {
             "commentStart": 1791,
@@ -7397,8 +7397,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2d592898-71b7-580a-9407-65789be786da",
+          "id": "072f1b7d-3c8c-5c16-84a7-d2d4f22cda8f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2003,
@@ -7411,8 +7411,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c0856ebf-0518-591c-aa14-405bea03f204",
+          "id": "e0d05a38-4f87-5155-8a77-6cf42ef32170",
           "sourceRange": [],
           "tag": {
             "commentStart": 2219,
@@ -7425,8 +7425,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c17bb3df-2e17-5fc7-82a5-423b6d54e563",
+          "id": "7120f68f-3588-50c0-a736-15db32ca4dbe",
           "sourceRange": [],
           "tag": {
             "commentStart": 2435,
@@ -7439,8 +7439,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f92e5b0-5200-5173-8fe3-3a0b27309f3f",
+          "id": "531d6d20-4484-5075-b6d9-deeb5266f9cd",
           "sourceRange": [],
           "tag": {
             "commentStart": 2648,
@@ -7453,8 +7453,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
+          "id": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3027,
@@ -7467,8 +7467,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
+          "id": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
           "sourceRange": [],
           "tag": {
             "commentStart": 3005,
@@ -7494,11 +7494,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2034f34c-e44b-514f-93e3-639cc60dc840",
               "sourceRange": []
             },
             "ccw": true,
@@ -7528,7 +7528,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbb06a9d-a46c-5683-8ff9-e1225dc799c7",
               "sourceRange": []
             },
             "ccw": true,
@@ -7558,7 +7558,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87283dda-1e0b-54f6-a1b5-8cb77ed64395",
               "sourceRange": []
             },
             "ccw": true,
@@ -7588,7 +7588,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
               "sourceRange": []
             },
             "ccw": true,
@@ -7618,7 +7618,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
               "sourceRange": []
             },
             "ccw": true,
@@ -7648,7 +7648,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4aa1bf0-88ec-51a6-920b-d4dce57cdd2e",
               "sourceRange": []
             },
             "ccw": true,
@@ -7678,7 +7678,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "548e75bb-df37-54cf-ab29-559aa9505f30",
               "sourceRange": []
             },
             "ccw": true,
@@ -7708,7 +7708,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "072f1b7d-3c8c-5c16-84a7-d2d4f22cda8f",
               "sourceRange": []
             },
             "ccw": true,
@@ -7738,7 +7738,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0d05a38-4f87-5155-8a77-6cf42ef32170",
               "sourceRange": []
             },
             "ccw": true,
@@ -7768,7 +7768,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7120f68f-3588-50c0-a736-15db32ca4dbe",
               "sourceRange": []
             },
             "ccw": true,
@@ -7798,7 +7798,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "531d6d20-4484-5075-b6d9-deeb5266f9cd",
               "sourceRange": []
             },
             "ccw": true,
@@ -7828,8 +7828,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -7870,7 +7870,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
             "sourceRange": []
           }
         },
@@ -7928,13 +7928,13 @@ description: Variables in memory after executing propeller.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "originalId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "originSketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
+      "endCapId": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
       "units": "in",
       "sectional": false
     }
@@ -7943,12 +7943,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c8da3189-2eee-5307-9477-076b12db84a5",
+      "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "74d7a189-c5f5-5a15-ba2c-f91e47ea6ab2",
+          "id": "46104eff-e015-53b5-8e4e-ddf21940534a",
           "sourceRange": [],
           "tag": {
             "commentStart": 6682,
@@ -7964,11 +7964,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c8da3189-2eee-5307-9477-076b12db84a5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46104eff-e015-53b5-8e4e-ddf21940534a",
               "sourceRange": []
             },
             "ccw": true,
@@ -7998,8 +7998,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+          "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
           "kind": "Custom",
           "objectId": 122,
           "origin": {
@@ -8040,7 +8040,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
             "sourceRange": []
           }
         },
@@ -8050,13 +8050,13 @@ description: Variables in memory after executing propeller.kcl
             "value": "hubClearanceCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "originalId": "c8da3189-2eee-5307-9477-076b12db84a5",
+        "originSketchId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "97587e09-6598-5a02-8610-5e40655e7659",
+      "endCapId": "a839dffb-cd32-540e-b8c3-c3e549ec0f17",
       "units": "in",
       "sectional": false
     }
@@ -8070,11 +8070,11 @@ description: Variables in memory after executing propeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c8da3189-2eee-5307-9477-076b12db84a5",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "46104eff-e015-53b5-8e4e-ddf21940534a",
             "sourceRange": []
           },
           "ccw": true,
@@ -8104,8 +8104,8 @@ description: Variables in memory after executing propeller.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+        "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
         "kind": "Custom",
         "objectId": 122,
         "origin": {
@@ -8146,7 +8146,7 @@ description: Variables in memory after executing propeller.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
           "sourceRange": []
         }
       },
@@ -8156,9 +8156,9 @@ description: Variables in memory after executing propeller.kcl
           "value": "hubClearanceCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "c8da3189-2eee-5307-9477-076b12db84a5",
+      "originalId": "c8da3189-2eee-5307-9477-076b12db84a5",
+      "originSketchId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
       "units": "in"
     }
   },
@@ -8171,7 +8171,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                 "objectId": 126,
                 "kind": {
                   "circle": {
@@ -8245,8 +8245,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+                  "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
@@ -8275,7 +8275,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hubClearanceCircle"
@@ -8292,11 +8292,11 @@ description: Variables in memory after executing propeller.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8326,8 +8326,8 @@ description: Variables in memory after executing propeller.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+                "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
                 "kind": "Custom",
                 "objectId": 122,
                 "origin": {
@@ -8368,7 +8368,7 @@ description: Variables in memory after executing propeller.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
                   "sourceRange": []
                 }
               },
@@ -8378,8 +8378,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "hubClearanceCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+              "originalId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
               "units": "in",
               "isClosed": "no"
             }
@@ -8408,11 +8408,11 @@ description: Variables in memory after executing propeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2034f34c-e44b-514f-93e3-639cc60dc840",
             "sourceRange": []
           },
           "ccw": true,
@@ -8442,7 +8442,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fbb06a9d-a46c-5683-8ff9-e1225dc799c7",
             "sourceRange": []
           },
           "ccw": true,
@@ -8472,7 +8472,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "87283dda-1e0b-54f6-a1b5-8cb77ed64395",
             "sourceRange": []
           },
           "ccw": true,
@@ -8502,7 +8502,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
             "sourceRange": []
           },
           "ccw": true,
@@ -8532,7 +8532,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
             "sourceRange": []
           },
           "ccw": true,
@@ -8562,7 +8562,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e4aa1bf0-88ec-51a6-920b-d4dce57cdd2e",
             "sourceRange": []
           },
           "ccw": true,
@@ -8592,7 +8592,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "548e75bb-df37-54cf-ab29-559aa9505f30",
             "sourceRange": []
           },
           "ccw": true,
@@ -8622,7 +8622,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "072f1b7d-3c8c-5c16-84a7-d2d4f22cda8f",
             "sourceRange": []
           },
           "ccw": true,
@@ -8652,7 +8652,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e0d05a38-4f87-5155-8a77-6cf42ef32170",
             "sourceRange": []
           },
           "ccw": true,
@@ -8682,7 +8682,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7120f68f-3588-50c0-a736-15db32ca4dbe",
             "sourceRange": []
           },
           "ccw": true,
@@ -8712,7 +8712,7 @@ description: Variables in memory after executing propeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "531d6d20-4484-5075-b6d9-deeb5266f9cd",
             "sourceRange": []
           },
           "ccw": true,
@@ -8742,8 +8742,8 @@ description: Variables in memory after executing propeller.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -8784,7 +8784,7 @@ description: Variables in memory after executing propeller.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "sourceRange": []
         }
       },
@@ -8842,9 +8842,9 @@ description: Variables in memory after executing propeller.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "originalId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "originSketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "units": "in"
     }
   },
@@ -8852,12 +8852,12 @@ description: Variables in memory after executing propeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9aef0fe0-2d59-5c2a-806d-e62130a84ebc",
+          "id": "2034f34c-e44b-514f-93e3-639cc60dc840",
           "sourceRange": [],
           "tag": {
             "commentStart": 549,
@@ -8870,8 +8870,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "32942065-b002-5363-a87a-b25759434136",
+          "id": "fbb06a9d-a46c-5683-8ff9-e1225dc799c7",
           "sourceRange": [],
           "tag": {
             "commentStart": 714,
@@ -8884,8 +8884,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "edec2c64-58e0-51c3-aed5-222991a5ce75",
+          "id": "87283dda-1e0b-54f6-a1b5-8cb77ed64395",
           "sourceRange": [],
           "tag": {
             "commentStart": 923,
@@ -8898,8 +8898,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b1f72f37-fc78-583d-ac92-69cb3f6e64bf",
+          "id": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 1139,
@@ -8912,8 +8912,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1989f550-9d1b-5d17-af0e-5b239bfb98dd",
+          "id": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1355,
@@ -8926,8 +8926,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "60237b43-6bcb-5c1c-b418-5ad9ee5416cb",
+          "id": "e4aa1bf0-88ec-51a6-920b-d4dce57cdd2e",
           "sourceRange": [],
           "tag": {
             "commentStart": 1573,
@@ -8940,8 +8940,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7dbdbe6a-9400-5528-be30-3effcd44881b",
+          "id": "548e75bb-df37-54cf-ab29-559aa9505f30",
           "sourceRange": [],
           "tag": {
             "commentStart": 1791,
@@ -8954,8 +8954,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2d592898-71b7-580a-9407-65789be786da",
+          "id": "072f1b7d-3c8c-5c16-84a7-d2d4f22cda8f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2003,
@@ -8968,8 +8968,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c0856ebf-0518-591c-aa14-405bea03f204",
+          "id": "e0d05a38-4f87-5155-8a77-6cf42ef32170",
           "sourceRange": [],
           "tag": {
             "commentStart": 2219,
@@ -8982,8 +8982,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c17bb3df-2e17-5fc7-82a5-423b6d54e563",
+          "id": "7120f68f-3588-50c0-a736-15db32ca4dbe",
           "sourceRange": [],
           "tag": {
             "commentStart": 2435,
@@ -8996,8 +8996,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f92e5b0-5200-5173-8fe3-3a0b27309f3f",
+          "id": "531d6d20-4484-5075-b6d9-deeb5266f9cd",
           "sourceRange": [],
           "tag": {
             "commentStart": 2648,
@@ -9010,8 +9010,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
+          "id": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3027,
@@ -9024,8 +9024,8 @@ description: Variables in memory after executing propeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
+          "id": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
           "sourceRange": [],
           "tag": {
             "commentStart": 3005,
@@ -9051,11 +9051,11 @@ description: Variables in memory after executing propeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2034f34c-e44b-514f-93e3-639cc60dc840",
               "sourceRange": []
             },
             "ccw": true,
@@ -9085,7 +9085,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbb06a9d-a46c-5683-8ff9-e1225dc799c7",
               "sourceRange": []
             },
             "ccw": true,
@@ -9115,7 +9115,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87283dda-1e0b-54f6-a1b5-8cb77ed64395",
               "sourceRange": []
             },
             "ccw": true,
@@ -9145,7 +9145,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
               "sourceRange": []
             },
             "ccw": true,
@@ -9175,7 +9175,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
               "sourceRange": []
             },
             "ccw": true,
@@ -9205,7 +9205,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4aa1bf0-88ec-51a6-920b-d4dce57cdd2e",
               "sourceRange": []
             },
             "ccw": true,
@@ -9235,7 +9235,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "548e75bb-df37-54cf-ab29-559aa9505f30",
               "sourceRange": []
             },
             "ccw": true,
@@ -9265,7 +9265,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "072f1b7d-3c8c-5c16-84a7-d2d4f22cda8f",
               "sourceRange": []
             },
             "ccw": true,
@@ -9295,7 +9295,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0d05a38-4f87-5155-8a77-6cf42ef32170",
               "sourceRange": []
             },
             "ccw": true,
@@ -9325,7 +9325,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7120f68f-3588-50c0-a736-15db32ca4dbe",
               "sourceRange": []
             },
             "ccw": true,
@@ -9355,7 +9355,7 @@ description: Variables in memory after executing propeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "531d6d20-4484-5075-b6d9-deeb5266f9cd",
               "sourceRange": []
             },
             "ccw": true,
@@ -9385,8 +9385,8 @@ description: Variables in memory after executing propeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -9427,7 +9427,7 @@ description: Variables in memory after executing propeller.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
             "sourceRange": []
           }
         },
@@ -9485,17 +9485,17 @@ description: Variables in memory after executing propeller.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "originalId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "originSketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e7c19929-0b19-50bd-8d20-68bf3b2095f4",
+      "endCapId": "b5dd0d01-4fb3-55dd-abca-3d652bb122f7",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
           "radius": {
             "n": 0.6666666666666666,
             "ty": {
@@ -9504,12 +9504,12 @@ description: Variables in memory after executing propeller.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e9bbf44e-1eef-5329-a4fc-f40c8b5ff076",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
           "radius": {
             "n": 0.6666666666666666,
             "ty": {
@@ -9518,7 +9518,7 @@ description: Variables in memory after executing propeller.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "2034f34c-e44b-514f-93e3-639cc60dc840",
           "tag": null
         }
       ],
@@ -9535,7 +9535,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 9,
                 "kind": {
                   "circle": {
@@ -9609,8 +9609,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9639,7 +9639,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole0"
@@ -9655,7 +9655,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 14,
                 "kind": {
                   "circle": {
@@ -9729,8 +9729,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9759,7 +9759,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole1"
@@ -9775,7 +9775,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 19,
                 "kind": {
                   "circle": {
@@ -9849,8 +9849,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9879,7 +9879,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole2"
@@ -9895,7 +9895,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "objectId": 24,
                 "kind": {
                   "circle": {
@@ -9969,8 +9969,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9999,7 +9999,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole3"
@@ -10015,7 +10015,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 29,
                 "kind": {
                   "circle": {
@@ -10089,8 +10089,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10119,7 +10119,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole4"
@@ -10135,7 +10135,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 34,
                 "kind": {
                   "circle": {
@@ -10209,8 +10209,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10239,7 +10239,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole5"
@@ -10255,7 +10255,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 39,
                 "kind": {
                   "circle": {
@@ -10329,8 +10329,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10359,7 +10359,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole6"
@@ -10375,7 +10375,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 44,
                 "kind": {
                   "circle": {
@@ -10449,8 +10449,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10479,7 +10479,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole7"
@@ -10495,7 +10495,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 49,
                 "kind": {
                   "circle": {
@@ -10569,8 +10569,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10599,7 +10599,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole8"
@@ -10615,7 +10615,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "objectId": 54,
                 "kind": {
                   "circle": {
@@ -10689,8 +10689,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10719,7 +10719,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole9"
@@ -10736,11 +10736,11 @@ description: Variables in memory after executing propeller.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10770,7 +10770,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                     "sourceRange": []
                   },
                   "from": [
@@ -10787,7 +10787,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10817,7 +10817,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                     "sourceRange": []
                   },
                   "from": [
@@ -10834,7 +10834,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10864,7 +10864,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "sourceRange": []
                   },
                   "from": [
@@ -10881,7 +10881,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10911,7 +10911,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                     "sourceRange": []
                   },
                   "from": [
@@ -10928,7 +10928,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10958,7 +10958,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
                     "sourceRange": []
                   },
                   "from": [
@@ -10975,7 +10975,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11005,7 +11005,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                     "sourceRange": []
                   },
                   "from": [
@@ -11022,7 +11022,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11052,7 +11052,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
                     "sourceRange": []
                   },
                   "from": [
@@ -11069,7 +11069,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11099,7 +11099,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                     "sourceRange": []
                   },
                   "from": [
@@ -11116,7 +11116,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11146,7 +11146,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "468f6520-a683-5392-9492-de009fdcddef",
                     "sourceRange": []
                   },
                   "from": [
@@ -11163,7 +11163,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11193,7 +11193,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                     "sourceRange": []
                   },
                   "from": [
@@ -11210,7 +11210,7 @@ description: Variables in memory after executing propeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11240,8 +11240,8 @@ description: Variables in memory after executing propeller.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -11282,7 +11282,7 @@ description: Variables in memory after executing propeller.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                   "sourceRange": []
                 }
               },
@@ -11332,8 +11332,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+              "originalId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
               "units": "in",
               "isClosed": "no"
             }
@@ -11347,7 +11347,7 @@ description: Variables in memory after executing propeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -11421,8 +11421,8 @@ description: Variables in memory after executing propeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -11451,7 +11451,7 @@ description: Variables in memory after executing propeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"

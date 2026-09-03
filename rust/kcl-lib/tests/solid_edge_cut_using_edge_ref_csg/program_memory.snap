@@ -6,8 +6,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
   "__sketch_23_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,12 +71,12 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+          "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
           "sourceRange": [],
           "tag": {
             "commentStart": 827,
@@ -89,8 +89,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0cac68d9-dce1-5ea5-b271-00d335088531",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 882,
@@ -103,8 +103,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7e2c556e-e179-59fe-8bbb-62b28161420a",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 938,
@@ -117,8 +117,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "id": "46c1c873-adde-54a9-8c92-5f163decf204",
           "sourceRange": [],
           "tag": {
             "commentStart": 992,
@@ -131,8 +131,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1153,
@@ -145,8 +145,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1462,
@@ -172,11 +172,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
               "sourceRange": []
             },
             "from": [
@@ -200,7 +200,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -224,7 +224,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -248,7 +248,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46c1c873-adde-54a9-8c92-5f163decf204",
               "sourceRange": []
             },
             "from": [
@@ -272,8 +272,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "kind": "Custom",
           "objectId": 22,
           "origin": {
@@ -314,7 +314,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
             "sourceRange": []
           }
         },
@@ -344,13 +344,13 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "value": "topCap"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+      "endCapId": "9f4eb1aa-edde-5423-b838-744539667ee8",
       "units": "mm",
       "sectional": false
     }
@@ -364,12 +364,12 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+          "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
           "sourceRange": [],
           "tag": {
             "commentStart": 827,
@@ -382,8 +382,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0cac68d9-dce1-5ea5-b271-00d335088531",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 882,
@@ -396,8 +396,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7e2c556e-e179-59fe-8bbb-62b28161420a",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 938,
@@ -410,8 +410,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "id": "46c1c873-adde-54a9-8c92-5f163decf204",
           "sourceRange": [],
           "tag": {
             "commentStart": 992,
@@ -424,8 +424,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1153,
@@ -447,11 +447,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
               "sourceRange": []
             },
             "from": [
@@ -475,7 +475,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -499,7 +499,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -523,7 +523,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46c1c873-adde-54a9-8c92-5f163decf204",
               "sourceRange": []
             },
             "from": [
@@ -547,8 +547,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "kind": "Custom",
           "objectId": 22,
           "origin": {
@@ -589,7 +589,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
             "sourceRange": []
           }
         },
@@ -615,13 +615,13 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "value": "topCap"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+      "endCapId": "9f4eb1aa-edde-5423-b838-744539667ee8",
       "units": "mm",
       "sectional": false
     }
@@ -635,12 +635,12 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 87,
@@ -653,8 +653,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 168,
@@ -667,8 +667,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 248,
@@ -681,8 +681,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 327,
@@ -698,11 +698,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -726,7 +726,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -750,7 +750,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -774,7 +774,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -798,8 +798,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -840,7 +840,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           }
         },
@@ -862,13 +862,13 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originSketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
+      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
       "units": "mm",
       "sectional": false
     }
@@ -877,11 +877,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -905,7 +905,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -929,7 +929,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "from": [
@@ -953,7 +953,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -977,8 +977,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1019,7 +1019,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": []
         }
       },
@@ -1041,8 +1041,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -1051,11 +1051,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
             "sourceRange": []
           },
           "from": [
@@ -1079,7 +1079,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
             "sourceRange": []
           },
           "from": [
@@ -1103,7 +1103,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "907cac50-3701-5367-b35c-4ec2132c824f",
             "sourceRange": []
           },
           "from": [
@@ -1127,7 +1127,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
             "sourceRange": []
           },
           "from": [
@@ -1151,8 +1151,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "kind": "Custom",
         "objectId": 22,
         "origin": {
@@ -1193,7 +1193,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "sourceRange": []
         }
       },
@@ -1215,8 +1215,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "value": "top"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+      "originalId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -1255,7 +1255,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -1329,8 +1329,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1359,7 +1359,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -1375,7 +1375,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -1449,8 +1449,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1479,7 +1479,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -1496,11 +1496,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                     "sourceRange": []
                   },
                   "from": [
@@ -1524,7 +1524,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                     "sourceRange": []
                   },
                   "from": [
@@ -1548,7 +1548,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "907cac50-3701-5367-b35c-4ec2132c824f",
                     "sourceRange": []
                   },
                   "from": [
@@ -1572,7 +1572,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                     "sourceRange": []
                   },
                   "from": [
@@ -1596,8 +1596,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "kind": "Custom",
                 "objectId": 22,
                 "origin": {
@@ -1638,7 +1638,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                   "sourceRange": []
                 }
               },
@@ -1660,8 +1660,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   "value": "top"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+              "originalId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1675,7 +1675,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -1749,8 +1749,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1779,7 +1779,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -1795,7 +1795,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -1869,8 +1869,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1899,7 +1899,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"
@@ -1921,7 +1921,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1995,8 +1995,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2025,7 +2025,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2041,7 +2041,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -2115,8 +2115,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2145,7 +2145,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2161,7 +2161,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -2235,8 +2235,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2265,7 +2265,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2281,7 +2281,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -2355,8 +2355,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2385,7 +2385,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2402,11 +2402,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2430,7 +2430,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -2454,7 +2454,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -2478,7 +2478,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -2502,8 +2502,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2544,7 +2544,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "sourceRange": []
                 }
               },
@@ -2566,8 +2566,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2582,11 +2582,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -2610,7 +2610,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -2634,7 +2634,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -2658,7 +2658,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -2682,8 +2682,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -2724,7 +2724,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": []
         }
       },
@@ -2746,9 +2746,9 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originSketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "units": "mm"
     }
   },
@@ -2756,11 +2756,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
             "sourceRange": []
           },
           "from": [
@@ -2784,7 +2784,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
             "sourceRange": []
           },
           "from": [
@@ -2808,7 +2808,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
             "sourceRange": []
           },
           "from": [
@@ -2832,7 +2832,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "46c1c873-adde-54a9-8c92-5f163decf204",
             "sourceRange": []
           },
           "from": [
@@ -2856,8 +2856,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "kind": "Custom",
         "objectId": 22,
         "origin": {
@@ -2898,7 +2898,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "sourceRange": []
         }
       },
@@ -2932,9 +2932,9 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "value": "topCap"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "originSketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "units": "mm"
     }
   },
@@ -2942,12 +2942,12 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+      "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+          "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
           "sourceRange": [],
           "tag": {
             "commentStart": 827,
@@ -2960,8 +2960,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0cac68d9-dce1-5ea5-b271-00d335088531",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 882,
@@ -2974,8 +2974,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7e2c556e-e179-59fe-8bbb-62b28161420a",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 938,
@@ -2988,8 +2988,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "id": "46c1c873-adde-54a9-8c92-5f163decf204",
           "sourceRange": [],
           "tag": {
             "commentStart": 992,
@@ -3002,8 +3002,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1153,
@@ -3016,8 +3016,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1462,
@@ -3043,11 +3043,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
               "sourceRange": []
             },
             "from": [
@@ -3071,7 +3071,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -3095,7 +3095,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -3119,7 +3119,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46c1c873-adde-54a9-8c92-5f163decf204",
               "sourceRange": []
             },
             "from": [
@@ -3143,8 +3143,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "kind": "Custom",
           "objectId": 22,
           "origin": {
@@ -3185,7 +3185,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
             "sourceRange": []
           }
         },
@@ -3215,13 +3215,13 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "value": "topCap"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+      "endCapId": "9f4eb1aa-edde-5423-b838-744539667ee8",
       "units": "mm",
       "sectional": false
     }
@@ -3235,12 +3235,12 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+          "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
           "sourceRange": [],
           "tag": {
             "commentStart": 827,
@@ -3253,8 +3253,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0cac68d9-dce1-5ea5-b271-00d335088531",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 882,
@@ -3267,8 +3267,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7e2c556e-e179-59fe-8bbb-62b28161420a",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 938,
@@ -3281,8 +3281,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "id": "46c1c873-adde-54a9-8c92-5f163decf204",
           "sourceRange": [],
           "tag": {
             "commentStart": 992,
@@ -3295,8 +3295,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1153,
@@ -3309,8 +3309,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "sourceRange": [],
           "tag": {
             "commentStart": 1316,
@@ -3336,11 +3336,11 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
               "sourceRange": []
             },
             "from": [
@@ -3364,7 +3364,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -3388,7 +3388,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -3412,7 +3412,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46c1c873-adde-54a9-8c92-5f163decf204",
               "sourceRange": []
             },
             "from": [
@@ -3436,8 +3436,8 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "kind": "Custom",
           "objectId": 22,
           "origin": {
@@ -3478,7 +3478,7 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
             "sourceRange": []
           }
         },
@@ -3508,13 +3508,13 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "value": "topCap"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+      "endCapId": "9f4eb1aa-edde-5423-b838-744539667ee8",
       "units": "mm",
       "sectional": false
     }

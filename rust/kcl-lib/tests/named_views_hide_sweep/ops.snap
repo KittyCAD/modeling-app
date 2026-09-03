@@ -153,7 +153,7 @@ description: Operations executed named_views_hide_sweep.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "meta": {
                 "type": "Object",
@@ -161,7 +161,7 @@ description: Operations executed named_views_hide_sweep.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03"
                     }
                   }
                 }
@@ -306,7 +306,7 @@ description: Operations executed named_views_hide_sweep.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -315,7 +315,7 @@ description: Operations executed named_views_hide_sweep.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           },
           "sourceRange": []
         },
@@ -933,19 +933,19 @@ description: Operations executed named_views_hide_sweep.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               },
               "meta": {
                 "type": "Object",
@@ -953,7 +953,7 @@ description: Operations executed named_views_hide_sweep.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621"
                     }
                   }
                 }
@@ -989,7 +989,7 @@ description: Operations executed named_views_hide_sweep.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
           }
         },
         "sourceRange": []
@@ -1031,7 +1031,7 @@ description: Operations executed named_views_hide_sweep.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
           }
         },
         "sourceRange": []

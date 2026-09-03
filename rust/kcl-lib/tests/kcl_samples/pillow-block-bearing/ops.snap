@@ -25,7 +25,7 @@ description: Operations executed pillow-block-bearing.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3"
         },
         "sourceRange": []
       },
@@ -342,11 +342,11 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a93807f2-bb75-552f-8f69-73c95b73e483"
               }
             ]
           },
@@ -376,7 +376,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9b104d16-efec-521a-b275-43ab461a46f7"
           }
         },
         "sourceRange": []
@@ -464,7 +464,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "628f15ef-635e-5eac-8d21-2e7ffa497d33"
           }
         },
         "sourceRange": []
@@ -597,7 +597,7 @@ description: Operations executed pillow-block-bearing.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3"
         },
         "sourceRange": []
       },
@@ -1176,11 +1176,11 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e3552bce-740f-5d25-b5c8-dc7373b771e4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7afd9142-4986-5642-903b-b79c4d488db6"
               }
             ]
           },
@@ -1210,7 +1210,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b3f571cf-a507-5510-a6c4-b3754477a444"
           }
         },
         "sourceRange": []
@@ -1298,7 +1298,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "24f05b2b-a713-5e9c-a9c0-7dd439085394"
           }
         },
         "sourceRange": []
@@ -2315,11 +2315,11 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "02c96b06-63c8-522b-a2a0-e5a882440927"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5c714122-0389-5701-b7c9-3c110e7526e3"
               }
             ]
           },
@@ -2349,7 +2349,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d80bdb4b-aaf6-5d20-ac1e-57ee202f0097"
           }
         },
         "sourceRange": []
@@ -2449,7 +2449,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "70fb7e8e-c34a-513b-8500-dc6c265df8e0"
           }
         },
         "sourceRange": []
@@ -4047,11 +4047,11 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b11f16f3-d1c8-5014-bbf1-df7999757c47"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a10a8d5c-90bc-5c2e-ada0-dfa218639434"
               }
             ]
           },
@@ -4081,7 +4081,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "28bcfee8-f7ec-5d96-a280-b0f790a138f9"
           }
         },
         "sourceRange": []
@@ -4181,7 +4181,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ebabe5ee-e91a-5397-957d-8066fe4de498"
           }
         },
         "sourceRange": []
@@ -4226,7 +4226,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9d1851c6-87dc-5344-ad52-8853d5d0d6ea"
               }
             ]
           },
@@ -4256,7 +4256,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3e42627b-193c-5587-9e8f-6c15a37ecd14"
           }
         },
         "sourceRange": []
@@ -4353,7 +4353,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "492b08c1-0dc4-5aaf-aa82-127c34b5335f"
           }
         },
         "sourceRange": []
@@ -5155,11 +5155,11 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "37dccfff-51c8-54b8-ad35-58f377eb2c42"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "515e71b6-5068-5314-a362-727be5fd92ee"
               }
             ]
           },
@@ -5189,7 +5189,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e59d71a1-61af-585c-bfd1-c3c90d0039de"
           }
         },
         "sourceRange": []
@@ -5235,7 +5235,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6be835dd-eec1-5cac-b5f4-dd6eda804b7a"
           }
         },
         "sourceRange": []
@@ -5276,7 +5276,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6be835dd-eec1-5cac-b5f4-dd6eda804b7a"
           }
         },
         "sourceRange": []
@@ -5300,19 +5300,19 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "cb526b25-1d1c-5cd8-b4b5-f16e5071e285"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "9e0ecdff-7ecf-5b09-9871-1b95fd613a7d"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "007cfdac-2949-5312-b58b-95af2fcf99ce"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "08ac0227-0e34-5937-9e5d-16670fc36a55"
               }
             ]
           },
@@ -5345,7 +5345,7 @@ description: Operations executed pillow-block-bearing.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3"
         },
         "sourceRange": []
       },
@@ -5505,7 +5505,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93ab5cfd-a566-59d3-8a82-1e668b63f2f5"
               }
             ]
           },
@@ -5538,7 +5538,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e505c23-dde9-5385-a5ca-bff76165a83f"
           }
         },
         "sourceRange": []
@@ -5580,7 +5580,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b239de75-3f80-5e55-ba15-53afc928f527"
           }
         },
         "sourceRange": []
@@ -5712,13 +5712,13 @@ description: Operations executed pillow-block-bearing.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b239de75-3f80-5e55-ba15-53afc928f527"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "97c9db6c-a954-5303-b25a-6977ef2f3fd6"
               }
             }
           ]
@@ -5849,7 +5849,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6be835dd-eec1-5cac-b5f4-dd6eda804b7a"
           }
         },
         "sourceRange": []
@@ -5862,25 +5862,25 @@ description: Operations executed pillow-block-bearing.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "b239de75-3f80-5e55-ba15-53afc928f527"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "a474cdf7-b9bc-5c8a-9296-04d95403656e"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "97c9db6c-a954-5303-b25a-6977ef2f3fd6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "4475152b-6b96-52ce-a945-4fe2ee7ab426"
                 }
               }
             ]
@@ -5910,7 +5910,7 @@ description: Operations executed pillow-block-bearing.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3"
         },
         "sourceRange": []
       },
@@ -6070,7 +6070,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8038abe0-f104-567d-90cd-f71bd47954df"
               }
             ]
           },
@@ -6103,7 +6103,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "84791802-ac56-5214-afde-b71ec4265f1b"
           }
         },
         "sourceRange": []
@@ -6145,7 +6145,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ac76f166-501c-51bd-92cc-429a0ccc48df"
           }
         },
         "sourceRange": []
@@ -6277,13 +6277,13 @@ description: Operations executed pillow-block-bearing.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ac76f166-501c-51bd-92cc-429a0ccc48df"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ca47dcc6-66fa-5144-b826-99b83c40461a"
               }
             }
           ]
@@ -6414,7 +6414,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c8d10d7a-2979-59ad-a964-392421834e2a"
           }
         },
         "sourceRange": []
@@ -6427,25 +6427,25 @@ description: Operations executed pillow-block-bearing.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "ac76f166-501c-51bd-92cc-429a0ccc48df"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "7f45cef7-83d0-5a47-97c3-0364c95ca759"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "ca47dcc6-66fa-5144-b826-99b83c40461a"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "966d3a9b-44a0-5df2-a0e5-265c7a2981c5"
                 }
               }
             ]
@@ -6480,7 +6480,7 @@ description: Operations executed pillow-block-bearing.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "81c06928-6302-5370-bac1-7ae6b91cfb62"
           }
         },
         "sourceRange": []

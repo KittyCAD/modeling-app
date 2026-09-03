@@ -6,8 +6,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -53,7 +53,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -127,8 +127,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -157,7 +157,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -174,11 +174,11 @@ description: Variables in memory after executing inconsistent_sketch.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -202,8 +202,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -244,7 +244,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                   "sourceRange": []
                 }
               },
@@ -254,8 +254,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "originalId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "units": "mm",
               "isClosed": "no"
             }

@@ -184,7 +184,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -1980,7 +1980,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3776,7 +3776,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -5572,7 +5572,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -7368,7 +7368,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -9164,7 +9164,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -10960,7 +10960,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -12761,11 +12761,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -12799,11 +12799,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0917d07d-5996-5994-8a06-602d43e2b6f3"
               }
             ]
           },
@@ -12837,11 +12837,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44621ebd-5856-5dfd-9426-dda5d969f375"
               }
             ]
           },
@@ -12875,11 +12875,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2b45af9b-6b90-5530-b9b7-b193031152d8"
               }
             ]
           },
@@ -12913,11 +12913,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c47bdefb-e100-5d1c-a209-66adc3d957b5"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad"
               }
             ]
           },
@@ -12951,11 +12951,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0e5111f2-33bb-50f3-812c-3fe7fe747c41"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "77202593-ebf9-50c7-b715-41557309d9ab"
               }
             ]
           },
@@ -12989,11 +12989,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "95ab2f69-02d1-5308-9a43-67a2ec05bd0f"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "db1a26b9-a657-5b85-9427-e6bdab5ddc51"
               }
             ]
           },
@@ -13026,13 +13026,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6fec3912-fa52-5513-b3f5-b608fd2bcfc1"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42"
               }
             }
           ]
@@ -13067,7 +13067,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9091619d-ebc5-5e38-b770-c9cad323ebc4"
           }
         },
         "sourceRange": []
@@ -13111,19 +13111,19 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "09bc7d66-414a-560e-9855-7a04ab7b5e7e"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7ae875a8-ae57-5b6a-ae5d-65f2501893ad"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d"
               }
             }
           ]
@@ -13158,7 +13158,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8a2f791f-f281-5e91-bf75-72e9409b6587"
           }
         },
         "sourceRange": []
@@ -13202,13 +13202,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c9419ead-8fe3-58ae-821f-b6a562bd113d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "296133c8-94a5-5fd9-851a-d484fa3dc66a"
               }
             }
           ]
@@ -13243,7 +13243,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3f57863-47a5-53b5-9e66-0894898f9785"
           }
         },
         "sourceRange": []
@@ -13283,7 +13283,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -14412,11 +14412,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f20f97db-6c6e-5597-acd6-63874dd9452b"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6c399e30-11b0-54b4-ab2e-01904812cfa4"
               }
             ]
           },
@@ -14446,7 +14446,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9e6c6007-f848-596e-a16a-ec9a3e919448"
           }
         },
         "sourceRange": []
@@ -14499,7 +14499,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d18cac33-8289-57fc-b158-acc5374b53ba"
           }
         },
         "sourceRange": []
@@ -14518,12 +14518,12 @@ description: Operations executed end-effector-gripper-fingers.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line4",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "9e6e304e-8ad4-5ac0-8010-5afbc75f3240"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capEnd001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "04a01765-c212-5ea8-ab37-e68d46b70b3d"
                       }
                     ]
                   }
@@ -14538,12 +14538,12 @@ description: Operations executed end-effector-gripper-fingers.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line8",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "42f3e161-2199-5f73-bf40-1ca4904daa2a"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capEnd001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "04a01765-c212-5ea8-ab37-e68d46b70b3d"
                       }
                     ]
                   }
@@ -15045,7 +15045,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a033dab5-0390-57db-8839-ba1e2994485a"
               }
             ]
           },
@@ -15079,7 +15079,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "21f4265c-f137-5d70-bd15-fef61fa118ad"
               }
             ]
           },
@@ -15113,7 +15113,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1632f8b6-ad43-564a-88e5-8f866fc32fa5"
               }
             ]
           },
@@ -15147,7 +15147,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b38bdf32-0c5b-50a1-a245-8525c060479a"
               }
             ]
           },
@@ -15180,25 +15180,25 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "48948c29-adc8-5bb6-8e6e-ca30d9e99f42"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "42399397-a35f-595e-a4d2-7fd000b9757b"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3ac0a3a0-6a92-5839-8105-1fee8d446f12"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9d96504e-8b78-5712-bcdb-96503aa71631"
               }
             }
           ]
@@ -15249,25 +15249,25 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "136f5e0e-221f-5235-9148-cfe68c5ca291"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "887c0877-1b4f-5fea-a0d9-50772562bc0a"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "589feeab-5bd5-57b3-8210-34189549c7ae"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ff4c146e-5f80-5a26-becd-54747f974af4"
               }
             }
           ]
@@ -16070,11 +16070,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b8e185de-540f-54a8-bf4b-f9522f7b8b8a"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "812ce946-faf1-5d69-8f37-46a5d6e95361"
               }
             ]
           },
@@ -16104,7 +16104,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c15a3baf-83dc-58d1-ab0c-20d9082b0471"
           }
         },
         "sourceRange": []
@@ -16157,7 +16157,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6b809edf-d342-5e88-8a11-67808067d72a"
               }
             ]
           },
@@ -16191,7 +16191,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c6e35f00-4ad9-5601-9c9a-9274c22d495d"
               }
             ]
           },
@@ -16221,7 +16221,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f45ac561-4d3d-5a97-ab27-2b7a119dd09a"
           }
         },
         "sourceRange": []
@@ -16277,7 +16277,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "54d84b22-fe3c-56c9-a6af-d549f2b130a2"
           }
         },
         "sourceRange": []
@@ -16333,7 +16333,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f002859b-a914-5327-8934-6d752f24d128"
           }
         },
         "sourceRange": []
@@ -16346,13 +16346,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "20cceef8-ea05-5566-afde-a69614ea95cc"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "7d742777-6020-5b95-b225-89e9e69a3e2f"
                 }
               }
             ]
@@ -16387,7 +16387,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "21e98f42-035b-5b63-b972-ceb0d08632da"
           }
         },
         "sourceRange": []
@@ -16428,7 +16428,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "21e98f42-035b-5b63-b972-ceb0d08632da"
           }
         },
         "sourceRange": []
@@ -16519,7 +16519,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -18800,11 +18800,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d6828a8f-1a31-5a20-8904-8c941bcdc652"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c24c2f08-b312-540d-8c14-0e56b5df29a3"
               }
             ]
           },
@@ -18834,7 +18834,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc8f0db3-1e07-5c6f-b896-ec1ed303927b"
           }
         },
         "sourceRange": []
@@ -18992,7 +18992,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0"
               }
             ]
           },
@@ -19022,7 +19022,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7"
           }
         },
         "sourceRange": []
@@ -19187,7 +19187,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f49760ee-6262-5eb6-a263-c1ce858994fb"
               }
             ]
           },
@@ -19217,7 +19217,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "edb8fe4b-e78c-5e91-bf14-77f419569505"
           }
         },
         "sourceRange": []
@@ -19382,7 +19382,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d9779ddb-867b-5e29-b375-a577f4869b89"
               }
             ]
           },
@@ -19412,7 +19412,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af"
           }
         },
         "sourceRange": []
@@ -19577,7 +19577,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "80a89d3a-76e3-5e83-b69a-12df5d33293f"
               }
             ]
           },
@@ -19607,7 +19607,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "001a84e2-9659-5f72-8f74-6581f709b63f"
           }
         },
         "sourceRange": []
@@ -19659,13 +19659,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7c672a57-a1f6-5865-b9f5-1656324bc70c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "28dbff08-8bd2-56e1-a5eb-77bcedc4ce26"
               }
             }
           ]
@@ -19731,13 +19731,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5d1093ba-3f39-522b-a08b-2e4798f74f4f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fba553ba-7032-5e50-9960-8abf3ac45705"
               }
             }
           ]
@@ -19803,13 +19803,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "239c31b0-218e-5845-9593-0fdf899053a7"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d6047020-81f7-5abc-8462-2bb06d43a2c1"
               }
             }
           ]
@@ -19868,7 +19868,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e7807f37-e1a4-5d2a-9c3a-c08f01bc4d86"
               }
             }
           ]
@@ -19895,7 +19895,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e1d52290-2e9c-50ce-8a87-e455736e4180"
                 }
               }
             ]
@@ -19930,7 +19930,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "79ae8d62-90e5-571e-b998-e60ee90789ab"
           }
         },
         "sourceRange": []
@@ -19970,7 +19970,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -21047,11 +21047,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7645163c-dd2f-51e8-89d9-81a71c2e60ef"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "085078d7-3455-5550-a0a9-8e9153df0942"
               }
             ]
           },
@@ -21081,7 +21081,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5dd2b690-759c-55dc-93bb-c18f00c890a9"
           }
         },
         "sourceRange": []
@@ -21169,7 +21169,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6cbf4a37-4a2f-5472-89ce-c7a24aa2931a"
           }
         },
         "sourceRange": []
@@ -21264,13 +21264,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6cbf4a37-4a2f-5472-89ce-c7a24aa2931a"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bb9dec3f-7a76-5431-be9a-f1ecc5c73395"
               }
             }
           ]
@@ -21312,7 +21312,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -23743,11 +23743,11 @@ description: Operations executed end-effector-gripper-fingers.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5777c136-6b93-5c4a-98c8-2ea2547a0fea"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7779e220-1426-55dd-969d-9e5689eb6015"
               }
             ]
           },
@@ -23777,7 +23777,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ed7341e1-fe44-5e92-b711-2b91fcf31081"
           }
         },
         "sourceRange": []
@@ -23865,7 +23865,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ba10c382-f783-5646-a8a8-a0c8707ded16"
           }
         },
         "sourceRange": []
@@ -23960,13 +23960,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ba10c382-f783-5646-a8a8-a0c8707ded16"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e6e5ee9e-0b2a-5185-b934-22a44a5f4ee2"
               }
             }
           ]
@@ -24012,127 +24012,127 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "34ea98a5-fab3-5283-9445-5a3b25071d26"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cea75c17-0a18-5ab9-8495-1b1bb278e899"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "22ba7afc-f279-51e5-b5e8-7cf66be455e6"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fba10312-ccc1-5900-b701-a62fd578246e"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cbdb6f93-9e20-5934-a422-d908ce101fef"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6788db81-f481-5fd7-8a75-497b7aaf3285"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f0e53d08-0838-5ec1-bb88-e74e2f619376"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "be3d12d5-8f96-5787-9c72-38ae9d305319"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "58a9782f-2947-5530-984c-971c8f28df73"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e0575921-ab6f-5505-a805-5f9cfc8fa9c9"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e2feb7e4-705f-5adf-ad43-5cf7a2d1ae6d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff"
               }
             }
           ]
@@ -24166,25 +24166,25 @@ description: Operations executed end-effector-gripper-fingers.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "136f5e0e-221f-5235-9148-cfe68c5ca291"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "887c0877-1b4f-5fea-a0d9-50772562bc0a"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "589feeab-5bd5-57b3-8210-34189549c7ae"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "ff4c146e-5f80-5a26-becd-54747f974af4"
                   }
                 }
               ]
@@ -24195,13 +24195,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "21e98f42-035b-5b63-b972-ceb0d08632da"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "ed210439-c49e-51fe-9253-e8bc177aabef"
                   }
                 }
               ]
@@ -24209,7 +24209,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "79ae8d62-90e5-571e-b998-e60ee90789ab"
               }
             },
             {
@@ -24218,13 +24218,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "6cbf4a37-4a2f-5472-89ce-c7a24aa2931a"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "bb9dec3f-7a76-5431-be9a-f1ecc5c73395"
                   }
                 }
               ]
@@ -24235,13 +24235,13 @@ description: Operations executed end-effector-gripper-fingers.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "ba10c382-f783-5646-a8a8-a0c8707ded16"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "e6e5ee9e-0b2a-5185-b934-22a44a5f4ee2"
                   }
                 }
               ]

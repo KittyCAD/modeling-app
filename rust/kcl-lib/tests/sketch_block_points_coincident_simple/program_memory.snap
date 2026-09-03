@@ -6,8 +6,8 @@ description: Variables in memory after executing sketch_block_points_coincident_
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 2,
                 "kind": {
                   "point": {
@@ -84,8 +84,8 @@ description: Variables in memory after executing sketch_block_points_coincident_
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -114,7 +114,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p1"
@@ -130,7 +130,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 3,
                 "kind": {
                   "point": {
@@ -170,8 +170,8 @@ description: Variables in memory after executing sketch_block_points_coincident_
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -200,7 +200,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p2"
@@ -216,7 +216,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 5,
                 "kind": {
                   "point": {
@@ -256,8 +256,8 @@ description: Variables in memory after executing sketch_block_points_coincident_
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -286,7 +286,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p3"
@@ -302,7 +302,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 6,
                 "kind": {
                   "point": {
@@ -342,8 +342,8 @@ description: Variables in memory after executing sketch_block_points_coincident_
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -372,7 +372,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p4"

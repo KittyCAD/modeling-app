@@ -5,7 +5,7 @@ description: Artifact commands coilover-assembly.kcl
 {
   "public/kcl-samples/coilover-assembly/coilover-bottom.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ccd2d088-d1a2-552b-93dd-5598fbbcb031",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19858dcf-1f16-5e5b-a096-221c1356f1ab",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6418bd17-8278-546c-a76e-c9e46933af75",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab171963-cf83-535c-81f6-ff96008d7a4c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6418bd17-8278-546c-a76e-c9e46933af75",
         "to": {
           "x": 35.0,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "367b0131-ff93-5810-94cf-4d6645cfc79b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6418bd17-8278-546c-a76e-c9e46933af75",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,24 +107,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "6418bd17-8278-546c-a76e-c9e46933af75",
+        "segment": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
+        "intersection_segment": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b121efde-68c6-58ef-8d2b-9381048f41ce",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -136,11 +136,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d160926-1aee-5802-99f3-2f5145efb260",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6",
         "distance": 6.3,
         "faces": null,
         "opposite": "None",
@@ -149,68 +149,68 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "458bd166-3b39-5b82-86b7-0d0cfea550b1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6855157b-d2a8-5dab-98fa-09614b8d40e8",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6d922f0b-805a-5b7a-be01-22025630b25b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6",
+        "edge_id": "c41dd226-b1f2-5d54-9164-5f59f81535c7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c504ffe9-f58c-5071-b323-4c40c962c99d",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6",
+        "edge_id": "c41dd226-b1f2-5d54-9164-5f59f81535c7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a5021b3-b301-5049-8de0-1434be0c2714",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+          "36ddadba-7da4-56f0-bc1f-59abaa29211e"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee34aa8-390c-5dcc-8779-9fa05c1c15e1",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6",
+        "edge_id": "c41dd226-b1f2-5d54-9164-5f59f81535c7"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a784bc99-9c06-5812-bd9f-e6f763802b26",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "114a51cd-8c82-5b7e-8bc4-df41e0cf54d6",
         "edge_ids": [
-          "[uuid]"
+          "c41dd226-b1f2-5d54-9164-5f59f81535c7"
         ],
         "cut_type": {
           "chamfer": {
@@ -226,37 +226,37 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "599406fe-8fa8-5dc3-9929-a581de301b08",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6418bd17-8278-546c-a76e-c9e46933af75",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5df06b5a-d299-528d-bc12-2781871c1ecb",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "36ddadba-7da4-56f0-bc1f-59abaa29211e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fdefd451-2e31-5260-bcdb-1a6e3eeb631d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5df06b5a-d299-528d-bc12-2781871c1ecb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a975c2b7-7f3d-517e-a535-11d01af26c97",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "5df06b5a-d299-528d-bc12-2781871c1ecb",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -268,18 +268,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e5ac066-03c0-5d08-aa73-281135f0051b",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4177b5ef-cbd3-5bbf-be61-61c60c23b9aa",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "9e5ac066-03c0-5d08-aa73-281135f0051b",
         "to": {
           "x": 27.5,
           "y": 0.0,
@@ -288,18 +288,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27cdb3c6-57f2-5436-b5a0-ea56d854b0ea",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e94090c7-1202-5385-8abd-ebb644f303c7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9e5ac066-03c0-5d08-aa73-281135f0051b",
         "segment": {
           "type": "arc",
           "center": {
@@ -320,24 +320,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "9e5ac066-03c0-5d08-aa73-281135f0051b",
+        "segment": "e94090c7-1202-5385-8abd-ebb644f303c7",
+        "intersection_segment": "e94090c7-1202-5385-8abd-ebb644f303c7",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f3b497c-6dcf-534d-a453-52a4f9d32ee5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "5df06b5a-d299-528d-bc12-2781871c1ecb",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -349,11 +349,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "35ba111a-187f-564e-955a-1c04d83dd0c3",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e",
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
@@ -362,70 +362,70 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea97a39-30f7-5924-9384-773169cd228c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ffde0060-c8f8-517f-a68b-cb30c764be88",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c365a323-de4a-5a38-890b-e8602360a7e9",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e",
+        "edge_id": "96e6dc51-b24b-5b5e-b152-b42796c81d8a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01eb91e0-99dc-5521-b353-e23b21021bbf",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e",
+        "edge_id": "96e6dc51-b24b-5b5e-b152-b42796c81d8a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae3e5978-6ebb-5883-8d4e-01e7a0bf41a0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9e5ac066-03c0-5d08-aa73-281135f0051b",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "74370ff5-898a-5401-a26c-8a664f0231c9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "07e1fb2e-446a-5dd2-8511-498086a311be",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2850e5f1-fc2e-56ad-941f-eb9557ab866b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -437,18 +437,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "915c226b-6220-58f1-a18b-ad408905f6af",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88a0a424-12ab-58a7-8962-c69c7f4d8cc9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "915c226b-6220-58f1-a18b-ad408905f6af",
         "to": {
           "x": 19.0,
           "y": 0.0,
@@ -457,18 +457,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372f9fa5-6877-531c-97c7-a80763f05fa6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1dbf2c11-0540-50fe-8243-58ffa27a5471",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "915c226b-6220-58f1-a18b-ad408905f6af",
         "segment": {
           "type": "arc",
           "center": {
@@ -489,24 +489,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "915c226b-6220-58f1-a18b-ad408905f6af",
+        "segment": "1dbf2c11-0540-50fe-8243-58ffa27a5471",
+        "intersection_segment": "1dbf2c11-0540-50fe-8243-58ffa27a5471",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d32acd57-f701-51ba-971d-c9a443cf59a3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -518,11 +518,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "119fc69d-a017-5296-bc1f-8f8261c68502",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
         "distance": 92.0,
         "faces": null,
         "opposite": "None",
@@ -531,68 +531,68 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbd3906f-122e-5c71-a488-77fb0822a2ec",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0daf60f-365d-5cec-91f4-ad17841b694d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "520efbb9-3ffc-5a5d-a05c-2d68347a74c6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
+        "edge_id": "8c15c139-5109-55b1-aacd-60cd175f3848"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6428b2b4-1f57-5410-8bd6-bc58d5a8ab19",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
+        "edge_id": "8c15c139-5109-55b1-aacd-60cd175f3848"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa232e03-f489-5a7f-b9f8-0b577fef6783",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "9c1a364c-7261-5e63-8570-2877e788d831",
+          "a49f6419-56d5-55cc-afd8-f454f21faf27"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2dc0fd6e-c59e-5f5c-b509-65d8b0594720",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
+        "edge_id": "acb2a8ff-4c96-5e0b-9dbf-b2ace0e55c95"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6bf150f2-98a0-5b1d-9b26-fe4587a6bf55",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
         "edge_ids": [
-          "[uuid]"
+          "acb2a8ff-4c96-5e0b-9dbf-b2ace0e55c95"
         ],
         "cut_type": {
           "chamfer": {
@@ -608,37 +608,37 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1bea67bd-66c7-5dc3-ae2f-93b32ece0d09",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "915c226b-6220-58f1-a18b-ad408905f6af",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90553d31-7b28-5e2b-8bd5-b40a99d5e1c0",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "a49f6419-56d5-55cc-afd8-f454f21faf27"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83e94bc2-4899-51b2-943d-5ac78bc967ca",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "90553d31-7b28-5e2b-8bd5-b40a99d5e1c0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "47c739fd-fc75-5518-9334-3d901d8d1038",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "90553d31-7b28-5e2b-8bd5-b40a99d5e1c0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -650,18 +650,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef5d07ed-ec75-547f-b122-54717e4473f3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27b53fa8-1f13-5ef1-af0d-af513888d587",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ef5d07ed-ec75-547f-b122-54717e4473f3",
         "to": {
           "x": 12.5,
           "y": 0.0,
@@ -670,18 +670,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55060033-cc36-561b-99fd-a96abc0ec0ce",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1261aabb-691e-5c4e-a553-418b2f3586e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ef5d07ed-ec75-547f-b122-54717e4473f3",
         "segment": {
           "type": "arc",
           "center": {
@@ -702,24 +702,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ef5d07ed-ec75-547f-b122-54717e4473f3",
+        "segment": "1261aabb-691e-5c4e-a553-418b2f3586e3",
+        "intersection_segment": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "496123de-8789-5ba0-8a2b-e76307384138",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "90553d31-7b28-5e2b-8bd5-b40a99d5e1c0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -731,11 +731,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a6ff2397-09f8-57e7-86c0-b276e982bcc6",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "distance": 42.5,
         "faces": null,
         "opposite": "None",
@@ -744,68 +744,68 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f710e8c1-3ce8-5bc1-a64c-1a4d7fe54c0c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e812624-c25d-5827-b9ed-bbd05187134c",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec1b1e6f-4a29-5638-a336-c6e1f369914a",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
+        "edge_id": "ee95e1d7-63a8-590c-941d-d073b4bbc769"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc4f55fc-c8a9-5893-8dc6-95576c9b728c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
+        "edge_id": "ee95e1d7-63a8-590c-941d-d073b4bbc769"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "99c03c46-c4c3-5b41-80cc-35504fccedad",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "1c83c07f-1367-5eae-87a6-2c5c17910d6d",
+          "a0142a94-0deb-5b1a-a91c-09fffee1a35c"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e756c946-3726-5bd7-9293-8b039ffd84f1",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
+        "edge_id": "2775e3bd-8b39-560f-ab03-334989bf4ef1"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98588bbd-e36e-54a0-acd0-471bae96872a",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "edge_ids": [
-          "[uuid]"
+          "2775e3bd-8b39-560f-ab03-334989bf4ef1"
         ],
         "cut_type": {
           "fillet": {
@@ -819,35 +819,35 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48fadb5c-d200-5e8e-a88d-262c16919893",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "1c83c07f-1367-5eae-87a6-2c5c17910d6d",
+          "add7f4dc-698e-52c1-8123-58174862c900"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b97d9a8-edae-55ed-a3a4-06ecdb6fa541",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
+        "edge_id": "ee95e1d7-63a8-590c-941d-d073b4bbc769"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ef02a22-0bf9-51b9-8e85-d9de8afb33d5",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "edge_ids": [
-          "[uuid]"
+          "ee95e1d7-63a8-590c-941d-d073b4bbc769"
         ],
         "cut_type": {
           "fillet": {
@@ -861,16 +861,16 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8cd0070d-4468-5992-8b78-6f35398566ba",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ef5d07ed-ec75-547f-b122-54717e4473f3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53c3190b-f023-5c4f-be10-10b13db80873",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -895,20 +895,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef21e739-5f9b-5741-a5c3-27a32524b947",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "53c3190b-f023-5c4f-be10-10b13db80873",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b10d80f-e71e-5f4f-8a5f-cd654cf43638",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "53c3190b-f023-5c4f-be10-10b13db80873",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -920,18 +920,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7e76b502-0a65-5db3-b125-5afb10033201",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "to": {
           "x": 31.35,
           "y": -114.5,
@@ -940,18 +940,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30c62370-252d-530f-a4e4-d5fc50f4557e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "472c4710-fd5c-551b-99c6-0e1aae2760e2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -964,11 +964,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "220da994-7698-5975-996f-e1f8c9d6a937",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "arc",
           "center": {
@@ -989,11 +989,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "875b4c9b-5651-552d-b36b-edc313a9444a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -1006,11 +1006,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62979774-3fe0-5b4a-8606-25cb69364c68",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -1023,11 +1023,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c53f0311-f8c9-5643-b0f2-995aac7886a1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -1040,11 +1040,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8e978f1-6bcb-5e83-a6c9-c3031e1d8fb8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "arc",
           "center": {
@@ -1065,11 +1065,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e8d49e0-237f-52a2-8623-ac6c06817d2d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -1082,11 +1082,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b60351b-ca82-586d-afaf-9fbbf42bef71",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -1099,11 +1099,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "78927e9f-44c5-5721-8758-86db500f82f0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -1116,11 +1116,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb07c274-7f2a-5e62-8552-a81fefa66882",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "segment": {
           "type": "line",
           "end": {
@@ -1133,24 +1133,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
+        "segment": "472c4710-fd5c-551b-99c6-0e1aae2760e2",
+        "intersection_segment": "472c4710-fd5c-551b-99c6-0e1aae2760e2",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "435f3566-86d2-5c29-8b90-100e15ebe932",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "53c3190b-f023-5c4f-be10-10b13db80873",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1162,11 +1162,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7e19de-23a0-5ef9-a70a-4d2b6462d6d3",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3",
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -1175,64 +1175,64 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11abeca3-0957-5077-ac2a-f8dca708b902",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "15478f32-0303-5fec-a1cb-3190d753b742",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93e2989a-347f-5164-a923-959bef09b66f",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3",
+        "edge_id": "a4224eea-d935-5b9d-9bd5-c1181bff1b77"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9416544c-1108-54db-ba55-a4e37e514cb1",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3",
+        "edge_id": "a4224eea-d935-5b9d-9bd5-c1181bff1b77"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "99f639da-4c6d-5758-a745-6cf4d4abb4fd",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "c17a4fed-a24c-5bd4-b74e-411833c26da9"
         ],
         "tool_ids": [
-          "[uuid]"
+          "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27d929b9-f0bc-5579-9ebf-bd456cdeaba3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6a68e9eb-12e1-50ec-bd3c-99980d27c8a5",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1257,11 +1257,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88d0aa84-59b7-5aef-8bf1-b2f811bf3083",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "6a68e9eb-12e1-50ec-bd3c-99980d27c8a5",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1271,20 +1271,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a61cdea-9e5b-5039-a2c1-94bbace0af72",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6a68e9eb-12e1-50ec-bd3c-99980d27c8a5",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc48b4fe-99db-57cb-9a86-7afbb004baa0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6a68e9eb-12e1-50ec-bd3c-99980d27c8a5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1296,18 +1296,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a58a14f2-c137-584c-ae28-d2602bdbca9e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a5bd3aa8-95dd-5ff7-abb9-009b6f130f56",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a58a14f2-c137-584c-ae28-d2602bdbca9e",
         "to": {
           "x": 6.25000000325,
           "y": -127.000000004,
@@ -1316,18 +1316,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6583c679-b706-5f59-b274-52ade813546c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4841d46b-a8c5-5beb-8491-de79bcfc0d5e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a58a14f2-c137-584c-ae28-d2602bdbca9e",
         "segment": {
           "type": "arc",
           "center": {
@@ -1348,24 +1348,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a58a14f2-c137-584c-ae28-d2602bdbca9e",
+        "segment": "4841d46b-a8c5-5beb-8491-de79bcfc0d5e",
+        "intersection_segment": "4841d46b-a8c5-5beb-8491-de79bcfc0d5e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7bbf5a08-0cdd-57d2-a13e-bbb18b3138e5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6a68e9eb-12e1-50ec-bd3c-99980d27c8a5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1377,11 +1377,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6d997ab3-f3ed-505c-9791-8ec32639e47d",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5",
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
@@ -1390,64 +1390,64 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77cbd268-cb09-56d1-b836-5b93c58df7a9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8268829-b110-52fe-ad71-ebddb02d8389",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5",
+        "edge_id": "b750c55b-6b33-5b63-8dfc-f9d37693e5f8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cccbb5f4-e0c3-5d9e-ae8d-d61981368f4a",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5",
+        "edge_id": "b750c55b-6b33-5b63-8dfc-f9d37693e5f8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a243d600-7a89-58c0-b391-f49fa60311b2",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "99f639da-4c6d-5758-a745-6cf4d4abb4fd"
         ],
         "tool_ids": [
-          "[uuid]"
+          "e4dd6f90-03b7-53e6-ac9a-3638839b8db5"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "afc7ff9b-22a0-5f02-9d97-b83239b7149f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a58a14f2-c137-584c-ae28-d2602bdbca9e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b7784b7d-4194-5262-9b90-b8484cede58a",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1472,20 +1472,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fba2a6d-c37d-53de-8155-e0f1c9306907",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b7784b7d-4194-5262-9b90-b8484cede58a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef501465-5c56-5bde-a1c9-53db61919ed1",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b7784b7d-4194-5262-9b90-b8484cede58a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1497,18 +1497,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70956a22-6873-550b-b803-039d42b7d712",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b35eacc8-d61b-56a6-a79c-2c4011cafdc8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "70956a22-6873-550b-b803-039d42b7d712",
         "to": {
           "x": 19.0,
           "y": 0.0,
@@ -1517,18 +1517,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8fcab502-16d6-560a-b20f-bd54b0aa80da",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7c81ca8-5a4d-54f9-a4cd-6ac823fb33f3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "70956a22-6873-550b-b803-039d42b7d712",
         "segment": {
           "type": "arc",
           "center": {
@@ -1549,24 +1549,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "36f739ad-44ec-54a1-a253-1897aeafb909",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "70956a22-6873-550b-b803-039d42b7d712",
+        "segment": "a7c81ca8-5a4d-54f9-a4cd-6ac823fb33f3",
+        "intersection_segment": "a7c81ca8-5a4d-54f9-a4cd-6ac823fb33f3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2d22c6-8003-51b4-9168-1f7e761477eb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b7784b7d-4194-5262-9b90-b8484cede58a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1578,11 +1578,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8de60ed6-22ad-5c48-9321-45a0c9ccb127",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "36f739ad-44ec-54a1-a253-1897aeafb909",
         "distance": 51.0,
         "faces": null,
         "opposite": "None",
@@ -1591,70 +1591,70 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0fba7e07-4db3-5ffe-93a6-2511707d43b3",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11366216-b576-5d52-85a6-0314ac971917",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "36f739ad-44ec-54a1-a253-1897aeafb909"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3cf8716b-eb4e-5f4e-87e4-014d308e6b4c",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "36f739ad-44ec-54a1-a253-1897aeafb909",
+        "edge_id": "cfd98384-f90d-5f0d-a06c-6751325ec752"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ebecab9-da9e-5468-892c-c24dfd0eba52",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "36f739ad-44ec-54a1-a253-1897aeafb909",
+        "edge_id": "cfd98384-f90d-5f0d-a06c-6751325ec752"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "866b670c-0a7d-51fe-8fbe-ee158af223eb",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "70956a22-6873-550b-b803-039d42b7d712",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20c1ef34-4a75-55fb-9fc5-ea73ab3da8ec",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "86f5b56a-8ee7-54f5-9008-3cf212909c2c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a74978b-6513-5971-ab7a-7977d863e6f2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "20c1ef34-4a75-55fb-9fc5-ea73ab3da8ec",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f9c8e0f-f974-5427-9243-9c4cb9eb2b87",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20c1ef34-4a75-55fb-9fc5-ea73ab3da8ec",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1666,18 +1666,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2df46e97-fd71-5f2c-a67a-ce99a18727c2",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "863f9e69-55a3-51cc-9775-b91a7067ab9e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2df46e97-fd71-5f2c-a67a-ce99a18727c2",
         "to": {
           "x": 5.0,
           "y": 0.0,
@@ -1686,18 +1686,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fdea1e0d-136c-5d5b-8f2c-f58d5aa8d821",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0931f2f4-8119-5874-b381-906c616420b3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2df46e97-fd71-5f2c-a67a-ce99a18727c2",
         "segment": {
           "type": "arc",
           "center": {
@@ -1718,24 +1718,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2df46e97-fd71-5f2c-a67a-ce99a18727c2",
+        "segment": "0931f2f4-8119-5874-b381-906c616420b3",
+        "intersection_segment": "0931f2f4-8119-5874-b381-906c616420b3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b5930dd-ec28-587c-8e0e-afcc1247df64",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20c1ef34-4a75-55fb-9fc5-ea73ab3da8ec",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1747,11 +1747,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5c07dd0-a2d1-5d95-8d2c-295e4c2e3659",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
         "distance": -51.0,
         "faces": null,
         "opposite": "None",
@@ -1760,70 +1760,70 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4743e0bd-5fc4-5459-83e6-dac1866a65e3",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "cbc74e70-6a54-530b-989d-cf74f1da82c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "56097360-43af-5b29-9943-3680a3d3f6cc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
+        "edge_id": "14d6d3a7-ecdc-5160-89cc-338e8362522e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "218a8472-acf7-5c93-b30c-244f577f7292",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
+        "edge_id": "14d6d3a7-ecdc-5160-89cc-338e8362522e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d39730b-3991-5e1e-9144-46b864ad6974",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "36f739ad-44ec-54a1-a253-1897aeafb909"
         ],
         "tool_ids": [
-          "[uuid]"
+          "cbc74e70-6a54-530b-989d-cf74f1da82c5"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f5fb36a-2638-5957-8892-28e883cbf8ee",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2df46e97-fd71-5f2c-a67a-ce99a18727c2",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0816a6c-b4c1-59b7-8528-6fca3fd618a5",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]"
+          "a243d600-7a89-58c0-b391-f49fa60311b2",
+          "4d39730b-3991-5e1e-9144-46b864ad6974"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
@@ -1832,7 +1832,7 @@ description: Artifact commands coilover-assembly.kcl
   ],
   "public/kcl-samples/coilover-assembly/coilover-top.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1857,20 +1857,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8bca829-2e04-5408-be66-e006eb87a287",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3dc38ff5-6a47-5349-819e-85fd4987b2dc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1882,18 +1882,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edccd9f4-f441-5e37-8c81-63f16ccfa985",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03c3dfed-0d2c-52c4-8659-e9bde0261ee5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "edccd9f4-f441-5e37-8c81-63f16ccfa985",
         "to": {
           "x": 12.5,
           "y": 0.0,
@@ -1902,18 +1902,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f78200b-ebff-5c2d-a334-f9594a609666",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f1634645-3502-580b-a84b-0466ff4d66c4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "edccd9f4-f441-5e37-8c81-63f16ccfa985",
         "segment": {
           "type": "arc",
           "center": {
@@ -1934,24 +1934,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "694dfa80-ac26-5d24-beac-f480b73cb763",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "edccd9f4-f441-5e37-8c81-63f16ccfa985",
+        "segment": "f1634645-3502-580b-a84b-0466ff4d66c4",
+        "intersection_segment": "f1634645-3502-580b-a84b-0466ff4d66c4",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "023d0354-5e6b-51ae-b372-1b4223628a61",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1963,11 +1963,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60de322d-bf9a-5235-a2a1-64013dd61264",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "distance": -32.5,
         "faces": null,
         "opposite": "None",
@@ -1976,68 +1976,68 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90ac5173-a190-5221-9b4f-6adfbe21958b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f9fd900-e8f7-52e4-a641-4b8ba87f1b3a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b34f2336-80ec-5dd0-9463-6ffa6485a805",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
+        "edge_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
+        "edge_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9cdc2dc-e2ca-503e-9cbb-0a105b8084b6",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "118dd6be-7e76-5ad2-aab5-354627acb59b",
+          "e1e7e372-f8f6-5b56-a623-e188c73253ab"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee156f1f-f0a9-5b56-9762-e3d661811d8d",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
+        "edge_id": "33a382ff-4e43-5c58-a0ae-cf68ce924f55"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "edge_ids": [
-          "[uuid]"
+          "33a382ff-4e43-5c58-a0ae-cf68ce924f55"
         ],
         "cut_type": {
           "chamfer": {
@@ -2053,37 +2053,37 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb250d0-d2e5-5973-9660-450dd3452c17",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "edccd9f4-f441-5e37-8c81-63f16ccfa985",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53573373-2a3c-53e1-ac71-5495c47a5b44",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "e1e7e372-f8f6-5b56-a623-e188c73253ab"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0754fa6-359c-5cb1-aa3e-91134015b0ed",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "53573373-2a3c-53e1-ac71-5495c47a5b44",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05cbe6d5-3d6e-51ee-81df-40d3d2666c39",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "53573373-2a3c-53e1-ac71-5495c47a5b44",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2095,18 +2095,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f878ac8-aa13-5c62-9e2e-1c2c5c890ea6",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43e735ed-de79-5875-b5ed-06327ad4e801",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1f878ac8-aa13-5c62-9e2e-1c2c5c890ea6",
         "to": {
           "x": 4.95,
           "y": 0.0,
@@ -2115,18 +2115,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af4f276-ac5b-5bf4-a3c7-e642dffac2bc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbbbb2df-3f42-5bc0-a765-f67f028bbad0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1f878ac8-aa13-5c62-9e2e-1c2c5c890ea6",
         "segment": {
           "type": "arc",
           "center": {
@@ -2147,24 +2147,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "601dbb56-735e-5539-9adf-396f13e5255e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1f878ac8-aa13-5c62-9e2e-1c2c5c890ea6",
+        "segment": "bbbbb2df-3f42-5bc0-a765-f67f028bbad0",
+        "intersection_segment": "bbbbb2df-3f42-5bc0-a765-f67f028bbad0",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7fa2368-0447-5fdb-8443-ec3222ab8648",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "53573373-2a3c-53e1-ac71-5495c47a5b44",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2176,11 +2176,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a6511e8-9390-5980-a26f-d8e5f9296384",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "601dbb56-735e-5539-9adf-396f13e5255e",
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
@@ -2189,70 +2189,70 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d93278ce-1670-5a7c-90ce-020ed280966a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8af163f-65a0-52aa-9206-4984a521b1c6",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "601dbb56-735e-5539-9adf-396f13e5255e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aefd1725-8517-5e50-abc5-d600b843d359",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "601dbb56-735e-5539-9adf-396f13e5255e",
+        "edge_id": "f9dc77a7-942d-53b4-8770-2ba893de13ea"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "116a39cc-94a3-53a5-849d-b22972ce2b61",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "601dbb56-735e-5539-9adf-396f13e5255e",
+        "edge_id": "f9dc77a7-942d-53b4-8770-2ba893de13ea"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a374928-6df0-5372-8eff-548025f2d25e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1f878ac8-aa13-5c62-9e2e-1c2c5c890ea6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f55548a-b1a4-54a8-a738-fb870e67591d",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "094eba77-2db2-5353-b3c1-5160c55b1f09"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c0883bc-2917-569a-85d0-79764868e9e0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0f55548a-b1a4-54a8-a738-fb870e67591d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd581ef1-a14a-50c1-a51b-40c0cefc7e3f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0f55548a-b1a4-54a8-a738-fb870e67591d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2264,18 +2264,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08d3b429-5ffc-57db-8f9a-be455c2f7f2f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1116a59-2e00-5448-ba5b-c509e6395cbf",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "08d3b429-5ffc-57db-8f9a-be455c2f7f2f",
         "to": {
           "x": 35.0,
           "y": 0.0,
@@ -2284,18 +2284,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5aba47cf-8edd-5167-98b7-d3209024696a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9110f55-6b3e-5074-a6ff-f5db965ee01b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d3b429-5ffc-57db-8f9a-be455c2f7f2f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2316,24 +2316,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "781c48e5-9a88-580f-a953-0c524fe7ad05",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "08d3b429-5ffc-57db-8f9a-be455c2f7f2f",
+        "segment": "a9110f55-6b3e-5074-a6ff-f5db965ee01b",
+        "intersection_segment": "a9110f55-6b3e-5074-a6ff-f5db965ee01b",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9202981d-057b-57da-b2d6-c25ad1e73ee7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0f55548a-b1a4-54a8-a738-fb870e67591d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2345,11 +2345,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b85218a-560d-50ab-9b5e-02ced5877ec0",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "781c48e5-9a88-580f-a953-0c524fe7ad05",
         "distance": 22.5,
         "faces": null,
         "opposite": "None",
@@ -2358,68 +2358,68 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "614f6ed4-a48a-5909-b569-6a72b73c919b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7852ed37-71de-5522-9297-96d12fb10d94",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae88f9af-0b90-5238-8af0-4a6972da4697",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
+        "edge_id": "5ffca563-7e60-502d-a44c-c3f46b2c01df"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "79b63c50-3fe8-5221-b451-f7d89a3cef24",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
+        "edge_id": "5ffca563-7e60-502d-a44c-c3f46b2c01df"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0bf2c125-6cbc-5092-b81a-7d39e93646eb",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "048d4247-26c9-5763-a1ef-4c2969eb0113",
+          "15cbcec7-c51d-5826-89aa-977e59c2170d"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7243497b-9a86-59e9-b243-7867e587b7d4",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
+        "edge_id": "ec8d6cce-59df-5143-94cf-9997e5e195b6"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "86f02c1c-9b61-5096-9aa1-fb4393107998",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
         "edge_ids": [
-          "[uuid]"
+          "ec8d6cce-59df-5143-94cf-9997e5e195b6"
         ],
         "cut_type": {
           "chamfer": {
@@ -2435,37 +2435,37 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "09292438-4457-5b75-a730-364dabd84f99",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "08d3b429-5ffc-57db-8f9a-be455c2f7f2f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff27be58-13f3-5755-81ba-b65b36be64f0",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "15cbcec7-c51d-5826-89aa-977e59c2170d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ff27be58-13f3-5755-81ba-b65b36be64f0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7f6a4f6-4336-5f2f-ae77-43c0ac6f87c1",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ff27be58-13f3-5755-81ba-b65b36be64f0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2477,18 +2477,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1edf3e97-cc0d-5442-8700-7debb1169632",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "602dfc01-e15e-5e05-af59-b77a397466b1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1edf3e97-cc0d-5442-8700-7debb1169632",
         "to": {
           "x": 12.5,
           "y": 0.0,
@@ -2497,18 +2497,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c92b6b10-80c0-515a-a8c7-92a9f3c0454a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1edf3e97-cc0d-5442-8700-7debb1169632",
         "segment": {
           "type": "arc",
           "center": {
@@ -2529,24 +2529,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1edf3e97-cc0d-5442-8700-7debb1169632",
+        "segment": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
+        "intersection_segment": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4eef85c-7c1f-534b-9d2e-0761c86f2cf7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ff27be58-13f3-5755-81ba-b65b36be64f0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2558,11 +2558,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d9ab2263-7770-54af-a414-a342353f20ff",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
         "distance": 42.5,
         "faces": null,
         "opposite": "None",
@@ -2571,68 +2571,68 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70881e74-bf20-5457-b2c1-ae0bbd8a336a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5701cce1-61c6-5bc1-9e97-0578f2eec19f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb99c183-0f18-591f-8fca-7e3f01d2ad21",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
+        "edge_id": "e23910ba-5f1c-5ef5-a102-fcf5890875f4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33de9b29-1553-50a8-b4df-5e82504f14cc",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
+        "edge_id": "e23910ba-5f1c-5ef5-a102-fcf5890875f4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7d51378-02e6-53ce-83ed-cfb8ef4f115a",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "11122e4b-43e5-57d4-9ed3-1807e082727e",
+          "03eabece-7315-54fc-b59e-8ec268de10b1"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e149da0e-c33a-571a-9171-8e06294ee871",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
+        "edge_id": "15b1192d-db8b-5740-9f36-845efe4af7d8"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96e78904-c80e-52c1-bef5-79efbf0ae161",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
         "edge_ids": [
-          "[uuid]"
+          "15b1192d-db8b-5740-9f36-845efe4af7d8"
         ],
         "cut_type": {
           "fillet": {
@@ -2646,16 +2646,16 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "929e546b-c4e6-50d4-845d-41af4f401ddd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1edf3e97-cc0d-5442-8700-7debb1169632",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98a5e477-6016-5118-bf97-b9ff492bbdd5",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2680,20 +2680,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd5eb9b3-8ca7-5c0b-a905-471ce39d7443",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "98a5e477-6016-5118-bf97-b9ff492bbdd5",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33c702c1-3aa3-55c7-a488-d037cd6801ca",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "98a5e477-6016-5118-bf97-b9ff492bbdd5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2705,18 +2705,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f61d88c-eed8-545d-8409-f88123872135",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a75dc5f3-6760-527d-a7ff-0105122da09a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "to": {
           "x": 31.35,
           "y": 40.0,
@@ -2725,18 +2725,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d5a506f-fa8c-5567-a2eb-dd13172784f7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "80331198-6fe6-5e5f-9b3d-56d79c4e33f6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2749,11 +2749,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "baba4c22-f0d3-52ff-ac41-c2df0f3e6878",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "to": {
           "x": 6.349999999813393,
           "y": 45.00375000016815,
@@ -2762,11 +2762,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "57f976a7-2d3c-550c-b8de-6e744110aa39",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2779,11 +2779,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "120e491c-e376-508c-8e4f-e19221a4df17",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2796,11 +2796,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4a8f729c-6c28-5262-9e7e-0a56ef5b996e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2813,11 +2813,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ad24428-8bc1-5f9d-b180-87ae7bc3e9f9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "to": {
           "x": -11.35,
           "y": 40.0,
@@ -2826,11 +2826,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d94e89a-756c-5048-abc0-b0f23b809c61",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2843,11 +2843,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f07ca21e-7a17-52b1-a0de-cabbcf22c4c2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2860,11 +2860,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d237f941-2991-5274-92ba-45f6e22d7caa",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2877,11 +2877,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98f8acaf-cf49-5df1-ad01-b43222945188",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "line",
           "end": {
@@ -2894,11 +2894,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "244ef8e0-59f6-5548-b454-a9bd19b0264b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "to": {
           "x": -11.35,
           "y": 40.0,
@@ -2907,11 +2907,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "arc",
           "center": {
@@ -2932,11 +2932,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98eca586-bb75-58ef-89ff-ffc35db52409",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "to": {
           "x": 6.349999999813394,
           "y": 45.00375000016815,
@@ -2945,11 +2945,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92c1eaf2-665a-5a02-9d2d-1cc6a7865d18",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f61d88c-eed8-545d-8409-f88123872135",
         "segment": {
           "type": "arc",
           "center": {
@@ -2970,24 +2970,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a06a58e3-42fa-55ff-b2be-7606be6a52a2",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "0f61d88c-eed8-545d-8409-f88123872135",
+        "segment": "80331198-6fe6-5e5f-9b3d-56d79c4e33f6",
+        "intersection_segment": "92c1eaf2-665a-5a02-9d2d-1cc6a7865d18",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a2f3d622-6d99-5ecc-a971-9d99b8850b98",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "98a5e477-6016-5118-bf97-b9ff492bbdd5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2999,11 +2999,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "743a178f-d494-5f7c-99b0-4af042ce416c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "a06a58e3-42fa-55ff-b2be-7606be6a52a2",
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -3012,64 +3012,64 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a85e3826-8286-57b0-97fd-36b12b2aa5ee",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c3bd80e-0780-5794-973f-bad3d8217898",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4a60e2c5-57c5-52f8-beb2-f2e2d04bf384",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a06a58e3-42fa-55ff-b2be-7606be6a52a2",
+        "edge_id": "1c172ddf-66b4-5222-b74a-cfc09f1bb2ad"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "51b92a47-93a7-5663-95d9-b38a40e3ba6c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a06a58e3-42fa-55ff-b2be-7606be6a52a2",
+        "edge_id": "1c172ddf-66b4-5222-b74a-cfc09f1bb2ad"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c58d6c7-ba6f-5dcd-8210-fe29b1040afa",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "4f02c872-a65a-5add-bdcb-a8186428c0d7"
         ],
         "tool_ids": [
-          "[uuid]"
+          "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f90d13d8-a945-52e5-8b53-1a39291beadf",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0f61d88c-eed8-545d-8409-f88123872135",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59032428-782a-520f-ab73-f21ec19111b0",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3094,11 +3094,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4122d8a6-28a4-5f4c-a643-643fbaeeaae3",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "59032428-782a-520f-ab73-f21ec19111b0",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3108,20 +3108,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe295ca0-b410-5328-8da5-220ec2caf40a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "59032428-782a-520f-ab73-f21ec19111b0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e19f983-1cff-53f4-a63f-3eb0868964ce",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "59032428-782a-520f-ab73-f21ec19111b0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3133,18 +3133,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e94ed706-b3a8-5199-aade-614a6dfc54b6",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5cce706f-fee0-590f-b0d8-3c8868a6e80b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e94ed706-b3a8-5199-aade-614a6dfc54b6",
         "to": {
           "x": 6.25000000325,
           "y": 52.499999999,
@@ -3153,18 +3153,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29db51d7-8303-5c7a-82ce-8757cc293f1d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149063af-53e8-5239-97f8-43946249a9cd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e94ed706-b3a8-5199-aade-614a6dfc54b6",
         "segment": {
           "type": "arc",
           "center": {
@@ -3185,24 +3185,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b4488d7a-289b-5f7a-ad51-dd02763e12ea",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e94ed706-b3a8-5199-aade-614a6dfc54b6",
+        "segment": "149063af-53e8-5239-97f8-43946249a9cd",
+        "intersection_segment": "149063af-53e8-5239-97f8-43946249a9cd",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a97409d-2cf6-5651-b377-3387a1a0e0e7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "59032428-782a-520f-ab73-f21ec19111b0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3214,11 +3214,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ffc5c763-91d5-536e-beab-6fea4ede929f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b4488d7a-289b-5f7a-ad51-dd02763e12ea",
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
@@ -3227,59 +3227,59 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b5bdedb-475f-5fc0-9706-ea1de95e9449",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "de979771-c551-50a1-8a40-3e3c43dcc58d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b4488d7a-289b-5f7a-ad51-dd02763e12ea"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c7c7c90-4637-54a7-8577-3d9dba3d20a7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b4488d7a-289b-5f7a-ad51-dd02763e12ea",
+        "edge_id": "73872674-b986-5b57-b5ce-d29f5c2afbb8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4963c28-2b9a-5b22-abb8-3178f8176ddb",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b4488d7a-289b-5f7a-ad51-dd02763e12ea",
+        "edge_id": "73872674-b986-5b57-b5ce-d29f5c2afbb8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "afd1bca6-3aa2-5503-ba55-98490b005876",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "6c58d6c7-ba6f-5dcd-8210-fe29b1040afa"
         ],
         "tool_ids": [
-          "[uuid]"
+          "b4488d7a-289b-5f7a-ad51-dd02763e12ea"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "968c0798-5f82-5ba5-a470-9a2434d6b3af",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "afd1bca6-3aa2-5503-ba55-98490b005876",
         "color": {
           "r": 0.14509805,
           "g": 0.13725491,
@@ -3292,20 +3292,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "36397328-abb0-558e-957a-e7fa1554a22b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e94ed706-b3a8-5199-aade-614a6dfc54b6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "667d7c3e-c8e7-5285-a4ba-0db4cba342b9",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "601dbb56-735e-5539-9adf-396f13e5255e",
         "transforms": [
           {
             "translate": {
@@ -3327,11 +3327,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "348fa867-2442-5031-9ca5-af661c6c0517",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
         "transforms": [
           {
             "translate": {
@@ -3353,11 +3353,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2af51d62-d708-535e-be58-1ca9036d99d8",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "transforms": [
           {
             "translate": {
@@ -3379,11 +3379,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f2fefa-d3cc-5258-826d-1ae22541db0e",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "afd1bca6-3aa2-5503-ba55-98490b005876",
         "transforms": [
           {
             "translate": {
@@ -3407,7 +3407,7 @@ description: Artifact commands coilover-assembly.kcl
   ],
   "public/kcl-samples/coilover-assembly/spring.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
       "range": [],
       "command": {
         "type": "entity_make_helix_from_params",
@@ -3432,7 +3432,7 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3457,20 +3457,20 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed413f80-b210-565c-be1b-f95f0fa5de80",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89187ec0-3c95-5d5e-9946-c823c4954b7c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3482,18 +3482,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d5831f8-cfb6-55d6-8689-9eba26b90a80",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae52fc86-6a50-5b42-a4b0-660ab1894329",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "8d5831f8-cfb6-55d6-8689-9eba26b90a80",
         "to": {
           "x": 25.0,
           "y": 0.0,
@@ -3502,18 +3502,18 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d8ed11b-f875-58d6-bf67-ff3a20a8f5f0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "782a6a40-2456-5e7d-9296-7cc2489d740e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8d5831f8-cfb6-55d6-8689-9eba26b90a80",
         "segment": {
           "type": "arc",
           "center": {
@@ -3534,24 +3534,24 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "8d5831f8-cfb6-55d6-8689-9eba26b90a80",
+        "segment": "782a6a40-2456-5e7d-9296-7cc2489d740e",
+        "intersection_segment": "782a6a40-2456-5e7d-9296-7cc2489d740e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1aecef1-7f47-5e98-a759-68b4bf046700",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3563,12 +3563,12 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a58fb782-b253-5b3f-99b2-36f8fe81cfef",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
+        "trajectory": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -3576,53 +3576,53 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0522b012-e030-5688-a335-da7c2506e314",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9a89775-cfba-5031-8e02-ff7b852c56d9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "754e5e64-bf24-52cf-9f8c-962e4cc9e527"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dae2d208-7706-5747-b592-90417506cbf1",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
+        "edge_id": "1f8bb8e8-cdf6-5f77-9728-917ae47cdb8b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21294103-205a-51c9-9939-ab6cf5fa2f07",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
+        "edge_id": "1f8bb8e8-cdf6-5f77-9728-917ae47cdb8b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f5c1b33-d042-5dcb-a15f-7fef02bfe413",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0208f2f8-c61e-57fc-96d1-c8e9e64f25d8",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
         "color": {
           "r": 0.84313726,
           "g": 0.5058824,
@@ -3635,11 +3635,11 @@ description: Artifact commands coilover-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "8d5831f8-cfb6-55d6-8689-9eba26b90a80",
         "hidden": true
       }
     }

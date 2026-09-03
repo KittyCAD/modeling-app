@@ -10,7 +10,7 @@ description: Operations executed multi_transform.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -39,7 +39,7 @@ description: Operations executed multi_transform.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
           }
         },
         "sourceRange": []
@@ -160,7 +160,7 @@ description: Operations executed multi_transform.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
           }
         },
         "sourceRange": []

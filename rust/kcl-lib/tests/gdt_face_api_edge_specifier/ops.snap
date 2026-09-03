@@ -758,19 +758,19 @@ description: Operations executed gdt_face_api_edge_specifier.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "meta": {
                 "type": "Object",
@@ -778,7 +778,7 @@ description: Operations executed gdt_face_api_edge_specifier.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
                     }
                   }
                 }
@@ -811,7 +811,7 @@ description: Operations executed gdt_face_api_edge_specifier.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []
@@ -878,12 +878,12 @@ description: Operations executed gdt_face_api_edge_specifier.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capStart001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9"
                       }
                     ]
                   }
@@ -896,7 +896,7 @@ description: Operations executed gdt_face_api_edge_specifier.kcl
         "framePlane": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
           },
           "sourceRange": []
         },

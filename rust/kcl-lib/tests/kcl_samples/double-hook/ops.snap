@@ -3589,7 +3589,7 @@ description: Operations executed double-hook.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ec50dfc5-8660-5f82-906a-6429c34099eb"
               }
             ]
           },
@@ -3619,7 +3619,7 @@ description: Operations executed double-hook.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
           }
         },
         "sourceRange": []
@@ -3631,43 +3631,43 @@ description: Operations executed double-hook.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
               }
             ]
           },
@@ -3701,7 +3701,7 @@ description: Operations executed double-hook.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c"
           }
         },
         "sourceRange": []

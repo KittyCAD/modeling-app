@@ -5348,11 +5348,11 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "07e1fb2e-446a-5dd2-8511-498086a311be"
               }
             ]
           },
@@ -5382,7 +5382,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1261aabb-691e-5c4e-a553-418b2f3586e3"
           }
         },
         "sourceRange": []
@@ -5411,7 +5411,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c06ffe93-85d7-5099-9b42-804a1349a567"
           }
         },
         "sourceRange": []
@@ -8381,11 +8381,11 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5eb3658-5164-5ba7-8d79-4e8399f16898"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c20c40fc-0ea8-5640-b267-20ce6af54976"
               }
             ]
           },
@@ -8415,7 +8415,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f96fa62d-5f43-5ea5-ba97-75264171a92c"
           }
         },
         "sourceRange": []
@@ -8444,7 +8444,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b"
           }
         },
         "sourceRange": []
@@ -8540,7 +8540,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e497b8e4-aad4-5eb7-81e8-b8ee40d446a4"
           }
         },
         "sourceRange": []
@@ -8550,7 +8550,7 @@ description: Operations executed axial-fan.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "56097360-43af-5b29-9943-3680a3d3f6cc"
             }
           },
           "sourceRange": []
@@ -10913,7 +10913,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "064b953a-989d-582d-9ebd-e402cf819589"
           }
         },
         "sourceRange": []
@@ -10946,11 +10946,11 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6905af4b-45c9-5184-b7b1-5461b63c44ae"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5a00b2c-7258-5857-b280-d8eb2c0c9322"
               }
             ]
           },
@@ -10980,7 +10980,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d24164b0-5331-53ba-acbe-e521e155452d"
           }
         },
         "sourceRange": []
@@ -11022,7 +11022,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "97afdf03-5344-55d3-8a8a-75fd4f9469d8"
           }
         },
         "sourceRange": []
@@ -11555,7 +11555,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60"
           }
         },
         "sourceRange": []
@@ -11588,7 +11588,7 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c007bebb-71e1-53ff-b337-ee30630d9883"
               }
             ]
           },
@@ -11618,7 +11618,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0ec295c9-4e35-5e13-92ee-0b183fdc0d6b"
           }
         },
         "sourceRange": []
@@ -11663,13 +11663,13 @@ description: Operations executed axial-fan.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e0816a6c-b4c1-59b7-8528-6fca3fd618a5"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9ff0857c-c743-5933-a243-738d32d0537e"
               }
             }
           ]
@@ -13375,11 +13375,11 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9adef1b0-205f-5ea6-85ea-a530a6abee69"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f1634645-3502-580b-a84b-0466ff4d66c4"
               }
             ]
           },
@@ -13409,7 +13409,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fff6f5e-9bd2-546b-8e3d-319de235951e"
           }
         },
         "sourceRange": []
@@ -13438,7 +13438,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e9f4b468-6510-5f17-b19b-14497d76aafa"
           }
         },
         "sourceRange": []
@@ -13526,7 +13526,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3bfa4865-2b7e-55bf-b05d-7a62017cb9b1"
           }
         },
         "sourceRange": []
@@ -13740,7 +13740,7 @@ description: Operations executed axial-fan.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -15383,11 +15383,11 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0bf2c125-6cbc-5092-b81a-7d39e93646eb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "781c48e5-9a88-580f-a953-0c524fe7ad05"
               }
             ]
           },
@@ -15417,7 +15417,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f611c28-5882-5389-96e6-dbce36b6e7a4"
           }
         },
         "sourceRange": []
@@ -15446,7 +15446,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "17aab31b-c253-5483-99fc-f73d3a2b475a"
           }
         },
         "sourceRange": []
@@ -15542,7 +15542,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3412529c-1465-5f50-8a6a-7d4885b1302f"
           }
         },
         "sourceRange": []
@@ -15583,7 +15583,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3412529c-1465-5f50-8a6a-7d4885b1302f"
           }
         },
         "sourceRange": []
@@ -15777,7 +15777,7 @@ description: Operations executed axial-fan.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -15973,7 +15973,7 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "515e71b6-5068-5314-a362-727be5fd92ee"
               }
             ]
           },
@@ -16003,7 +16003,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e"
           }
         },
         "sourceRange": []
@@ -16063,7 +16063,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "389ea878-9075-54e8-9f0d-f5855f0295fb"
           }
         },
         "sourceRange": []
@@ -16104,7 +16104,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "389ea878-9075-54e8-9f0d-f5855f0295fb"
           }
         },
         "sourceRange": []
@@ -16128,11 +16128,11 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "17d5946e-cd6b-5da9-ac3f-afcc3e4522fb"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5b59f557-18c5-57a6-9174-87d825fc7955"
               }
             ]
           },
@@ -16165,7 +16165,7 @@ description: Operations executed axial-fan.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -16325,7 +16325,7 @@ description: Operations executed axial-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0208f2f8-c61e-57fc-96d1-c8e9e64f25d8"
               }
             ]
           },
@@ -16355,7 +16355,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "08f30374-37d7-5a7c-a606-c19ce1a055d5"
           }
         },
         "sourceRange": []
@@ -16398,7 +16398,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0e403565-ae76-5417-9231-63bff71f63cc"
           }
         },
         "sourceRange": []
@@ -16436,7 +16436,7 @@ description: Operations executed axial-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "630e2c20-474e-5cd6-8b4f-09f30ec93091"
           }
         },
         "sourceRange": []

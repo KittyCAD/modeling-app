@@ -6,8 +6,8 @@ description: Variables in memory after executing sphere.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -53,7 +53,7 @@ description: Variables in memory after executing sphere.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -159,8 +159,8 @@ description: Variables in memory after executing sphere.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -189,7 +189,7 @@ description: Variables in memory after executing sphere.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -205,7 +205,7 @@ description: Variables in memory after executing sphere.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -279,8 +279,8 @@ description: Variables in memory after executing sphere.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -309,7 +309,7 @@ description: Variables in memory after executing sphere.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -326,11 +326,11 @@ description: Variables in memory after executing sphere.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -354,7 +354,7 @@ description: Variables in memory after executing sphere.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -384,8 +384,8 @@ description: Variables in memory after executing sphere.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -426,7 +426,7 @@ description: Variables in memory after executing sphere.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                   "sourceRange": []
                 }
               },
@@ -440,8 +440,8 @@ description: Variables in memory after executing sphere.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -456,11 +456,11 @@ description: Variables in memory after executing sphere.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7337cce0-8c11-5e1e-8fac-6baaf617fc94",
             "sourceRange": []
           },
           "from": [
@@ -484,7 +484,7 @@ description: Variables in memory after executing sphere.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cb91d51d-a3c8-546d-8d81-5cd86845c71e",
             "sourceRange": []
           },
           "ccw": true,
@@ -514,8 +514,8 @@ description: Variables in memory after executing sphere.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -556,7 +556,7 @@ description: Variables in memory after executing sphere.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": []
         }
       },
@@ -570,9 +570,9 @@ description: Variables in memory after executing sphere.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originSketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "units": "mm"
     }
   },
@@ -580,12 +580,12 @@ description: Variables in memory after executing sphere.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb0b3009-1694-5623-98ce-4ab9986356e2",
+          "id": "cb91d51d-a3c8-546d-8d81-5cd86845c71e",
           "sourceRange": [],
           "tag": {
             "commentStart": 350,
@@ -601,11 +601,11 @@ description: Variables in memory after executing sphere.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7337cce0-8c11-5e1e-8fac-6baaf617fc94",
               "sourceRange": []
             },
             "from": [
@@ -629,7 +629,7 @@ description: Variables in memory after executing sphere.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cb91d51d-a3c8-546d-8d81-5cd86845c71e",
               "sourceRange": []
             },
             "ccw": true,
@@ -659,8 +659,8 @@ description: Variables in memory after executing sphere.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -701,7 +701,7 @@ description: Variables in memory after executing sphere.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           }
         },
@@ -715,9 +715,9 @@ description: Variables in memory after executing sphere.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originSketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
         "units": "mm"
       },
       "startCapId": null,

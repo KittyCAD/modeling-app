@@ -195,14 +195,14 @@ where
         // Replace UUIDs with the string "[uuid]", because otherwise the tests
         // would constantly be changing the UUID. This is a stopgap measure
         // until we make the engine more deterministic.
-        settings.add_filter(
-            r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
-            "[uuid]",
-        );
-        settings.add_filter(
-            r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
-            "face_id_[uuid]",
-        );
+        // settings.add_filter(
+        //     r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
+        //     "[uuid]",
+        // );
+        // settings.add_filter(
+        //     r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
+        //     "face_id_[uuid]",
+        // );
     }
     // Run `f` (the closure that was passed in) with these settings.
     settings.bind(f);

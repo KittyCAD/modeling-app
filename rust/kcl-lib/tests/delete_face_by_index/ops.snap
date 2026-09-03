@@ -10,7 +10,7 @@ description: Operations executed delete_face_by_index.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed delete_face_by_index.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -87,7 +87,7 @@ description: Operations executed delete_face_by_index.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -122,7 +122,7 @@ description: Operations executed delete_face_by_index.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
           }
         },
         "sourceRange": []
@@ -168,7 +168,7 @@ description: Operations executed delete_face_by_index.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -178,7 +178,7 @@ description: Operations executed delete_face_by_index.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
             }
           },
           "sourceRange": []
@@ -207,7 +207,7 @@ description: Operations executed delete_face_by_index.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []

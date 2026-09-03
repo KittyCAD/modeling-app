@@ -24,7 +24,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
         },
         "sourceRange": []
       },
@@ -92,7 +92,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
         },
         "sourceRange": []
       },
@@ -133,7 +133,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
         },
         "sourceRange": []
       },
@@ -191,7 +191,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
         },
         "sourceRange": []
       },
@@ -232,7 +232,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
         },
         "sourceRange": []
       },
@@ -306,7 +306,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
         },
         "sourceRange": []
       },

@@ -6,8 +6,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -42,7 +42,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
   },
   "b": {
     "type": "Uuid",
-    "value": "[uuid]"
+    "value": "6100d74d-ce8c-583e-a1e5-0562b6b6a9dd"
   },
   "circle1": {
     "type": "TagIdentifier",
@@ -58,12 +58,12 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "127b064d-be28-5c09-9098-d8ce4b4c9b8e",
+          "id": "46c1c873-adde-54a9-8c92-5f163decf204",
           "sourceRange": [],
           "tag": {
             "commentStart": 214,
@@ -76,8 +76,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9d4bc51b-2be0-5a19-b18a-c2cd353e2e59",
+          "id": "fbd99ed1-1a3d-5720-a57f-61901e074ff6",
           "sourceRange": [],
           "tag": {
             "commentStart": 214,
@@ -90,8 +90,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8f376f82-671f-58e7-bdef-122a7408ee1e",
+          "id": "87e48d27-2273-5b60-aacc-6fd19758c6bb",
           "sourceRange": [],
           "tag": {
             "commentStart": 340,
@@ -104,8 +104,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "01215fa4-ee56-5054-a41e-7b59a7f38930",
+          "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
           "sourceRange": [],
           "tag": {
             "commentStart": 462,
@@ -121,11 +121,11 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46c1c873-adde-54a9-8c92-5f163decf204",
               "sourceRange": []
             },
             "ccw": true,
@@ -155,7 +155,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbd99ed1-1a3d-5720-a57f-61901e074ff6",
               "sourceRange": []
             },
             "ccw": true,
@@ -185,7 +185,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87e48d27-2273-5b60-aacc-6fd19758c6bb",
               "sourceRange": []
             },
             "ccw": true,
@@ -215,7 +215,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
               "sourceRange": []
             },
             "from": [
@@ -239,8 +239,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -281,7 +281,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           }
         },
@@ -299,13 +299,13 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "originSketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "3b3d823b-eb7a-5058-904a-737356c16bf9",
+      "endCapId": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
       "units": "mm",
       "sectional": false
     }
@@ -314,12 +314,12 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+          "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -327,8 +327,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
       ],
       "sketch": {
         "creatorType": "edge",
-        "edge_id": "[uuid]",
-        "body_id": "[uuid]"
+        "edge_id": "d1b70a94-c9b3-5485-a4da-49c4162f6f1b",
+        "body_id": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
       },
       "startCapId": null,
       "endCapId": null,
@@ -340,11 +340,11 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "ccw": true,
@@ -374,7 +374,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           },
           "from": [
@@ -391,7 +391,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "ccw": true,
@@ -421,7 +421,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
             "sourceRange": []
           },
           "from": [
@@ -438,7 +438,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -462,8 +462,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -504,7 +504,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": []
         }
       },
@@ -522,8 +522,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "units": "mm",
       "isClosed": "no"
     }
@@ -537,11 +537,11 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "46c1c873-adde-54a9-8c92-5f163decf204",
             "sourceRange": []
           },
           "ccw": true,
@@ -571,7 +571,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fbd99ed1-1a3d-5720-a57f-61901e074ff6",
             "sourceRange": []
           },
           "ccw": true,
@@ -601,7 +601,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "87e48d27-2273-5b60-aacc-6fd19758c6bb",
             "sourceRange": []
           },
           "ccw": true,
@@ -631,7 +631,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9bae9824-fc91-5745-8e9a-fc2839744e92",
             "sourceRange": []
           },
           "from": [
@@ -655,8 +655,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -697,7 +697,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": []
         }
       },
@@ -715,9 +715,9 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "originSketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "units": "mm"
     }
   },
@@ -730,7 +730,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -804,8 +804,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -834,7 +834,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -850,7 +850,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 8,
                 "kind": {
                   "circle": {
@@ -924,8 +924,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -954,7 +954,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -970,7 +970,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -1044,8 +1044,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1074,7 +1074,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1091,11 +1091,11 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1125,7 +1125,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -1142,7 +1142,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1172,7 +1172,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "from": [
@@ -1189,7 +1189,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -1213,8 +1213,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1255,7 +1255,7 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                   "sourceRange": []
                 }
               },
@@ -1273,8 +1273,8 @@ description: Variables in memory after executing surface_extrude_edge_from_solid
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "units": "mm",
               "isClosed": "no"
             }

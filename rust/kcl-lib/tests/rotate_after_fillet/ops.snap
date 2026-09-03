@@ -239,7 +239,7 @@ description: Operations executed rotate_after_fillet.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -284,7 +284,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -343,7 +343,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -368,11 +368,11 @@ description: Operations executed rotate_after_fillet.kcl
               {
                 "type": "TagIdentifier",
                 "value": "topEdge",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "43282795-727b-53bc-82e1-4ae63e6b1ea1"
               }
             ]
           },
@@ -419,7 +419,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -473,7 +473,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
           }
         },
         "sourceRange": []
@@ -532,7 +532,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -586,7 +586,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
           }
         },
         "sourceRange": []
@@ -645,7 +645,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []
@@ -669,7 +669,7 @@ description: Operations executed rotate_after_fillet.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "46bee66e-144c-59bc-b323-520a57b7ab19"
               }
             ]
           },
@@ -716,7 +716,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []
@@ -795,7 +795,7 @@ description: Operations executed rotate_after_fillet.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []

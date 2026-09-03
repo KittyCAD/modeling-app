@@ -6,8 +6,8 @@ description: Variables in memory after executing double-hook.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing double-hook.kcl
   "__sketch_75_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -98,12 +98,12 @@ description: Variables in memory after executing double-hook.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+      "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea25634d-7965-5fef-ba47-eaabfebabc40",
+          "id": "c5817aa6-3738-52de-9593-c590ee024812",
           "sourceRange": [],
           "tag": {
             "commentStart": 3910,
@@ -119,11 +119,11 @@ description: Variables in memory after executing double-hook.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c5817aa6-3738-52de-9593-c590ee024812",
               "sourceRange": []
             },
             "ccw": true,
@@ -153,8 +153,8 @@ description: Variables in memory after executing double-hook.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+          "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
           "kind": "Custom",
           "objectId": 74,
           "origin": {
@@ -195,7 +195,7 @@ description: Variables in memory after executing double-hook.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "sourceRange": []
           }
         },
@@ -205,13 +205,13 @@ description: Variables in memory after executing double-hook.kcl
             "value": "sectionCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+        "originalId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+        "originSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ec8b1cd9-71e3-51e5-93b2-0a1a95f1e045",
+      "endCapId": "9a14cf52-77c7-5d3c-acff-e1c504901931",
       "units": "mm",
       "sectional": false
     }
@@ -225,7 +225,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -299,8 +299,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -329,7 +329,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "connector"
@@ -345,7 +345,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 11,
                 "kind": {
                   "arc": {
@@ -451,8 +451,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -481,7 +481,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerBend"
@@ -497,7 +497,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 18,
                 "kind": {
                   "line": {
@@ -571,8 +571,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -601,7 +601,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerBridge"
@@ -617,7 +617,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -691,8 +691,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -721,7 +721,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerTip"
@@ -738,11 +738,11 @@ description: Variables in memory after executing double-hook.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -766,7 +766,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -796,7 +796,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -820,7 +820,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -850,7 +850,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -874,7 +874,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "sourceRange": []
                   },
                   "from": [
@@ -898,7 +898,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -928,7 +928,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -952,7 +952,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "deb86259-17a0-5782-a352-d25992246cc0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -982,7 +982,7 @@ description: Variables in memory after executing double-hook.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                     "sourceRange": []
                   },
                   "from": [
@@ -1006,8 +1006,8 @@ description: Variables in memory after executing double-hook.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1048,7 +1048,7 @@ description: Variables in memory after executing double-hook.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
                   "sourceRange": []
                 }
               },
@@ -1094,8 +1094,8 @@ description: Variables in memory after executing double-hook.kcl
                   "value": "upperTopBend"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+              "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1109,7 +1109,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -1183,8 +1183,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1213,7 +1213,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperBottom"
@@ -1229,7 +1229,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 26,
                 "kind": {
                   "arc": {
@@ -1335,8 +1335,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1365,7 +1365,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperEntry"
@@ -1381,7 +1381,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 47,
                 "kind": {
                   "arc": {
@@ -1487,8 +1487,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1517,7 +1517,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperLowerBend"
@@ -1533,7 +1533,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "objectId": 54,
                 "kind": {
                   "line": {
@@ -1607,8 +1607,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1637,7 +1637,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperSide"
@@ -1653,7 +1653,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                 "objectId": 69,
                 "kind": {
                   "line": {
@@ -1727,8 +1727,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1757,7 +1757,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperTop"
@@ -1773,7 +1773,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "deb86259-17a0-5782-a352-d25992246cc0",
                 "objectId": 62,
                 "kind": {
                   "arc": {
@@ -1879,8 +1879,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1909,7 +1909,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperTopBend"
@@ -1998,11 +1998,11 @@ description: Variables in memory after executing double-hook.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c5817aa6-3738-52de-9593-c590ee024812",
             "sourceRange": []
           },
           "ccw": true,
@@ -2032,8 +2032,8 @@ description: Variables in memory after executing double-hook.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+        "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "kind": "Custom",
         "objectId": 74,
         "origin": {
@@ -2074,7 +2074,7 @@ description: Variables in memory after executing double-hook.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
           "sourceRange": []
         }
       },
@@ -2084,9 +2084,9 @@ description: Variables in memory after executing double-hook.kcl
           "value": "sectionCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+      "originalId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+      "originSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "units": "mm"
     }
   },
@@ -2100,11 +2100,11 @@ description: Variables in memory after executing double-hook.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2134,8 +2134,8 @@ description: Variables in memory after executing double-hook.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+                "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "kind": "Custom",
                 "objectId": 74,
                 "origin": {
@@ -2176,7 +2176,7 @@ description: Variables in memory after executing double-hook.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
                   "sourceRange": []
                 }
               },
@@ -2186,8 +2186,8 @@ description: Variables in memory after executing double-hook.kcl
                   "value": "sectionCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+              "originalId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2201,7 +2201,7 @@ description: Variables in memory after executing double-hook.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
                 "objectId": 78,
                 "kind": {
                   "circle": {
@@ -2275,8 +2275,8 @@ description: Variables in memory after executing double-hook.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+                  "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                   "kind": "Custom",
                   "objectId": 74,
                   "origin": {
@@ -2305,7 +2305,7 @@ description: Variables in memory after executing double-hook.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "sectionCircle"

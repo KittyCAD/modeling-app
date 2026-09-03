@@ -5,7 +5,7 @@ description: Artifact commands multi-axis-robot.kcl
 {
   "public/kcl-samples/multi-axis-robot/robot-arm-base.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16873e11-3e0a-5226-baed-06f258dfd628",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b80d2a0-c728-5076-9494-32f48d80f7ad",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5af0bbb7-d491-5121-8272-8122355a7f96",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "26c2bb19-5996-500c-bee9-134381fd334a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": -139.7,
           "y": -139.7,
@@ -75,18 +75,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d24149d4-c0e8-5147-add1-f3d482e1e26c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63baedff-9c3f-5a6b-8a94-11cf90ee8228",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "070325e1-7989-54f2-9ed3-2540604376b8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ecb7cc1-b8ea-575f-9a4e-357bdca0ed44",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": 115.34590298041347,
           "y": 66.19074811858793,
@@ -163,11 +163,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -188,11 +188,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d082c8fe-97e9-58a1-9066-3abd3c16ed32",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": 76.20297037692853,
           "y": 102.50017492557055,
@@ -201,11 +201,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f3b497c-6dcf-534d-a453-52a4f9d32ee5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -226,11 +226,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e1722f35-b124-513b-a752-83e91e867e12",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": -66.1172496086768,
           "y": 110.25383582745043,
@@ -239,11 +239,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ffde0060-c8f8-517f-a68b-cb30c764be88",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -264,11 +264,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "26ac1a06-d1d6-5e27-ba58-cd6c57f3e1ec",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": -109.71904990776574,
           "y": 66.26305310236033,
@@ -277,11 +277,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01eb91e0-99dc-5521-b353-e23b21021bbf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -302,11 +302,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d2c40b5-8047-5285-a88c-b5fa63445f82",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": -109.23482555139128,
           "y": -85.55470784656006,
@@ -315,11 +315,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -340,11 +340,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7307656e-c0d2-5d91-a3b8-7a4d431a78ff",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": -66.74217976253661,
           "y": -116.86826323661005,
@@ -353,11 +353,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a16ecec-e0ad-523b-9bb2-da041ec7794a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -378,11 +378,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3a234f5d-ef11-544c-87d7-c354d79dfe0e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": 85.02043024096909,
           "y": -117.3112882859492,
@@ -391,11 +391,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74eb2c69-253d-5f77-a793-45f91cee32fe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -416,11 +416,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6bb9d485-6273-569e-8f43-2fed79094a1c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "to": {
           "x": 116.59137257715945,
           "y": -85.35640838619132,
@@ -429,11 +429,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ee09ad8-3595-53fa-9431-87c1ccd410a4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "segment": {
           "type": "arc",
           "center": {
@@ -454,33 +454,33 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5af0bbb7-d491-5121-8272-8122355a7f96",
+        "segment": "7c4571e0-7b14-576f-a82e-22280b05874d",
+        "intersection_segment": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0ca3919-4cda-5ffa-8c32-5cb113ec4f76",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5af0bbb7-d491-5121-8272-8122355a7f96",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5de9f95-9a42-56e8-8f8f-de8d34b08f21",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -492,11 +492,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "24b5e4d5-b7d4-51b9-8057-afc7dbec29ee",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
@@ -505,44 +505,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edc8b733-a3b6-5620-a02a-1ae9dab034e7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5699e2e-2983-5dbf-a0b2-7a5452887dfb",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23e89902-fcd5-5e5b-9f47-610ad7ded697",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "6cddcf0f-9271-5fb5-ac5b-96ac4152d66f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a282b968-e08b-5bb9-9f15-cf41fac8f105",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "6cddcf0f-9271-5fb5-ac5b-96ac4152d66f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25bd9ece-381d-5a33-bde2-94d9ca04ce28",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0abe5974-90f2-5293-988f-5820298ce734",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -550,18 +550,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "18bd181e-2dd8-54f4-88b5-257014d54c1a",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45eebb7-861f-571e-9138-f7c072af9028",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "18bd181e-2dd8-54f4-88b5-257014d54c1a",
         "to": {
           "x": 101.6,
           "y": 0.0,
@@ -570,18 +570,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6a79900f-2979-5cf2-b1f4-18227df1434e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "18bd181e-2dd8-54f4-88b5-257014d54c1a",
         "segment": {
           "type": "arc",
           "center": {
@@ -602,24 +602,24 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "52ab6b39-09d9-5eb3-89a9-b3b5c20f1771",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "18bd181e-2dd8-54f4-88b5-257014d54c1a",
+        "segment": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d",
+        "intersection_segment": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f343393-cae6-5d60-9535-851def31d898",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0abe5974-90f2-5293-988f-5820298ce734",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -627,11 +627,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "10bd9a1f-cce7-5e66-9521-3d1bf2b0601d",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "52ab6b39-09d9-5eb3-89a9-b3b5c20f1771",
         "distance": 76.19999999999999,
         "faces": null,
         "opposite": "None",
@@ -640,44 +640,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "52ab6b39-09d9-5eb3-89a9-b3b5c20f1771"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc74d3b9-3119-5a07-be47-51fc9700085d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "7f5a0227-018c-5211-9af6-8a459e9ab3d0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43e78dc3-01b6-5751-8bae-0769a264580f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "7f5a0227-018c-5211-9af6-8a459e9ab3d0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "804a9fd5-9d99-5e92-896a-9fc86883c319",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "018674f1-2f7d-5c88-8f15-f6f671ae5667",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -685,18 +685,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f53b0689-a0f0-5ff2-a83f-dc8f3555b2aa",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e4f05479-6900-50cb-b463-8ff55ecc991f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f53b0689-a0f0-5ff2-a83f-dc8f3555b2aa",
         "to": {
           "x": 12.7,
           "y": 0.0,
@@ -705,18 +705,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0903eda-c1b0-57c1-902d-97b306630826",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef81f5e0-0835-59bd-8ae9-52c6731f1e4e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f53b0689-a0f0-5ff2-a83f-dc8f3555b2aa",
         "segment": {
           "type": "arc",
           "center": {
@@ -737,24 +737,24 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "374c0bd6-2d94-5211-977c-e8748783b3ad",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f53b0689-a0f0-5ff2-a83f-dc8f3555b2aa",
+        "segment": "ef81f5e0-0835-59bd-8ae9-52c6731f1e4e",
+        "intersection_segment": "ef81f5e0-0835-59bd-8ae9-52c6731f1e4e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d7514b2-f5c5-52ae-8a31-efdfc359c31a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "018674f1-2f7d-5c88-8f15-f6f671ae5667",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -762,11 +762,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c06ffe93-85d7-5099-9b42-804a1349a567",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "374c0bd6-2d94-5211-977c-e8748783b3ad",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -775,44 +775,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e497b8e4-aad4-5eb7-81e8-b8ee40d446a4",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "66053f92-0acc-5c7b-b6de-86f9a38600a2",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "374c0bd6-2d94-5211-977c-e8748783b3ad"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21dc2e2b-5111-50b2-9e69-1cc365fd7f61",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "5a898825-a5f5-5989-880f-1de07d7d94bd"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a6d79b3d-458a-5e4a-8a39-76b65328620f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "5a898825-a5f5-5989-880f-1de07d7d94bd"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbb3e70a-beaa-5fa1-aa71-bb770033a0d2",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "color": {
           "r": 0.45882353,
           "g": 0.25490198,
@@ -825,101 +825,101 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e74db01-d31d-58b9-a45c-92eae8674865",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "f59fae83-cded-5213-adfd-4ffbbed9fb7d",
+          "8b83dade-7d69-5021-a824-85c6c4af89b4"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "39c5e092-3967-50e1-8069-f330b5829328",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "8b83dade-7d69-5021-a824-85c6c4af89b4",
+          "5c83a0dc-5782-5af8-b35e-a5035e85c863"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f934a6ff-896b-5059-8753-b046f8d0f2f0",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "5c83a0dc-5782-5af8-b35e-a5035e85c863",
+          "61468768-7d03-5b5d-b8e4-600e2ded60c2"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae4092e1-384b-5e9b-8dd2-25d396512f0f",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "61468768-7d03-5b5d-b8e4-600e2ded60c2",
+          "f59fae83-cded-5213-adfd-4ffbbed9fb7d"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c54ae8a0-c198-5336-94ac-422febb0de75",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "9e73947b-0fd5-5a42-a410-45c329517b3f"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e03112ca-abc3-504a-a53e-875ae2307997",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "84dcab21-bafe-5857-9277-5cd2a264d695"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f13cefc5-6c68-51ea-9b25-6d36310334a5",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "cf5b2e71-1edb-55e8-a475-9243b87b41e1"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
+        "edge_id": "c621bad2-7960-53b5-b9e4-a3eadd7690e4"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c20c40fc-0ea8-5640-b267-20ce6af54976",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "[uuid]"
+          "9e73947b-0fd5-5a42-a410-45c329517b3f"
         ],
         "cut_type": {
           "chamfer": {
@@ -935,13 +935,13 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3b7ac91-5842-5810-b9f8-261c9c5faca8",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "[uuid]"
+          "84dcab21-bafe-5857-9277-5cd2a264d695"
         ],
         "cut_type": {
           "chamfer": {
@@ -957,13 +957,13 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "646e5cc8-40a4-58a9-96bf-13e41b10cc9b",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "[uuid]"
+          "cf5b2e71-1edb-55e8-a475-9243b87b41e1"
         ],
         "cut_type": {
           "chamfer": {
@@ -979,13 +979,13 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f943a9a2-24e9-5028-b854-6b27ca002979",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "[uuid]"
+          "c621bad2-7960-53b5-b9e4-a3eadd7690e4"
         ],
         "cut_type": {
           "chamfer": {
@@ -1003,7 +1003,7 @@ description: Artifact commands multi-axis-robot.kcl
   ],
   "public/kcl-samples/multi-axis-robot/robot-arm-j2.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3339ca35-9b8d-5b6a-8d00-1c7541ff8f02",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1028,20 +1028,20 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b34f2336-80ec-5dd0-9463-6ffa6485a805",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3339ca35-9b8d-5b6a-8d00-1c7541ff8f02",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3339ca35-9b8d-5b6a-8d00-1c7541ff8f02",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1053,18 +1053,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d9edfde-acd3-5837-973b-9e4dccbe6953",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9cdc2dc-e2ca-503e-9cbb-0a105b8084b6",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2d9edfde-acd3-5837-973b-9e4dccbe6953",
         "to": {
           "x": -3.302,
           "y": 185.928,
@@ -1073,18 +1073,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee156f1f-f0a9-5b56-9762-e3d661811d8d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f1634645-3502-580b-a84b-0466ff4d66c4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2d9edfde-acd3-5837-973b-9e4dccbe6953",
         "segment": {
           "type": "arc",
           "center": {
@@ -1105,11 +1105,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9aa4f613-d255-5aaa-abf2-88a262722a67",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2d9edfde-acd3-5837-973b-9e4dccbe6953",
         "segment": {
           "type": "line",
           "end": {
@@ -1122,11 +1122,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "219ab03b-d74a-5799-8fff-c00f3eb79b24",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2d9edfde-acd3-5837-973b-9e4dccbe6953",
         "segment": {
           "type": "arc",
           "center": {
@@ -1147,11 +1147,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4291aed6-32ab-576c-aac6-4016b06e1609",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2d9edfde-acd3-5837-973b-9e4dccbe6953",
         "segment": {
           "type": "line",
           "end": {
@@ -1164,23 +1164,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2d9edfde-acd3-5837-973b-9e4dccbe6953",
+        "segment": "f1634645-3502-580b-a84b-0466ff4d66c4",
+        "intersection_segment": "9aa4f613-d255-5aaa-abf2-88a262722a67",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53573373-2a3c-53e1-ac71-5495c47a5b44",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3339ca35-9b8d-5b6a-8d00-1c7541ff8f02",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1192,11 +1192,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb250d0-d2e5-5973-9660-450dd3452c17",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
         "distance": -63.5,
         "faces": null,
         "opposite": "None",
@@ -1205,44 +1205,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "54a747f6-1708-5062-8769-8cd0915a894e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1398119f-9fcf-5f16-8eed-ab10fadc8952",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbbbb2df-3f42-5bc0-a765-f67f028bbad0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cd58ed94-d8a1-566b-ab11-f5c62b7fb90d",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5766478-65b9-5b0e-b1bb-3f54c6ad4d9f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1250,18 +1250,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0b99353-2b92-5be5-b339-745535fad102",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "22e4847b-51dc-52cb-a592-73121ef9c4ce",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a0b99353-2b92-5be5-b339-745535fad102",
         "to": {
           "x": 3.8099999999999996,
           "y": 203.2,
@@ -1270,18 +1270,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd5149b7-87d6-578c-adbf-f26cd9999152",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f20a7800-7fb2-522c-abc3-645eaa4ca76a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a0b99353-2b92-5be5-b339-745535fad102",
         "segment": {
           "type": "arc",
           "center": {
@@ -1302,23 +1302,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa440d13-0bb0-5b73-a8b6-35e3f074bf22",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a0b99353-2b92-5be5-b339-745535fad102",
+        "segment": "f20a7800-7fb2-522c-abc3-645eaa4ca76a",
+        "intersection_segment": "f20a7800-7fb2-522c-abc3-645eaa4ca76a",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0754fa6-359c-5cb1-aa3e-91134015b0ed",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1326,11 +1326,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e59a8f8-980a-5935-be3c-65e4437cdf26",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "fa440d13-0bb0-5b73-a8b6-35e3f074bf22",
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
@@ -1339,44 +1339,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05cbe6d5-3d6e-51ee-81df-40d3d2666c39",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43e735ed-de79-5875-b5ed-06327ad4e801",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fa440d13-0bb0-5b73-a8b6-35e3f074bf22"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af4f276-ac5b-5bf4-a3c7-e642dffac2bc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "7a420cfc-712e-58da-9200-a71eb586b982"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "601dbb56-735e-5539-9adf-396f13e5255e",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "7a420cfc-712e-58da-9200-a71eb586b982"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a374928-6df0-5372-8eff-548025f2d25e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1384,18 +1384,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d93278ce-1670-5a7c-90ce-020ed280966a",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f55548a-b1a4-54a8-a738-fb870e67591d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d93278ce-1670-5a7c-90ce-020ed280966a",
         "to": {
           "x": 273.05,
           "y": 943.102,
@@ -1404,18 +1404,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5579ebb6-2af2-5158-b723-3ba68c55ac7e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7fa2368-0447-5fdb-8443-ec3222ab8648",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d93278ce-1670-5a7c-90ce-020ed280966a",
         "segment": {
           "type": "arc",
           "center": {
@@ -1436,23 +1436,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db60e777-3679-5b88-b023-d22d28d62923",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "d93278ce-1670-5a7c-90ce-020ed280966a",
+        "segment": "a7fa2368-0447-5fdb-8443-ec3222ab8648",
+        "intersection_segment": "a7fa2368-0447-5fdb-8443-ec3222ab8648",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5c0da744-cd60-5f10-b6bc-392b2f199cd7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1460,11 +1460,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9110f55-6b3e-5074-a6ff-f5db965ee01b",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "db60e777-3679-5b88-b023-d22d28d62923",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -1473,44 +1473,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "736b26fd-a375-5e68-85cf-347b888357bb",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48f42b10-0610-54f6-a9df-84b24f1742f2",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "db60e777-3679-5b88-b023-d22d28d62923"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "c2cc5fab-df05-5614-b021-7030500c77c7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23dddded-c8f3-544d-a89d-8f71e26428b1",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "c2cc5fab-df05-5614-b021-7030500c77c7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1ef572a-1fff-506a-8f23-83584e171161",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1518,18 +1518,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9aef2c2-59c7-5333-a603-04fa391de4b2",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c0883bc-2917-569a-85d0-79764868e9e0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a9aef2c2-59c7-5333-a603-04fa391de4b2",
         "to": {
           "x": -217.17000000000002,
           "y": 943.102,
@@ -1538,18 +1538,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd581ef1-a14a-50c1-a51b-40c0cefc7e3f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9f4b468-6510-5f17-b19b-14497d76aafa",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a9aef2c2-59c7-5333-a603-04fa391de4b2",
         "segment": {
           "type": "arc",
           "center": {
@@ -1570,23 +1570,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1116a59-2e00-5448-ba5b-c509e6395cbf",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a9aef2c2-59c7-5333-a603-04fa391de4b2",
+        "segment": "e9f4b468-6510-5f17-b19b-14497d76aafa",
+        "intersection_segment": "e9f4b468-6510-5f17-b19b-14497d76aafa",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "781c48e5-9a88-580f-a953-0c524fe7ad05",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1594,11 +1594,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5aba47cf-8edd-5167-98b7-d3209024696a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b1116a59-2e00-5448-ba5b-c509e6395cbf",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -1607,44 +1607,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b85218a-560d-50ab-9b5e-02ced5877ec0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9202981d-057b-57da-b2d6-c25ad1e73ee7",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b1116a59-2e00-5448-ba5b-c509e6395cbf"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "614f6ed4-a48a-5909-b569-6a72b73c919b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "cd36649a-b297-5394-8b19-fcd382f40999"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7852ed37-71de-5522-9297-96d12fb10d94",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
+        "edge_id": "cd36649a-b297-5394-8b19-fcd382f40999"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae88f9af-0b90-5238-8af0-4a6972da4697",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
         "color": {
           "r": 0.27058825,
           "g": 0.27058825,
@@ -1659,7 +1659,7 @@ description: Artifact commands multi-axis-robot.kcl
   ],
   "public/kcl-samples/multi-axis-robot/robot-arm-j3.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a24223d0-3225-5880-a5b6-6d11466e7f39",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1684,20 +1684,20 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c96578f-c346-557f-90cd-c28d3ee681f0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a24223d0-3225-5880-a5b6-6d11466e7f39",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08eb81f8-82f0-596d-b652-09211a1d8eb2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a24223d0-3225-5880-a5b6-6d11466e7f39",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1709,18 +1709,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "15ae7f49-8496-5206-87df-462fb61e8794",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e",
         "to": {
           "x": -216.6612509296617,
           "y": 990.0963305618976,
@@ -1729,18 +1729,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1fe419a-893d-55d3-bc72-8319af209d5e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1dda4566-8b38-5113-91c9-2b6e48fdecd7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e",
         "segment": {
           "type": "arc",
           "center": {
@@ -1761,11 +1761,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6de35640-41ab-5381-bda0-d44652f1a175",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e",
         "segment": {
           "type": "line",
           "end": {
@@ -1778,11 +1778,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8b306c4-0488-5f40-a601-7ae5478b62ef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e",
         "segment": {
           "type": "arc",
           "center": {
@@ -1803,11 +1803,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "67e85d05-358f-57a2-a655-98c62e3c18c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e",
         "segment": {
           "type": "line",
           "end": {
@@ -1820,11 +1820,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
       "range": [],
       "command": {
         "type": "create_region_from_query_point",
-        "object_id": "[uuid]",
+        "object_id": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e",
         "query_point": {
           "x": -271.78074167999995,
           "y": 951.3392707999999
@@ -1832,11 +1832,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7321ee8b-9643-50e2-9bbe-a77659783123",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a24223d0-3225-5880-a5b6-6d11466e7f39",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1848,11 +1848,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81316ee4-5d49-5321-a0a1-8d4cd48d2632",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
         "distance": 63.5,
         "faces": null,
         "opposite": "None",
@@ -1861,44 +1861,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f498b52-b580-5268-94ec-54a455abf21e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d8b660b8-dc6f-522a-b79e-b96860255d16",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50e36482-d004-5c18-85eb-329508ac9da5",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
+        "edge_id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5849cb03-eba2-587b-97e2-d6c3045bc3e4",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
+        "edge_id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b495fdb8-4108-5186-aaff-c6a8041a3516",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1906,18 +1906,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81666e5c-6cc1-53d0-b1e8-73cd4c5dacdc",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "15a7bb63-546d-5094-94de-2eb4605821e4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "81666e5c-6cc1-53d0-b1e8-73cd4c5dacdc",
         "to": {
           "x": -177.79999999999998,
           "y": 943.102,
@@ -1926,18 +1926,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f956036-f468-5704-b717-fd7a50eacfe0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2a26ca2a-368e-579d-994e-e3153e453eff",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "81666e5c-6cc1-53d0-b1e8-73cd4c5dacdc",
         "segment": {
           "type": "arc",
           "center": {
@@ -1958,23 +1958,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf18f8c3-70d8-5c6a-b100-e58ffbe62879",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "81666e5c-6cc1-53d0-b1e8-73cd4c5dacdc",
+        "segment": "2a26ca2a-368e-579d-994e-e3153e453eff",
+        "intersection_segment": "2a26ca2a-368e-579d-994e-e3153e453eff",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4ccedf1-7cf3-5c6f-98d1-a6600b5358d7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1982,11 +1982,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a62d3e54-0a0e-596e-9d5f-593743965c16",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "bf18f8c3-70d8-5c6a-b100-e58ffbe62879",
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
@@ -1995,44 +1995,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a3c6fcb-84d4-5bf5-b106-bb5bf61dc229",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "838ebde5-4a3a-5d02-9a2e-b506fb70b355",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bf18f8c3-70d8-5c6a-b100-e58ffbe62879"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19981163-ecf5-5cab-99db-523aa9a78aa7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
+        "edge_id": "510f436a-132b-546b-aa9b-d935f5856f7a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "caef671b-050d-51ac-91af-f37e0cd4546c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
+        "edge_id": "510f436a-132b-546b-aa9b-d935f5856f7a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "078afe52-817e-5d29-817b-ea77786590da",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6811759c-1b79-5e97-9641-5a2ae07d7cd4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2040,18 +2040,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d8814f8-5abd-59bf-b065-c60911021916",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19734089-8587-5691-b79d-c80f5a01cacb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5d8814f8-5abd-59bf-b065-c60911021916",
         "to": {
           "x": -227.838,
           "y": 854.9639999999998,
@@ -2060,18 +2060,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62203db6-de43-5855-87dd-bcad8b700195",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2683330e-d365-57e6-8235-a813832ffe69",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5d8814f8-5abd-59bf-b065-c60911021916",
         "segment": {
           "type": "arc",
           "center": {
@@ -2092,23 +2092,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5d8814f8-5abd-59bf-b065-c60911021916",
+        "segment": "2683330e-d365-57e6-8235-a813832ffe69",
+        "intersection_segment": "2683330e-d365-57e6-8235-a813832ffe69",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0de5a1c7-0a73-55c8-a2ee-e5fa180a4c2b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6811759c-1b79-5e97-9641-5a2ae07d7cd4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2116,11 +2116,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "967d8995-5b46-537a-ad8e-b602584bac31",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7",
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
@@ -2129,44 +2129,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d72b8e06-c865-594a-8f26-5e3c0374a1e5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0c86c0cd-5d59-511a-be49-a5f11ae32b91",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b54c8197-7920-5a51-a4e3-1963ef5396c1",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7",
+        "edge_id": "7ab44626-4550-58eb-b371-5781af818f31"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8275e704-d0a2-5c99-bbf9-288ae4a616fa",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7",
+        "edge_id": "7ab44626-4550-58eb-b371-5781af818f31"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc2e9a04-a92b-5712-8194-9f3409e4fbcb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2174,18 +2174,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "06e92a41-902a-5cd0-b1ec-7b357f813f90",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e76198f-4baf-5fd8-ba58-0006832b3376",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "06e92a41-902a-5cd0-b1ec-7b357f813f90",
         "to": {
           "x": 322.834,
           "y": 854.9639999999998,
@@ -2194,18 +2194,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4f322076-d280-5899-8366-5310db44d77b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7bb4a46e-1d63-51b6-884f-dd2df9a0451b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "06e92a41-902a-5cd0-b1ec-7b357f813f90",
         "segment": {
           "type": "arc",
           "center": {
@@ -2226,23 +2226,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "06e92a41-902a-5cd0-b1ec-7b357f813f90",
+        "segment": "7bb4a46e-1d63-51b6-884f-dd2df9a0451b",
+        "intersection_segment": "7bb4a46e-1d63-51b6-884f-dd2df9a0451b",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96675f22-5f56-57a9-a7e2-baf789fb1e95",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2250,11 +2250,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9a30239c-a41e-531d-aeaf-c591ff3682bf",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
@@ -2263,44 +2263,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d24e4520-03e5-532b-a5ff-e0ef1982d4ee",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbd15593-9599-5819-a52c-7df5de695521",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9c705f4f-63cd-5a04-b916-bfbcd3557f94",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
+        "edge_id": "34ea7cec-5ec6-563f-8d46-c58237130fa9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3495d7c9-33d4-5fa1-b00d-08dd196f7e51",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
+        "edge_id": "34ea7cec-5ec6-563f-8d46-c58237130fa9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81935f0d-8b49-5090-8182-352293599db9",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3ae1961c-10aa-5ad6-bc75-245b45a7f95c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2308,18 +2308,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7bd7ebbb-9ac6-5071-900a-cf9dcaceb752",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "80ddfc02-cc16-5b30-a844-1164d4d0c491",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7bd7ebbb-9ac6-5071-900a-cf9dcaceb752",
         "to": {
           "x": 2.54,
           "y": 0.0,
@@ -2328,18 +2328,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "304116fd-37ed-547e-97f1-1d56c31ee9dc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8bd49e1-cdaa-5a54-adf0-a96af709c98c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7bd7ebbb-9ac6-5071-900a-cf9dcaceb752",
         "segment": {
           "type": "arc",
           "center": {
@@ -2360,23 +2360,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d9ff857-4bf3-570a-80f2-de7152abbb6b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "7bd7ebbb-9ac6-5071-900a-cf9dcaceb752",
+        "segment": "b8bd49e1-cdaa-5a54-adf0-a96af709c98c",
+        "intersection_segment": "b8bd49e1-cdaa-5a54-adf0-a96af709c98c",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ece6c50b-43d0-58e4-9884-abac7efb3cec",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3ae1961c-10aa-5ad6-bc75-245b45a7f95c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2384,11 +2384,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19f5357e-4771-5a39-b1ac-9b4a39fc9a06",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "4d9ff857-4bf3-570a-80f2-de7152abbb6b",
         "distance": -0.254,
         "faces": null,
         "opposite": "None",
@@ -2397,44 +2397,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83dd5af3-65c1-50c6-b9ce-4ac7b42325d2",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "45d0e4f3-8f0a-507a-8161-8a16e178aaf4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "4d9ff857-4bf3-570a-80f2-de7152abbb6b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0910e52e-3b36-54e6-8d88-c68014908ea6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
+        "edge_id": "31c8e79a-74ef-5bd7-9e8a-b88f10ba7319"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dcdc2e7e-8f42-5d70-8cb7-07bfdbbcafaf",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
+        "edge_id": "31c8e79a-74ef-5bd7-9e8a-b88f10ba7319"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84ddfee3-9e65-5800-8adb-42bb7aef5985",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2442,18 +2442,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4a55b3df-d2ea-52d9-9420-22e301d64e75",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "to": {
           "x": 275.33599999999996,
           "y": 854.9639999999998,
@@ -2462,18 +2462,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7af97c10-1b0c-5be6-81e9-134094c751be",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "57d7e7b2-fdb6-5a09-ad11-012112b3044d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "segment": {
           "type": "line",
           "end": {
@@ -2486,11 +2486,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01db4e78-e528-5341-9838-5700b64cb9a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "segment": {
           "type": "arc",
           "center": {
@@ -2511,11 +2511,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd76b2d2-3e3a-53e3-bc75-d5ab9a9c2ba4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "segment": {
           "type": "line",
           "end": {
@@ -2528,11 +2528,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9471782c-479f-559c-9917-7248b913f27e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "segment": {
           "type": "line",
           "end": {
@@ -2545,11 +2545,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7354946-d8fc-5cd0-92b2-5692185ff943",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "segment": {
           "type": "line",
           "end": {
@@ -2562,11 +2562,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9c73fda-ac74-5163-93e5-08cea0a680a5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "segment": {
           "type": "line",
           "end": {
@@ -2579,11 +2579,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d41478d-fb47-5947-a5e1-309db6b4292d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
         "segment": {
           "type": "line",
           "end": {
@@ -2596,23 +2596,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c4af35e-3789-555a-b480-2dc0aab22dd1",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "cc8f4f99-1538-5df7-b7a6-e37b25ff8851",
+        "segment": "57d7e7b2-fdb6-5a09-ad11-012112b3044d",
+        "intersection_segment": "01db4e78-e528-5341-9838-5700b64cb9a8",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d1357e5-134c-5d64-94bb-2b1bbc1adae8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2620,11 +2620,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19af0132-5e72-5833-acfb-fc1e190f7c95",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "1c4af35e-3789-555a-b480-2dc0aab22dd1",
         "distance": -38.099999999999994,
         "faces": null,
         "opposite": "None",
@@ -2633,44 +2633,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e0a3125-eda1-5250-91b5-32993303f00c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25e00900-65ca-5536-8aa0-7fa5d671191c",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1c4af35e-3789-555a-b480-2dc0aab22dd1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "afb1d6c2-9c87-58d9-aa73-411820fd269d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c4af35e-3789-555a-b480-2dc0aab22dd1",
+        "edge_id": "021f0598-4a12-5b9f-a0ad-2540723f9183"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f32a96d2-9301-58fa-8169-f19b6cc58800",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c4af35e-3789-555a-b480-2dc0aab22dd1",
+        "edge_id": "021f0598-4a12-5b9f-a0ad-2540723f9183"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5ada2fe3-1344-5bdc-9136-ea56cfc2743f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2678,18 +2678,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82bd688f-1932-595b-b245-9678bd5d7b84",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa71dae-5efa-5bba-b1ac-3e4cd829c156",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "to": {
           "x": 275.33599999999996,
           "y": 854.9639999999998,
@@ -2698,18 +2698,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "403963c8-a40e-547f-b8b0-739c8a8016ec",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7e15343-cae7-5a64-92fd-2f2ebd501fa0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "segment": {
           "type": "line",
           "end": {
@@ -2722,11 +2722,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fbfd809-efc9-55c0-b893-36974f17f468",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "segment": {
           "type": "arc",
           "center": {
@@ -2747,11 +2747,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f64ada44-5b7d-5fc6-90f6-4e4e7cc77e9d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "segment": {
           "type": "line",
           "end": {
@@ -2764,11 +2764,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d2cf8230-1eb4-5649-bb40-e9b0355ec9f6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "segment": {
           "type": "line",
           "end": {
@@ -2781,11 +2781,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11328236-0af3-517a-9fec-b8a45d041741",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "segment": {
           "type": "line",
           "end": {
@@ -2798,11 +2798,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55fc8b8a-42c5-5c74-9eee-70d64d32a997",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "segment": {
           "type": "line",
           "end": {
@@ -2815,11 +2815,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3900157-7c73-558e-9d5f-489df906d90f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "82bd688f-1932-595b-b245-9678bd5d7b84",
         "segment": {
           "type": "line",
           "end": {
@@ -2832,23 +2832,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "301f8743-d0a0-5bd2-9197-fb19bed47af5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "82bd688f-1932-595b-b245-9678bd5d7b84",
+        "segment": "e7e15343-cae7-5a64-92fd-2f2ebd501fa0",
+        "intersection_segment": "2fbfd809-efc9-55c0-b893-36974f17f468",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "943e86a1-5da2-5ccd-8825-3fa3498b1b0d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2856,11 +2856,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd15d539-411e-53a8-9ecf-e6b965e8b947",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "301f8743-d0a0-5bd2-9197-fb19bed47af5",
         "distance": -38.099999999999994,
         "faces": null,
         "opposite": "None",
@@ -2869,44 +2869,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "79ba0b4a-5240-5bd5-9306-8cb6e882c699",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5fcf4016-253e-5cdc-a9b6-bf97ad004929",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "301f8743-d0a0-5bd2-9197-fb19bed47af5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "32ad8cf6-9294-5267-b923-089a11d88302",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "301f8743-d0a0-5bd2-9197-fb19bed47af5",
+        "edge_id": "a3d85d7b-1991-5875-b7bf-d7c89a24275c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "748f4b63-1f0a-59e3-ae3f-a00065c2cfe1",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "301f8743-d0a0-5bd2-9197-fb19bed47af5",
+        "edge_id": "a3d85d7b-1991-5875-b7bf-d7c89a24275c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6f513cb-e8c0-5f04-9902-151c757f8a9c",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7",
         "color": {
           "r": 0.39607844,
           "g": 0.44705883,
@@ -2919,11 +2919,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2a5ded2d-acbc-54e5-ae5c-2e5a1b444840",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
         "color": {
           "r": 0.39607844,
           "g": 0.44705883,
@@ -2936,11 +2936,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9da65312-24d6-58b8-8baf-78ea2d3d18ec",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1c4af35e-3789-555a-b480-2dc0aab22dd1",
         "color": {
           "r": 0.39607844,
           "g": 0.44705883,
@@ -2953,11 +2953,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "52e91f32-02ab-5e43-a609-27b747fc6fdc",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "301f8743-d0a0-5bd2-9197-fb19bed47af5",
         "color": {
           "r": 0.39607844,
           "g": 0.44705883,
@@ -2972,7 +2972,7 @@ description: Artifact commands multi-axis-robot.kcl
   ],
   "public/kcl-samples/multi-axis-robot/robot-rotating-base.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2997,20 +2997,20 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d5831f8-cfb6-55d6-8689-9eba26b90a80",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3022,18 +3022,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b300c02-0ca5-542d-bf6b-f6b9a31f8a08",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e16ca69-67dd-5294-8693-34fbdb7b414e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "9b300c02-0ca5-542d-bf6b-f6b9a31f8a08",
         "to": {
           "x": 99.05999999999999,
           "y": 0.0,
@@ -3042,18 +3042,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "515e71b6-5068-5314-a362-727be5fd92ee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9b300c02-0ca5-542d-bf6b-f6b9a31f8a08",
         "segment": {
           "type": "arc",
           "center": {
@@ -3074,23 +3074,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "389ea878-9075-54e8-9f0d-f5855f0295fb",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "9b300c02-0ca5-542d-bf6b-f6b9a31f8a08",
+        "segment": "515e71b6-5068-5314-a362-727be5fd92ee",
+        "intersection_segment": "515e71b6-5068-5314-a362-727be5fd92ee",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edce6c48-023d-5bab-b0e3-a6e19d17b66d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3102,11 +3102,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9aaf1824-b21b-5333-a9d1-b1fa8b5d27b8",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "389ea878-9075-54e8-9f0d-f5855f0295fb",
         "distance": 35.559999999999995,
         "faces": null,
         "opposite": "None",
@@ -3115,44 +3115,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74258cdc-0880-5ede-953e-e4fe95273e55",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed413f80-b210-565c-be1b-f95f0fa5de80",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "389ea878-9075-54e8-9f0d-f5855f0295fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89187ec0-3c95-5d5e-9946-c823c4954b7c",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "389ea878-9075-54e8-9f0d-f5855f0295fb",
+        "edge_id": "dc8499ff-29fe-52e1-8145-d4827c53c57d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae52fc86-6a50-5b42-a4b0-660ab1894329",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "389ea878-9075-54e8-9f0d-f5855f0295fb",
+        "edge_id": "dc8499ff-29fe-52e1-8145-d4827c53c57d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d8ed11b-f875-58d6-bf67-ff3a20a8f5f0",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "389ea878-9075-54e8-9f0d-f5855f0295fb",
         "color": {
           "r": 0.30980393,
           "g": 0.49019608,
@@ -3165,7 +3165,7 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a58fb782-b253-5b3f-99b2-36f8fe81cfef",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3190,20 +3190,20 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db2ad7c6-e062-5c1e-a086-01b201ca4910",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a58fb782-b253-5b3f-99b2-36f8fe81cfef",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "52540e74-3d7a-5ae5-87ce-76b81c914fc4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a58fb782-b253-5b3f-99b2-36f8fe81cfef",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3215,18 +3215,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f203f7cf-d99b-5239-a007-846590cbf667",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
         "to": {
           "x": 88.89999999999999,
           "y": 127.0,
@@ -3235,18 +3235,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a38efef1-7b01-551d-b122-cef40ed1403c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0522b012-e030-5688-a335-da7c2506e314",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
         "segment": {
           "type": "line",
           "end": {
@@ -3259,11 +3259,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9a89775-cfba-5031-8e02-ff7b852c56d9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
         "segment": {
           "type": "arc",
           "center": {
@@ -3284,11 +3284,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dae2d208-7706-5747-b592-90417506cbf1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
         "segment": {
           "type": "line",
           "end": {
@@ -3301,11 +3301,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21294103-205a-51c9-9939-ab6cf5fa2f07",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
         "segment": {
           "type": "line",
           "end": {
@@ -3318,23 +3318,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93be3bcc-48af-500d-9d79-fd3aa827af91",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
+        "segment": "0522b012-e030-5688-a335-da7c2506e314",
+        "intersection_segment": "f9a89775-cfba-5031-8e02-ff7b852c56d9",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f03b31ca-ebd8-53f5-a509-bae18965efd8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a58fb782-b253-5b3f-99b2-36f8fe81cfef",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3346,11 +3346,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc6651e8-c7e0-55ae-80b6-1f75337bc7a2",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "93be3bcc-48af-500d-9d79-fd3aa827af91",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -3359,44 +3359,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93ab5cfd-a566-59d3-8a82-1e668b63f2f5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "276fb2f9-c709-5be5-a53b-374550944444",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
+        "edge_id": "45a7f0ae-a60d-5c05-a80b-64a6e20be693"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc5d77af-818d-5ac1-b232-e5730bec8961",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
+        "edge_id": "45a7f0ae-a60d-5c05-a80b-64a6e20be693"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cd4471f-0b9c-5fe2-85d9-ef5e7b9655e5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2827c090-e171-5f86-8140-d3dd3056c6c6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3404,18 +3404,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c52fef6e-44f2-5461-9aa6-5d73da3fbbdf",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4888986b-b59b-5518-981e-71fe0ebb5474",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c52fef6e-44f2-5461-9aa6-5d73da3fbbdf",
         "to": {
           "x": 114.3,
           "y": 203.2,
@@ -3424,18 +3424,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f33355cc-779b-5caf-8737-6fea66c9d2ad",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ddf73b0f-cf9d-5c37-baf5-cfe65ad2c434",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c52fef6e-44f2-5461-9aa6-5d73da3fbbdf",
         "segment": {
           "type": "arc",
           "center": {
@@ -3456,23 +3456,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88d53866-cebd-5812-a4d1-b473ef522ec8",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c52fef6e-44f2-5461-9aa6-5d73da3fbbdf",
+        "segment": "ddf73b0f-cf9d-5c37-baf5-cfe65ad2c434",
+        "intersection_segment": "ddf73b0f-cf9d-5c37-baf5-cfe65ad2c434",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61f4c49f-bbaa-5086-b0f4-d2c20a721238",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2827c090-e171-5f86-8140-d3dd3056c6c6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3480,11 +3480,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9f9dd22-ede7-5364-996b-910e720628a9",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "88d53866-cebd-5812-a4d1-b473ef522ec8",
         "distance": 38.099999999999994,
         "faces": null,
         "opposite": "None",
@@ -3493,44 +3493,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3a21569a-e35c-573e-ac8e-baab933c3ce6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8d10d7a-2979-59ad-a964-392421834e2a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "88d53866-cebd-5812-a4d1-b473ef522ec8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3487d1cb-da0f-53cd-ac77-59fd978cf8d2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
+        "edge_id": "c1d1bd47-6417-5d2d-8386-f0d45e3d8622"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d8d5c995-45fd-5e61-a869-55f54706aac7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
+        "edge_id": "c1d1bd47-6417-5d2d-8386-f0d45e3d8622"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "545abb42-d8d5-5979-accf-ed93cdbfbc2a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6357148f-b547-5baf-9773-bdb7300cfaf1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3538,18 +3538,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "69c5d86e-17f6-5454-b80d-3090f74648c3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbfcf96e-c8a5-5413-b3ef-d94ab9394720",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "69c5d86e-17f6-5454-b80d-3090f74648c3",
         "to": {
           "x": 57.15,
           "y": 203.2,
@@ -3558,18 +3558,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84791802-ac56-5214-afde-b71ec4265f1b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8038abe0-f104-567d-90cd-f71bd47954df",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "69c5d86e-17f6-5454-b80d-3090f74648c3",
         "segment": {
           "type": "arc",
           "center": {
@@ -3590,23 +3590,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ac76f166-501c-51bd-92cc-429a0ccc48df",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "69c5d86e-17f6-5454-b80d-3090f74648c3",
+        "segment": "8038abe0-f104-567d-90cd-f71bd47954df",
+        "intersection_segment": "8038abe0-f104-567d-90cd-f71bd47954df",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6edc55a-0f3c-5fb0-aacc-bbe8a8801906",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6357148f-b547-5baf-9773-bdb7300cfaf1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3614,11 +3614,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d92c90e1-7514-5ccd-aa46-d6567f1d43f7",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "ac76f166-501c-51bd-92cc-429a0ccc48df",
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
@@ -3627,44 +3627,44 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23fa6977-0d4f-50c4-97d4-94d17f316c1a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a07b6b1-57d3-5aed-b4d4-a39b6372d794",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ac76f166-501c-51bd-92cc-429a0ccc48df"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "64f818b2-a003-5a93-8e89-b807867faa41",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
+        "edge_id": "bc7b8622-045d-5e5f-9aab-ea023c8d9888"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dccc941d-0f53-5e76-a77d-7eaabd51ce74",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
+        "edge_id": "bc7b8622-045d-5e5f-9aab-ea023c8d9888"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48a54318-ef33-5582-ad9a-28dd917a06ab",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
         "color": {
           "r": 0.30980393,
           "g": 0.49019608,
@@ -3677,7 +3677,7 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81c06928-6302-5370-bac1-7ae6b91cfb62",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3702,20 +3702,20 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8627ecf-8d0e-5b1b-8dc7-ecf87f1a5117",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "81c06928-6302-5370-bac1-7ae6b91cfb62",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cd9ed1ea-1606-5366-86fb-64ff49a95623",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "81c06928-6302-5370-bac1-7ae6b91cfb62",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3727,18 +3727,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f97cd314-7e6a-5b19-9116-6e1eb252e6f4",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd168f9-37cd-555f-9048-c8566ca41d47",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f97cd314-7e6a-5b19-9116-6e1eb252e6f4",
         "to": {
           "x": 52.06999999999999,
           "y": 203.2,
@@ -3747,18 +3747,18 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27a78bd8-f7b0-5037-936e-51a54b4931ff",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6d48e5c7-0046-5293-9787-f91af998100f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f97cd314-7e6a-5b19-9116-6e1eb252e6f4",
         "segment": {
           "type": "arc",
           "center": {
@@ -3779,23 +3779,23 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f97cd314-7e6a-5b19-9116-6e1eb252e6f4",
+        "segment": "6d48e5c7-0046-5293-9787-f91af998100f",
+        "intersection_segment": "6d48e5c7-0046-5293-9787-f91af998100f",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "201fdd4d-3085-5128-be8d-a43056e4a2bd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "81c06928-6302-5370-bac1-7ae6b91cfb62",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3807,11 +3807,11 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34bc3ace-6258-5a7f-ab7c-03504068e99a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb",
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
@@ -3820,36 +3820,36 @@ description: Artifact commands multi-axis-robot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "64396997-3c80-5b7d-86f3-b1ce991d629f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "839139e6-1c44-5627-ac39-2a2dadc1828a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b0c4876-f634-53c4-94bc-ec8f2d51c6f2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb",
+        "edge_id": "ef339c84-ab92-5b1c-a24f-b27935f2f3ff"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6a385754-175f-5cc5-9438-33b4872649f9",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb",
+        "edge_id": "ef339c84-ab92-5b1c-a24f-b27935f2f3ff"
       }
     }
   ]

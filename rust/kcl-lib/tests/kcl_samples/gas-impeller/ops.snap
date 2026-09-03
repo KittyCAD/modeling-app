@@ -3804,11 +3804,11 @@ description: Operations executed gas-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -3838,7 +3838,7 @@ description: Operations executed gas-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544"
           }
         },
         "sourceRange": []
@@ -3933,11 +3933,11 @@ description: Operations executed gas-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f481fd4-203e-57d7-b5d6-b16289577621"
               }
             ]
           },
@@ -3967,7 +3967,7 @@ description: Operations executed gas-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
           }
         },
         "sourceRange": []
@@ -5127,7 +5127,7 @@ description: Operations executed gas-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85"
               }
             ]
           },
@@ -5157,7 +5157,7 @@ description: Operations executed gas-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89273a0b-b55b-5457-9b1c-de1d777240e8"
           }
         },
         "sourceRange": []
@@ -5214,13 +5214,13 @@ description: Operations executed gas-impeller.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6"
               }
             }
           ]
@@ -5255,7 +5255,7 @@ description: Operations executed gas-impeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488"
           }
         },
         "sourceRange": []
@@ -5370,7 +5370,7 @@ description: Operations executed gas-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
           }
         },
         "sourceRange": []
@@ -5396,7 +5396,7 @@ description: Operations executed gas-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba"
           }
         },
         "sourceRange": []

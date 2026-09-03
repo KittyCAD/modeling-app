@@ -3295,7 +3295,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -3325,7 +3325,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b"
           }
         },
         "sourceRange": []
@@ -3421,7 +3421,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d"
           }
         },
         "sourceRange": []
@@ -3446,7 +3446,7 @@ description: Operations executed helium-tank.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3706,7 +3706,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
               }
             ]
           },
@@ -3736,7 +3736,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
           }
         },
         "sourceRange": []
@@ -3789,7 +3789,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976"
           }
         },
         "sourceRange": []
@@ -3813,7 +3813,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "85f34ae5-e934-5ff7-8913-4ab84baf25f2"
               }
             ]
           },
@@ -3847,7 +3847,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976"
           }
         },
         "sourceRange": []
@@ -3888,7 +3888,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5f95e913-96e4-58df-abe6-125bedd61cad"
           }
         },
         "sourceRange": []
@@ -3913,7 +3913,7 @@ description: Operations executed helium-tank.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -4279,7 +4279,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce"
               }
             ]
           },
@@ -4309,7 +4309,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e02115f0-d853-5684-82c8-298aa25e4541"
           }
         },
         "sourceRange": []
@@ -4355,7 +4355,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413"
           }
         },
         "sourceRange": []
@@ -4396,7 +4396,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053"
           }
         },
         "sourceRange": []
@@ -4421,7 +4421,7 @@ description: Operations executed helium-tank.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -8234,11 +8234,11 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               }
             ]
           },
@@ -8268,7 +8268,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "67d03316-0deb-5224-a7ce-b3394ba08db9"
           }
         },
         "sourceRange": []
@@ -8317,7 +8317,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0"
           }
         },
         "sourceRange": []
@@ -8498,7 +8498,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "887f8b95-6182-5637-a45b-e92f2860796c"
               }
             ]
           },
@@ -8528,7 +8528,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
           }
         },
         "sourceRange": []
@@ -8577,7 +8577,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "75786bd7-c284-566d-b238-3f6b11158ab4"
           }
         },
         "sourceRange": []
@@ -8758,7 +8758,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5fd1215-9080-56e3-9845-e939e4245bdb"
               }
             ]
           },
@@ -8788,7 +8788,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5d2a2786-5258-5364-b1b2-b28334229017"
           }
         },
         "sourceRange": []
@@ -8837,7 +8837,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "60f59271-6b58-59b1-94ae-dad793e5c6cd"
           }
         },
         "sourceRange": []
@@ -8866,7 +8866,7 @@ description: Operations executed helium-tank.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f3e5d974-3ee8-52ce-a294-da34987457f8"
               }
             }
           ]
@@ -8881,7 +8881,7 @@ description: Operations executed helium-tank.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7"
                 }
               }
             ]
@@ -8915,7 +8915,7 @@ description: Operations executed helium-tank.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e"
               }
             }
           ]
@@ -8930,7 +8930,7 @@ description: Operations executed helium-tank.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "388597b8-4546-5655-b3a3-c3a0bba239ad"
                 }
               }
             ]
@@ -8960,7 +8960,7 @@ description: Operations executed helium-tank.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -9156,7 +9156,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b"
               }
             ]
           },
@@ -9186,7 +9186,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3322387d-5b58-56ea-8103-4d2112d432af"
           }
         },
         "sourceRange": []
@@ -9228,7 +9228,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7"
           }
         },
         "sourceRange": []
@@ -9254,7 +9254,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d"
           }
         },
         "sourceRange": []
@@ -9345,7 +9345,7 @@ description: Operations executed helium-tank.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5584477d-a466-5baa-9972-325d4b097d17"
               }
             }
           ]
@@ -9360,13 +9360,13 @@ description: Operations executed helium-tank.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "5fcad80b-8312-5e60-a712-8f913a0fd488"
                 }
               }
             ]
@@ -9401,7 +9401,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c8b4e335-6a37-5df4-9658-e96f62cfa1e8"
           }
         },
         "sourceRange": []
@@ -9597,7 +9597,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5c95ab49-a18e-5d8b-a77b-13603dc90286"
               }
             ]
           },
@@ -9627,7 +9627,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3160ffad-2e46-5554-be76-1b632140926c"
           }
         },
         "sourceRange": []
@@ -9676,7 +9676,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084"
           }
         },
         "sourceRange": []
@@ -9857,7 +9857,7 @@ description: Operations executed helium-tank.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "10afce2b-40ff-5ee3-a44b-bd101e341780"
               }
             ]
           },
@@ -9887,7 +9887,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f86f4e23-13b8-55ee-8316-48b3edea035e"
           }
         },
         "sourceRange": []
@@ -9936,7 +9936,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0"
           }
         },
         "sourceRange": []
@@ -9965,7 +9965,7 @@ description: Operations executed helium-tank.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f"
               }
             }
           ]
@@ -9980,7 +9980,7 @@ description: Operations executed helium-tank.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f1288296-2fab-5d3c-b852-464b1f48007a"
                 }
               }
             ]
@@ -10015,7 +10015,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "65b5ba6d-61ab-533a-8e74-55dff5a195bd"
           }
         },
         "sourceRange": []
@@ -10056,7 +10056,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c8b4e335-6a37-5df4-9658-e96f62cfa1e8"
           }
         },
         "sourceRange": []
@@ -10144,7 +10144,7 @@ description: Operations executed helium-tank.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "65b5ba6d-61ab-533a-8e74-55dff5a195bd"
           }
         },
         "sourceRange": []

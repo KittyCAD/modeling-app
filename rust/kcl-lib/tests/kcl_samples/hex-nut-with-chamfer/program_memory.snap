@@ -6,8 +6,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
   "__sketch_50_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -85,7 +85,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                 "objectId": 53,
                 "kind": {
                   "circle": {
@@ -159,8 +159,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+                  "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                   "kind": "Custom",
                   "objectId": 49,
                   "origin": {
@@ -189,7 +189,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -206,11 +206,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -240,8 +240,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+                "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                 "kind": "Custom",
                 "objectId": 49,
                 "origin": {
@@ -282,7 +282,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                   "sourceRange": []
                 }
               },
@@ -292,8 +292,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+              "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
               "units": "mm",
               "isClosed": "no"
             }
@@ -322,12 +322,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
+          "id": "6752298a-4e72-5abb-ba6c-372de1f9f8b8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2576,
@@ -340,8 +340,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+          "id": "adce3691-f4a2-5b4b-8b97-005271c17a50",
           "sourceRange": [],
           "tag": {
             "commentStart": 3024,
@@ -354,8 +354,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
+          "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
           "sourceRange": [],
           "tag": {
             "commentStart": 3054,
@@ -381,11 +381,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6752298a-4e72-5abb-ba6c-372de1f9f8b8",
               "sourceRange": []
             },
             "ccw": true,
@@ -415,8 +415,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "kind": "Custom",
           "objectId": 49,
           "origin": {
@@ -457,7 +457,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
             "sourceRange": []
           }
         },
@@ -475,13 +475,13 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+      "endCapId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
       "units": "mm",
       "sectional": false
     }
@@ -495,12 +495,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
+          "id": "6752298a-4e72-5abb-ba6c-372de1f9f8b8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2576,
@@ -513,8 +513,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+          "id": "adce3691-f4a2-5b4b-8b97-005271c17a50",
           "sourceRange": [],
           "tag": {
             "commentStart": 3024,
@@ -527,8 +527,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
+          "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
           "sourceRange": [],
           "tag": {
             "commentStart": 3054,
@@ -554,11 +554,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6752298a-4e72-5abb-ba6c-372de1f9f8b8",
               "sourceRange": []
             },
             "ccw": true,
@@ -588,8 +588,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "kind": "Custom",
           "objectId": 49,
           "origin": {
@@ -630,7 +630,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
             "sourceRange": []
           }
         },
@@ -648,17 +648,17 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+      "endCapId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "1a0ade6f-d355-5121-9adb-351976a78284",
           "length": {
             "n": 2.5,
             "ty": {
@@ -667,12 +667,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "9c748f5d-0e3c-56d7-89f0-c8191104b892",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
           "length": {
             "n": 2.5,
             "ty": {
@@ -681,7 +681,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "6752298a-4e72-5abb-ba6c-372de1f9f8b8",
           "tag": null
         }
       ],
@@ -712,7 +712,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 22,
                 "kind": {
                   "circle": {
@@ -786,8 +786,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -816,7 +816,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -832,7 +832,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 25,
                 "kind": {
                   "circle": {
@@ -907,8 +907,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -937,7 +937,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -953,7 +953,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1027,8 +1027,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1057,7 +1057,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1073,7 +1073,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1147,8 +1147,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1177,7 +1177,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1193,7 +1193,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1267,8 +1267,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1297,7 +1297,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1313,7 +1313,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1387,8 +1387,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1417,7 +1417,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1433,7 +1433,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -1507,8 +1507,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1537,7 +1537,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1553,7 +1553,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1627,8 +1627,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1657,7 +1657,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1673,7 +1673,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41c630c9-9d44-581b-98af-caee575bea48",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -1748,8 +1748,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1778,7 +1778,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1795,11 +1795,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1823,7 +1823,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1847,7 +1847,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1871,7 +1871,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1895,7 +1895,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -1919,7 +1919,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1943,7 +1943,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc312d38-2fa6-5583-a605-44880f646499",
                     "sourceRange": []
                   },
                   "from": [
@@ -1960,7 +1960,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1990,8 +1990,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2032,7 +2032,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                   "sourceRange": []
                 }
               },
@@ -2066,8 +2066,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+              "originalId": "037b0f2d-13ef-58af-b918-43b89e77393e",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2130,12 +2130,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cc891d2d-6661-5674-b06c-461f2f806e1f",
+          "id": "e8e8a799-080a-5af7-b552-92f258391b5a",
           "sourceRange": [],
           "tag": {
             "commentStart": 740,
@@ -2148,8 +2148,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0b268327-1014-5ebf-a708-00a678259761",
+          "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -2162,8 +2162,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f54764aa-b9e1-59a3-b779-d36eed525661",
+          "id": "e916a179-7df2-5cbb-93ea-473efc1e7690",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -2176,8 +2176,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "16899ec9-b256-5216-9caf-cdf034f092fb",
+          "id": "6cf39ba3-1c9b-5995-8348-b47113d724db",
           "sourceRange": [],
           "tag": {
             "commentStart": 964,
@@ -2190,8 +2190,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "646973f3-a27a-51a8-84e1-f7c30c7341e4",
+          "id": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
           "sourceRange": [],
           "tag": {
             "commentStart": 1040,
@@ -2204,8 +2204,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f65fd9f3-2cf8-5b07-991e-aab90163da64",
+          "id": "6afe3bf4-f144-5dab-9e2a-d72827c120eb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1118,
@@ -2218,8 +2218,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ce33a4a3-4eb4-5816-bde4-2e7ff3b1958c",
+          "id": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1193,
@@ -2235,11 +2235,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e8e8a799-080a-5af7-b552-92f258391b5a",
               "sourceRange": []
             },
             "from": [
@@ -2263,7 +2263,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
               "sourceRange": []
             },
             "from": [
@@ -2287,7 +2287,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e916a179-7df2-5cbb-93ea-473efc1e7690",
               "sourceRange": []
             },
             "from": [
@@ -2311,7 +2311,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6cf39ba3-1c9b-5995-8348-b47113d724db",
               "sourceRange": []
             },
             "from": [
@@ -2335,7 +2335,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
               "sourceRange": []
             },
             "from": [
@@ -2359,7 +2359,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6afe3bf4-f144-5dab-9e2a-d72827c120eb",
               "sourceRange": []
             },
             "from": [
@@ -2383,7 +2383,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
               "sourceRange": []
             },
             "ccw": true,
@@ -2413,8 +2413,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2455,7 +2455,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
             "sourceRange": []
           }
         },
@@ -2489,13 +2489,13 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "originSketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+      "endCapId": "73f7bfd3-6044-5270-8b81-b1e589f2c3de",
       "units": "mm",
       "sectional": false
     }
@@ -2513,12 +2513,12 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+      "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cc891d2d-6661-5674-b06c-461f2f806e1f",
+          "id": "e8e8a799-080a-5af7-b552-92f258391b5a",
           "sourceRange": [],
           "tag": {
             "commentStart": 740,
@@ -2531,8 +2531,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0b268327-1014-5ebf-a708-00a678259761",
+          "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -2545,8 +2545,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f54764aa-b9e1-59a3-b779-d36eed525661",
+          "id": "e916a179-7df2-5cbb-93ea-473efc1e7690",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -2559,8 +2559,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "16899ec9-b256-5216-9caf-cdf034f092fb",
+          "id": "6cf39ba3-1c9b-5995-8348-b47113d724db",
           "sourceRange": [],
           "tag": {
             "commentStart": 964,
@@ -2573,8 +2573,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "646973f3-a27a-51a8-84e1-f7c30c7341e4",
+          "id": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
           "sourceRange": [],
           "tag": {
             "commentStart": 1040,
@@ -2587,8 +2587,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f65fd9f3-2cf8-5b07-991e-aab90163da64",
+          "id": "6afe3bf4-f144-5dab-9e2a-d72827c120eb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1118,
@@ -2601,8 +2601,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ce33a4a3-4eb4-5816-bde4-2e7ff3b1958c",
+          "id": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1193,
@@ -2618,11 +2618,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e8e8a799-080a-5af7-b552-92f258391b5a",
               "sourceRange": []
             },
             "from": [
@@ -2646,7 +2646,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
               "sourceRange": []
             },
             "from": [
@@ -2670,7 +2670,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e916a179-7df2-5cbb-93ea-473efc1e7690",
               "sourceRange": []
             },
             "from": [
@@ -2694,7 +2694,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6cf39ba3-1c9b-5995-8348-b47113d724db",
               "sourceRange": []
             },
             "from": [
@@ -2718,7 +2718,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
               "sourceRange": []
             },
             "from": [
@@ -2742,7 +2742,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6afe3bf4-f144-5dab-9e2a-d72827c120eb",
               "sourceRange": []
             },
             "from": [
@@ -2766,7 +2766,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
               "sourceRange": []
             },
             "ccw": true,
@@ -2796,8 +2796,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2838,7 +2838,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
             "sourceRange": []
           }
         },
@@ -2872,13 +2872,13 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "originSketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+      "endCapId": "73f7bfd3-6044-5270-8b81-b1e589f2c3de",
       "units": "mm",
       "sectional": false
     }
@@ -2887,11 +2887,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e8e8a799-080a-5af7-b552-92f258391b5a",
             "sourceRange": []
           },
           "from": [
@@ -2915,7 +2915,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
             "sourceRange": []
           },
           "from": [
@@ -2939,7 +2939,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e916a179-7df2-5cbb-93ea-473efc1e7690",
             "sourceRange": []
           },
           "from": [
@@ -2963,7 +2963,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6cf39ba3-1c9b-5995-8348-b47113d724db",
             "sourceRange": []
           },
           "from": [
@@ -2987,7 +2987,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
             "sourceRange": []
           },
           "from": [
@@ -3011,7 +3011,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6afe3bf4-f144-5dab-9e2a-d72827c120eb",
             "sourceRange": []
           },
           "from": [
@@ -3035,7 +3035,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
             "sourceRange": []
           },
           "ccw": true,
@@ -3065,8 +3065,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -3107,7 +3107,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
           "sourceRange": []
         }
       },
@@ -3141,9 +3141,9 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "originSketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "units": "mm"
     }
   },
@@ -3151,11 +3151,11 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6752298a-4e72-5abb-ba6c-372de1f9f8b8",
             "sourceRange": []
           },
           "ccw": true,
@@ -3185,8 +3185,8 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+        "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
         "kind": "Custom",
         "objectId": 49,
         "origin": {
@@ -3227,7 +3227,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
           "sourceRange": []
         }
       },
@@ -3245,9 +3245,9 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "units": "mm"
     }
   }

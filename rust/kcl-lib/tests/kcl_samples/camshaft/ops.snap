@@ -387,7 +387,7 @@ description: Operations executed camshaft.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -1264,11 +1264,11 @@ description: Operations executed camshaft.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -1305,7 +1305,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
           }
         },
         "sourceRange": []
@@ -1351,7 +1351,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -1396,7 +1396,7 @@ description: Operations executed camshaft.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -2273,11 +2273,11 @@ description: Operations executed camshaft.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e383621f-755a-5f2e-ada3-608aff393dab"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
               }
             ]
           },
@@ -2314,7 +2314,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
           }
         },
         "sourceRange": []
@@ -2360,7 +2360,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
           }
         },
         "sourceRange": []
@@ -2406,7 +2406,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
           }
         },
         "sourceRange": []
@@ -2452,7 +2452,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
           }
         },
         "sourceRange": []
@@ -2540,13 +2540,13 @@ description: Operations executed camshaft.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
               }
             }
           ]
@@ -2716,25 +2716,25 @@ description: Operations executed camshaft.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "91c9766d-c483-5cd6-bc6b-8cd723b9b113"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "93d860bd-86a2-5fa8-80fe-57be39b71bc8"
               }
             }
           ]
@@ -2929,7 +2929,7 @@ description: Operations executed camshaft.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
               }
             ]
           },
@@ -2962,7 +2962,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
           }
         },
         "sourceRange": []
@@ -3201,7 +3201,7 @@ description: Operations executed camshaft.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
               }
             ]
           },
@@ -3234,7 +3234,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
           }
         },
         "sourceRange": []
@@ -3276,7 +3276,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
           }
         },
         "sourceRange": []
@@ -3289,7 +3289,7 @@ description: Operations executed camshaft.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
                 }
               }
             ]
@@ -3320,7 +3320,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
           }
         },
         "sourceRange": []
@@ -3346,7 +3346,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524"
           }
         },
         "sourceRange": []
@@ -3372,7 +3372,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
           }
         },
         "sourceRange": []
@@ -3398,7 +3398,7 @@ description: Operations executed camshaft.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666"
           }
         },
         "sourceRange": []

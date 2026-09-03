@@ -22,11 +22,11 @@ description: Variables in memory after executing artifact_graph_example_code_no_
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -50,7 +50,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -74,7 +74,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
             "sourceRange": []
           },
           "from": [
@@ -98,7 +98,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -115,8 +115,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "kind": "YZ",
         "objectId": 0,
         "origin": {
@@ -157,7 +157,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
           "sourceRange": []
         }
       },
@@ -175,8 +175,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "value": "rectangleSegmentC001"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "units": "mm"
     }
   },
@@ -184,11 +184,11 @@ description: Variables in memory after executing artifact_graph_example_code_no_
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7b681387-29ea-57f1-8713-d63280827139",
             "sourceRange": []
           },
           "from": [
@@ -205,7 +205,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           },
           "ccw": false,
@@ -227,7 +227,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
             "sourceRange": []
           },
           "ccw": true,
@@ -249,8 +249,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+        "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
         "kind": "XZ",
         "objectId": 1,
         "origin": {
@@ -291,12 +291,12 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
           "sourceRange": []
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "units": "mm",
       "isClosed": "no"
     }

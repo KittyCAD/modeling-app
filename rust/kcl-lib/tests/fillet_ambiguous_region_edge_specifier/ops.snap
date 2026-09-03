@@ -634,19 +634,19 @@ description: Operations executed fillet_ambiguous_region_edge_specifier.kcl
             "value": {
               "chordLeft": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "chordRight": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
               },
               "meta": {
                 "type": "Object",
@@ -654,7 +654,7 @@ description: Operations executed fillet_ambiguous_region_edge_specifier.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
                     }
                   }
                 }
@@ -687,7 +687,7 @@ description: Operations executed fillet_ambiguous_region_edge_specifier.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -736,7 +736,7 @@ description: Operations executed fillet_ambiguous_region_edge_specifier.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []
@@ -755,7 +755,7 @@ description: Operations executed fillet_ambiguous_region_edge_specifier.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "20b30aa4-67cc-51f8-a59d-6551fddaae57"
                       }
                     ]
                   },
@@ -765,12 +765,12 @@ description: Operations executed fillet_ambiguous_region_edge_specifier.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "circle1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "636eb591-c4d3-588c-9a91-ff7a9ab7125b"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capStart001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "611a7e93-6aa0-555e-a3ce-6a3079ed898f"
                       }
                     ]
                   }

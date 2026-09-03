@@ -6,8 +6,8 @@ description: Variables in memory after executing pipe-straight.kcl
   "__sketch_13_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing pipe-straight.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing pipe-straight.kcl
   "__sketch_25_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -115,12 +115,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+          "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -136,11 +136,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -170,8 +170,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -212,7 +212,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -222,13 +222,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -237,12 +237,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3450c48f-3d4a-57c7-871b-e3bd614bcbf4",
+          "artifactId": "3450c48f-3d4a-57c7-871b-e3bd614bcbf4",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -258,11 +258,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "3450c48f-3d4a-57c7-871b-e3bd614bcbf4",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -292,8 +292,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -334,7 +334,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -344,13 +344,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -359,12 +359,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
+          "artifactId": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -380,11 +380,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -414,8 +414,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -456,7 +456,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -466,13 +466,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -481,12 +481,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+          "artifactId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -502,11 +502,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "adce3691-f4a2-5b4b-8b97-005271c17a50",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -536,8 +536,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -578,7 +578,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -588,13 +588,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -603,12 +603,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "d2aeb297-eff2-5763-b4a0-d2e4a8378b2c",
+          "artifactId": "d2aeb297-eff2-5763-b4a0-d2e4a8378b2c",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -624,11 +624,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "d2aeb297-eff2-5763-b4a0-d2e4a8378b2c",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -658,8 +658,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -700,7 +700,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -710,13 +710,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -725,12 +725,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "997407b6-c34d-53a9-b417-758aff870eb4",
+          "artifactId": "997407b6-c34d-53a9-b417-758aff870eb4",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -746,11 +746,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "997407b6-c34d-53a9-b417-758aff870eb4",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -780,8 +780,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -822,7 +822,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -832,13 +832,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -847,12 +847,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "151f577d-89c9-57d2-9e80-70d3947c8bbf",
+          "artifactId": "151f577d-89c9-57d2-9e80-70d3947c8bbf",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -868,11 +868,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "151f577d-89c9-57d2-9e80-70d3947c8bbf",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -902,8 +902,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -944,7 +944,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -954,13 +954,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -969,12 +969,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "c6e7f420-60e1-5672-8956-a2f5216ef49a",
+          "artifactId": "c6e7f420-60e1-5672-8956-a2f5216ef49a",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -990,11 +990,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "c6e7f420-60e1-5672-8956-a2f5216ef49a",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1024,8 +1024,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1066,7 +1066,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1076,13 +1076,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1091,12 +1091,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791",
+          "artifactId": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1112,11 +1112,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1146,8 +1146,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1188,7 +1188,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1198,13 +1198,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1213,12 +1213,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+          "artifactId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1234,11 +1234,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1268,8 +1268,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1310,7 +1310,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1320,13 +1320,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1335,12 +1335,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "80d9cfa2-7e37-52d4-b4d1-735fde220693",
+          "artifactId": "80d9cfa2-7e37-52d4-b4d1-735fde220693",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1356,11 +1356,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "80d9cfa2-7e37-52d4-b4d1-735fde220693",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1390,8 +1390,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1432,7 +1432,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1442,13 +1442,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1457,12 +1457,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "5dafa22d-7710-59be-af57-c2c7540e6558",
+          "artifactId": "5dafa22d-7710-59be-af57-c2c7540e6558",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1478,11 +1478,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "5dafa22d-7710-59be-af57-c2c7540e6558",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1512,8 +1512,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1554,7 +1554,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1564,13 +1564,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1579,12 +1579,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "1ce0e02e-52ff-5bd8-b258-0209c20e3c37",
+          "artifactId": "1ce0e02e-52ff-5bd8-b258-0209c20e3c37",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1600,11 +1600,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "1ce0e02e-52ff-5bd8-b258-0209c20e3c37",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1634,8 +1634,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1676,7 +1676,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1686,13 +1686,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1701,12 +1701,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "c8fd3fce-f7ce-5063-a2e0-681af6ad93ae",
+          "artifactId": "c8fd3fce-f7ce-5063-a2e0-681af6ad93ae",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1722,11 +1722,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "c8fd3fce-f7ce-5063-a2e0-681af6ad93ae",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1756,8 +1756,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1798,7 +1798,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1808,13 +1808,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1823,12 +1823,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "20f78557-d752-5b3c-94e6-337c67a2a326",
+          "artifactId": "20f78557-d752-5b3c-94e6-337c67a2a326",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1844,11 +1844,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "20f78557-d752-5b3c-94e6-337c67a2a326",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1878,8 +1878,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -1930,13 +1930,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -1945,12 +1945,12 @@ description: Variables in memory after executing pipe-straight.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3941e672-3550-56e2-a8eb-596032a230f7",
+          "artifactId": "3941e672-3550-56e2-a8eb-596032a230f7",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1915,
@@ -1966,11 +1966,11 @@ description: Variables in memory after executing pipe-straight.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "3941e672-3550-56e2-a8eb-596032a230f7",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2000,8 +2000,8 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "kind": "Custom",
               "objectId": 24,
               "origin": {
@@ -2042,7 +2042,7 @@ description: Variables in memory after executing pipe-straight.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "sourceRange": []
               }
             },
@@ -2052,13 +2052,13 @@ description: Variables in memory after executing pipe-straight.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+            "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "endCapId": "19b80591-b217-553e-b524-394df234e28a",
           "units": "mm",
           "sectional": false
         }
@@ -2069,12 +2069,12 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+          "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
           "sourceRange": [],
           "tag": {
             "commentStart": 1915,
@@ -2090,11 +2090,11 @@ description: Variables in memory after executing pipe-straight.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
               "sourceRange": []
             },
             "ccw": true,
@@ -2124,8 +2124,8 @@ description: Variables in memory after executing pipe-straight.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "kind": "Custom",
           "objectId": 24,
           "origin": {
@@ -2166,7 +2166,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "sourceRange": []
           }
         },
@@ -2176,13 +2176,13 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "975296b2-086b-5a76-86ec-c84703e9f49a",
+      "endCapId": "19b80591-b217-553e-b524-394df234e28a",
       "units": "mm",
       "sectional": false
     }
@@ -2214,7 +2214,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "objectId": 28,
                 "kind": {
                   "circle": {
@@ -2288,8 +2288,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 24,
                   "origin": {
@@ -2318,7 +2318,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2334,7 +2334,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -2409,8 +2409,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 24,
                   "origin": {
@@ -2439,7 +2439,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2456,11 +2456,11 @@ description: Variables in memory after executing pipe-straight.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2490,8 +2490,8 @@ description: Variables in memory after executing pipe-straight.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "kind": "Custom",
                 "objectId": 24,
                 "origin": {
@@ -2532,7 +2532,7 @@ description: Variables in memory after executing pipe-straight.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                   "sourceRange": []
                 }
               },
@@ -2542,8 +2542,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+              "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2558,11 +2558,11 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "41280f43-8573-5a9b-ab43-6af54c38a17e",
             "sourceRange": []
           },
           "ccw": true,
@@ -2592,8 +2592,8 @@ description: Variables in memory after executing pipe-straight.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
         "kind": "Custom",
         "objectId": 24,
         "origin": {
@@ -2634,7 +2634,7 @@ description: Variables in memory after executing pipe-straight.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
           "sourceRange": []
         }
       },
@@ -2644,9 +2644,9 @@ description: Variables in memory after executing pipe-straight.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "originSketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "units": "mm"
     }
   },
@@ -2659,12 +2659,12 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "caab2e75-951d-5d86-b9bb-bd94eb9cef11",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 1312,
@@ -2677,8 +2677,8 @@ description: Variables in memory after executing pipe-straight.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "44c976bf-fa25-54c3-994a-152b021a4da7",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1455,
@@ -2694,11 +2694,11 @@ description: Variables in memory after executing pipe-straight.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
               "sourceRange": []
             },
             "ccw": true,
@@ -2728,7 +2728,7 @@ description: Variables in memory after executing pipe-straight.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "ccw": true,
@@ -2758,8 +2758,8 @@ description: Variables in memory after executing pipe-straight.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "kind": "Custom",
           "objectId": 12,
           "origin": {
@@ -2800,7 +2800,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
             "sourceRange": []
           }
         },
@@ -2814,13 +2814,13 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0f2880d4-d771-5ebc-9cf1-0815ded3b5bb",
+      "endCapId": "2d5ec83e-723e-5e13-9c3f-0cfdcaf57fae",
       "units": "mm",
       "sectional": false
     }
@@ -2829,12 +2829,12 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "caab2e75-951d-5d86-b9bb-bd94eb9cef11",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 1312,
@@ -2847,8 +2847,8 @@ description: Variables in memory after executing pipe-straight.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "44c976bf-fa25-54c3-994a-152b021a4da7",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1455,
@@ -2864,11 +2864,11 @@ description: Variables in memory after executing pipe-straight.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
               "sourceRange": []
             },
             "ccw": true,
@@ -2898,7 +2898,7 @@ description: Variables in memory after executing pipe-straight.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "ccw": true,
@@ -2928,8 +2928,8 @@ description: Variables in memory after executing pipe-straight.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "kind": "Custom",
           "objectId": 12,
           "origin": {
@@ -2970,7 +2970,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
             "sourceRange": []
           }
         },
@@ -2984,13 +2984,13 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0f2880d4-d771-5ebc-9cf1-0815ded3b5bb",
+      "endCapId": "2d5ec83e-723e-5e13-9c3f-0cfdcaf57fae",
       "units": "mm",
       "sectional": false
     }
@@ -3027,11 +3027,11 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
             "sourceRange": []
           },
           "ccw": true,
@@ -3061,7 +3061,7 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
             "sourceRange": []
           },
           "ccw": true,
@@ -3091,8 +3091,8 @@ description: Variables in memory after executing pipe-straight.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
         "kind": "Custom",
         "objectId": 12,
         "origin": {
@@ -3133,7 +3133,7 @@ description: Variables in memory after executing pipe-straight.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
           "sourceRange": []
         }
       },
@@ -3147,9 +3147,9 @@ description: Variables in memory after executing pipe-straight.kcl
           "value": "flangeOuterCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "units": "mm"
     }
   },
@@ -3162,7 +3162,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "objectId": 20,
                 "kind": {
                   "circle": {
@@ -3236,8 +3236,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 12,
                   "origin": {
@@ -3266,7 +3266,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "flangeInnerCircle"
@@ -3282,7 +3282,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 16,
                 "kind": {
                   "circle": {
@@ -3356,8 +3356,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 12,
                   "origin": {
@@ -3386,7 +3386,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "flangeOuterCircle"
@@ -3403,11 +3403,11 @@ description: Variables in memory after executing pipe-straight.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3437,7 +3437,7 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                     "sourceRange": []
                   },
                   "from": [
@@ -3454,7 +3454,7 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3484,8 +3484,8 @@ description: Variables in memory after executing pipe-straight.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "kind": "Custom",
                 "objectId": 12,
                 "origin": {
@@ -3526,7 +3526,7 @@ description: Variables in memory after executing pipe-straight.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                   "sourceRange": []
                 }
               },
@@ -3540,8 +3540,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "flangeOuterCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+              "originalId": "53a9149e-1246-5c44-9e3c-558201ff438c",
               "units": "mm",
               "isClosed": "no"
             }
@@ -3565,17 +3565,17 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+      "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
       "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a8e9500c-2c23-50fa-970e-171599ae62f2",
               "sourceRange": []
             },
             "ccw": true,
@@ -3605,7 +3605,7 @@ description: Variables in memory after executing pipe-straight.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "384b9545-b2f4-5628-8dc6-16e8897a2290",
               "sourceRange": []
             },
             "ccw": true,
@@ -3635,8 +3635,8 @@ description: Variables in memory after executing pipe-straight.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "kind": "Custom",
           "objectId": 12,
           "origin": {
@@ -3677,7 +3677,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
             "sourceRange": []
           }
         },
@@ -3691,9 +3691,9 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+        "originalId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+        "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "units": "mm"
       },
       "startCapId": null,
@@ -3706,12 +3706,12 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
+          "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
           "sourceRange": [],
           "tag": {
             "commentStart": 730,
@@ -3724,8 +3724,8 @@ description: Variables in memory after executing pipe-straight.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c8c7308-3a35-5560-adc8-fa0d351181c5",
+          "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
           "sourceRange": [],
           "tag": {
             "commentStart": 869,
@@ -3741,11 +3741,11 @@ description: Variables in memory after executing pipe-straight.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
               "sourceRange": []
             },
             "ccw": true,
@@ -3775,7 +3775,7 @@ description: Variables in memory after executing pipe-straight.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
               "sourceRange": []
             },
             "ccw": true,
@@ -3805,8 +3805,8 @@ description: Variables in memory after executing pipe-straight.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3847,7 +3847,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           }
         },
@@ -3861,13 +3861,13 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "pipeOuterCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "originSketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
+      "endCapId": "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
       "units": "mm",
       "sectional": false
     }
@@ -3913,11 +3913,11 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
             "sourceRange": []
           },
           "ccw": true,
@@ -3947,7 +3947,7 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
             "sourceRange": []
           },
           "ccw": true,
@@ -3977,8 +3977,8 @@ description: Variables in memory after executing pipe-straight.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -4019,7 +4019,7 @@ description: Variables in memory after executing pipe-straight.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": []
         }
       },
@@ -4033,9 +4033,9 @@ description: Variables in memory after executing pipe-straight.kcl
           "value": "pipeOuterCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "originSketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "units": "mm"
     }
   },
@@ -4049,11 +4049,11 @@ description: Variables in memory after executing pipe-straight.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4083,7 +4083,7 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -4100,7 +4100,7 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4130,8 +4130,8 @@ description: Variables in memory after executing pipe-straight.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -4172,7 +4172,7 @@ description: Variables in memory after executing pipe-straight.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                   "sourceRange": []
                 }
               },
@@ -4186,8 +4186,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "pipeOuterCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "originalId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "units": "mm",
               "isClosed": "no"
             }
@@ -4201,7 +4201,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 8,
                 "kind": {
                   "circle": {
@@ -4275,8 +4275,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4305,7 +4305,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pipeInnerCircle"
@@ -4321,7 +4321,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -4395,8 +4395,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4425,7 +4425,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pipeOuterCircle"
@@ -4451,12 +4451,12 @@ description: Variables in memory after executing pipe-straight.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "caab2e75-951d-5d86-b9bb-bd94eb9cef11",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 1312,
@@ -4469,8 +4469,8 @@ description: Variables in memory after executing pipe-straight.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "44c976bf-fa25-54c3-994a-152b021a4da7",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1455,
@@ -4486,11 +4486,11 @@ description: Variables in memory after executing pipe-straight.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
               "sourceRange": []
             },
             "ccw": true,
@@ -4520,7 +4520,7 @@ description: Variables in memory after executing pipe-straight.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "ccw": true,
@@ -4550,8 +4550,8 @@ description: Variables in memory after executing pipe-straight.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "kind": "Custom",
           "objectId": 12,
           "origin": {
@@ -4592,7 +4592,7 @@ description: Variables in memory after executing pipe-straight.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
             "sourceRange": []
           }
         },
@@ -4606,13 +4606,13 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0f2880d4-d771-5ebc-9cf1-0815ded3b5bb",
+      "endCapId": "2d5ec83e-723e-5e13-9c3f-0cfdcaf57fae",
       "units": "mm",
       "sectional": false
     }

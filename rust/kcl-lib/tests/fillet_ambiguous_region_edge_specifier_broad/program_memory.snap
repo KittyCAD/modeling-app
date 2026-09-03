@@ -6,8 +6,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,11 +39,11 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
             "sourceRange": []
           },
           "ccw": true,
@@ -73,7 +73,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "636eb591-c4d3-588c-9a91-ff7a9ab7125b",
             "sourceRange": []
           },
           "ccw": true,
@@ -103,7 +103,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
             "sourceRange": []
           },
           "from": [
@@ -127,7 +127,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
             "sourceRange": []
           },
           "from": [
@@ -151,7 +151,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
             "sourceRange": []
           },
           "from": [
@@ -175,8 +175,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -217,7 +217,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "sourceRange": []
         }
       },
@@ -243,9 +243,9 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "originalId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "originSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "units": "mm"
     }
   },
@@ -253,12 +253,12 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
+          "id": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
           "sourceRange": [],
           "tag": {
             "commentStart": 89,
@@ -271,8 +271,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c0c8e1e-2e1a-5f02-9225-b6f7e124bb59",
+          "id": "636eb591-c4d3-588c-9a91-ff7a9ab7125b",
           "sourceRange": [],
           "tag": {
             "commentStart": 89,
@@ -285,8 +285,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c32fcce5-9a50-5fb0-ba9a-2bf87f66813b",
+          "id": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
           "sourceRange": [],
           "tag": {
             "commentStart": 179,
@@ -299,8 +299,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a42a54e6-4426-5fb3-931c-2414ffd90ab7",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 347,
@@ -313,8 +313,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9076fac9-8dc4-5a25-8fbf-e3f2c0d70b84",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 477,
@@ -327,8 +327,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
+          "id": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
           "sourceRange": [],
           "tag": {
             "commentStart": 737,
@@ -350,11 +350,11 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
               "sourceRange": []
             },
             "ccw": true,
@@ -384,7 +384,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "636eb591-c4d3-588c-9a91-ff7a9ab7125b",
               "sourceRange": []
             },
             "ccw": true,
@@ -414,7 +414,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
               "sourceRange": []
             },
             "from": [
@@ -438,7 +438,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
               "sourceRange": []
             },
             "from": [
@@ -462,7 +462,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
               "sourceRange": []
             },
             "from": [
@@ -486,8 +486,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -528,7 +528,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
             "sourceRange": []
           }
         },
@@ -554,13 +554,13 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "originalId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "originSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
+      "endCapId": "e357b432-0a06-5db8-963e-069aa10281d9",
       "units": "mm",
       "sectional": false
     }
@@ -584,7 +584,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -658,8 +658,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -688,7 +688,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "chordLeft"
@@ -704,7 +704,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -778,8 +778,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -808,7 +808,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "chordRight"
@@ -824,7 +824,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -898,8 +898,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -928,7 +928,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -944,7 +944,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -1018,8 +1018,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1048,7 +1048,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1065,11 +1065,11 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1099,7 +1099,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                     "sourceRange": []
                   },
                   "from": [
@@ -1116,7 +1116,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1140,7 +1140,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -1157,7 +1157,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -1181,7 +1181,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "from": [
@@ -1205,8 +1205,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1247,7 +1247,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                   "sourceRange": []
                 }
               },
@@ -1269,8 +1269,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+              "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1285,12 +1285,12 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
+          "id": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
           "sourceRange": [],
           "tag": {
             "commentStart": 89,
@@ -1303,8 +1303,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c0c8e1e-2e1a-5f02-9225-b6f7e124bb59",
+          "id": "636eb591-c4d3-588c-9a91-ff7a9ab7125b",
           "sourceRange": [],
           "tag": {
             "commentStart": 89,
@@ -1317,8 +1317,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c32fcce5-9a50-5fb0-ba9a-2bf87f66813b",
+          "id": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
           "sourceRange": [],
           "tag": {
             "commentStart": 179,
@@ -1331,8 +1331,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a42a54e6-4426-5fb3-931c-2414ffd90ab7",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 347,
@@ -1345,8 +1345,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9076fac9-8dc4-5a25-8fbf-e3f2c0d70b84",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 477,
@@ -1359,8 +1359,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
+          "id": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
           "sourceRange": [],
           "tag": {
             "commentStart": 737,
@@ -1382,11 +1382,11 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
               "sourceRange": []
             },
             "ccw": true,
@@ -1416,7 +1416,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "636eb591-c4d3-588c-9a91-ff7a9ab7125b",
               "sourceRange": []
             },
             "ccw": true,
@@ -1446,7 +1446,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
               "sourceRange": []
             },
             "from": [
@@ -1470,7 +1470,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
               "sourceRange": []
             },
             "from": [
@@ -1494,7 +1494,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
               "sourceRange": []
             },
             "from": [
@@ -1518,8 +1518,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1560,7 +1560,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
             "sourceRange": []
           }
         },
@@ -1586,13 +1586,13 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "originalId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "originSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
+      "endCapId": "e357b432-0a06-5db8-963e-069aa10281d9",
       "units": "mm",
       "sectional": false
     }

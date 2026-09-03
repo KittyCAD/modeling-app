@@ -6,8 +6,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,12 +39,12 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bf2569f4-8303-5a9a-817c-062b9a00a926",
+          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 32,
@@ -57,8 +57,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5983fe0d-ad46-595e-9b48-dfabc7824ea6",
+          "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
           "sourceRange": [],
           "tag": {
             "commentStart": 171,
@@ -71,8 +71,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "88584acc-3096-5ab3-9eaa-f5fe960fbda6",
+          "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
           "sourceRange": [],
           "tag": {
             "commentStart": 282,
@@ -85,8 +85,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
+          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
           "sourceRange": [],
           "tag": {
             "commentStart": 396,
@@ -99,8 +99,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "afa4dbd5-d41b-53bd-a721-65ca0ddfa6e5",
+          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
           "sourceRange": [],
           "tag": {
             "commentStart": 510,
@@ -113,8 +113,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7d3fe1e7-d80b-511c-a42f-3f0f64367ccb",
+          "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
           "sourceRange": [],
           "tag": {
             "commentStart": 624,
@@ -127,8 +127,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "acf4900d-8e16-5c01-911d-bb2445b5f458",
+          "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
           "sourceRange": [],
           "tag": {
             "commentStart": 768,
@@ -144,11 +144,11 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
               "sourceRange": []
             },
             "from": [
@@ -172,7 +172,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
               "sourceRange": []
             },
             "from": [
@@ -196,7 +196,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
               "sourceRange": []
             },
             "from": [
@@ -220,7 +220,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
               "sourceRange": []
             },
             "from": [
@@ -244,7 +244,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
               "sourceRange": []
             },
             "from": [
@@ -268,7 +268,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
               "sourceRange": []
             },
             "from": [
@@ -292,7 +292,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
               "sourceRange": []
             },
             "from": [
@@ -316,8 +316,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -358,7 +358,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
             "sourceRange": []
           }
         },
@@ -392,13 +392,13 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "value": "line7"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "originalId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "8320a413-49c7-59bc-8a42-492ed5c5ecf4",
+      "endCapId": "6fe0649f-cdd5-50ea-ad12-53597d9acb63",
       "units": "mm",
       "sectional": false
     }
@@ -407,12 +407,12 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bf2569f4-8303-5a9a-817c-062b9a00a926",
+          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 32,
@@ -425,8 +425,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5983fe0d-ad46-595e-9b48-dfabc7824ea6",
+          "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
           "sourceRange": [],
           "tag": {
             "commentStart": 171,
@@ -439,8 +439,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "88584acc-3096-5ab3-9eaa-f5fe960fbda6",
+          "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
           "sourceRange": [],
           "tag": {
             "commentStart": 282,
@@ -453,8 +453,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
+          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
           "sourceRange": [],
           "tag": {
             "commentStart": 396,
@@ -467,8 +467,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "afa4dbd5-d41b-53bd-a721-65ca0ddfa6e5",
+          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
           "sourceRange": [],
           "tag": {
             "commentStart": 510,
@@ -481,8 +481,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7d3fe1e7-d80b-511c-a42f-3f0f64367ccb",
+          "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
           "sourceRange": [],
           "tag": {
             "commentStart": 624,
@@ -495,8 +495,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "acf4900d-8e16-5c01-911d-bb2445b5f458",
+          "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
           "sourceRange": [],
           "tag": {
             "commentStart": 768,
@@ -512,11 +512,11 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
               "sourceRange": []
             },
             "from": [
@@ -540,7 +540,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
               "sourceRange": []
             },
             "from": [
@@ -564,7 +564,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
               "sourceRange": []
             },
             "from": [
@@ -588,7 +588,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
               "sourceRange": []
             },
             "from": [
@@ -612,7 +612,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
               "sourceRange": []
             },
             "from": [
@@ -636,7 +636,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
               "sourceRange": []
             },
             "from": [
@@ -660,7 +660,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
               "sourceRange": []
             },
             "from": [
@@ -684,8 +684,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -726,7 +726,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
             "sourceRange": []
           }
         },
@@ -760,17 +760,17 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "value": "line7"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "originalId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "8320a413-49c7-59bc-8a42-492ed5c5ecf4",
+      "endCapId": "6fe0649f-cdd5-50ea-ad12-53597d9acb63",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -779,12 +779,12 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "760cc82f-86e1-519e-8024-b4672b5540ed",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -793,12 +793,12 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "36129089-746e-51c1-bb05-6e0b9902480f",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -807,7 +807,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "722f5dcc-4e20-57a6-83e8-fde41fc11236",
           "tag": null
         }
       ],
@@ -819,11 +819,11 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -847,7 +847,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -871,7 +871,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -895,7 +895,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -919,7 +919,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "sourceRange": []
           },
           "from": [
@@ -943,7 +943,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
             "sourceRange": []
           },
           "from": [
@@ -967,7 +967,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
             "sourceRange": []
           },
           "from": [
@@ -991,8 +991,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1033,7 +1033,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
           "sourceRange": []
         }
       },
@@ -1067,8 +1067,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "value": "line7"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -1112,11 +1112,11 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
             "sourceRange": []
           },
           "from": [
@@ -1140,7 +1140,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
             "sourceRange": []
           },
           "from": [
@@ -1164,7 +1164,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
             "sourceRange": []
           },
           "from": [
@@ -1188,7 +1188,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
             "sourceRange": []
           },
           "from": [
@@ -1212,7 +1212,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
             "sourceRange": []
           },
           "from": [
@@ -1236,7 +1236,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
             "sourceRange": []
           },
           "from": [
@@ -1260,7 +1260,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
             "sourceRange": []
           },
           "from": [
@@ -1284,8 +1284,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1326,7 +1326,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
           "sourceRange": []
         }
       },
@@ -1360,9 +1360,9 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "value": "line7"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "originalId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "units": "mm"
     }
   },
@@ -1375,7 +1375,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1449,8 +1449,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1479,7 +1479,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1495,7 +1495,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 9,
                 "kind": {
                   "line": {
@@ -1569,8 +1569,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1599,7 +1599,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1615,7 +1615,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1689,8 +1689,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1719,7 +1719,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1735,7 +1735,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 17,
                 "kind": {
                   "line": {
@@ -1809,8 +1809,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1839,7 +1839,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1855,7 +1855,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -1929,8 +1929,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1959,7 +1959,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1975,7 +1975,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 25,
                 "kind": {
                   "line": {
@@ -2049,8 +2049,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2079,7 +2079,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2095,7 +2095,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 30,
                 "kind": {
                   "line": {
@@ -2169,8 +2169,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2199,7 +2199,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -2216,11 +2216,11 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2244,7 +2244,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -2268,7 +2268,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -2292,7 +2292,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -2316,7 +2316,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -2340,7 +2340,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -2364,7 +2364,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                     "sourceRange": []
                   },
                   "from": [
@@ -2388,8 +2388,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2430,7 +2430,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                   "sourceRange": []
                 }
               },
@@ -2464,8 +2464,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                   "value": "line7"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+              "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2480,12 +2480,12 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1e863501-0b4f-5edc-9654-2da123096255",
+      "artifactId": "1e863501-0b4f-5edc-9654-2da123096255",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "441c7422-3069-569e-b6dd-e598e677d2a6",
+          "id": "6a6d2cd8-580d-5243-9e9b-0cc867839802",
           "sourceRange": [],
           "tag": {
             "commentStart": 32,
@@ -2498,8 +2498,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8bef909b-8803-54cb-a195-92e48deeb229",
+          "id": "15ca699b-e2bd-5897-b94a-d6e5fe476d5a",
           "sourceRange": [],
           "tag": {
             "commentStart": 171,
@@ -2512,8 +2512,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2dd3c6d0-fc6f-565f-94b1-cd4db1ff1567",
+          "id": "952b4654-fa18-5482-b3ba-eb37b0681461",
           "sourceRange": [],
           "tag": {
             "commentStart": 282,
@@ -2526,8 +2526,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c625eacf-0237-5177-b0c2-e658078b9577",
+          "id": "10431699-f002-5b74-80a2-7e994b310734",
           "sourceRange": [],
           "tag": {
             "commentStart": 396,
@@ -2540,8 +2540,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "903e4b82-ba56-58a2-a87c-f85e787443f6",
+          "id": "eee928bd-5509-5637-a417-b6baa430b125",
           "sourceRange": [],
           "tag": {
             "commentStart": 510,
@@ -2554,8 +2554,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f7f2a52-a7aa-5e45-a5ad-44daeb8e8340",
+          "id": "4b8a3d75-081f-545f-8cbf-e7fe2e54ae12",
           "sourceRange": [],
           "tag": {
             "commentStart": 624,
@@ -2568,8 +2568,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e5cb0b26-d931-5985-976e-197e8d3b2093",
+          "id": "769871b5-3ebe-50e6-9dc4-dbd6e8967466",
           "sourceRange": [],
           "tag": {
             "commentStart": 768,
@@ -2585,11 +2585,11 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1e863501-0b4f-5edc-9654-2da123096255",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6a6d2cd8-580d-5243-9e9b-0cc867839802",
               "sourceRange": []
             },
             "from": [
@@ -2613,7 +2613,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "15ca699b-e2bd-5897-b94a-d6e5fe476d5a",
               "sourceRange": []
             },
             "from": [
@@ -2637,7 +2637,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "952b4654-fa18-5482-b3ba-eb37b0681461",
               "sourceRange": []
             },
             "from": [
@@ -2661,7 +2661,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "10431699-f002-5b74-80a2-7e994b310734",
               "sourceRange": []
             },
             "from": [
@@ -2685,7 +2685,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eee928bd-5509-5637-a417-b6baa430b125",
               "sourceRange": []
             },
             "from": [
@@ -2709,7 +2709,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4b8a3d75-081f-545f-8cbf-e7fe2e54ae12",
               "sourceRange": []
             },
             "from": [
@@ -2733,7 +2733,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "769871b5-3ebe-50e6-9dc4-dbd6e8967466",
               "sourceRange": []
             },
             "from": [
@@ -2757,8 +2757,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2799,7 +2799,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
             "sourceRange": []
           }
         },
@@ -2833,13 +2833,13 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "value": "line7"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1e863501-0b4f-5edc-9654-2da123096255",
+        "originalId": "1e863501-0b4f-5edc-9654-2da123096255",
+        "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0c3d19a9-84e9-50dc-8839-03bdbd55b1c0",
+      "endCapId": "ba9d9fa0-6a88-5f98-8158-391612fa9514",
       "units": "mm",
       "sectional": false
     }
@@ -2848,12 +2848,12 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+      "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bf2569f4-8303-5a9a-817c-062b9a00a926",
+          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 32,
@@ -2866,8 +2866,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5983fe0d-ad46-595e-9b48-dfabc7824ea6",
+          "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
           "sourceRange": [],
           "tag": {
             "commentStart": 171,
@@ -2880,8 +2880,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "88584acc-3096-5ab3-9eaa-f5fe960fbda6",
+          "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
           "sourceRange": [],
           "tag": {
             "commentStart": 282,
@@ -2894,8 +2894,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
+          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
           "sourceRange": [],
           "tag": {
             "commentStart": 396,
@@ -2908,8 +2908,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "afa4dbd5-d41b-53bd-a721-65ca0ddfa6e5",
+          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
           "sourceRange": [],
           "tag": {
             "commentStart": 510,
@@ -2922,8 +2922,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7d3fe1e7-d80b-511c-a42f-3f0f64367ccb",
+          "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
           "sourceRange": [],
           "tag": {
             "commentStart": 624,
@@ -2936,8 +2936,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "acf4900d-8e16-5c01-911d-bb2445b5f458",
+          "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
           "sourceRange": [],
           "tag": {
             "commentStart": 768,
@@ -2953,11 +2953,11 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
               "sourceRange": []
             },
             "from": [
@@ -2981,7 +2981,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
               "sourceRange": []
             },
             "from": [
@@ -3005,7 +3005,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
               "sourceRange": []
             },
             "from": [
@@ -3029,7 +3029,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
               "sourceRange": []
             },
             "from": [
@@ -3053,7 +3053,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
               "sourceRange": []
             },
             "from": [
@@ -3077,7 +3077,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
               "sourceRange": []
             },
             "from": [
@@ -3101,7 +3101,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
               "sourceRange": []
             },
             "from": [
@@ -3125,8 +3125,8 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3167,7 +3167,7 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
             "sourceRange": []
           }
         },
@@ -3201,13 +3201,13 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "value": "line7"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "originalId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "8320a413-49c7-59bc-8a42-492ed5c5ecf4",
+      "endCapId": "6fe0649f-cdd5-50ea-ad12-53597d9acb63",
       "units": "mm",
       "sectional": false
     }

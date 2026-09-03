@@ -728,7 +728,7 @@ description: Operations executed clone_w_face_tags.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []
@@ -761,11 +761,11 @@ description: Operations executed clone_w_face_tags.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -795,7 +795,7 @@ description: Operations executed clone_w_face_tags.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           }
         },
         "sourceRange": []
@@ -844,7 +844,7 @@ description: Operations executed clone_w_face_tags.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
           }
         },
         "sourceRange": []
@@ -877,7 +877,7 @@ description: Operations executed clone_w_face_tags.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "deb86259-17a0-5782-a352-d25992246cc0"
           }
         },
         "sourceRange": []
@@ -923,7 +923,7 @@ description: Operations executed clone_w_face_tags.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "deb86259-17a0-5782-a352-d25992246cc0"
           }
         },
         "sourceRange": []
@@ -944,7 +944,7 @@ description: Operations executed clone_w_face_tags.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "8137b0af-17a3-570f-907a-7da80b56d36d"
           },
           "sourceRange": []
         }

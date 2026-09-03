@@ -11,12 +11,12 @@ description: Variables in memory after executing import_whole_simple.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "070325e1-7989-54f2-9ed3-2540604376b8",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f60df527-1928-55b5-a970-81b21b875fc1",
+          "id": "60407a3e-ef7a-5779-a051-a70a61ac9407",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
@@ -25,11 +25,11 @@ description: Variables in memory after executing import_whole_simple.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "60407a3e-ef7a-5779-a051-a70a61ac9407",
               "sourceRange": []
             },
             "ccw": true,
@@ -52,8 +52,8 @@ description: Variables in memory after executing import_whole_simple.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+          "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
           "kind": "XY",
           "objectId": 0,
           "origin": {
@@ -94,16 +94,16 @@ description: Variables in memory after executing import_whole_simple.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a2c8378e-e4d1-5286-9240-29dabf6bd44d",
             "sourceRange": []
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+        "originalId": "7c4571e0-7b14-576f-a82e-22280b05874d",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "4ad4d147-b588-542b-b3f9-d54ddefc3844",
+      "endCapId": "3f91b569-e28a-541e-a1ba-4405500ccd24",
       "units": "in",
       "sectional": false
     }

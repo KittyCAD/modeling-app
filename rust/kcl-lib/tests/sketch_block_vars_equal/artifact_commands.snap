@@ -5,7 +5,7 @@ description: Artifact commands sketch_block_vars_equal.kcl
 {
   "rust/kcl-lib/tests/sketch_block_vars_equal/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",

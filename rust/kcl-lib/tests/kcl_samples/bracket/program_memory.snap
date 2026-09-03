@@ -6,8 +6,8 @@ description: Variables in memory after executing bracket.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -66,12 +66,12 @@ description: Variables in memory after executing bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 2555,
@@ -84,8 +84,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 2638,
@@ -98,8 +98,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2752,
@@ -112,8 +112,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2871,
@@ -126,8 +126,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2992,
@@ -140,8 +140,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 3115,
@@ -154,8 +154,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 4080,
@@ -168,8 +168,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 4050,
@@ -195,11 +195,11 @@ description: Variables in memory after executing bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -223,7 +223,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -247,7 +247,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -271,7 +271,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -295,7 +295,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -319,7 +319,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -343,8 +343,8 @@ description: Variables in memory after executing bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -385,7 +385,7 @@ description: Variables in memory after executing bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -423,13 +423,13 @@ description: Variables in memory after executing bracket.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "units": "in",
       "sectional": false
     }
@@ -443,11 +443,11 @@ description: Variables in memory after executing bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
             "sourceRange": []
           },
           "from": [
@@ -471,7 +471,7 @@ description: Variables in memory after executing bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
             "sourceRange": []
           },
           "from": [
@@ -495,7 +495,7 @@ description: Variables in memory after executing bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
             "sourceRange": []
           },
           "from": [
@@ -519,7 +519,7 @@ description: Variables in memory after executing bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
             "sourceRange": []
           },
           "from": [
@@ -543,7 +543,7 @@ description: Variables in memory after executing bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
             "sourceRange": []
           },
           "from": [
@@ -567,7 +567,7 @@ description: Variables in memory after executing bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1084cca5-0297-5dc3-92ac-287642feefac",
             "sourceRange": []
           },
           "from": [
@@ -591,8 +591,8 @@ description: Variables in memory after executing bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -633,7 +633,7 @@ description: Variables in memory after executing bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
           "sourceRange": []
         }
       },
@@ -671,9 +671,9 @@ description: Variables in memory after executing bracket.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "units": "in"
     }
   },
@@ -686,7 +686,7 @@ description: Variables in memory after executing bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -760,8 +760,8 @@ description: Variables in memory after executing bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -790,7 +790,7 @@ description: Variables in memory after executing bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -806,7 +806,7 @@ description: Variables in memory after executing bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -880,8 +880,8 @@ description: Variables in memory after executing bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -910,7 +910,7 @@ description: Variables in memory after executing bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -926,7 +926,7 @@ description: Variables in memory after executing bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1000,8 +1000,8 @@ description: Variables in memory after executing bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1030,7 +1030,7 @@ description: Variables in memory after executing bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1046,7 +1046,7 @@ description: Variables in memory after executing bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -1120,8 +1120,8 @@ description: Variables in memory after executing bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1150,7 +1150,7 @@ description: Variables in memory after executing bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1166,7 +1166,7 @@ description: Variables in memory after executing bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1240,8 +1240,8 @@ description: Variables in memory after executing bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1270,7 +1270,7 @@ description: Variables in memory after executing bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1286,7 +1286,7 @@ description: Variables in memory after executing bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -1360,8 +1360,8 @@ description: Variables in memory after executing bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1390,7 +1390,7 @@ description: Variables in memory after executing bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1407,11 +1407,11 @@ description: Variables in memory after executing bracket.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1435,7 +1435,7 @@ description: Variables in memory after executing bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1459,7 +1459,7 @@ description: Variables in memory after executing bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1483,7 +1483,7 @@ description: Variables in memory after executing bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1507,7 +1507,7 @@ description: Variables in memory after executing bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -1531,7 +1531,7 @@ description: Variables in memory after executing bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -1555,8 +1555,8 @@ description: Variables in memory after executing bracket.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1597,7 +1597,7 @@ description: Variables in memory after executing bracket.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                   "sourceRange": []
                 }
               },
@@ -1627,8 +1627,8 @@ description: Variables in memory after executing bracket.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "originalId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1666,12 +1666,12 @@ description: Variables in memory after executing bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 2555,
@@ -1684,8 +1684,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 2638,
@@ -1698,8 +1698,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2752,
@@ -1712,8 +1712,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2871,
@@ -1726,8 +1726,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2992,
@@ -1740,8 +1740,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 3115,
@@ -1754,8 +1754,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 4080,
@@ -1768,8 +1768,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 4050,
@@ -1795,11 +1795,11 @@ description: Variables in memory after executing bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -1823,7 +1823,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -1847,7 +1847,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -1871,7 +1871,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -1895,7 +1895,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -1919,7 +1919,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -1943,8 +1943,8 @@ description: Variables in memory after executing bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1985,7 +1985,7 @@ description: Variables in memory after executing bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -2023,17 +2023,17 @@ description: Variables in memory after executing bracket.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
           "radius": {
             "n": 0.25,
             "ty": {
@@ -2042,12 +2042,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "00413e35-9bf5-5b61-952c-680df3ead9be",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
           "radius": {
             "n": 0.6348561883538911,
             "ty": {
@@ -2056,7 +2056,7 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "tag": null
         }
       ],
@@ -2068,12 +2068,12 @@ description: Variables in memory after executing bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 2555,
@@ -2086,8 +2086,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 2638,
@@ -2100,8 +2100,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2752,
@@ -2114,8 +2114,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2871,
@@ -2128,8 +2128,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2992,
@@ -2142,8 +2142,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 3115,
@@ -2156,8 +2156,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 4080,
@@ -2170,8 +2170,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 4050,
@@ -2197,11 +2197,11 @@ description: Variables in memory after executing bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -2225,7 +2225,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -2249,7 +2249,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -2273,7 +2273,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -2297,7 +2297,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -2321,7 +2321,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -2345,8 +2345,8 @@ description: Variables in memory after executing bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2387,7 +2387,7 @@ description: Variables in memory after executing bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -2425,17 +2425,17 @@ description: Variables in memory after executing bracket.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
           "radius": {
             "n": 0.25,
             "ty": {
@@ -2444,12 +2444,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "00413e35-9bf5-5b61-952c-680df3ead9be",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
           "radius": {
             "n": 0.6348561883538911,
             "ty": {
@@ -2458,12 +2458,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -2472,12 +2472,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -2486,12 +2486,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -2500,12 +2500,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -2514,7 +2514,7 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "tag": null
         }
       ],
@@ -2526,12 +2526,12 @@ description: Variables in memory after executing bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 2555,
@@ -2544,8 +2544,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 2638,
@@ -2558,8 +2558,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2752,
@@ -2572,8 +2572,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2871,
@@ -2586,8 +2586,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2992,
@@ -2600,8 +2600,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 3115,
@@ -2614,8 +2614,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 4080,
@@ -2628,8 +2628,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 4050,
@@ -2655,11 +2655,11 @@ description: Variables in memory after executing bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -2683,7 +2683,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -2707,7 +2707,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -2731,7 +2731,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -2755,7 +2755,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -2779,7 +2779,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -2803,8 +2803,8 @@ description: Variables in memory after executing bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2845,7 +2845,7 @@ description: Variables in memory after executing bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -2883,17 +2883,17 @@ description: Variables in memory after executing bracket.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
           "radius": {
             "n": 0.25,
             "ty": {
@@ -2902,7 +2902,7 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "00413e35-9bf5-5b61-952c-680df3ead9be",
           "tag": null
         }
       ],
@@ -2914,12 +2914,12 @@ description: Variables in memory after executing bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+      "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 2555,
@@ -2932,8 +2932,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 2638,
@@ -2946,8 +2946,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2752,
@@ -2960,8 +2960,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2871,
@@ -2974,8 +2974,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2992,
@@ -2988,8 +2988,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 3115,
@@ -3002,8 +3002,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 4080,
@@ -3016,8 +3016,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 4050,
@@ -3043,11 +3043,11 @@ description: Variables in memory after executing bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -3071,7 +3071,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -3095,7 +3095,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -3119,7 +3119,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -3143,7 +3143,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -3167,7 +3167,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -3191,8 +3191,8 @@ description: Variables in memory after executing bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3233,7 +3233,7 @@ description: Variables in memory after executing bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -3271,17 +3271,17 @@ description: Variables in memory after executing bracket.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
           "radius": {
             "n": 0.25,
             "ty": {
@@ -3290,12 +3290,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "00413e35-9bf5-5b61-952c-680df3ead9be",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
           "radius": {
             "n": 0.6348561883538911,
             "ty": {
@@ -3304,12 +3304,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3318,12 +3318,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3332,12 +3332,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3346,12 +3346,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3360,7 +3360,7 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "tag": null
         }
       ],
@@ -3390,12 +3390,12 @@ description: Variables in memory after executing bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+      "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 2555,
@@ -3408,8 +3408,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 2638,
@@ -3422,8 +3422,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2752,
@@ -3436,8 +3436,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2871,
@@ -3450,8 +3450,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2992,
@@ -3464,8 +3464,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 3115,
@@ -3478,8 +3478,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 4080,
@@ -3492,8 +3492,8 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 4050,
@@ -3519,11 +3519,11 @@ description: Variables in memory after executing bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -3547,7 +3547,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -3571,7 +3571,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -3595,7 +3595,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -3619,7 +3619,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -3643,7 +3643,7 @@ description: Variables in memory after executing bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -3667,8 +3667,8 @@ description: Variables in memory after executing bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3709,7 +3709,7 @@ description: Variables in memory after executing bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -3747,17 +3747,17 @@ description: Variables in memory after executing bracket.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
           "radius": {
             "n": 0.25,
             "ty": {
@@ -3766,12 +3766,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "00413e35-9bf5-5b61-952c-680df3ead9be",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
           "radius": {
             "n": 0.6348561883538911,
             "ty": {
@@ -3780,12 +3780,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3794,12 +3794,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3808,12 +3808,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3822,12 +3822,12 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -3836,7 +3836,7 @@ description: Variables in memory after executing bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "tag": null
         }
       ],

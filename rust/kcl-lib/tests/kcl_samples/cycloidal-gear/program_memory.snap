@@ -6,8 +6,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
   "__sketch_91_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -115,7 +115,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                 "objectId": 94,
                 "kind": {
                   "circle": {
@@ -189,8 +189,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+                  "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                   "kind": "Custom",
                   "objectId": 90,
                   "origin": {
@@ -219,7 +219,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole"
@@ -236,11 +236,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -270,8 +270,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+                "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "kind": "Custom",
                 "objectId": 90,
                 "origin": {
@@ -312,7 +312,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                   "sourceRange": []
                 }
               },
@@ -322,8 +322,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   "value": "hole"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+              "originalId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
               "units": "in",
               "isClosed": "no"
             }
@@ -338,11 +338,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
             "sourceRange": []
           },
           "ccw": true,
@@ -372,8 +372,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "kind": "Custom",
         "objectId": 90,
         "origin": {
@@ -414,7 +414,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
           "sourceRange": []
         }
       },
@@ -424,9 +424,9 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "value": "hole"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+      "originalId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+      "originSketchId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "units": "in"
     }
   },
@@ -452,12 +452,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
+          "id": "af0a7034-5ea7-56f1-9145-413e8c236728",
           "sourceRange": [],
           "tag": {
             "commentStart": 2241,
@@ -470,8 +470,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a4117a30-2b51-5046-b23f-e2fed86da938",
+          "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2354,
@@ -484,8 +484,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bd349247-d9ec-528e-8d4f-f1b9af010429",
+          "id": "d577f6b7-4101-59d0-8f6f-234f212e9526",
           "sourceRange": [],
           "tag": {
             "commentStart": 2475,
@@ -498,8 +498,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "51eae745-e5a4-5c1f-886e-878b0e8f1ed7",
+          "id": "a7f5a91c-28d0-5345-8cb1-c6d704b6cee3",
           "sourceRange": [],
           "tag": {
             "commentStart": 2600,
@@ -512,8 +512,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb3ae195-3112-581e-9eed-779b12aebc9a",
+          "id": "60939c8c-8887-54d1-936f-3f956c6fccb8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2720,
@@ -526,8 +526,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a650b2e2-ddde-52bf-9004-d5f1281d0a2f",
+          "id": "855ede3e-8420-5757-bd36-d62524b8ebf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2842,
@@ -543,11 +543,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af0a7034-5ea7-56f1-9145-413e8c236728",
               "sourceRange": []
             },
             "ccw": true,
@@ -577,7 +577,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
               "sourceRange": []
             },
             "ccw": true,
@@ -607,7 +607,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d577f6b7-4101-59d0-8f6f-234f212e9526",
               "sourceRange": []
             },
             "ccw": false,
@@ -637,7 +637,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7f5a91c-28d0-5345-8cb1-c6d704b6cee3",
               "sourceRange": []
             },
             "ccw": true,
@@ -667,7 +667,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "60939c8c-8887-54d1-936f-3f956c6fccb8",
               "sourceRange": []
             },
             "ccw": false,
@@ -697,7 +697,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "855ede3e-8420-5757-bd36-d62524b8ebf6",
               "sourceRange": []
             },
             "ccw": true,
@@ -727,8 +727,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -769,7 +769,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
             "sourceRange": []
           }
         },
@@ -799,13 +799,13 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "arc6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "originSketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "fae834cb-6b4b-58ca-b28a-e7eb6d23e5a4",
+      "endCapId": "165b1110-9d7b-5e3a-9d56-d84564808b92",
       "units": "in",
       "sectional": false
     }
@@ -814,12 +814,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+      "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de9357e9-f145-5d3a-9f58-6c90631f755e",
+          "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
           "sourceRange": [],
           "tag": {
             "commentStart": 3847,
@@ -835,11 +835,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
               "sourceRange": []
             },
             "ccw": true,
@@ -869,8 +869,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+          "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
           "kind": "Custom",
           "objectId": 90,
           "origin": {
@@ -911,7 +911,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
             "sourceRange": []
           }
         },
@@ -921,13 +921,13 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "hole"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "originalId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "originSketchId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "91217df3-8781-5744-b00a-419896828ac7",
+      "endCapId": "dcf38853-8141-5c7c-92d5-f6536120a4cf",
       "units": "in",
       "sectional": false
     }
@@ -945,12 +945,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+      "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
+          "id": "af0a7034-5ea7-56f1-9145-413e8c236728",
           "sourceRange": [],
           "tag": {
             "commentStart": 2241,
@@ -963,8 +963,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a4117a30-2b51-5046-b23f-e2fed86da938",
+          "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2354,
@@ -977,8 +977,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bd349247-d9ec-528e-8d4f-f1b9af010429",
+          "id": "d577f6b7-4101-59d0-8f6f-234f212e9526",
           "sourceRange": [],
           "tag": {
             "commentStart": 2475,
@@ -991,8 +991,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "51eae745-e5a4-5c1f-886e-878b0e8f1ed7",
+          "id": "a7f5a91c-28d0-5345-8cb1-c6d704b6cee3",
           "sourceRange": [],
           "tag": {
             "commentStart": 2600,
@@ -1005,8 +1005,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb3ae195-3112-581e-9eed-779b12aebc9a",
+          "id": "60939c8c-8887-54d1-936f-3f956c6fccb8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2720,
@@ -1019,8 +1019,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a650b2e2-ddde-52bf-9004-d5f1281d0a2f",
+          "id": "855ede3e-8420-5757-bd36-d62524b8ebf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2842,
@@ -1036,11 +1036,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af0a7034-5ea7-56f1-9145-413e8c236728",
               "sourceRange": []
             },
             "ccw": true,
@@ -1070,7 +1070,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
               "sourceRange": []
             },
             "ccw": true,
@@ -1100,7 +1100,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d577f6b7-4101-59d0-8f6f-234f212e9526",
               "sourceRange": []
             },
             "ccw": false,
@@ -1130,7 +1130,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7f5a91c-28d0-5345-8cb1-c6d704b6cee3",
               "sourceRange": []
             },
             "ccw": true,
@@ -1160,7 +1160,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "60939c8c-8887-54d1-936f-3f956c6fccb8",
               "sourceRange": []
             },
             "ccw": false,
@@ -1190,7 +1190,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "855ede3e-8420-5757-bd36-d62524b8ebf6",
               "sourceRange": []
             },
             "ccw": true,
@@ -1220,8 +1220,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1262,7 +1262,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
             "sourceRange": []
           }
         },
@@ -1292,13 +1292,13 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "arc6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "originSketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "fae834cb-6b4b-58ca-b28a-e7eb6d23e5a4",
+      "endCapId": "165b1110-9d7b-5e3a-9d56-d84564808b92",
       "units": "in",
       "sectional": false
     }
@@ -1325,12 +1325,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
+          "id": "af0a7034-5ea7-56f1-9145-413e8c236728",
           "sourceRange": [],
           "tag": {
             "commentStart": 2241,
@@ -1343,8 +1343,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a4117a30-2b51-5046-b23f-e2fed86da938",
+          "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2354,
@@ -1357,8 +1357,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bd349247-d9ec-528e-8d4f-f1b9af010429",
+          "id": "d577f6b7-4101-59d0-8f6f-234f212e9526",
           "sourceRange": [],
           "tag": {
             "commentStart": 2475,
@@ -1371,8 +1371,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "51eae745-e5a4-5c1f-886e-878b0e8f1ed7",
+          "id": "a7f5a91c-28d0-5345-8cb1-c6d704b6cee3",
           "sourceRange": [],
           "tag": {
             "commentStart": 2600,
@@ -1385,8 +1385,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb3ae195-3112-581e-9eed-779b12aebc9a",
+          "id": "60939c8c-8887-54d1-936f-3f956c6fccb8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2720,
@@ -1399,8 +1399,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a650b2e2-ddde-52bf-9004-d5f1281d0a2f",
+          "id": "855ede3e-8420-5757-bd36-d62524b8ebf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 2842,
@@ -1416,11 +1416,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af0a7034-5ea7-56f1-9145-413e8c236728",
               "sourceRange": []
             },
             "ccw": true,
@@ -1450,7 +1450,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
               "sourceRange": []
             },
             "ccw": true,
@@ -1480,7 +1480,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d577f6b7-4101-59d0-8f6f-234f212e9526",
               "sourceRange": []
             },
             "ccw": false,
@@ -1510,7 +1510,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7f5a91c-28d0-5345-8cb1-c6d704b6cee3",
               "sourceRange": []
             },
             "ccw": true,
@@ -1540,7 +1540,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "60939c8c-8887-54d1-936f-3f956c6fccb8",
               "sourceRange": []
             },
             "ccw": false,
@@ -1570,7 +1570,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "855ede3e-8420-5757-bd36-d62524b8ebf6",
               "sourceRange": []
             },
             "ccw": true,
@@ -1600,8 +1600,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1642,7 +1642,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
             "sourceRange": []
           }
         },
@@ -1672,13 +1672,13 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "arc6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "originSketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "fae834cb-6b4b-58ca-b28a-e7eb6d23e5a4",
+      "endCapId": "165b1110-9d7b-5e3a-9d56-d84564808b92",
       "units": "in",
       "sectional": false
     }
@@ -1687,12 +1687,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+      "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de9357e9-f145-5d3a-9f58-6c90631f755e",
+          "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
           "sourceRange": [],
           "tag": {
             "commentStart": 3847,
@@ -1708,11 +1708,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
               "sourceRange": []
             },
             "ccw": true,
@@ -1742,8 +1742,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+          "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
           "kind": "Custom",
           "objectId": 90,
           "origin": {
@@ -1784,7 +1784,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
             "sourceRange": []
           }
         },
@@ -1794,13 +1794,13 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "hole"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "originalId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "originSketchId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "91217df3-8781-5744-b00a-419896828ac7",
+      "endCapId": "dcf38853-8141-5c7c-92d5-f6536120a4cf",
       "units": "in",
       "sectional": false
     }
@@ -1846,7 +1846,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "objectId": 45,
                 "kind": {
                   "arc": {
@@ -1952,8 +1952,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1982,7 +1982,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -1998,7 +1998,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 49,
                 "kind": {
                   "arc": {
@@ -2104,8 +2104,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2134,7 +2134,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -2150,7 +2150,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 53,
                 "kind": {
                   "arc": {
@@ -2256,8 +2256,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2286,7 +2286,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -2302,7 +2302,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 57,
                 "kind": {
                   "arc": {
@@ -2408,8 +2408,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2438,7 +2438,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -2454,7 +2454,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "objectId": 61,
                 "kind": {
                   "arc": {
@@ -2560,8 +2560,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2590,7 +2590,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc5"
@@ -2606,7 +2606,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "objectId": 65,
                 "kind": {
                   "arc": {
@@ -2712,8 +2712,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2742,7 +2742,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -2758,7 +2758,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2833,8 +2833,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2863,7 +2863,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseline"
@@ -2879,7 +2879,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -2954,8 +2954,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2984,7 +2984,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c1ToC6"
@@ -3000,7 +3000,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -3075,8 +3075,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3105,7 +3105,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c2ToC1"
@@ -3121,7 +3121,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -3196,8 +3196,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3226,7 +3226,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c2ToC3"
@@ -3242,7 +3242,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -3317,8 +3317,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3347,7 +3347,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c3ToC4"
@@ -3363,7 +3363,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -3438,8 +3438,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3468,7 +3468,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c4ToC5"
@@ -3484,7 +3484,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 22,
                 "kind": {
                   "line": {
@@ -3559,8 +3559,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3589,7 +3589,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c5ToC6"
@@ -3606,11 +3606,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3640,7 +3640,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
                     "sourceRange": []
                   },
                   "from": [
@@ -3657,7 +3657,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3687,7 +3687,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -3717,7 +3717,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3747,7 +3747,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -3777,7 +3777,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3807,8 +3807,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -3849,7 +3849,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                   "sourceRange": []
                 }
               },
@@ -3879,8 +3879,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   "value": "arc6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "originalId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
               "units": "in",
               "isClosed": "no"
             }
@@ -3895,11 +3895,11 @@ description: Variables in memory after executing cycloidal-gear.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "af0a7034-5ea7-56f1-9145-413e8c236728",
             "sourceRange": []
           },
           "ccw": true,
@@ -3929,7 +3929,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
             "sourceRange": []
           },
           "ccw": true,
@@ -3959,7 +3959,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d577f6b7-4101-59d0-8f6f-234f212e9526",
             "sourceRange": []
           },
           "ccw": false,
@@ -3989,7 +3989,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a7f5a91c-28d0-5345-8cb1-c6d704b6cee3",
             "sourceRange": []
           },
           "ccw": true,
@@ -4019,7 +4019,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "60939c8c-8887-54d1-936f-3f956c6fccb8",
             "sourceRange": []
           },
           "ccw": false,
@@ -4049,7 +4049,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "855ede3e-8420-5757-bd36-d62524b8ebf6",
             "sourceRange": []
           },
           "ccw": true,
@@ -4079,8 +4079,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -4121,7 +4121,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
           "sourceRange": []
         }
       },
@@ -4151,9 +4151,9 @@ description: Variables in memory after executing cycloidal-gear.kcl
           "value": "arc6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "originSketchId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "units": "in"
     }
   },

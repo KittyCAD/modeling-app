@@ -5,7 +5,7 @@ description: Artifact commands tangent_line_line_error.kcl
 {
   "rust/kcl-lib/tests/tangent_line_line_error/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",

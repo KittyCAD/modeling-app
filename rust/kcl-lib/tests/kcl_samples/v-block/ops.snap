@@ -242,7 +242,7 @@ description: Operations executed v-block.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -2668,11 +2668,11 @@ description: Operations executed v-block.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -2702,7 +2702,7 @@ description: Operations executed v-block.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
           }
         },
         "sourceRange": []
@@ -3120,7 +3120,7 @@ description: Operations executed v-block.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
               }
             ]
           },
@@ -3157,13 +3157,13 @@ description: Operations executed v-block.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d88e6ffa-3627-55b0-a88f-7cabc211677b"
               }
             }
           ]

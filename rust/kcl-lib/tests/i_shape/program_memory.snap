@@ -7,11 +7,11 @@ description: Variables in memory after executing i_shape.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -28,7 +28,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "ccw": true,
@@ -50,7 +50,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
             "sourceRange": []
           },
           "from": [
@@ -67,7 +67,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "ccw": true,
@@ -89,7 +89,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "41c630c9-9d44-581b-98af-caee575bea48",
             "sourceRange": []
           },
           "from": [
@@ -106,7 +106,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "sourceRange": []
           },
           "ccw": false,
@@ -128,7 +128,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
             "sourceRange": []
           },
           "from": [
@@ -145,7 +145,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
             "sourceRange": []
           },
           "ccw": false,
@@ -167,7 +167,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
             "sourceRange": []
           },
           "from": [
@@ -184,7 +184,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
             "sourceRange": []
           },
           "ccw": true,
@@ -206,7 +206,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
             "sourceRange": []
           },
           "from": [
@@ -223,7 +223,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           },
           "ccw": true,
@@ -245,7 +245,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7b681387-29ea-57f1-8713-d63280827139",
             "sourceRange": []
           },
           "from": [
@@ -262,7 +262,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           },
           "ccw": true,
@@ -284,7 +284,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
             "sourceRange": []
           },
           "from": [
@@ -301,7 +301,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           },
           "ccw": true,
@@ -323,7 +323,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
             "sourceRange": []
           },
           "from": [
@@ -340,7 +340,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "sourceRange": []
           },
           "ccw": false,
@@ -362,7 +362,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
             "sourceRange": []
           },
           "from": [
@@ -379,7 +379,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
             "sourceRange": []
           },
           "ccw": false,
@@ -401,7 +401,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
             "sourceRange": []
           },
           "from": [
@@ -418,7 +418,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
             "sourceRange": []
           },
           "ccw": true,
@@ -440,7 +440,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
             "sourceRange": []
           },
           "from": [
@@ -457,7 +457,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           },
           "ccw": true,
@@ -479,8 +479,8 @@ description: Variables in memory after executing i_shape.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "kind": "XY",
         "objectId": 0,
         "origin": {
@@ -521,12 +521,12 @@ description: Variables in memory after executing i_shape.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
           "sourceRange": []
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "units": "mm"
     }
   },
@@ -584,229 +584,229 @@ description: Variables in memory after executing i_shape.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c0dd9083-49e1-5c2e-81be-df3364134715",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ae480fe2-b537-5caa-859f-5bb0590055d3",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "42d9eefc-45ec-52f5-8fd8-e9245cd4df64",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8e7b1faa-f279-5908-937a-8309ae123681",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "953e773d-24a0-5e8c-abbe-908b9313fa9b",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c7d55df-dc6d-559b-b432-db2d0c6a1c77",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "76b49ff1-dc55-5357-820b-3bc8c99c86d5",
+          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a637cbd-0b2b-5b9a-ad83-522375676522",
+          "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c30cc217-d237-5e3a-bfc7-ac8150f43847",
+          "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3f48d460-448d-5bf0-b5c9-67ece26b5249",
+          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e908fce5-56fd-5321-94ee-5ba9fb8ecc2b",
+          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1693c8c3-a0db-5052-8116-d87655752ec9",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "61a7dc9c-0786-5977-8b79-d246e443e49e",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "001dee11-5a1b-518c-a314-fef7b77a2230",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8805d215-8112-567b-addd-9ce02c60d578",
+          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cb9d2c74-7d48-5ab3-9332-425f80a10012",
+          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3d39d8cf-cc3e-5b10-b3e0-dde601dc8d0c",
+          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c52a68c1-9a42-5ce6-ab8a-2b15b85242c5",
+          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c8cdcad9-d4eb-5204-b4b3-280b8df80046",
+          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6ca0a299-8be0-5857-8c05-c5c27962e2bb",
+          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1d92d168-a04b-5524-b9f9-b5a204ef8ef4",
+          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "892e1d17-84bf-5a11-afbd-3b8ee7b03787",
+          "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5f8e8e80-611b-5647-bd81-b7218f8eaf6e",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8333d10b-fe46-5045-9868-2aff8b64ced2",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aea66e1d-1bdc-53b5-bcb4-8e05fde23bb0",
+          "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5741088e-b1c4-51a2-9468-01f637657a41",
+          "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5569b4e4-a50b-5d0d-b3b4-6ede65a4eb25",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a3841d72-6bc3-56d8-b18b-8be8ad064f26",
+          "id": "deb86259-17a0-5782-a352-d25992246cc0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "26710161-151a-5929-a7c2-b50ee5908a75",
+          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "453e87d5-0d77-58de-b5f0-cb9a06af9b0b",
+          "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ac963172-a41d-57b1-8b38-678febda8b6d",
+          "id": "907cac50-3701-5367-b35c-4ec2132c824f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "65719cd0-7634-5da3-ad4c-9a03f15b3b11",
+          "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
@@ -815,11 +815,11 @@ description: Variables in memory after executing i_shape.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -836,7 +836,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "ccw": true,
@@ -858,7 +858,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -875,7 +875,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "ccw": true,
@@ -897,7 +897,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -914,7 +914,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "sourceRange": []
             },
             "ccw": false,
@@ -936,7 +936,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
               "sourceRange": []
             },
             "from": [
@@ -953,7 +953,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
               "sourceRange": []
             },
             "ccw": false,
@@ -975,7 +975,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "sourceRange": []
             },
             "from": [
@@ -992,7 +992,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
               "sourceRange": []
             },
             "ccw": true,
@@ -1014,7 +1014,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
               "sourceRange": []
             },
             "from": [
@@ -1031,7 +1031,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "sourceRange": []
             },
             "ccw": true,
@@ -1053,7 +1053,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "sourceRange": []
             },
             "from": [
@@ -1070,7 +1070,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
               "sourceRange": []
             },
             "ccw": true,
@@ -1092,7 +1092,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
               "sourceRange": []
             },
             "from": [
@@ -1109,7 +1109,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
               "sourceRange": []
             },
             "ccw": true,
@@ -1131,7 +1131,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
               "sourceRange": []
             },
             "from": [
@@ -1148,7 +1148,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": []
             },
             "ccw": false,
@@ -1170,7 +1170,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
               "sourceRange": []
             },
             "from": [
@@ -1187,7 +1187,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "sourceRange": []
             },
             "ccw": false,
@@ -1209,7 +1209,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
               "sourceRange": []
             },
             "from": [
@@ -1226,7 +1226,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
               "sourceRange": []
             },
             "ccw": true,
@@ -1248,7 +1248,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
               "sourceRange": []
             },
             "from": [
@@ -1265,7 +1265,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "sourceRange": []
             },
             "ccw": true,
@@ -1289,7 +1289,7 @@ description: Variables in memory after executing i_shape.kcl
         "innerPaths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
               "sourceRange": []
             },
             "from": [
@@ -1306,7 +1306,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
               "sourceRange": []
             },
             "ccw": true,
@@ -1328,7 +1328,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "sourceRange": []
             },
             "from": [
@@ -1345,7 +1345,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "deb86259-17a0-5782-a352-d25992246cc0",
               "sourceRange": []
             },
             "ccw": true,
@@ -1367,7 +1367,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
               "sourceRange": []
             },
             "from": [
@@ -1384,7 +1384,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "sourceRange": []
             },
             "ccw": true,
@@ -1406,7 +1406,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "907cac50-3701-5367-b35c-4ec2132c824f",
               "sourceRange": []
             },
             "from": [
@@ -1423,7 +1423,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "sourceRange": []
             },
             "ccw": true,
@@ -1445,8 +1445,8 @@ description: Variables in memory after executing i_shape.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "kind": "XY",
           "objectId": 0,
           "origin": {
@@ -1487,16 +1487,16 @@ description: Variables in memory after executing i_shape.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a8a0c69c-1d03-5cd9-a5d8-3ee45d5a7a75",
+      "endCapId": "4929c626-0f36-5e6d-906a-afc1e3e0444f",
       "units": "mm",
       "sectional": false
     }
@@ -1514,11 +1514,11 @@ description: Variables in memory after executing i_shape.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
             "sourceRange": []
           },
           "from": [
@@ -1535,7 +1535,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
             "sourceRange": []
           },
           "ccw": true,
@@ -1557,7 +1557,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
             "sourceRange": []
           },
           "from": [
@@ -1574,7 +1574,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "deb86259-17a0-5782-a352-d25992246cc0",
             "sourceRange": []
           },
           "ccw": true,
@@ -1596,7 +1596,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
             "sourceRange": []
           },
           "from": [
@@ -1613,7 +1613,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
             "sourceRange": []
           },
           "ccw": true,
@@ -1635,7 +1635,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "907cac50-3701-5367-b35c-4ec2132c824f",
             "sourceRange": []
           },
           "from": [
@@ -1652,7 +1652,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
             "sourceRange": []
           },
           "ccw": true,
@@ -1674,8 +1674,8 @@ description: Variables in memory after executing i_shape.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "kind": "XY",
         "objectId": 1,
         "origin": {
@@ -1716,12 +1716,12 @@ description: Variables in memory after executing i_shape.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
           "sourceRange": []
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "originalId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "units": "mm"
     }
   },

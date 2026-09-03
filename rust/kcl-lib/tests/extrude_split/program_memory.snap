@@ -6,8 +6,8 @@ description: Variables in memory after executing extrude_split.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing extrude_split.kcl
   "__sketch_60_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -81,12 +81,12 @@ description: Variables in memory after executing extrude_split.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+      "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8a6007a-bf57-53b9-8614-24fd8d675fb5",
+          "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -99,8 +99,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e911a1c9-3ccd-512a-9c2d-b911a7bbb891",
+          "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -113,8 +113,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "11c37c58-758d-5ca9-823e-471b0c5e7db8",
+          "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -127,8 +127,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "80d9cfa2-7e37-52d4-b4d1-735fde220693",
+          "id": "468f6520-a683-5392-9492-de009fdcddef",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -141,8 +141,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0b2ce503-1be6-5fb9-9408-efe6556cf8a3",
+          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -158,11 +158,11 @@ description: Variables in memory after executing extrude_split.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "sourceRange": []
             },
             "from": [
@@ -186,7 +186,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
               "sourceRange": []
             },
             "from": [
@@ -203,7 +203,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
               "sourceRange": []
             },
             "ccw": true,
@@ -233,7 +233,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
               "sourceRange": []
             },
             "from": [
@@ -250,7 +250,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
               "sourceRange": []
             },
             "from": [
@@ -274,7 +274,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "468f6520-a683-5392-9492-de009fdcddef",
               "sourceRange": []
             },
             "ccw": false,
@@ -304,7 +304,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
               "sourceRange": []
             },
             "from": [
@@ -321,7 +321,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
               "sourceRange": []
             },
             "from": [
@@ -345,8 +345,8 @@ description: Variables in memory after executing extrude_split.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -387,7 +387,7 @@ description: Variables in memory after executing extrude_split.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
             "sourceRange": []
           }
         },
@@ -413,8 +413,8 @@ description: Variables in memory after executing extrude_split.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+        "originalId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "units": "mm",
         "isClosed": "no"
       },
@@ -428,12 +428,12 @@ description: Variables in memory after executing extrude_split.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+      "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7467eab4-d141-56b6-801a-38073a88ff5d",
+          "id": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -446,8 +446,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fd8b4200-afb4-5b9f-92b0-c12670b1cb3e",
+          "id": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -460,8 +460,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b63b5896-79c8-5c6a-bce2-cda24b5c357f",
+          "id": "f3e5d974-3ee8-52ce-a294-da34987457f8",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -474,8 +474,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e51dbc13-5fc5-56bd-ab53-77af2d19f969",
+          "id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -488,8 +488,8 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "34313a00-30dd-5db2-9367-596e72e50b60",
+          "id": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -505,11 +505,11 @@ description: Variables in memory after executing extrude_split.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
               "sourceRange": []
             },
             "from": [
@@ -533,7 +533,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399",
               "sourceRange": []
             },
             "from": [
@@ -550,7 +550,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
               "sourceRange": []
             },
             "ccw": true,
@@ -580,7 +580,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f3e5d974-3ee8-52ce-a294-da34987457f8",
               "sourceRange": []
             },
             "from": [
@@ -604,7 +604,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
               "sourceRange": []
             },
             "ccw": true,
@@ -634,7 +634,7 @@ description: Variables in memory after executing extrude_split.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
               "sourceRange": []
             },
             "from": [
@@ -658,8 +658,8 @@ description: Variables in memory after executing extrude_split.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+          "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
           "kind": "Custom",
           "objectId": 59,
           "origin": {
@@ -700,7 +700,7 @@ description: Variables in memory after executing extrude_split.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e6ed3605-69e2-53c9-bebb-df82937c0962",
             "sourceRange": []
           }
         },
@@ -726,8 +726,8 @@ description: Variables in memory after executing extrude_split.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+        "originalId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
         "units": "mm",
         "isClosed": "no"
       },
@@ -761,7 +761,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "objectId": 52,
                 "kind": {
                   "arc": {
@@ -867,8 +867,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -897,7 +897,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -913,7 +913,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 18,
                 "kind": {
                   "arc": {
@@ -1019,8 +1019,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1049,7 +1049,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -1065,7 +1065,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1139,8 +1139,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1169,7 +1169,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1185,7 +1185,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 9,
                 "kind": {
                   "line": {
@@ -1259,8 +1259,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1289,7 +1289,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1305,7 +1305,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -1379,8 +1379,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1409,7 +1409,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1425,7 +1425,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -1500,8 +1500,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1530,7 +1530,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1546,7 +1546,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 30,
                 "kind": {
                   "line": {
@@ -1621,8 +1621,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1651,7 +1651,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1667,7 +1667,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -1742,8 +1742,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1772,7 +1772,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1788,7 +1788,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -1863,8 +1863,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1893,7 +1893,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1910,11 +1910,11 @@ description: Variables in memory after executing extrude_split.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1938,7 +1938,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1955,7 +1955,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1979,7 +1979,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                     "sourceRange": []
                   },
                   "from": [
@@ -1996,7 +1996,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -2020,7 +2020,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "sourceRange": []
                   },
                   "from": [
@@ -2037,7 +2037,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2067,7 +2067,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                     "sourceRange": []
                   },
                   "from": [
@@ -2084,7 +2084,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2114,8 +2114,8 @@ description: Variables in memory after executing extrude_split.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2156,7 +2156,7 @@ description: Variables in memory after executing extrude_split.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                   "sourceRange": []
                 }
               },
@@ -2182,8 +2182,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "originalId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2203,7 +2203,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
                 "objectId": 103,
                 "kind": {
                   "arc": {
@@ -2309,8 +2309,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -2339,7 +2339,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -2355,7 +2355,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
                 "objectId": 112,
                 "kind": {
                   "arc": {
@@ -2461,8 +2461,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -2491,7 +2491,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -2507,7 +2507,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                 "objectId": 124,
                 "kind": {
                   "arc": {
@@ -2613,8 +2613,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -2643,7 +2643,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -2659,7 +2659,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                 "objectId": 128,
                 "kind": {
                   "arc": {
@@ -2765,8 +2765,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -2795,7 +2795,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -2811,7 +2811,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                 "objectId": 150,
                 "kind": {
                   "circle": {
@@ -2885,8 +2885,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -2915,7 +2915,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2931,7 +2931,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
                 "objectId": 155,
                 "kind": {
                   "circle": {
@@ -3005,8 +3005,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3035,7 +3035,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -3051,7 +3051,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
                 "objectId": 232,
                 "kind": {
                   "circle": {
@@ -3125,8 +3125,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3155,7 +3155,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle3"
@@ -3171,7 +3171,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c8da3189-2eee-5307-9477-076b12db84a5",
                 "objectId": 235,
                 "kind": {
                   "circle": {
@@ -3245,8 +3245,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3275,7 +3275,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle4"
@@ -3291,7 +3291,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                 "objectId": 248,
                 "kind": {
                   "circle": {
@@ -3365,8 +3365,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3395,7 +3395,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle5"
@@ -3411,7 +3411,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
                 "objectId": 252,
                 "kind": {
                   "circle": {
@@ -3485,8 +3485,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3515,7 +3515,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle6"
@@ -3531,7 +3531,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "objectId": 63,
                 "kind": {
                   "line": {
@@ -3605,8 +3605,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3635,7 +3635,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3651,7 +3651,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                 "objectId": 136,
                 "kind": {
                   "line": {
@@ -3725,8 +3725,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3755,7 +3755,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -3771,7 +3771,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                 "objectId": 160,
                 "kind": {
                   "line": {
@@ -3845,8 +3845,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3875,7 +3875,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -3891,7 +3891,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "objectId": 163,
                 "kind": {
                   "line": {
@@ -3965,8 +3965,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -3995,7 +3995,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -4011,7 +4011,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
                 "objectId": 166,
                 "kind": {
                   "line": {
@@ -4085,8 +4085,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4115,7 +4115,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -4131,7 +4131,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "objectId": 169,
                 "kind": {
                   "line": {
@@ -4205,8 +4205,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4235,7 +4235,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line14"
@@ -4251,7 +4251,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                 "objectId": 182,
                 "kind": {
                   "line": {
@@ -4326,8 +4326,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4356,7 +4356,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -4372,7 +4372,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bee9909d-abbf-534c-b266-2c2c04133834",
                 "objectId": 188,
                 "kind": {
                   "line": {
@@ -4447,8 +4447,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4477,7 +4477,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line16"
@@ -4493,7 +4493,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
                 "objectId": 196,
                 "kind": {
                   "line": {
@@ -4567,8 +4567,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4597,7 +4597,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line17"
@@ -4613,7 +4613,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "objectId": 199,
                 "kind": {
                   "line": {
@@ -4687,8 +4687,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4717,7 +4717,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line18"
@@ -4733,7 +4733,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
                 "objectId": 202,
                 "kind": {
                   "line": {
@@ -4807,8 +4807,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4837,7 +4837,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line19"
@@ -4853,7 +4853,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                 "objectId": 66,
                 "kind": {
                   "line": {
@@ -4927,8 +4927,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -4957,7 +4957,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4973,7 +4973,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                 "objectId": 205,
                 "kind": {
                   "line": {
@@ -5047,8 +5047,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5077,7 +5077,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line20"
@@ -5093,7 +5093,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                 "objectId": 218,
                 "kind": {
                   "line": {
@@ -5168,8 +5168,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5198,7 +5198,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line21"
@@ -5214,7 +5214,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
                 "objectId": 224,
                 "kind": {
                   "line": {
@@ -5289,8 +5289,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5319,7 +5319,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line22"
@@ -5335,7 +5335,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
                 "objectId": 239,
                 "kind": {
                   "line": {
@@ -5410,8 +5410,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5440,7 +5440,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line23"
@@ -5456,7 +5456,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "objectId": 69,
                 "kind": {
                   "line": {
@@ -5530,8 +5530,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5560,7 +5560,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5576,7 +5576,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
                 "objectId": 72,
                 "kind": {
                   "line": {
@@ -5651,8 +5651,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5681,7 +5681,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5697,7 +5697,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
                 "objectId": 80,
                 "kind": {
                   "line": {
@@ -5772,8 +5772,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5802,7 +5802,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -5818,7 +5818,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "objectId": 84,
                 "kind": {
                   "line": {
@@ -5893,8 +5893,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -5923,7 +5923,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -5939,7 +5939,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
                 "objectId": 89,
                 "kind": {
                   "line": {
@@ -6014,8 +6014,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -6044,7 +6044,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -6060,7 +6060,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
                 "objectId": 93,
                 "kind": {
                   "line": {
@@ -6135,8 +6135,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -6165,7 +6165,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -6181,7 +6181,7 @@ description: Variables in memory after executing extrude_split.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
                 "objectId": 131,
                 "kind": {
                   "line": {
@@ -6255,8 +6255,8 @@ description: Variables in memory after executing extrude_split.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 59,
                   "origin": {
@@ -6285,7 +6285,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -6302,11 +6302,11 @@ description: Variables in memory after executing extrude_split.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                     "sourceRange": []
                   },
                   "from": [
@@ -6330,7 +6330,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
                     "sourceRange": []
                   },
                   "from": [
@@ -6347,7 +6347,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                     "sourceRange": []
                   },
                   "from": [
@@ -6371,7 +6371,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
                     "sourceRange": []
                   },
                   "from": [
@@ -6388,7 +6388,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
                     "sourceRange": []
                   },
                   "from": [
@@ -6412,7 +6412,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ab87837d-7702-50ae-a973-1b474e1e48bf",
                     "sourceRange": []
                   },
                   "from": [
@@ -6429,7 +6429,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6459,7 +6459,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
                     "sourceRange": []
                   },
                   "from": [
@@ -6476,7 +6476,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6506,7 +6506,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "edad1eb5-5562-5615-b23f-ee6623df14ee",
                     "sourceRange": []
                   },
                   "from": [
@@ -6523,7 +6523,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6553,7 +6553,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
                     "sourceRange": []
                   },
                   "from": [
@@ -6570,7 +6570,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6600,7 +6600,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "92ead137-02a3-5a66-a3df-f1b87766c456",
                     "sourceRange": []
                   },
                   "from": [
@@ -6617,7 +6617,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
                     "sourceRange": []
                   },
                   "from": [
@@ -6641,7 +6641,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
                     "sourceRange": []
                   },
                   "from": [
@@ -6658,7 +6658,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                     "sourceRange": []
                   },
                   "from": [
@@ -6682,7 +6682,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "887f8b95-6182-5637-a45b-e92f2860796c",
                     "sourceRange": []
                   },
                   "from": [
@@ -6699,7 +6699,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6729,7 +6729,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
                     "sourceRange": []
                   },
                   "from": [
@@ -6746,7 +6746,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6776,7 +6776,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "75786bd7-c284-566d-b238-3f6b11158ab4",
                     "sourceRange": []
                   },
                   "from": [
@@ -6793,7 +6793,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                     "sourceRange": []
                   },
                   "from": [
@@ -6817,7 +6817,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                     "sourceRange": []
                   },
                   "from": [
@@ -6841,7 +6841,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
                     "sourceRange": []
                   },
                   "from": [
@@ -6865,7 +6865,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                     "sourceRange": []
                   },
                   "from": [
@@ -6889,7 +6889,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
                     "sourceRange": []
                   },
                   "from": [
@@ -6906,7 +6906,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
                     "sourceRange": []
                   },
                   "from": [
@@ -6930,7 +6930,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                     "sourceRange": []
                   },
                   "from": [
@@ -6954,7 +6954,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
                     "sourceRange": []
                   },
                   "from": [
@@ -6978,7 +6978,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                     "sourceRange": []
                   },
                   "from": [
@@ -7002,7 +7002,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
                     "sourceRange": []
                   },
                   "from": [
@@ -7019,7 +7019,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7049,7 +7049,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f89f295-7088-5e46-8594-1b84a8601b0a",
                     "sourceRange": []
                   },
                   "from": [
@@ -7066,7 +7066,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c8da3189-2eee-5307-9477-076b12db84a5",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7096,7 +7096,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ca586750-6453-56e0-b4cf-8e561096e7ca",
                     "sourceRange": []
                   },
                   "from": [
@@ -7113,7 +7113,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7143,7 +7143,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b7074da6-ba4d-5c11-9954-823a94aa7064",
                     "sourceRange": []
                   },
                   "from": [
@@ -7160,7 +7160,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7190,8 +7190,8 @@ description: Variables in memory after executing extrude_split.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                 "kind": "Custom",
                 "objectId": 59,
                 "origin": {
@@ -7232,7 +7232,7 @@ description: Variables in memory after executing extrude_split.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2d6c2537-3784-5667-8614-4423d6c6f752",
                   "sourceRange": []
                 }
               },
@@ -7330,8 +7330,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+              "originalId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
               "units": "mm",
               "isClosed": "no"
             }
@@ -7349,12 +7349,12 @@ description: Variables in memory after executing extrude_split.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+          "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d8a6007a-bf57-53b9-8614-24fd8d675fb5",
+              "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7367,8 +7367,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e911a1c9-3ccd-512a-9c2d-b911a7bbb891",
+              "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7381,8 +7381,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "11c37c58-758d-5ca9-823e-471b0c5e7db8",
+              "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7395,8 +7395,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "80d9cfa2-7e37-52d4-b4d1-735fde220693",
+              "id": "468f6520-a683-5392-9492-de009fdcddef",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7409,8 +7409,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "0b2ce503-1be6-5fb9-9408-efe6556cf8a3",
+              "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7426,11 +7426,11 @@ description: Variables in memory after executing extrude_split.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "cbd0a735-3417-50fd-a670-41b483234c04",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                   "sourceRange": []
                 },
                 "from": [
@@ -7454,7 +7454,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
                   "sourceRange": []
                 },
                 "from": [
@@ -7471,7 +7471,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -7501,7 +7501,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                   "sourceRange": []
                 },
                 "from": [
@@ -7518,7 +7518,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                   "sourceRange": []
                 },
                 "from": [
@@ -7542,7 +7542,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "468f6520-a683-5392-9492-de009fdcddef",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -7572,7 +7572,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                   "sourceRange": []
                 },
                 "from": [
@@ -7589,7 +7589,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                   "sourceRange": []
                 },
                 "from": [
@@ -7613,8 +7613,8 @@ description: Variables in memory after executing extrude_split.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "kind": "Custom",
               "objectId": 0,
               "origin": {
@@ -7655,7 +7655,7 @@ description: Variables in memory after executing extrude_split.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
                 "sourceRange": []
               }
             },
@@ -7681,8 +7681,8 @@ description: Variables in memory after executing extrude_split.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+            "originalId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
             "units": "mm",
             "isClosed": "no"
           },
@@ -7696,12 +7696,12 @@ description: Variables in memory after executing extrude_split.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "2cf019d6-af20-5412-9462-583bbcb2189f",
+          "artifactId": "2cf019d6-af20-5412-9462-583bbcb2189f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d8a6007a-bf57-53b9-8614-24fd8d675fb5",
+              "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7714,8 +7714,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e911a1c9-3ccd-512a-9c2d-b911a7bbb891",
+              "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7728,8 +7728,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "11c37c58-758d-5ca9-823e-471b0c5e7db8",
+              "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7742,8 +7742,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "80d9cfa2-7e37-52d4-b4d1-735fde220693",
+              "id": "468f6520-a683-5392-9492-de009fdcddef",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7756,8 +7756,8 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "0b2ce503-1be6-5fb9-9408-efe6556cf8a3",
+              "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -7773,11 +7773,11 @@ description: Variables in memory after executing extrude_split.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "2cf019d6-af20-5412-9462-583bbcb2189f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                   "sourceRange": []
                 },
                 "from": [
@@ -7801,7 +7801,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
                   "sourceRange": []
                 },
                 "from": [
@@ -7818,7 +7818,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -7848,7 +7848,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                   "sourceRange": []
                 },
                 "from": [
@@ -7865,7 +7865,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                   "sourceRange": []
                 },
                 "from": [
@@ -7889,7 +7889,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "468f6520-a683-5392-9492-de009fdcddef",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -7919,7 +7919,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                   "sourceRange": []
                 },
                 "from": [
@@ -7936,7 +7936,7 @@ description: Variables in memory after executing extrude_split.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                   "sourceRange": []
                 },
                 "from": [
@@ -7960,8 +7960,8 @@ description: Variables in memory after executing extrude_split.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "kind": "Custom",
               "objectId": 0,
               "origin": {
@@ -8002,7 +8002,7 @@ description: Variables in memory after executing extrude_split.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
                 "sourceRange": []
               }
             },
@@ -8028,8 +8028,8 @@ description: Variables in memory after executing extrude_split.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+            "originalId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
             "units": "mm",
             "isClosed": "no"
           },

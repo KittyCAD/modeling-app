@@ -688,7 +688,7 @@ description: Operations executed tube-manifold.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -718,7 +718,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
           }
         },
         "sourceRange": []
@@ -760,7 +760,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe"
           }
         },
         "sourceRange": []
@@ -4640,11 +4640,11 @@ description: Operations executed tube-manifold.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
               }
             ]
           },
@@ -4674,7 +4674,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c820e130-6f59-5cd5-8ff1-7228a584ef66"
           }
         },
         "sourceRange": []
@@ -4758,7 +4758,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270"
           }
         },
         "sourceRange": []
@@ -4784,7 +4784,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []
@@ -4817,7 +4817,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
           }
         },
         "sourceRange": []
@@ -4912,7 +4912,7 @@ description: Operations executed tube-manifold.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
               }
             }
           ]
@@ -4927,25 +4927,25 @@ description: Operations executed tube-manifold.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "b4bb5869-c4a2-5776-837b-23210d5454b6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e87adfa5-4f60-5241-b09f-71a7287871de"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e47c670e-da9a-5ef8-bd00-49d4e4cb9f9a"
                 }
               }
             ]
@@ -5421,7 +5421,7 @@ description: Operations executed tube-manifold.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               }
             ]
           },
@@ -5451,7 +5451,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475"
           }
         },
         "sourceRange": []
@@ -5505,7 +5505,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6"
           }
         },
         "sourceRange": []
@@ -7357,27 +7357,27 @@ description: Operations executed tube-manifold.kcl
             "value": {
               "baseLine": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c8da3189-2eee-5307-9477-076b12db84a5"
               },
               "beadArc": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5a7368ed-12c7-59b9-88f4-186289245e86"
               },
               "beadRadiusGuide": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c444b134-67e1-507a-bb00-d4998ba97afb"
               },
               "beadSpanGuide": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
               },
               "centerAxis": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
               },
               "lowerWall": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "meta": {
                 "type": "Object",
@@ -7385,18 +7385,18 @@ description: Operations executed tube-manifold.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
                     }
                   }
                 }
               },
               "topCap": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "upperWall": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "acb6b8b6-e024-57d9-a856-353e5c4d001f"
               }
             }
           },
@@ -7426,7 +7426,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f"
           }
         },
         "sourceRange": []
@@ -7510,7 +7510,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
           }
         },
         "sourceRange": []
@@ -7539,7 +7539,7 @@ description: Operations executed tube-manifold.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525"
               }
             }
           ]
@@ -7554,7 +7554,7 @@ description: Operations executed tube-manifold.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
                 }
               }
             ]
@@ -7588,7 +7588,7 @@ description: Operations executed tube-manifold.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2"
               }
             }
           ]
@@ -7603,7 +7603,7 @@ description: Operations executed tube-manifold.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
                 }
               }
             ]
@@ -7634,7 +7634,7 @@ description: Operations executed tube-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4"
           }
         },
         "sourceRange": []

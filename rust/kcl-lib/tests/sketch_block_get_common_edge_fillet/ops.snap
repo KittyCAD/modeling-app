@@ -590,19 +590,19 @@ description: Operations executed sketch_block_get_common_edge_fillet.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
               },
               "meta": {
                 "type": "Object",
@@ -610,7 +610,7 @@ description: Operations executed sketch_block_get_common_edge_fillet.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
                     }
                   }
                 }
@@ -643,7 +643,7 @@ description: Operations executed sketch_block_get_common_edge_fillet.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           }
         },
         "sourceRange": []
@@ -685,7 +685,7 @@ description: Operations executed sketch_block_get_common_edge_fillet.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -706,7 +706,7 @@ description: Operations executed sketch_block_get_common_edge_fillet.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b"
           },
           "sourceRange": []
         }

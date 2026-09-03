@@ -6,8 +6,8 @@ description: Variables in memory after executing shaft-grommet.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -84,12 +84,12 @@ description: Variables in memory after executing shaft-grommet.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
+          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 668,
@@ -102,8 +102,8 @@ description: Variables in memory after executing shaft-grommet.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "265dfb1c-91bb-5028-be4d-e5cd56f0d4b2",
+          "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
           "sourceRange": [],
           "tag": {
             "commentStart": 746,
@@ -116,8 +116,8 @@ description: Variables in memory after executing shaft-grommet.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6f02fef-55ca-55e7-8e63-aae67c6d5a8d",
+          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
           "sourceRange": [],
           "tag": {
             "commentStart": 866,
@@ -130,8 +130,8 @@ description: Variables in memory after executing shaft-grommet.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c52bbae9-e008-5339-94d1-ac1ff250d78f",
+          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
           "sourceRange": [],
           "tag": {
             "commentStart": 986,
@@ -144,8 +144,8 @@ description: Variables in memory after executing shaft-grommet.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c7c89202-0038-501d-ba21-800f36323579",
+          "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
           "sourceRange": [],
           "tag": {
             "commentStart": 1106,
@@ -158,8 +158,8 @@ description: Variables in memory after executing shaft-grommet.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "161cfaf1-02b0-5dfd-99a4-725242202b74",
+          "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
           "sourceRange": [],
           "tag": {
             "commentStart": 1226,
@@ -172,8 +172,8 @@ description: Variables in memory after executing shaft-grommet.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e357b432-0a06-5db8-963e-069aa10281d9",
+          "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
           "sourceRange": [],
           "tag": {
             "commentStart": 1343,
@@ -189,11 +189,11 @@ description: Variables in memory after executing shaft-grommet.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
               "sourceRange": []
             },
             "from": [
@@ -217,7 +217,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
               "sourceRange": []
             },
             "from": [
@@ -241,7 +241,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
               "sourceRange": []
             },
             "from": [
@@ -265,7 +265,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
               "sourceRange": []
             },
             "from": [
@@ -289,7 +289,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
               "sourceRange": []
             },
             "from": [
@@ -313,7 +313,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
               "sourceRange": []
             },
             "from": [
@@ -337,7 +337,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
               "sourceRange": []
             },
             "from": [
@@ -361,8 +361,8 @@ description: Variables in memory after executing shaft-grommet.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -403,7 +403,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -437,13 +437,13 @@ description: Variables in memory after executing shaft-grommet.kcl
             "value": "line8"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
+      "endCapId": "08ac0227-0e34-5937-9e5d-16670fc36a55",
       "units": "in",
       "sectional": false
     }
@@ -457,7 +457,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -531,8 +531,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -561,7 +561,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -577,7 +577,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -651,8 +651,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -681,7 +681,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -697,7 +697,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -771,8 +771,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -801,7 +801,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -817,7 +817,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -891,8 +891,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -921,7 +921,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -937,7 +937,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1011,8 +1011,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1041,7 +1041,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1057,7 +1057,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -1131,8 +1131,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1161,7 +1161,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1177,7 +1177,7 @@ description: Variables in memory after executing shaft-grommet.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -1251,8 +1251,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1281,7 +1281,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -1298,11 +1298,11 @@ description: Variables in memory after executing shaft-grommet.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1326,7 +1326,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1350,7 +1350,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1374,7 +1374,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1398,7 +1398,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -1422,7 +1422,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -1446,7 +1446,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -1470,8 +1470,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1512,7 +1512,7 @@ description: Variables in memory after executing shaft-grommet.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                   "sourceRange": []
                 }
               },
@@ -1546,8 +1546,8 @@ description: Variables in memory after executing shaft-grommet.kcl
                   "value": "line8"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+              "originalId": "f084ad07-5777-5607-a544-c69f455c2aab",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1562,11 +1562,11 @@ description: Variables in memory after executing shaft-grommet.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
             "sourceRange": []
           },
           "from": [
@@ -1590,7 +1590,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
             "sourceRange": []
           },
           "from": [
@@ -1614,7 +1614,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
             "sourceRange": []
           },
           "from": [
@@ -1638,7 +1638,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
             "sourceRange": []
           },
           "from": [
@@ -1662,7 +1662,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bd305f8c-79b5-5b00-8996-32d99826fed2",
             "sourceRange": []
           },
           "from": [
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91c30026-e3e4-53ca-a404-77c90d45c725",
             "sourceRange": []
           },
           "from": [
@@ -1710,7 +1710,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "78c3d9b8-14a7-54aa-b700-d3be9b22f507",
             "sourceRange": []
           },
           "from": [
@@ -1734,8 +1734,8 @@ description: Variables in memory after executing shaft-grommet.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1776,7 +1776,7 @@ description: Variables in memory after executing shaft-grommet.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
           "sourceRange": []
         }
       },
@@ -1810,9 +1810,9 @@ description: Variables in memory after executing shaft-grommet.kcl
           "value": "line8"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originSketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "units": "in"
     }
   },

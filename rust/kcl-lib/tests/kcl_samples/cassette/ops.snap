@@ -271,7 +271,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -744,11 +744,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -778,7 +778,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           }
         },
         "sourceRange": []
@@ -1036,7 +1036,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -1646,11 +1646,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b680fe3e-a804-583c-99d9-1693b2432aeb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
               }
             ]
           },
@@ -1693,7 +1693,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
           }
         },
         "sourceRange": []
@@ -1748,7 +1748,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -1790,7 +1790,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []
@@ -1800,7 +1800,7 @@ description: Operations executed cassette.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
             }
           },
           "sourceRange": []
@@ -1841,7 +1841,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -2140,7 +2140,7 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "468f6520-a683-5392-9492-de009fdcddef"
               }
             ]
           },
@@ -2183,7 +2183,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284"
           }
         },
         "sourceRange": []
@@ -2242,7 +2242,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48"
           }
         },
         "sourceRange": []
@@ -2296,7 +2296,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []
@@ -2335,7 +2335,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
           }
         },
         "sourceRange": []
@@ -2593,7 +2593,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -3203,11 +3203,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e8637a6d-00c2-5b87-831e-2db8c2223948"
               }
             ]
           },
@@ -3250,7 +3250,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
           }
         },
         "sourceRange": []
@@ -3305,7 +3305,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -3347,7 +3347,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
           }
         },
         "sourceRange": []
@@ -3357,7 +3357,7 @@ description: Operations executed cassette.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
             }
           },
           "sourceRange": []
@@ -3398,7 +3398,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -3697,7 +3697,7 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44621ebd-5856-5dfd-9426-dda5d969f375"
               }
             ]
           },
@@ -3740,7 +3740,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
           }
         },
         "sourceRange": []
@@ -3799,7 +3799,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "020035cf-ab88-50f3-91b0-886b7f399647"
           }
         },
         "sourceRange": []
@@ -3853,7 +3853,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc"
           }
         },
         "sourceRange": []
@@ -3892,7 +3892,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
           }
         },
         "sourceRange": []
@@ -4150,7 +4150,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -4760,11 +4760,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89273a0b-b55b-5457-9b1c-de1d777240e8"
               }
             ]
           },
@@ -4807,7 +4807,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "acb6b8b6-e024-57d9-a856-353e5c4d001f"
           }
         },
         "sourceRange": []
@@ -4862,7 +4862,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -4904,7 +4904,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86"
           }
         },
         "sourceRange": []
@@ -4914,7 +4914,7 @@ description: Operations executed cassette.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7"
             }
           },
           "sourceRange": []
@@ -4955,7 +4955,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -5254,7 +5254,7 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6f85cbad-5e6d-549c-850d-909283a25e83"
               }
             ]
           },
@@ -5297,7 +5297,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
           }
         },
         "sourceRange": []
@@ -5356,7 +5356,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0807f469-38fd-5e01-a326-82a66aa0f1d0"
           }
         },
         "sourceRange": []
@@ -5410,7 +5410,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
           }
         },
         "sourceRange": []
@@ -5449,7 +5449,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
           }
         },
         "sourceRange": []
@@ -5707,7 +5707,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -6317,11 +6317,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
               }
             ]
           },
@@ -6364,7 +6364,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33"
           }
         },
         "sourceRange": []
@@ -6419,7 +6419,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -6461,7 +6461,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bb771349-7de5-54b4-b74b-b946bb9dbc58"
           }
         },
         "sourceRange": []
@@ -6471,7 +6471,7 @@ description: Operations executed cassette.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "8f72543d-c84d-5018-865e-36a2fd66854c"
             }
           },
           "sourceRange": []
@@ -6512,7 +6512,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -6811,7 +6811,7 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "43582f56-4d15-5082-9796-67d8e5ee6e44"
               }
             ]
           },
@@ -6854,7 +6854,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f"
           }
         },
         "sourceRange": []
@@ -6913,7 +6913,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
           }
         },
         "sourceRange": []
@@ -6967,7 +6967,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
           }
         },
         "sourceRange": []
@@ -7006,7 +7006,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e9531b65-3013-5f8b-bebc-accdbd43919c"
           }
         },
         "sourceRange": []
@@ -7264,7 +7264,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -7874,11 +7874,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0a92fa6-be55-5cfb-a650-710b68437549"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f296bd37-495b-5038-81a3-eade3812cc2e"
               }
             ]
           },
@@ -7921,7 +7921,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca586750-6453-56e0-b4cf-8e561096e7ca"
           }
         },
         "sourceRange": []
@@ -7976,7 +7976,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -8018,7 +8018,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b7074da6-ba4d-5c11-9954-823a94aa7064"
           }
         },
         "sourceRange": []
@@ -8028,7 +8028,7 @@ description: Operations executed cassette.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46"
             }
           },
           "sourceRange": []
@@ -8069,7 +8069,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -8368,7 +8368,7 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "84468ff1-4b26-5c88-8618-6cea09661aac"
               }
             ]
           },
@@ -8411,7 +8411,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5584477d-a466-5baa-9972-325d4b097d17"
           }
         },
         "sourceRange": []
@@ -8470,7 +8470,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3"
           }
         },
         "sourceRange": []
@@ -8524,7 +8524,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "af94b4da-da53-5386-a65f-ed75c251c9ff"
           }
         },
         "sourceRange": []
@@ -8563,7 +8563,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
           }
         },
         "sourceRange": []
@@ -8821,7 +8821,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -9431,11 +9431,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "14466b86-e358-553e-8c66-6fd171fc4f2f"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3322387d-5b58-56ea-8103-4d2112d432af"
               }
             ]
           },
@@ -9478,7 +9478,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0"
           }
         },
         "sourceRange": []
@@ -9533,7 +9533,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -9575,7 +9575,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
           }
         },
         "sourceRange": []
@@ -9585,7 +9585,7 @@ description: Operations executed cassette.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0"
             }
           },
           "sourceRange": []
@@ -9626,7 +9626,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -9925,7 +9925,7 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d8d7c083-add8-5a2a-be8b-22654c3bacfc"
               }
             ]
           },
@@ -9968,7 +9968,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25"
           }
         },
         "sourceRange": []
@@ -10027,7 +10027,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b4079ec8-53e1-53e1-a48a-2e161d481653"
           }
         },
         "sourceRange": []
@@ -10081,7 +10081,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a6e62985-97dc-5bc0-bf5d-67848762cf83"
           }
         },
         "sourceRange": []
@@ -10120,7 +10120,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "13284012-5aa9-5cfb-8236-12f94ca6550e"
           }
         },
         "sourceRange": []
@@ -10378,7 +10378,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -10988,11 +10988,11 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "22eefce0-f976-5e04-8aaa-0e0718baacdf"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f492218-88c4-58fb-b433-2edbfe64d7db"
               }
             ]
           },
@@ -11035,7 +11035,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f4e17c17-71fb-5d7e-bb5c-8d09acfb49ed"
           }
         },
         "sourceRange": []
@@ -11090,7 +11090,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -11132,7 +11132,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "653db6f1-fef4-5443-9478-695b5150f724"
           }
         },
         "sourceRange": []
@@ -11142,7 +11142,7 @@ description: Operations executed cassette.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "d6c3d1d7-94c4-5d7c-90c2-2a09a1f36ced"
             }
           },
           "sourceRange": []
@@ -11183,7 +11183,7 @@ description: Operations executed cassette.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -11482,7 +11482,7 @@ description: Operations executed cassette.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "231fdc8e-7db8-57be-817d-bb786c4edc0b"
               }
             ]
           },
@@ -11525,7 +11525,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d"
           }
         },
         "sourceRange": []
@@ -11584,7 +11584,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "296133c8-94a5-5fd9-851a-d484fa3dc66a"
           }
         },
         "sourceRange": []
@@ -11638,7 +11638,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50a84d8a-72ec-5bad-8017-05f4b519172d"
           }
         },
         "sourceRange": []
@@ -11677,7 +11677,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f8a4f959-6a67-573d-a52e-b915999bcc80"
           }
         },
         "sourceRange": []
@@ -11719,7 +11719,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -11745,7 +11745,7 @@ description: Operations executed cassette.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []

@@ -1113,11 +1113,11 @@ description: Operations executed clone_a_blend.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "037b0f2d-13ef-58af-b918-43b89e77393e"
               }
             ]
           },
@@ -1150,7 +1150,7 @@ description: Operations executed clone_a_blend.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
           }
         },
         "sourceRange": []
@@ -1203,11 +1203,11 @@ description: Operations executed clone_a_blend.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1240,7 +1240,7 @@ description: Operations executed clone_a_blend.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
           }
         },
         "sourceRange": []
@@ -1292,12 +1292,12 @@ description: Operations executed clone_a_blend.kcl
             {
               "type": "TagIdentifier",
               "value": "line7",
-              "artifact_id": "[uuid]"
+              "artifact_id": "53c23738-8a00-5f59-8f43-97fa75d69785"
             },
             {
               "type": "TagIdentifier",
               "value": "line3",
-              "artifact_id": "[uuid]"
+              "artifact_id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b"
             }
           ]
         },
@@ -1327,7 +1327,7 @@ description: Operations executed clone_a_blend.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
           }
         },
         "sourceRange": []
@@ -1360,7 +1360,7 @@ description: Operations executed clone_a_blend.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
           }
         },
         "sourceRange": []
@@ -1418,7 +1418,7 @@ description: Operations executed clone_a_blend.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
           }
         },
         "sourceRange": []
@@ -1480,7 +1480,7 @@ description: Operations executed clone_a_blend.kcl
       "unlabeledArg": {
         "value": {
           "type": "Uuid",
-          "value": "[uuid]"
+          "value": "2838f9e9-89bd-5e52-9272-770d5200e10e"
         },
         "sourceRange": []
       },
@@ -1534,7 +1534,7 @@ description: Operations executed clone_a_blend.kcl
       "unlabeledArg": {
         "value": {
           "type": "Uuid",
-          "value": "[uuid]"
+          "value": "d27f313b-87a3-51db-88c0-ee8d0f1d9d61"
         },
         "sourceRange": []
       },

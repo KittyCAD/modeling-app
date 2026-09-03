@@ -1750,11 +1750,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1787,7 +1787,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
           }
         },
         "sourceRange": []
@@ -1828,7 +1828,7 @@ description: Operations executed truss-structure.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -2422,11 +2422,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "226ae769-fcaa-56af-ac65-5807ed297dad"
               }
             ]
           },
@@ -2459,7 +2459,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
           }
         },
         "sourceRange": []
@@ -3054,11 +3054,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a54ad82c-be8d-599a-9764-c6498922dd5c"
               }
             ]
           },
@@ -3091,7 +3091,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
           }
         },
         "sourceRange": []
@@ -3132,7 +3132,7 @@ description: Operations executed truss-structure.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3726,11 +3726,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44621ebd-5856-5dfd-9426-dda5d969f375"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
               }
             ]
           },
@@ -3763,7 +3763,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834"
           }
         },
         "sourceRange": []
@@ -4358,11 +4358,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               }
             ]
           },
@@ -4395,7 +4395,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966"
           }
         },
         "sourceRange": []
@@ -4440,31 +4440,31 @@ description: Operations executed truss-structure.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
               }
             }
           ]
@@ -4499,7 +4499,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4"
           }
         },
         "sourceRange": []
@@ -5406,11 +5406,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511"
               }
             ]
           },
@@ -5447,7 +5447,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8eada7d4-6cff-576e-9660-4b58911de9a7"
           }
         },
         "sourceRange": []
@@ -5493,7 +5493,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d"
           }
         },
         "sourceRange": []
@@ -6687,11 +6687,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bd2c7879-5553-55c3-bc25-46df0c8081fc"
               }
             ]
           },
@@ -6736,11 +6736,11 @@ description: Operations executed truss-structure.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e9531b65-3013-5f8b-bebc-accdbd43919c"
               }
             ]
           },
@@ -6784,13 +6784,13 @@ description: Operations executed truss-structure.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "12610836-7dea-569b-a3df-ec2ff8b2c295"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c0a92fa6-be55-5cfb-a650-710b68437549"
               }
             }
           ]
@@ -6841,13 +6841,13 @@ description: Operations executed truss-structure.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f296bd37-495b-5038-81a3-eade3812cc2e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "df641c7f-27a7-5524-a6c2-93d1677bc829"
               }
             }
           ]
@@ -6941,7 +6941,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -6967,7 +6967,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
           }
         },
         "sourceRange": []
@@ -6993,7 +6993,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef"
           }
         },
         "sourceRange": []
@@ -7019,7 +7019,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba"
           }
         },
         "sourceRange": []
@@ -7045,7 +7045,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
           }
         },
         "sourceRange": []
@@ -7071,7 +7071,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46"
           }
         },
         "sourceRange": []
@@ -7097,7 +7097,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
           }
         },
         "sourceRange": []
@@ -7123,7 +7123,7 @@ description: Operations executed truss-structure.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ab136157-9d5c-5ca2-93db-6deedd96b088"
           }
         },
         "sourceRange": []

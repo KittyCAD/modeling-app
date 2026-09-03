@@ -6,8 +6,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_125_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_151_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_172_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+      "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
       "kind": "Custom",
       "objectId": 171,
       "origin": {
@@ -103,8 +103,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_181_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+      "id": "855fafc2-5621-5264-953e-1be6964b7a16",
       "kind": "Custom",
       "objectId": 180,
       "origin": {
@@ -136,8 +136,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -168,8 +168,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_27_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -200,8 +200,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_72_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -232,8 +232,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "__sketch_98_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -265,12 +265,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "81418b08-0cc7-5229-8d32-e378f5b8fdd2",
+          "id": "6eeb134b-5a94-5fa1-b844-49f7614f1282",
           "sourceRange": [],
           "tag": {
             "commentStart": 7783,
@@ -283,8 +283,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0734e8f3-bf1f-5871-8488-9084e30aeb39",
+          "id": "1789fae6-afb4-57f6-9dd1-9e58d49fe36b",
           "sourceRange": [],
           "tag": {
             "commentStart": 7862,
@@ -297,8 +297,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4fad1897-54c0-592e-95c0-5014ae667f2b",
+          "id": "31e8e46e-5350-5607-8946-91e3b56d7e89",
           "sourceRange": [],
           "tag": {
             "commentStart": 7940,
@@ -311,8 +311,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cf05838c-a961-5b27-95f2-1f07bd30a139",
+          "id": "06534153-31cc-5ffa-a43b-b6768a70bfe8",
           "sourceRange": [],
           "tag": {
             "commentStart": 8017,
@@ -328,11 +328,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6eeb134b-5a94-5fa1-b844-49f7614f1282",
               "sourceRange": []
             },
             "from": [
@@ -356,7 +356,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1789fae6-afb4-57f6-9dd1-9e58d49fe36b",
               "sourceRange": []
             },
             "from": [
@@ -380,7 +380,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "31e8e46e-5350-5607-8946-91e3b56d7e89",
               "sourceRange": []
             },
             "from": [
@@ -404,7 +404,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "06534153-31cc-5ffa-a43b-b6768a70bfe8",
               "sourceRange": []
             },
             "from": [
@@ -428,8 +428,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
           "kind": "Custom",
           "objectId": 97,
           "origin": {
@@ -470,7 +470,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
             "sourceRange": []
           }
         },
@@ -492,13 +492,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+        "originalId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+        "originSketchId": "5a7368ed-12c7-59b9-88f4-186289245e86",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "532ff9a5-2b26-5caa-997e-60682834f8d4",
+      "endCapId": "81d97303-d1e0-510f-b3fd-cecbc92fca35",
       "units": "m",
       "sectional": false
     }
@@ -539,7 +539,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                 "objectId": 101,
                 "kind": {
                   "line": {
@@ -613,8 +613,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                  "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
@@ -643,7 +643,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5a7368ed-12c7-59b9-88f4-186289245e86",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -659,7 +659,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
                 "objectId": 104,
                 "kind": {
                   "line": {
@@ -733,8 +733,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                  "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
@@ -763,7 +763,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5a7368ed-12c7-59b9-88f4-186289245e86",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -779,7 +779,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                 "objectId": 107,
                 "kind": {
                   "line": {
@@ -853,8 +853,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                  "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
@@ -883,7 +883,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5a7368ed-12c7-59b9-88f4-186289245e86",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -899,7 +899,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                 "objectId": 110,
                 "kind": {
                   "line": {
@@ -973,8 +973,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                  "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
@@ -1003,7 +1003,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5a7368ed-12c7-59b9-88f4-186289245e86",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1020,11 +1020,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                     "sourceRange": []
                   },
                   "from": [
@@ -1048,7 +1048,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
                     "sourceRange": []
                   },
                   "from": [
@@ -1072,7 +1072,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                     "sourceRange": []
                   },
                   "from": [
@@ -1096,7 +1096,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                     "sourceRange": []
                   },
                   "from": [
@@ -1120,8 +1120,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                 "kind": "Custom",
                 "objectId": 97,
                 "origin": {
@@ -1162,7 +1162,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                   "sourceRange": []
                 }
               },
@@ -1184,8 +1184,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86",
+              "originalId": "5a7368ed-12c7-59b9-88f4-186289245e86",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -1200,11 +1200,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6eeb134b-5a94-5fa1-b844-49f7614f1282",
             "sourceRange": []
           },
           "from": [
@@ -1228,7 +1228,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1789fae6-afb4-57f6-9dd1-9e58d49fe36b",
             "sourceRange": []
           },
           "from": [
@@ -1252,7 +1252,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "31e8e46e-5350-5607-8946-91e3b56d7e89",
             "sourceRange": []
           },
           "from": [
@@ -1276,7 +1276,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "06534153-31cc-5ffa-a43b-b6768a70bfe8",
             "sourceRange": []
           },
           "from": [
@@ -1300,8 +1300,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+        "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
         "kind": "Custom",
         "objectId": 97,
         "origin": {
@@ -1342,7 +1342,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
           "sourceRange": []
         }
       },
@@ -1364,9 +1364,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "originalId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "originSketchId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "units": "m"
     }
   },
@@ -1374,12 +1374,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "48830e45-6c5e-5f0a-bd1c-097fbd692890",
+          "id": "28910ab1-cd76-59cd-b175-c21b301f5150",
           "sourceRange": [],
           "tag": {
             "commentStart": 6630,
@@ -1392,8 +1392,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "15ceed31-cb37-538c-beef-adf741bdbabd",
+          "id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8",
           "sourceRange": [],
           "tag": {
             "commentStart": 6695,
@@ -1406,8 +1406,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6363ade6-5875-5985-9ba4-894891f7d66f",
+          "id": "6ce591a4-109c-5953-ae3f-65444960b935",
           "sourceRange": [],
           "tag": {
             "commentStart": 6760,
@@ -1420,8 +1420,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83a32a88-a7ca-5b06-a253-37e274d87b01",
+          "id": "cc42be54-e999-5faf-8310-b89d15bdab88",
           "sourceRange": [],
           "tag": {
             "commentStart": 6825,
@@ -1437,11 +1437,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "28910ab1-cd76-59cd-b175-c21b301f5150",
               "sourceRange": []
             },
             "from": [
@@ -1465,7 +1465,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8",
               "sourceRange": []
             },
             "from": [
@@ -1489,7 +1489,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6ce591a4-109c-5953-ae3f-65444960b935",
               "sourceRange": []
             },
             "from": [
@@ -1513,7 +1513,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc42be54-e999-5faf-8310-b89d15bdab88",
               "sourceRange": []
             },
             "from": [
@@ -1537,8 +1537,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+          "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
           "kind": "Custom",
           "objectId": 71,
           "origin": {
@@ -1579,7 +1579,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
             "sourceRange": []
           }
         },
@@ -1601,13 +1601,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "originalId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "originSketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "63a7e966-804e-5d40-8b49-eaaaa4656e7b",
+      "endCapId": "2d830285-70fa-564d-8862-4d0001d9b746",
       "units": "m",
       "sectional": false
     }
@@ -1648,7 +1648,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                 "objectId": 75,
                 "kind": {
                   "line": {
@@ -1722,8 +1722,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -1752,7 +1752,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1768,7 +1768,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                 "objectId": 78,
                 "kind": {
                   "line": {
@@ -1842,8 +1842,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -1872,7 +1872,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1888,7 +1888,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                 "objectId": 81,
                 "kind": {
                   "line": {
@@ -1962,8 +1962,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -1992,7 +1992,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2008,7 +2008,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                 "objectId": 84,
                 "kind": {
                   "line": {
@@ -2082,8 +2082,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -2112,7 +2112,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2129,11 +2129,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                     "sourceRange": []
                   },
                   "from": [
@@ -2157,7 +2157,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "93954f29-a246-54bd-ac2a-62572f26d508",
                     "sourceRange": []
                   },
                   "from": [
@@ -2174,7 +2174,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -2198,7 +2198,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
                     "sourceRange": []
                   },
                   "from": [
@@ -2215,7 +2215,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                     "sourceRange": []
                   },
                   "from": [
@@ -2239,7 +2239,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bee9909d-abbf-534c-b266-2c2c04133834",
                     "sourceRange": []
                   },
                   "from": [
@@ -2256,7 +2256,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2280,8 +2280,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                 "kind": "Custom",
                 "objectId": 71,
                 "origin": {
@@ -2322,7 +2322,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                   "sourceRange": []
                 }
               },
@@ -2344,8 +2344,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+              "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
               "units": "m",
               "isClosed": "no"
             }
@@ -2360,11 +2360,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "28910ab1-cd76-59cd-b175-c21b301f5150",
             "sourceRange": []
           },
           "from": [
@@ -2388,7 +2388,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8",
             "sourceRange": []
           },
           "from": [
@@ -2412,7 +2412,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6ce591a4-109c-5953-ae3f-65444960b935",
             "sourceRange": []
           },
           "from": [
@@ -2436,7 +2436,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc42be54-e999-5faf-8310-b89d15bdab88",
             "sourceRange": []
           },
           "from": [
@@ -2460,8 +2460,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+        "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
         "kind": "Custom",
         "objectId": 71,
         "origin": {
@@ -2502,7 +2502,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
           "sourceRange": []
         }
       },
@@ -2524,9 +2524,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "originalId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "originSketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "units": "m"
     }
   },
@@ -2553,11 +2553,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
             "sourceRange": []
           },
           "from": [
@@ -2581,7 +2581,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
             "sourceRange": []
           },
           "from": [
@@ -2605,7 +2605,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
             "sourceRange": []
           },
           "from": [
@@ -2629,7 +2629,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
             "sourceRange": []
           },
           "from": [
@@ -2653,7 +2653,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
             "sourceRange": []
           },
           "from": [
@@ -2677,7 +2677,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "464887bf-1223-5b24-b9c6-b745024cd247",
             "sourceRange": []
           },
           "from": [
@@ -2701,8 +2701,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "id": "e383621f-755a-5f2e-ada3-608aff393dab",
         "kind": "Custom",
         "objectId": 26,
         "origin": {
@@ -2743,7 +2743,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
           "sourceRange": []
         }
       },
@@ -2773,9 +2773,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "units": "m"
     }
   },
@@ -2783,12 +2783,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+          "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4102,
@@ -2801,8 +2801,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
+          "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
           "sourceRange": [],
           "tag": {
             "commentStart": 4179,
@@ -2815,8 +2815,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
+          "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
           "sourceRange": [],
           "tag": {
             "commentStart": 4295,
@@ -2829,8 +2829,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "feeac1f5-9099-57d5-9583-b2fe93c70cec",
+          "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
           "sourceRange": [],
           "tag": {
             "commentStart": 4451,
@@ -2843,8 +2843,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
+          "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
           "sourceRange": [],
           "tag": {
             "commentStart": 4567,
@@ -2857,8 +2857,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+          "id": "464887bf-1223-5b24-b9c6-b745024cd247",
           "sourceRange": [],
           "tag": {
             "commentStart": 4685,
@@ -2874,11 +2874,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
               "sourceRange": []
             },
             "from": [
@@ -2902,7 +2902,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
               "sourceRange": []
             },
             "from": [
@@ -2926,7 +2926,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
               "sourceRange": []
             },
             "from": [
@@ -2950,7 +2950,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
               "sourceRange": []
             },
             "from": [
@@ -2974,7 +2974,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
               "sourceRange": []
             },
             "from": [
@@ -2998,7 +2998,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "464887bf-1223-5b24-b9c6-b745024cd247",
               "sourceRange": []
             },
             "from": [
@@ -3022,8 +3022,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -3094,13 +3094,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+      "endCapId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
       "units": "m",
       "sectional": false
     }
@@ -3109,12 +3109,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+      "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e923c6ca-acf0-5aeb-9553-382684381335",
+          "id": "b15cc19d-7481-57e9-98db-9f65b0089ba9",
           "sourceRange": [],
           "tag": {
             "commentStart": 10347,
@@ -3130,11 +3130,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b15cc19d-7481-57e9-98db-9f65b0089ba9",
               "sourceRange": []
             },
             "ccw": true,
@@ -3164,8 +3164,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+          "id": "9209892e-e35e-575e-b305-9935eac5ab33",
           "kind": "Custom",
           "objectId": 150,
           "origin": {
@@ -3206,7 +3206,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
             "sourceRange": []
           }
         },
@@ -3220,13 +3220,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+        "originalId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+        "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ff3af95e-d04b-5313-b682-437a16a4b79d",
+      "endCapId": "b80681a1-72eb-5d3c-9257-a09862ea8a10",
       "units": "m",
       "sectional": false
     }
@@ -3235,11 +3235,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b15cc19d-7481-57e9-98db-9f65b0089ba9",
             "sourceRange": []
           },
           "ccw": true,
@@ -3269,8 +3269,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+        "id": "9209892e-e35e-575e-b305-9935eac5ab33",
         "kind": "Custom",
         "objectId": 150,
         "origin": {
@@ -3311,7 +3311,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
           "sourceRange": []
         }
       },
@@ -3325,9 +3325,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+      "originalId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+      "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
       "units": "m"
     }
   },
@@ -3335,12 +3335,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bae84aa3-ea40-521b-946b-853e3c506509",
+          "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
           "sourceRange": [],
           "tag": {
             "commentStart": 2904,
@@ -3353,8 +3353,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53c23738-8a00-5f59-8f43-97fa75d69785",
+          "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
           "sourceRange": [],
           "tag": {
             "commentStart": 2969,
@@ -3367,8 +3367,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0b2ae9c-6174-5964-89c4-7ef6c64c0e98",
+          "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
           "sourceRange": [],
           "tag": {
             "commentStart": 3034,
@@ -3381,8 +3381,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6a805151-028a-5528-bb54-5cd649a0bf8a",
+          "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
           "sourceRange": [],
           "tag": {
             "commentStart": 3099,
@@ -3398,11 +3398,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
               "sourceRange": []
             },
             "from": [
@@ -3426,7 +3426,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
               "sourceRange": []
             },
             "from": [
@@ -3450,7 +3450,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
               "sourceRange": []
             },
             "from": [
@@ -3474,7 +3474,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
               "sourceRange": []
             },
             "from": [
@@ -3498,8 +3498,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3540,7 +3540,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -3562,13 +3562,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bfae3094-929d-5600-ab09-96c96c960ede",
+      "endCapId": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
       "units": "m",
       "sectional": false
     }
@@ -3609,7 +3609,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -3683,8 +3683,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3713,7 +3713,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3729,7 +3729,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -3803,8 +3803,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3833,7 +3833,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3849,7 +3849,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -3923,8 +3923,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3953,7 +3953,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3969,7 +3969,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -4043,8 +4043,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4073,7 +4073,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4090,11 +4090,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -4118,7 +4118,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -4135,7 +4135,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -4159,7 +4159,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                     "sourceRange": []
                   },
                   "from": [
@@ -4176,7 +4176,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -4200,7 +4200,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                     "sourceRange": []
                   },
                   "from": [
@@ -4217,7 +4217,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -4241,8 +4241,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -4283,7 +4283,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                   "sourceRange": []
                 }
               },
@@ -4305,8 +4305,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "originalId": "7b681387-29ea-57f1-8713-d63280827139",
               "units": "m",
               "isClosed": "no"
             }
@@ -4321,11 +4321,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
             "sourceRange": []
           },
           "from": [
@@ -4349,7 +4349,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
             "sourceRange": []
           },
           "from": [
@@ -4373,7 +4373,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
             "sourceRange": []
           },
           "from": [
@@ -4397,7 +4397,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
             "sourceRange": []
           },
           "from": [
@@ -4421,8 +4421,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -4463,7 +4463,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
           "sourceRange": []
         }
       },
@@ -4485,9 +4485,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
       "units": "m"
     }
   },
@@ -4504,12 +4504,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+      "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bae84aa3-ea40-521b-946b-853e3c506509",
+          "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
           "sourceRange": [],
           "tag": {
             "commentStart": 2904,
@@ -4522,8 +4522,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53c23738-8a00-5f59-8f43-97fa75d69785",
+          "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
           "sourceRange": [],
           "tag": {
             "commentStart": 2969,
@@ -4536,8 +4536,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0b2ae9c-6174-5964-89c4-7ef6c64c0e98",
+          "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
           "sourceRange": [],
           "tag": {
             "commentStart": 3034,
@@ -4550,8 +4550,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6a805151-028a-5528-bb54-5cd649a0bf8a",
+          "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
           "sourceRange": [],
           "tag": {
             "commentStart": 3099,
@@ -4567,11 +4567,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
               "sourceRange": []
             },
             "from": [
@@ -4595,7 +4595,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
               "sourceRange": []
             },
             "from": [
@@ -4619,7 +4619,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
               "sourceRange": []
             },
             "from": [
@@ -4643,7 +4643,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
               "sourceRange": []
             },
             "from": [
@@ -4667,8 +4667,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -4709,7 +4709,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -4731,13 +4731,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bfae3094-929d-5600-ab09-96c96c960ede",
+      "endCapId": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
       "units": "m",
       "sectional": false
     }
@@ -4746,12 +4746,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d77be279-8026-5289-8e15-5f4a1815b9b0",
+          "id": "a0f34065-202f-541e-898d-0a1282b2b4e9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4102,
@@ -4764,8 +4764,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ee14956-7275-569b-b940-7fef3f665057",
+          "id": "c8f793f6-7fe9-5a6e-9e46-51ebbfffa0fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 4179,
@@ -4778,8 +4778,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7835efdb-90ca-569e-9f0b-e9cedd6a3544",
+          "id": "01c343a4-ebca-5cb6-92e7-be4bc5228853",
           "sourceRange": [],
           "tag": {
             "commentStart": 4295,
@@ -4792,8 +4792,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea5ce42d-d5fc-51a5-9255-16add0aedda5",
+          "id": "7976e9f4-c433-5caa-bb0b-831d7cabb0c9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4451,
@@ -4806,8 +4806,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8575c95a-6a64-56fb-b6c0-34483e44ff8d",
+          "id": "7d6749e2-5998-57c3-b3b5-458d4e08b9d1",
           "sourceRange": [],
           "tag": {
             "commentStart": 4567,
@@ -4820,8 +4820,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791",
+          "id": "83bd425b-de02-5531-b5c8-0baff82238e5",
           "sourceRange": [],
           "tag": {
             "commentStart": 4685,
@@ -4837,11 +4837,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a0f34065-202f-541e-898d-0a1282b2b4e9",
               "sourceRange": []
             },
             "from": [
@@ -4865,7 +4865,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c8f793f6-7fe9-5a6e-9e46-51ebbfffa0fc",
               "sourceRange": []
             },
             "from": [
@@ -4889,7 +4889,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "01c343a4-ebca-5cb6-92e7-be4bc5228853",
               "sourceRange": []
             },
             "from": [
@@ -4913,7 +4913,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7976e9f4-c433-5caa-bb0b-831d7cabb0c9",
               "sourceRange": []
             },
             "from": [
@@ -4937,7 +4937,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7d6749e2-5998-57c3-b3b5-458d4e08b9d1",
               "sourceRange": []
             },
             "from": [
@@ -4961,7 +4961,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83bd425b-de02-5531-b5c8-0baff82238e5",
               "sourceRange": []
             },
             "from": [
@@ -4985,8 +4985,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -5027,7 +5027,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -5057,13 +5057,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "93d860bd-86a2-5fa8-80fe-57be39b71bc8",
+      "endCapId": "3a7a0e7b-7ad0-5e7b-b0b7-56b34083d08c",
       "units": "m",
       "sectional": false
     }
@@ -5072,12 +5072,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "id": "f64d0dae-3679-58db-bc44-8aeda11fa92c",
           "sourceRange": [],
           "tag": {
             "commentStart": 4102,
@@ -5090,8 +5090,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "66c2c253-d4a4-5428-8762-35d91a712f51",
+          "id": "031803b4-286b-5fe0-9f93-b05dc840248d",
           "sourceRange": [],
           "tag": {
             "commentStart": 4179,
@@ -5104,8 +5104,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0ea65eb7-c280-5cd4-bf05-8dc1aaf0b01b",
+          "id": "d1bbad67-a6b1-54a1-92d2-4d84769dada6",
           "sourceRange": [],
           "tag": {
             "commentStart": 4295,
@@ -5118,8 +5118,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "415b3116-d451-5d22-a9e5-b06133bdf861",
+          "id": "1d46309a-cca2-5dfc-a2c2-0612ca592d7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 4451,
@@ -5132,8 +5132,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e87adfa5-4f60-5241-b09f-71a7287871de",
+          "id": "9a364fdf-ffe0-53cb-84ba-86a45fdabfb4",
           "sourceRange": [],
           "tag": {
             "commentStart": 4567,
@@ -5146,8 +5146,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
+          "id": "6ba6c4ce-a540-5418-9a8d-61e357b6b1c9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4685,
@@ -5163,11 +5163,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f64d0dae-3679-58db-bc44-8aeda11fa92c",
               "sourceRange": []
             },
             "from": [
@@ -5191,7 +5191,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "031803b4-286b-5fe0-9f93-b05dc840248d",
               "sourceRange": []
             },
             "from": [
@@ -5215,7 +5215,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d1bbad67-a6b1-54a1-92d2-4d84769dada6",
               "sourceRange": []
             },
             "from": [
@@ -5239,7 +5239,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d46309a-cca2-5dfc-a2c2-0612ca592d7a",
               "sourceRange": []
             },
             "from": [
@@ -5263,7 +5263,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9a364fdf-ffe0-53cb-84ba-86a45fdabfb4",
               "sourceRange": []
             },
             "from": [
@@ -5287,7 +5287,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6ba6c4ce-a540-5418-9a8d-61e357b6b1c9",
               "sourceRange": []
             },
             "from": [
@@ -5311,8 +5311,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -5353,7 +5353,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -5383,13 +5383,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "originalId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "7a96c229-5b8c-588d-88fc-45140676ab64",
+      "endCapId": "b85a8d32-0360-58aa-a9db-5318a1787848",
       "units": "m",
       "sectional": false
     }
@@ -5410,12 +5410,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3322387d-5b58-56ea-8103-4d2112d432af",
+          "artifactId": "94cfcc75-120e-5336-b89b-66096a401da3",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "24ad9927-94e5-5db3-9f91-48a62786a62b",
+              "id": "b09f7098-7782-5db5-a7ac-a33f2dd64d87",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12492,
@@ -5431,11 +5431,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "3322387d-5b58-56ea-8103-4d2112d432af",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b09f7098-7782-5db5-a7ac-a33f2dd64d87",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5465,8 +5465,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+              "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
               "kind": "Custom",
               "objectId": 171,
               "origin": {
@@ -5507,7 +5507,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "9f531517-960e-5389-a7ca-a71161457c8a",
                 "sourceRange": []
               }
             },
@@ -5517,13 +5517,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "3322387d-5b58-56ea-8103-4d2112d432af",
+            "originalId": "3322387d-5b58-56ea-8103-4d2112d432af",
+            "originSketchId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "7c6a25d7-257f-5e9d-bb5e-3b0a7fa3db1e",
+          "endCapId": "0bdf3e92-8aa5-5d2e-bf4e-5bb9c61266db",
           "units": "m",
           "sectional": false
         }
@@ -5532,17 +5532,17 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "848ed7d7-05e7-5c25-9d3b-559ea56c3f0a",
+          "artifactId": "08c45048-e16b-54e2-9691-c65127dfc3a8",
           "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "848ed7d7-05e7-5c25-9d3b-559ea56c3f0a",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b09f7098-7782-5db5-a7ac-a33f2dd64d87",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5572,8 +5572,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+              "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
               "kind": "Custom",
               "objectId": 171,
               "origin": {
@@ -5614,7 +5614,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "9f531517-960e-5389-a7ca-a71161457c8a",
                 "sourceRange": []
               }
             },
@@ -5624,13 +5624,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "848ed7d7-05e7-5c25-9d3b-559ea56c3f0a",
+            "originalId": "3322387d-5b58-56ea-8103-4d2112d432af",
+            "originSketchId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "05f4cedb-b6b1-53c8-a730-1e51133a2f99",
+          "endCapId": "da85caa6-3d66-58d1-b943-40c3901fbd2a",
           "units": "m",
           "sectional": false
         }
@@ -5658,8 +5658,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "headlightsPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+      "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
       "kind": "Custom",
       "objectId": 171,
       "origin": {
@@ -5695,11 +5695,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Sketch",
         "value": {
           "type": "Sketch",
-          "id": "[uuid]",
+          "id": "3322387d-5b58-56ea-8103-4d2112d432af",
           "paths": [
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "b09f7098-7782-5db5-a7ac-a33f2dd64d87",
                 "sourceRange": []
               },
               "ccw": true,
@@ -5729,8 +5729,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "on": {
-            "artifactId": "[uuid]",
-            "id": "[uuid]",
+            "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+            "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
             "kind": "Custom",
             "objectId": 171,
             "origin": {
@@ -5771,7 +5771,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "m",
             "tag": null,
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f531517-960e-5389-a7ca-a71161457c8a",
               "sourceRange": []
             }
           },
@@ -5781,9 +5781,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "value": "circle1"
             }
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
+          "artifactId": "3322387d-5b58-56ea-8103-4d2112d432af",
+          "originalId": "3322387d-5b58-56ea-8103-4d2112d432af",
+          "originSketchId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
           "units": "m"
         }
       },
@@ -5791,11 +5791,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Sketch",
         "value": {
           "type": "Sketch",
-          "id": "[uuid]",
+          "id": "848ed7d7-05e7-5c25-9d3b-559ea56c3f0a",
           "paths": [
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "b09f7098-7782-5db5-a7ac-a33f2dd64d87",
                 "sourceRange": []
               },
               "ccw": true,
@@ -5825,8 +5825,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "on": {
-            "artifactId": "[uuid]",
-            "id": "[uuid]",
+            "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+            "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
             "kind": "Custom",
             "objectId": 171,
             "origin": {
@@ -5867,7 +5867,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "m",
             "tag": null,
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f531517-960e-5389-a7ca-a71161457c8a",
               "sourceRange": []
             }
           },
@@ -5877,9 +5877,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "value": "circle1"
             }
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
+          "artifactId": "848ed7d7-05e7-5c25-9d3b-559ea56c3f0a",
+          "originalId": "3322387d-5b58-56ea-8103-4d2112d432af",
+          "originSketchId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
           "units": "m"
         }
       }
@@ -5903,7 +5903,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
                 "objectId": 175,
                 "kind": {
                   "circle": {
@@ -5977,8 +5977,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+                  "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
                   "kind": "Custom",
                   "objectId": 171,
                   "origin": {
@@ -6007,7 +6007,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -6024,11 +6024,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6058,8 +6058,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
+                "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
                 "kind": "Custom",
                 "objectId": 171,
                 "origin": {
@@ -6100,7 +6100,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9f531517-960e-5389-a7ca-a71161457c8a",
                   "sourceRange": []
                 }
               },
@@ -6110,8 +6110,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+              "originalId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
               "units": "m",
               "isClosed": "no"
             }
@@ -6174,12 +6174,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "51192ec8-515b-5dc0-a02f-1e1455013823",
+          "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
           "sourceRange": [],
           "tag": {
             "commentStart": 4102,
@@ -6192,8 +6192,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e3bce775-5974-51d9-8b15-c50c11d6ed22",
+          "id": "be6b19b8-9e9f-5829-a36e-c9b75bcf6d9a",
           "sourceRange": [],
           "tag": {
             "commentStart": 4179,
@@ -6206,8 +6206,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8461e964-eca6-5e3c-a1bc-b6ba6da58b16",
+          "id": "74322c76-b563-5063-9044-70becaa99e60",
           "sourceRange": [],
           "tag": {
             "commentStart": 4295,
@@ -6220,8 +6220,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6af35eb3-1fe4-5a5d-89be-685b2cd4a4e4",
+          "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
           "sourceRange": [],
           "tag": {
             "commentStart": 4451,
@@ -6234,8 +6234,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "790f6830-3713-5616-b0d9-989ec3ea3f41",
+          "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
           "sourceRange": [],
           "tag": {
             "commentStart": 4567,
@@ -6248,8 +6248,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f718c37b-bc3f-517d-ac55-facb44e01867",
+          "id": "d665e8b8-04b3-5cae-a881-f3658e472092",
           "sourceRange": [],
           "tag": {
             "commentStart": 4685,
@@ -6265,11 +6265,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": []
             },
             "from": [
@@ -6293,7 +6293,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "be6b19b8-9e9f-5829-a36e-c9b75bcf6d9a",
               "sourceRange": []
             },
             "from": [
@@ -6317,7 +6317,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "74322c76-b563-5063-9044-70becaa99e60",
               "sourceRange": []
             },
             "from": [
@@ -6341,7 +6341,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
               "sourceRange": []
             },
             "from": [
@@ -6365,7 +6365,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
               "sourceRange": []
             },
             "from": [
@@ -6389,7 +6389,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d665e8b8-04b3-5cae-a881-f3658e472092",
               "sourceRange": []
             },
             "from": [
@@ -6413,8 +6413,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -6455,7 +6455,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -6485,13 +6485,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+        "originalId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2febc3e0-e362-5a22-921a-27594c8a4aa7",
+      "endCapId": "2bfedd8d-8eb3-5380-8809-4b970d03ca3d",
       "units": "m",
       "sectional": false
     }
@@ -6509,12 +6509,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+          "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4102,
@@ -6527,8 +6527,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
+          "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
           "sourceRange": [],
           "tag": {
             "commentStart": 4179,
@@ -6541,8 +6541,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
+          "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
           "sourceRange": [],
           "tag": {
             "commentStart": 4295,
@@ -6555,8 +6555,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "feeac1f5-9099-57d5-9583-b2fe93c70cec",
+          "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
           "sourceRange": [],
           "tag": {
             "commentStart": 4451,
@@ -6569,8 +6569,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
+          "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
           "sourceRange": [],
           "tag": {
             "commentStart": 4567,
@@ -6583,8 +6583,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+          "id": "464887bf-1223-5b24-b9c6-b745024cd247",
           "sourceRange": [],
           "tag": {
             "commentStart": 4685,
@@ -6600,11 +6600,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
               "sourceRange": []
             },
             "from": [
@@ -6628,7 +6628,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
               "sourceRange": []
             },
             "from": [
@@ -6652,7 +6652,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
               "sourceRange": []
             },
             "from": [
@@ -6676,7 +6676,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
               "sourceRange": []
             },
             "from": [
@@ -6700,7 +6700,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
               "sourceRange": []
             },
             "from": [
@@ -6724,7 +6724,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "464887bf-1223-5b24-b9c6-b745024cd247",
               "sourceRange": []
             },
             "from": [
@@ -6748,8 +6748,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -6790,7 +6790,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -6820,13 +6820,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+      "endCapId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
       "units": "m",
       "sectional": false
     }
@@ -6835,12 +6835,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+      "artifactId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bfd00d4e-de08-5937-96e8-967cdcae890e",
+          "id": "7e4b351f-1d40-5acf-baf8-fa2efb0742a5",
           "sourceRange": [],
           "tag": {
             "commentStart": 9089,
@@ -6853,8 +6853,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "367cdf25-520d-5a55-b813-d1dd1bd6526f",
+          "id": "33d5ab3e-4637-5f22-8d70-18bcaf5cd185",
           "sourceRange": [],
           "tag": {
             "commentStart": 9168,
@@ -6867,8 +6867,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4adc2cbf-92d9-5740-bd57-53b80263d46e",
+          "id": "be0d0234-0035-5c2a-a5a2-52d802599ad4",
           "sourceRange": [],
           "tag": {
             "commentStart": 9246,
@@ -6881,8 +6881,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6c1d2e0e-94c4-5da9-9ac8-647c4e1f6795",
+          "id": "a022e270-a908-5753-899e-2ff8580745d0",
           "sourceRange": [],
           "tag": {
             "commentStart": 9323,
@@ -6898,11 +6898,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e4b351f-1d40-5acf-baf8-fa2efb0742a5",
               "sourceRange": []
             },
             "from": [
@@ -6926,7 +6926,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "33d5ab3e-4637-5f22-8d70-18bcaf5cd185",
               "sourceRange": []
             },
             "from": [
@@ -6950,7 +6950,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "be0d0234-0035-5c2a-a5a2-52d802599ad4",
               "sourceRange": []
             },
             "from": [
@@ -6974,7 +6974,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a022e270-a908-5753-899e-2ff8580745d0",
               "sourceRange": []
             },
             "from": [
@@ -6998,8 +6998,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+          "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
           "kind": "Custom",
           "objectId": 124,
           "origin": {
@@ -7040,7 +7040,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
             "sourceRange": []
           }
         },
@@ -7062,13 +7062,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+        "originalId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+        "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "da4dbf01-cb65-56dd-8c21-c5f6d1c78355",
+      "endCapId": "9d97a397-19ac-58ad-8b7b-0b14e90d1796",
       "units": "m",
       "sectional": false
     }
@@ -7100,7 +7100,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
                 "objectId": 128,
                 "kind": {
                   "line": {
@@ -7174,8 +7174,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+                  "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -7204,7 +7204,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7220,7 +7220,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                 "objectId": 131,
                 "kind": {
                   "line": {
@@ -7294,8 +7294,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+                  "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -7324,7 +7324,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7340,7 +7340,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
                 "objectId": 134,
                 "kind": {
                   "line": {
@@ -7414,8 +7414,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+                  "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -7444,7 +7444,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7460,7 +7460,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
                 "objectId": 137,
                 "kind": {
                   "line": {
@@ -7534,8 +7534,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+                  "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -7564,7 +7564,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7581,11 +7581,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
                     "sourceRange": []
                   },
                   "from": [
@@ -7609,7 +7609,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                     "sourceRange": []
                   },
                   "from": [
@@ -7633,7 +7633,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
                     "sourceRange": []
                   },
                   "from": [
@@ -7657,7 +7657,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -7681,8 +7681,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+                "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
                 "kind": "Custom",
                 "objectId": 124,
                 "origin": {
@@ -7723,7 +7723,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
                   "sourceRange": []
                 }
               },
@@ -7745,8 +7745,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2ab8a671-6218-5516-901a-d1a83480ded7",
+              "originalId": "2ab8a671-6218-5516-901a-d1a83480ded7",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -7761,11 +7761,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7e4b351f-1d40-5acf-baf8-fa2efb0742a5",
             "sourceRange": []
           },
           "from": [
@@ -7789,7 +7789,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "33d5ab3e-4637-5f22-8d70-18bcaf5cd185",
             "sourceRange": []
           },
           "from": [
@@ -7813,7 +7813,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "be0d0234-0035-5c2a-a5a2-52d802599ad4",
             "sourceRange": []
           },
           "from": [
@@ -7837,7 +7837,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a022e270-a908-5753-899e-2ff8580745d0",
             "sourceRange": []
           },
           "from": [
@@ -7861,8 +7861,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+        "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
         "kind": "Custom",
         "objectId": 124,
         "origin": {
@@ -7903,7 +7903,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
           "sourceRange": []
         }
       },
@@ -7925,9 +7925,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+      "originalId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+      "originSketchId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "units": "m"
     }
   },
@@ -7938,12 +7938,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3ab72285-638e-584b-93ee-09ce363c6f80",
+          "artifactId": "b4079ec8-53e1-53e1-a48a-2e161d481653",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "f3a34a53-988d-5376-8dbe-b94b156fea9d",
+              "id": "9ce1d90c-19de-5064-904d-82c9bfffd549",
               "sourceRange": [],
               "tag": {
                 "commentStart": 13366,
@@ -7956,8 +7956,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "f2322c4a-a5fb-5d37-8375-722b360404e5",
+              "id": "b3782dc0-ce83-5e24-93c7-ba345c89a915",
               "sourceRange": [],
               "tag": {
                 "commentStart": 13431,
@@ -7970,8 +7970,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "42833091-abfa-5ba3-af03-221552755d70",
+              "id": "04c42d4b-1aa4-5bb7-b409-23f470a688b4",
               "sourceRange": [],
               "tag": {
                 "commentStart": 13496,
@@ -7984,8 +7984,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "72ef3acc-f468-57c5-bbe9-a63fe82ea4f4",
+              "id": "76c8f768-3891-5e41-8f56-445c0192d4a7",
               "sourceRange": [],
               "tag": {
                 "commentStart": 13561,
@@ -8001,11 +8001,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "3ab72285-638e-584b-93ee-09ce363c6f80",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9ce1d90c-19de-5064-904d-82c9bfffd549",
                   "sourceRange": []
                 },
                 "from": [
@@ -8029,7 +8029,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b3782dc0-ce83-5e24-93c7-ba345c89a915",
                   "sourceRange": []
                 },
                 "from": [
@@ -8053,7 +8053,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "04c42d4b-1aa4-5bb7-b409-23f470a688b4",
                   "sourceRange": []
                 },
                 "from": [
@@ -8077,7 +8077,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "76c8f768-3891-5e41-8f56-445c0192d4a7",
                   "sourceRange": []
                 },
                 "from": [
@@ -8101,8 +8101,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+              "id": "855fafc2-5621-5264-953e-1be6964b7a16",
               "kind": "Custom",
               "objectId": 180,
               "origin": {
@@ -8143,7 +8143,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
                 "sourceRange": []
               }
             },
@@ -8165,13 +8165,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "3ab72285-638e-584b-93ee-09ce363c6f80",
+            "originalId": "3ab72285-638e-584b-93ee-09ce363c6f80",
+            "originSketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "2239ddab-0010-5101-9893-6e2441f85290",
+          "endCapId": "98743543-8ec6-57e4-8b14-ed003a023ea7",
           "units": "m",
           "sectional": false
         }
@@ -8180,17 +8180,17 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9e303d78-6036-56ae-bba6-92be834e4661",
+          "artifactId": "585c0507-64ec-597f-addc-f52df0ac2e7f",
           "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9e303d78-6036-56ae-bba6-92be834e4661",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9ce1d90c-19de-5064-904d-82c9bfffd549",
                   "sourceRange": []
                 },
                 "from": [
@@ -8214,7 +8214,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b3782dc0-ce83-5e24-93c7-ba345c89a915",
                   "sourceRange": []
                 },
                 "from": [
@@ -8238,7 +8238,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "04c42d4b-1aa4-5bb7-b409-23f470a688b4",
                   "sourceRange": []
                 },
                 "from": [
@@ -8262,7 +8262,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "76c8f768-3891-5e41-8f56-445c0192d4a7",
                   "sourceRange": []
                 },
                 "from": [
@@ -8286,8 +8286,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+              "id": "855fafc2-5621-5264-953e-1be6964b7a16",
               "kind": "Custom",
               "objectId": 180,
               "origin": {
@@ -8328,7 +8328,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
                 "sourceRange": []
               }
             },
@@ -8350,13 +8350,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "9e303d78-6036-56ae-bba6-92be834e4661",
+            "originalId": "3ab72285-638e-584b-93ee-09ce363c6f80",
+            "originSketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "6c11c2dd-01c7-5262-a186-d75477bebc15",
+          "endCapId": "8d409429-e279-5a07-97c1-c6157d889d57",
           "units": "m",
           "sectional": false
         }
@@ -8402,8 +8402,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
   "taillightsPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+      "id": "855fafc2-5621-5264-953e-1be6964b7a16",
       "kind": "Custom",
       "objectId": 180,
       "origin": {
@@ -8439,11 +8439,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Sketch",
         "value": {
           "type": "Sketch",
-          "id": "[uuid]",
+          "id": "3ab72285-638e-584b-93ee-09ce363c6f80",
           "paths": [
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "9ce1d90c-19de-5064-904d-82c9bfffd549",
                 "sourceRange": []
               },
               "from": [
@@ -8467,7 +8467,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "b3782dc0-ce83-5e24-93c7-ba345c89a915",
                 "sourceRange": []
               },
               "from": [
@@ -8491,7 +8491,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "04c42d4b-1aa4-5bb7-b409-23f470a688b4",
                 "sourceRange": []
               },
               "from": [
@@ -8515,7 +8515,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "76c8f768-3891-5e41-8f56-445c0192d4a7",
                 "sourceRange": []
               },
               "from": [
@@ -8539,8 +8539,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "on": {
-            "artifactId": "[uuid]",
-            "id": "[uuid]",
+            "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+            "id": "855fafc2-5621-5264-953e-1be6964b7a16",
             "kind": "Custom",
             "objectId": 180,
             "origin": {
@@ -8581,7 +8581,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "m",
             "tag": null,
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
               "sourceRange": []
             }
           },
@@ -8603,9 +8603,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "value": "line4"
             }
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
+          "artifactId": "3ab72285-638e-584b-93ee-09ce363c6f80",
+          "originalId": "3ab72285-638e-584b-93ee-09ce363c6f80",
+          "originSketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
           "units": "m"
         }
       },
@@ -8613,11 +8613,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Sketch",
         "value": {
           "type": "Sketch",
-          "id": "[uuid]",
+          "id": "9e303d78-6036-56ae-bba6-92be834e4661",
           "paths": [
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "9ce1d90c-19de-5064-904d-82c9bfffd549",
                 "sourceRange": []
               },
               "from": [
@@ -8641,7 +8641,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "b3782dc0-ce83-5e24-93c7-ba345c89a915",
                 "sourceRange": []
               },
               "from": [
@@ -8665,7 +8665,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "04c42d4b-1aa4-5bb7-b409-23f470a688b4",
                 "sourceRange": []
               },
               "from": [
@@ -8689,7 +8689,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "76c8f768-3891-5e41-8f56-445c0192d4a7",
                 "sourceRange": []
               },
               "from": [
@@ -8713,8 +8713,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             }
           ],
           "on": {
-            "artifactId": "[uuid]",
-            "id": "[uuid]",
+            "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+            "id": "855fafc2-5621-5264-953e-1be6964b7a16",
             "kind": "Custom",
             "objectId": 180,
             "origin": {
@@ -8755,7 +8755,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "units": "m",
             "tag": null,
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
               "sourceRange": []
             }
           },
@@ -8777,9 +8777,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "value": "line4"
             }
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
+          "artifactId": "9e303d78-6036-56ae-bba6-92be834e4661",
+          "originalId": "3ab72285-638e-584b-93ee-09ce363c6f80",
+          "originSketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
           "units": "m"
         }
       }
@@ -8803,7 +8803,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
                 "objectId": 184,
                 "kind": {
                   "line": {
@@ -8877,8 +8877,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+                  "id": "855fafc2-5621-5264-953e-1be6964b7a16",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
@@ -8907,7 +8907,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -8923,7 +8923,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
                 "objectId": 187,
                 "kind": {
                   "line": {
@@ -8997,8 +8997,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+                  "id": "855fafc2-5621-5264-953e-1be6964b7a16",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
@@ -9027,7 +9027,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9043,7 +9043,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "3160ffad-2e46-5554-be76-1b632140926c",
                 "objectId": 190,
                 "kind": {
                   "line": {
@@ -9117,8 +9117,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+                  "id": "855fafc2-5621-5264-953e-1be6964b7a16",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
@@ -9147,7 +9147,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -9163,7 +9163,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
                 "objectId": 193,
                 "kind": {
                   "line": {
@@ -9237,8 +9237,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+                  "id": "855fafc2-5621-5264-953e-1be6964b7a16",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
@@ -9267,7 +9267,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -9284,11 +9284,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "93084d86-3fba-5437-851f-9a4bb9523e0c",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
                     "sourceRange": []
                   },
                   "from": [
@@ -9312,7 +9312,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "616c4ab6-5370-5a38-b6c8-083a2f7c7cdc",
                     "sourceRange": []
                   },
                   "from": [
@@ -9329,7 +9329,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
                     "sourceRange": []
                   },
                   "from": [
@@ -9353,7 +9353,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "95ab2f69-02d1-5308-9a43-67a2ec05bd0f",
                     "sourceRange": []
                   },
                   "from": [
@@ -9370,7 +9370,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3160ffad-2e46-5554-be76-1b632140926c",
                     "sourceRange": []
                   },
                   "from": [
@@ -9394,7 +9394,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "db1a26b9-a657-5b85-9427-e6bdab5ddc51",
                     "sourceRange": []
                   },
                   "from": [
@@ -9411,7 +9411,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
                     "sourceRange": []
                   },
                   "from": [
@@ -9435,8 +9435,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+                "id": "855fafc2-5621-5264-953e-1be6964b7a16",
                 "kind": "Custom",
                 "objectId": 180,
                 "origin": {
@@ -9477,7 +9477,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
                   "sourceRange": []
                 }
               },
@@ -9499,8 +9499,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
+              "originalId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
               "units": "m",
               "isClosed": "no"
             }
@@ -9538,7 +9538,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                 "objectId": 30,
                 "kind": {
                   "circle": {
@@ -9613,8 +9613,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -9643,7 +9643,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -9659,7 +9659,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -9733,8 +9733,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -9763,7 +9763,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -9779,7 +9779,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
                 "objectId": 36,
                 "kind": {
                   "line": {
@@ -9853,8 +9853,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -9883,7 +9883,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9899,7 +9899,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -9973,8 +9973,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10003,7 +10003,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -10019,7 +10019,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "objectId": 45,
                 "kind": {
                   "line": {
@@ -10093,8 +10093,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10123,7 +10123,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -10139,7 +10139,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -10213,8 +10213,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10243,7 +10243,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -10259,7 +10259,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                 "objectId": 53,
                 "kind": {
                   "line": {
@@ -10333,8 +10333,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10363,7 +10363,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -10379,7 +10379,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -10454,8 +10454,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10484,7 +10484,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -10501,11 +10501,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -10529,7 +10529,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
                     "sourceRange": []
                   },
                   "from": [
@@ -10553,7 +10553,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                     "sourceRange": []
                   },
                   "from": [
@@ -10577,7 +10577,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                     "sourceRange": []
                   },
                   "from": [
@@ -10601,7 +10601,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                     "sourceRange": []
                   },
                   "from": [
@@ -10625,7 +10625,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                     "sourceRange": []
                   },
                   "from": [
@@ -10649,8 +10649,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                 "kind": "Custom",
                 "objectId": 26,
                 "origin": {
@@ -10691,7 +10691,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                   "sourceRange": []
                 }
               },
@@ -10721,8 +10721,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+              "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -10749,12 +10749,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+          "artifactId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e527903e-78bb-5c92-b0e9-da58e4ed9c36",
+              "id": "ea23896d-0e66-53a1-b05d-c17e46f0928e",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10262,
@@ -10767,8 +10767,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "f6c9dd92-ba0b-51e9-beac-deda50bd5867",
+              "id": "cd485498-0f4e-50f0-bb44-b36581f49ada",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -10784,11 +10784,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ea23896d-0e66-53a1-b05d-c17e46f0928e",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -10818,7 +10818,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cd485498-0f4e-50f0-bb44-b36581f49ada",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -10848,8 +10848,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -10890,7 +10890,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -10904,13 +10904,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+            "originalId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c7c1f358-e23e-56dd-b65a-f791fc98d09f",
+          "endCapId": "c467907f-6cd1-5637-882a-226a5dfb937f",
           "units": "m",
           "sectional": false
         }
@@ -10919,12 +10919,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+          "artifactId": "2d6c2537-3784-5667-8614-4423d6c6f752",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9307ca7f-48e1-5ac3-a504-2db5a81b2d49",
+              "id": "efbc570b-f0b8-5cd1-898b-6befdd39b9c8",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -10940,11 +10940,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "efbc570b-f0b8-5cd1-898b-6befdd39b9c8",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -10974,8 +10974,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -11016,7 +11016,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -11030,13 +11030,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+            "originalId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "7185e86d-2ba6-5896-aadc-a2e8c4dd2c79",
+          "endCapId": "3d159f8f-f65a-5887-ad6a-0d4017775cdb",
           "units": "m",
           "sectional": false
         }
@@ -11050,12 +11050,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+          "artifactId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b20f90ae-42c9-5925-a65a-c1df286bf734",
+              "id": "886808dd-7e96-573f-8538-2623b5c5d292",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10262,
@@ -11068,8 +11068,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c386ad75-54d1-5a55-acbb-277050604ecf",
+              "id": "3fc5baa4-f601-5176-9ea5-cd916536bb90",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -11085,11 +11085,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "886808dd-7e96-573f-8538-2623b5c5d292",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11119,7 +11119,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3fc5baa4-f601-5176-9ea5-cd916536bb90",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11149,8 +11149,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -11191,7 +11191,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -11205,13 +11205,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+            "originalId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "1cbaed47-24c4-5fdc-a3c6-d527dabaf03f",
+          "endCapId": "2c1fb555-1328-5eea-9c5e-98aaa735020b",
           "units": "m",
           "sectional": false
         }
@@ -11220,12 +11220,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
+          "artifactId": "349ba77a-8183-57f6-8580-b06227eac5bd",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ad4d6932-c4cd-5e14-b9f7-99f5d5054374",
+              "id": "c6cdb98b-c753-52f8-ba05-b9e596865eb3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -11241,11 +11241,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c6cdb98b-c753-52f8-ba05-b9e596865eb3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11275,8 +11275,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -11317,7 +11317,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -11331,13 +11331,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
+            "originalId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "b6e002ba-82ed-5769-b081-7c737a5279cc",
+          "endCapId": "9902f89f-3830-5a0f-bf0b-77db02e11241",
           "units": "m",
           "sectional": false
         }
@@ -11348,11 +11348,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fdddd0fe-c77e-5784-b939-03f682706b01",
             "sourceRange": []
           },
           "ccw": true,
@@ -11382,7 +11382,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dd8c6f16-3c84-5f04-b7c7-7b9f9e3690b6",
             "sourceRange": []
           },
           "ccw": true,
@@ -11412,8 +11412,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+        "id": "9209892e-e35e-575e-b305-9935eac5ab33",
         "kind": "Custom",
         "objectId": 150,
         "origin": {
@@ -11454,7 +11454,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
           "sourceRange": []
         }
       },
@@ -11468,9 +11468,9 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+      "originalId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+      "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
       "units": "m"
     }
   },
@@ -11481,12 +11481,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "92ead137-02a3-5a66-a3df-f1b87766c456",
+          "artifactId": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d4985485-ec05-5bec-8121-6206e767ab43",
+              "id": "fecf72dc-3918-522b-b96d-1a130e95f03b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10262,
@@ -11499,8 +11499,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "89d3edb6-9487-568b-9aee-3494bf763201",
+              "id": "cb841263-8865-5207-a371-9b9659988391",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -11516,11 +11516,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "92ead137-02a3-5a66-a3df-f1b87766c456",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fecf72dc-3918-522b-b96d-1a130e95f03b",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11550,7 +11550,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cb841263-8865-5207-a371-9b9659988391",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11580,8 +11580,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -11622,7 +11622,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -11636,13 +11636,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "92ead137-02a3-5a66-a3df-f1b87766c456",
+            "originalId": "92ead137-02a3-5a66-a3df-f1b87766c456",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "9eb0934c-2942-582d-8a2e-d3d296e83046",
+          "endCapId": "e3df45e4-cb7d-557b-af68-506d418bd726",
           "units": "m",
           "sectional": false
         }
@@ -11651,12 +11651,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "2f89f295-7088-5e46-8594-1b84a8601b0a",
+          "artifactId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "347a232e-98ab-52af-89fc-573517036ce4",
+              "id": "5e8a50b9-f21b-59fd-918f-97f161f00a88",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -11672,11 +11672,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "2f89f295-7088-5e46-8594-1b84a8601b0a",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5e8a50b9-f21b-59fd-918f-97f161f00a88",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11706,8 +11706,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -11748,7 +11748,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -11762,13 +11762,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
+            "originalId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "630d7c11-4afc-523b-98e7-452c3e78d470",
+          "endCapId": "8779c1f3-16c3-57a7-81c0-ef39479e1771",
           "units": "m",
           "sectional": false
         }
@@ -11782,12 +11782,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+          "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "2fb1c747-daa7-54c8-b2d2-70aba454792f",
+              "id": "fdddd0fe-c77e-5784-b939-03f682706b01",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10262,
@@ -11800,8 +11800,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ae3c50ca-5d9d-5092-8e87-1df85d6e4e3a",
+              "id": "dd8c6f16-3c84-5f04-b7c7-7b9f9e3690b6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -11817,11 +11817,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fdddd0fe-c77e-5784-b939-03f682706b01",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11851,7 +11851,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dd8c6f16-3c84-5f04-b7c7-7b9f9e3690b6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11881,8 +11881,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -11923,7 +11923,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -11937,13 +11937,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+            "originalId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "9ca18153-9846-5428-9975-a66594cd1386",
+          "endCapId": "19e40ecf-7d22-551c-8bd6-9717b83bfb5a",
           "units": "m",
           "sectional": false
         }
@@ -11952,12 +11952,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+          "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e923c6ca-acf0-5aeb-9553-382684381335",
+              "id": "b15cc19d-7481-57e9-98db-9f65b0089ba9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10347,
@@ -11973,11 +11973,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b15cc19d-7481-57e9-98db-9f65b0089ba9",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -12007,8 +12007,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "kind": "Custom",
               "objectId": 150,
               "origin": {
@@ -12049,7 +12049,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                 "sourceRange": []
               }
             },
@@ -12063,13 +12063,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+            "originalId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+            "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ff3af95e-d04b-5313-b682-437a16a4b79d",
+          "endCapId": "b80681a1-72eb-5d3c-9257-a09862ea8a10",
           "units": "m",
           "sectional": false
         }
@@ -12085,7 +12085,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
                 "objectId": 154,
                 "kind": {
                   "circle": {
@@ -12159,8 +12159,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+                  "id": "9209892e-e35e-575e-b305-9935eac5ab33",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
@@ -12189,7 +12189,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -12205,7 +12205,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "95d80984-dc84-541c-af31-df26752c9fd4",
                 "objectId": 157,
                 "kind": {
                   "circle": {
@@ -12279,8 +12279,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+                  "id": "9209892e-e35e-575e-b305-9935eac5ab33",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
@@ -12309,7 +12309,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -12325,7 +12325,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
                 "objectId": 161,
                 "kind": {
                   "line": {
@@ -12400,8 +12400,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+                  "id": "9209892e-e35e-575e-b305-9935eac5ab33",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
@@ -12430,7 +12430,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -12447,11 +12447,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "96b5306d-8365-5f19-adf7-7b3e844826ca",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12481,7 +12481,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
                     "sourceRange": []
                   },
                   "from": [
@@ -12498,7 +12498,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "95d80984-dc84-541c-af31-df26752c9fd4",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12528,8 +12528,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+                "id": "9209892e-e35e-575e-b305-9935eac5ab33",
                 "kind": "Custom",
                 "objectId": 150,
                 "origin": {
@@ -12570,7 +12570,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
                   "sourceRange": []
                 }
               },
@@ -12584,8 +12584,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                   "value": "circle2"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
+              "originalId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
               "units": "m",
               "isClosed": "no"
             }
@@ -12600,12 +12600,12 @@ description: Variables in memory after executing stylized-mini-bus.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+      "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2fb1c747-daa7-54c8-b2d2-70aba454792f",
+          "id": "fdddd0fe-c77e-5784-b939-03f682706b01",
           "sourceRange": [],
           "tag": {
             "commentStart": 10262,
@@ -12618,8 +12618,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ae3c50ca-5d9d-5092-8e87-1df85d6e4e3a",
+          "id": "dd8c6f16-3c84-5f04-b7c7-7b9f9e3690b6",
           "sourceRange": [],
           "tag": {
             "commentStart": 10347,
@@ -12635,11 +12635,11 @@ description: Variables in memory after executing stylized-mini-bus.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fdddd0fe-c77e-5784-b939-03f682706b01",
               "sourceRange": []
             },
             "ccw": true,
@@ -12669,7 +12669,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dd8c6f16-3c84-5f04-b7c7-7b9f9e3690b6",
               "sourceRange": []
             },
             "ccw": true,
@@ -12699,8 +12699,8 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
+          "id": "9209892e-e35e-575e-b305-9935eac5ab33",
           "kind": "Custom",
           "objectId": 150,
           "origin": {
@@ -12741,7 +12741,7 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
             "sourceRange": []
           }
         },
@@ -12755,13 +12755,13 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+        "originalId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+        "originSketchId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "9ca18153-9846-5428-9975-a66594cd1386",
+      "endCapId": "19e40ecf-7d22-551c-8bd6-9717b83bfb5a",
       "units": "m",
       "sectional": false
     }

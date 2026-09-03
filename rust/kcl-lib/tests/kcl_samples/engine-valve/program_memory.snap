@@ -6,8 +6,8 @@ description: Variables in memory after executing engine-valve.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -84,12 +84,12 @@ description: Variables in memory after executing engine-valve.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "348e4e40-805e-5ae1-a154-12ad8d8873a8",
+          "id": "25c7c282-af36-54b0-8aed-f9f810c6ca68",
           "sourceRange": [],
           "tag": {
             "commentStart": 661,
@@ -102,8 +102,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de0bd177-cb4c-5793-ba9f-014ad4fc5abb",
+          "id": "2dab5eef-a99c-5f60-bceb-76a6663f8bb2",
           "sourceRange": [],
           "tag": {
             "commentStart": 734,
@@ -116,8 +116,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0837992-5a71-5dc4-b2d7-0d53d839b9fa",
+          "id": "d4874092-b638-5259-a779-1c71b9cb1d82",
           "sourceRange": [],
           "tag": {
             "commentStart": 843,
@@ -130,8 +130,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fa0f56bc-e031-56af-af2a-dd5aaec38eac",
+          "id": "db7d02ec-7a0a-5b10-925b-ec20c120bfe7",
           "sourceRange": [],
           "tag": {
             "commentStart": 952,
@@ -144,8 +144,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "86e6e811-57cc-5c8e-b60c-512d791fec40",
+          "id": "6404a0e5-f240-548c-bc5c-2dd1792e5542",
           "sourceRange": [],
           "tag": {
             "commentStart": 1214,
@@ -158,8 +158,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "daa462f2-820f-5fc4-aefc-30084ad1e2f7",
+          "id": "e8348d9e-94d9-57df-abe5-d44765644dee",
           "sourceRange": [],
           "tag": {
             "commentStart": 1475,
@@ -172,8 +172,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "907663d0-a35e-559c-9b24-3a1f1941ad7d",
+          "id": "9563aecd-340d-5916-8c38-e07e8a69ece8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1553,
@@ -186,8 +186,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a205b965-7927-5236-8d5c-193663b846bb",
+          "id": "db2471a6-6ac8-55bf-8d4c-9f5c415f0d57",
           "sourceRange": [],
           "tag": {
             "commentStart": 1638,
@@ -200,8 +200,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3494f1bc-8a73-5d72-aa54-0c86146c1a2b",
+          "id": "ff2c1af7-9556-57dd-9b3d-f3756c6cc1fa",
           "sourceRange": [],
           "tag": {
             "commentStart": 1724,
@@ -214,8 +214,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b521e8af-e435-558c-a572-30505536acb1",
+          "id": "ca0cc966-5ca3-5dfa-801e-73511e7d18b5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1810,
@@ -228,8 +228,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5b350b57-a380-50f4-bc2b-421afb968f7f",
+          "id": "9c6c6778-59d5-5c71-9184-74be64713f31",
           "sourceRange": [],
           "tag": {
             "commentStart": 1896,
@@ -242,8 +242,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "44da79ff-5e6d-5a99-a7ee-1073cbbb2631",
+          "id": "674663b6-f3db-5230-8d22-86bb181ad6dd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1981,
@@ -256,8 +256,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "34428e30-25d9-551b-ba45-ae6315741dba",
+          "id": "e75a130b-7fc1-5d5e-8be8-030acccea884",
           "sourceRange": [],
           "tag": {
             "commentStart": 2066,
@@ -270,8 +270,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4d75d32b-2c7b-5ee2-a8c6-0d32a29a41b4",
+          "id": "05445445-5395-5490-a8c6-d6d539f81b02",
           "sourceRange": [],
           "tag": {
             "commentStart": 2151,
@@ -284,8 +284,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6852ed63-2405-539c-9b94-6b6d9a2dbe65",
+          "id": "a000ce34-bdf9-5154-9322-73c6380c8d51",
           "sourceRange": [],
           "tag": {
             "commentStart": 2236,
@@ -298,8 +298,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eecbdc0b-e508-57e8-86cf-8d7bdd6cd9cb",
+          "id": "0d9d56dc-3827-510d-8adf-628e866dab37",
           "sourceRange": [],
           "tag": {
             "commentStart": 2321,
@@ -312,8 +312,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bfb7c004-6f69-597b-8e83-f451067c4e83",
+          "id": "3c512026-5d71-5997-9480-119384ecf1ab",
           "sourceRange": [],
           "tag": {
             "commentStart": 2406,
@@ -326,8 +326,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "75a59379-7b39-546d-9a82-0db05bafc204",
+          "id": "79b4d5c0-a78c-53c2-8da4-8c0d3ffdc1b8",
           "sourceRange": [],
           "tag": {
             "commentStart": 2492,
@@ -340,8 +340,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3a539666-4009-5295-85f7-7858827bb722",
+          "id": "ed8ea84e-314c-59a2-923f-ef6ffec30951",
           "sourceRange": [],
           "tag": {
             "commentStart": 2578,
@@ -354,8 +354,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "242ddabb-1542-5684-900f-a1e4c32c6385",
+          "id": "e40baf20-1690-5cc4-a5d1-5370bd66a66f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2661,
@@ -368,8 +368,8 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ad5c528f-2e53-5ea2-8da9-1ee4b30991f5",
+          "id": "60c62110-7f02-59ae-9df2-bb94d2629626",
           "sourceRange": [],
           "tag": {
             "commentStart": 2747,
@@ -385,11 +385,11 @@ description: Variables in memory after executing engine-valve.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "93954f29-a246-54bd-ac2a-62572f26d508",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25c7c282-af36-54b0-8aed-f9f810c6ca68",
               "sourceRange": []
             },
             "from": [
@@ -413,7 +413,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2dab5eef-a99c-5f60-bceb-76a6663f8bb2",
               "sourceRange": []
             },
             "ccw": false,
@@ -443,7 +443,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d4874092-b638-5259-a779-1c71b9cb1d82",
               "sourceRange": []
             },
             "ccw": true,
@@ -473,7 +473,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db7d02ec-7a0a-5b10-925b-ec20c120bfe7",
               "sourceRange": []
             },
             "from": [
@@ -497,7 +497,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6404a0e5-f240-548c-bc5c-2dd1792e5542",
               "sourceRange": []
             },
             "ccw": false,
@@ -527,7 +527,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "405ca97f-0495-55a0-a80f-441a691614ee",
               "sourceRange": []
             },
             "from": [
@@ -551,7 +551,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f9d6b90b-eb2a-5555-9298-32480b440a9a",
               "sourceRange": []
             },
             "from": [
@@ -575,7 +575,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e8348d9e-94d9-57df-abe5-d44765644dee",
               "sourceRange": []
             },
             "from": [
@@ -599,7 +599,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9563aecd-340d-5916-8c38-e07e8a69ece8",
               "sourceRange": []
             },
             "from": [
@@ -623,7 +623,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db2471a6-6ac8-55bf-8d4c-9f5c415f0d57",
               "sourceRange": []
             },
             "from": [
@@ -647,7 +647,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ff2c1af7-9556-57dd-9b3d-f3756c6cc1fa",
               "sourceRange": []
             },
             "from": [
@@ -671,7 +671,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ca0cc966-5ca3-5dfa-801e-73511e7d18b5",
               "sourceRange": []
             },
             "from": [
@@ -695,7 +695,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9c6c6778-59d5-5c71-9184-74be64713f31",
               "sourceRange": []
             },
             "from": [
@@ -719,7 +719,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "674663b6-f3db-5230-8d22-86bb181ad6dd",
               "sourceRange": []
             },
             "from": [
@@ -743,7 +743,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e75a130b-7fc1-5d5e-8be8-030acccea884",
               "sourceRange": []
             },
             "from": [
@@ -767,7 +767,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "05445445-5395-5490-a8c6-d6d539f81b02",
               "sourceRange": []
             },
             "from": [
@@ -791,7 +791,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a000ce34-bdf9-5154-9322-73c6380c8d51",
               "sourceRange": []
             },
             "from": [
@@ -815,7 +815,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0d9d56dc-3827-510d-8adf-628e866dab37",
               "sourceRange": []
             },
             "from": [
@@ -839,7 +839,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3c512026-5d71-5997-9480-119384ecf1ab",
               "sourceRange": []
             },
             "from": [
@@ -863,7 +863,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "79b4d5c0-a78c-53c2-8da4-8c0d3ffdc1b8",
               "sourceRange": []
             },
             "from": [
@@ -887,7 +887,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ed8ea84e-314c-59a2-923f-ef6ffec30951",
               "sourceRange": []
             },
             "from": [
@@ -911,7 +911,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e40baf20-1690-5cc4-a5d1-5370bd66a66f",
               "sourceRange": []
             },
             "from": [
@@ -935,7 +935,7 @@ description: Variables in memory after executing engine-valve.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "60c62110-7f02-59ae-9df2-bb94d2629626",
               "sourceRange": []
             },
             "from": [
@@ -959,8 +959,8 @@ description: Variables in memory after executing engine-valve.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1001,7 +1001,7 @@ description: Variables in memory after executing engine-valve.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
             "sourceRange": []
           }
         },
@@ -1099,9 +1099,9 @@ description: Variables in memory after executing engine-valve.kcl
             "value": "line9"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508",
+        "originalId": "93954f29-a246-54bd-ac2a-62572f26d508",
+        "originSketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "units": "mm"
       },
       "startCapId": null,
@@ -1150,11 +1150,11 @@ description: Variables in memory after executing engine-valve.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "93954f29-a246-54bd-ac2a-62572f26d508",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25c7c282-af36-54b0-8aed-f9f810c6ca68",
             "sourceRange": []
           },
           "from": [
@@ -1178,7 +1178,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2dab5eef-a99c-5f60-bceb-76a6663f8bb2",
             "sourceRange": []
           },
           "ccw": false,
@@ -1208,7 +1208,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d4874092-b638-5259-a779-1c71b9cb1d82",
             "sourceRange": []
           },
           "ccw": true,
@@ -1238,7 +1238,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "db7d02ec-7a0a-5b10-925b-ec20c120bfe7",
             "sourceRange": []
           },
           "from": [
@@ -1262,7 +1262,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6404a0e5-f240-548c-bc5c-2dd1792e5542",
             "sourceRange": []
           },
           "ccw": false,
@@ -1292,7 +1292,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "405ca97f-0495-55a0-a80f-441a691614ee",
             "sourceRange": []
           },
           "from": [
@@ -1316,7 +1316,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f9d6b90b-eb2a-5555-9298-32480b440a9a",
             "sourceRange": []
           },
           "from": [
@@ -1340,7 +1340,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e8348d9e-94d9-57df-abe5-d44765644dee",
             "sourceRange": []
           },
           "from": [
@@ -1364,7 +1364,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9563aecd-340d-5916-8c38-e07e8a69ece8",
             "sourceRange": []
           },
           "from": [
@@ -1388,7 +1388,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "db2471a6-6ac8-55bf-8d4c-9f5c415f0d57",
             "sourceRange": []
           },
           "from": [
@@ -1412,7 +1412,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ff2c1af7-9556-57dd-9b3d-f3756c6cc1fa",
             "sourceRange": []
           },
           "from": [
@@ -1436,7 +1436,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ca0cc966-5ca3-5dfa-801e-73511e7d18b5",
             "sourceRange": []
           },
           "from": [
@@ -1460,7 +1460,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9c6c6778-59d5-5c71-9184-74be64713f31",
             "sourceRange": []
           },
           "from": [
@@ -1484,7 +1484,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "674663b6-f3db-5230-8d22-86bb181ad6dd",
             "sourceRange": []
           },
           "from": [
@@ -1508,7 +1508,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e75a130b-7fc1-5d5e-8be8-030acccea884",
             "sourceRange": []
           },
           "from": [
@@ -1532,7 +1532,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "05445445-5395-5490-a8c6-d6d539f81b02",
             "sourceRange": []
           },
           "from": [
@@ -1556,7 +1556,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a000ce34-bdf9-5154-9322-73c6380c8d51",
             "sourceRange": []
           },
           "from": [
@@ -1580,7 +1580,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0d9d56dc-3827-510d-8adf-628e866dab37",
             "sourceRange": []
           },
           "from": [
@@ -1604,7 +1604,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3c512026-5d71-5997-9480-119384ecf1ab",
             "sourceRange": []
           },
           "from": [
@@ -1628,7 +1628,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "79b4d5c0-a78c-53c2-8da4-8c0d3ffdc1b8",
             "sourceRange": []
           },
           "from": [
@@ -1652,7 +1652,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ed8ea84e-314c-59a2-923f-ef6ffec30951",
             "sourceRange": []
           },
           "from": [
@@ -1676,7 +1676,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e40baf20-1690-5cc4-a5d1-5370bd66a66f",
             "sourceRange": []
           },
           "from": [
@@ -1700,7 +1700,7 @@ description: Variables in memory after executing engine-valve.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "60c62110-7f02-59ae-9df2-bb94d2629626",
             "sourceRange": []
           },
           "from": [
@@ -1724,8 +1724,8 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1766,7 +1766,7 @@ description: Variables in memory after executing engine-valve.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
           "sourceRange": []
         }
       },
@@ -1864,9 +1864,9 @@ description: Variables in memory after executing engine-valve.kcl
           "value": "line9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "originalId": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "originSketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "units": "mm"
     }
   },
@@ -1879,7 +1879,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 11,
                 "kind": {
                   "arc": {
@@ -1985,8 +1985,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2015,7 +2015,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -2031,7 +2031,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 15,
                 "kind": {
                   "arc": {
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2167,7 +2167,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -2183,7 +2183,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 28,
                 "kind": {
                   "arc": {
@@ -2289,8 +2289,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2319,7 +2319,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -2335,7 +2335,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2410,8 +2410,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2440,7 +2440,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2456,7 +2456,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -2530,8 +2530,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2560,7 +2560,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -2576,7 +2576,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 46,
                 "kind": {
                   "line": {
@@ -2650,8 +2650,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2680,7 +2680,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -2696,7 +2696,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -2770,8 +2770,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2800,7 +2800,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -2816,7 +2816,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 52,
                 "kind": {
                   "line": {
@@ -2890,8 +2890,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2920,7 +2920,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -2936,7 +2936,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b681387-29ea-57f1-8713-d63280827139",
                 "objectId": 55,
                 "kind": {
                   "line": {
@@ -3010,8 +3010,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3040,7 +3040,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line14"
@@ -3056,7 +3056,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 58,
                 "kind": {
                   "line": {
@@ -3130,8 +3130,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3160,7 +3160,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -3176,7 +3176,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 61,
                 "kind": {
                   "line": {
@@ -3250,8 +3250,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3280,7 +3280,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line16"
@@ -3296,7 +3296,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -3370,8 +3370,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3400,7 +3400,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line17"
@@ -3416,7 +3416,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 67,
                 "kind": {
                   "line": {
@@ -3490,8 +3490,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3520,7 +3520,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line18"
@@ -3536,7 +3536,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 70,
                 "kind": {
                   "line": {
@@ -3610,8 +3610,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3640,7 +3640,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line19"
@@ -3656,7 +3656,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -3730,8 +3730,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3760,7 +3760,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3776,7 +3776,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                 "objectId": 73,
                 "kind": {
                   "line": {
@@ -3850,8 +3850,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3880,7 +3880,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line20"
@@ -3896,7 +3896,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 76,
                 "kind": {
                   "line": {
@@ -3970,8 +3970,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4000,7 +4000,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line21"
@@ -4016,7 +4016,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -4090,8 +4090,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4120,7 +4120,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line22"
@@ -4136,7 +4136,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "objectId": 82,
                 "kind": {
                   "line": {
@@ -4210,8 +4210,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4240,7 +4240,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line23"
@@ -4256,7 +4256,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -4331,8 +4331,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4361,7 +4361,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4377,7 +4377,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -4452,8 +4452,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4482,7 +4482,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4498,7 +4498,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 18,
                 "kind": {
                   "line": {
@@ -4572,8 +4572,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4602,7 +4602,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -4618,7 +4618,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 34,
                 "kind": {
                   "line": {
@@ -4692,8 +4692,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4722,7 +4722,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -4738,7 +4738,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41c630c9-9d44-581b-98af-caee575bea48",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -4812,8 +4812,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4842,7 +4842,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -4858,7 +4858,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                 "objectId": 37,
                 "kind": {
                   "line": {
@@ -4932,8 +4932,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4962,7 +4962,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -4978,7 +4978,7 @@ description: Variables in memory after executing engine-valve.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -5052,8 +5052,8 @@ description: Variables in memory after executing engine-valve.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5082,7 +5082,7 @@ description: Variables in memory after executing engine-valve.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -5099,11 +5099,11 @@ description: Variables in memory after executing engine-valve.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -5127,7 +5127,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -5157,7 +5157,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5187,7 +5187,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -5211,7 +5211,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -5241,7 +5241,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
                     "sourceRange": []
                   },
                   "from": [
@@ -5265,7 +5265,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -5289,7 +5289,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                     "sourceRange": []
                   },
                   "from": [
@@ -5313,7 +5313,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -5337,7 +5337,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                     "sourceRange": []
                   },
                   "from": [
@@ -5361,7 +5361,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "from": [
@@ -5385,7 +5385,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                     "sourceRange": []
                   },
                   "from": [
@@ -5409,7 +5409,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -5433,7 +5433,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b681387-29ea-57f1-8713-d63280827139",
                     "sourceRange": []
                   },
                   "from": [
@@ -5457,7 +5457,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -5481,7 +5481,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "from": [
@@ -5505,7 +5505,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -5529,7 +5529,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "from": [
@@ -5553,7 +5553,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5577,7 +5577,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                     "sourceRange": []
                   },
                   "from": [
@@ -5601,7 +5601,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "from": [
@@ -5625,7 +5625,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5649,7 +5649,7 @@ description: Variables in memory after executing engine-valve.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "from": [
@@ -5673,8 +5673,8 @@ description: Variables in memory after executing engine-valve.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -5715,7 +5715,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                   "sourceRange": []
                 }
               },
@@ -5813,8 +5813,8 @@ description: Variables in memory after executing engine-valve.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+              "originalId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
               "units": "mm",
               "isClosed": "implicitly"
             }

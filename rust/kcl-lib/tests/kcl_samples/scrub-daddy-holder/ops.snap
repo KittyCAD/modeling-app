@@ -636,7 +636,7 @@ description: Operations executed scrub-daddy-holder.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -666,7 +666,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
           }
         },
         "sourceRange": []
@@ -712,7 +712,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []
@@ -1481,11 +1481,11 @@ description: Operations executed scrub-daddy-holder.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "037b0f2d-13ef-58af-b918-43b89e77393e"
               }
             ]
           },
@@ -1515,7 +1515,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
           }
         },
         "sourceRange": []
@@ -1561,7 +1561,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -1574,13 +1574,13 @@ description: Operations executed scrub-daddy-holder.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9caa7489-3e9c-5975-89aa-788cbb36099c"
                 }
               }
             ]
@@ -1614,7 +1614,7 @@ description: Operations executed scrub-daddy-holder.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -2062,7 +2062,7 @@ description: Operations executed scrub-daddy-holder.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
               }
             ]
           },
@@ -2092,7 +2092,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
           }
         },
         "sourceRange": []
@@ -2145,7 +2145,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
           }
         },
         "sourceRange": []
@@ -2166,7 +2166,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "96d1423f-5564-5cba-b03a-1bbeff4433fb"
           },
           "sourceRange": []
         }
@@ -2198,7 +2198,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
           }
         },
         "sourceRange": []
@@ -2350,7 +2350,7 @@ description: Operations executed scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []
@@ -2374,19 +2374,19 @@ description: Operations executed scrub-daddy-holder.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a9edeab8-e678-5885-9ffb-eeaa2ff7d8f7"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "287f0daf-d2bd-5fdf-8704-7b978471c682"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "586626d0-af09-5f7a-8f0f-a73450477d1b"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "89536a88-4703-54c3-9662-8f7ee1dbff12"
               }
             ]
           },

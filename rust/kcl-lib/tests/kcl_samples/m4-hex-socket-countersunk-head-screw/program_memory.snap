@@ -6,8 +6,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
   "__sketch_32_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,12 +71,12 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+      "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f4fb968-1638-5179-b5bf-e4835f86ae4e",
+          "id": "5803fcb4-e0b7-5b5f-9302-d122c1603383",
           "sourceRange": [],
           "tag": {
             "commentStart": 484,
@@ -89,8 +89,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "35061bc2-60e0-5fae-8d02-8f7ad45635a2",
+          "id": "ab16d4ba-4aff-5092-80de-3eaede51cef9",
           "sourceRange": [],
           "tag": {
             "commentStart": 568,
@@ -103,8 +103,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2994ff80-43fa-5bcd-81b5-dd3a93081128",
+          "id": "7d36259f-92c3-5773-80be-b4f3c936ff98",
           "sourceRange": [],
           "tag": {
             "commentStart": 712,
@@ -117,8 +117,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c91575a-fdf9-5275-80cc-18e5a96d8cb1",
+          "id": "af5d5852-6650-5b07-9937-8e56cb46a2cd",
           "sourceRange": [],
           "tag": {
             "commentStart": 877,
@@ -134,11 +134,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5803fcb4-e0b7-5b5f-9302-d122c1603383",
               "sourceRange": []
             },
             "from": [
@@ -162,7 +162,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ab16d4ba-4aff-5092-80de-3eaede51cef9",
               "sourceRange": []
             },
             "from": [
@@ -186,7 +186,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7d36259f-92c3-5773-80be-b4f3c936ff98",
               "sourceRange": []
             },
             "from": [
@@ -210,7 +210,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af5d5852-6650-5b07-9937-8e56cb46a2cd",
               "sourceRange": []
             },
             "from": [
@@ -234,7 +234,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3d18a1e3-e1ef-5ecb-a249-aaf3fc738661",
               "sourceRange": []
             },
             "from": [
@@ -258,8 +258,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -300,7 +300,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
             "sourceRange": []
           }
         },
@@ -326,9 +326,9 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "shankTopEdge"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originSketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "units": "mm"
       },
       "startCapId": null,
@@ -346,12 +346,12 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f4fb968-1638-5179-b5bf-e4835f86ae4e",
+          "id": "5803fcb4-e0b7-5b5f-9302-d122c1603383",
           "sourceRange": [],
           "tag": {
             "commentStart": 484,
@@ -364,8 +364,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "35061bc2-60e0-5fae-8d02-8f7ad45635a2",
+          "id": "ab16d4ba-4aff-5092-80de-3eaede51cef9",
           "sourceRange": [],
           "tag": {
             "commentStart": 568,
@@ -378,8 +378,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2994ff80-43fa-5bcd-81b5-dd3a93081128",
+          "id": "7d36259f-92c3-5773-80be-b4f3c936ff98",
           "sourceRange": [],
           "tag": {
             "commentStart": 712,
@@ -392,8 +392,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c91575a-fdf9-5275-80cc-18e5a96d8cb1",
+          "id": "af5d5852-6650-5b07-9937-8e56cb46a2cd",
           "sourceRange": [],
           "tag": {
             "commentStart": 877,
@@ -409,11 +409,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5803fcb4-e0b7-5b5f-9302-d122c1603383",
               "sourceRange": []
             },
             "from": [
@@ -437,7 +437,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ab16d4ba-4aff-5092-80de-3eaede51cef9",
               "sourceRange": []
             },
             "from": [
@@ -461,7 +461,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7d36259f-92c3-5773-80be-b4f3c936ff98",
               "sourceRange": []
             },
             "from": [
@@ -485,7 +485,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af5d5852-6650-5b07-9937-8e56cb46a2cd",
               "sourceRange": []
             },
             "from": [
@@ -509,7 +509,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3d18a1e3-e1ef-5ecb-a249-aaf3fc738661",
               "sourceRange": []
             },
             "from": [
@@ -533,8 +533,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -575,7 +575,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
             "sourceRange": []
           }
         },
@@ -601,9 +601,9 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "shankTopEdge"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originSketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "units": "mm"
       },
       "startCapId": null,
@@ -634,11 +634,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5803fcb4-e0b7-5b5f-9302-d122c1603383",
             "sourceRange": []
           },
           "from": [
@@ -662,7 +662,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ab16d4ba-4aff-5092-80de-3eaede51cef9",
             "sourceRange": []
           },
           "from": [
@@ -686,7 +686,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7d36259f-92c3-5773-80be-b4f3c936ff98",
             "sourceRange": []
           },
           "from": [
@@ -710,7 +710,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "af5d5852-6650-5b07-9937-8e56cb46a2cd",
             "sourceRange": []
           },
           "from": [
@@ -734,7 +734,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3d18a1e3-e1ef-5ecb-a249-aaf3fc738661",
             "sourceRange": []
           },
           "from": [
@@ -758,8 +758,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -800,7 +800,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "sourceRange": []
         }
       },
@@ -826,9 +826,9 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "value": "shankTopEdge"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "originSketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "units": "mm"
     }
   },
@@ -841,7 +841,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -915,8 +915,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -945,7 +945,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltAxis"
@@ -961,7 +961,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -1035,8 +1035,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1065,7 +1065,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "headTopEdge"
@@ -1081,7 +1081,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1155,8 +1155,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1185,7 +1185,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "headTransitionEdge"
@@ -1202,11 +1202,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1230,7 +1230,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1254,7 +1254,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1278,7 +1278,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1302,7 +1302,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -1326,8 +1326,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1368,7 +1368,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "sourceRange": []
                 }
               },
@@ -1394,8 +1394,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "value": "shankTopEdge"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1409,7 +1409,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1483,8 +1483,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1513,7 +1513,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "shankSideWall"
@@ -1529,7 +1529,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1603,8 +1603,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1633,7 +1633,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "shankTopEdge"
@@ -1683,12 +1683,12 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+      "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a796ac51-f320-5542-b7e6-2eaeaba5cb25",
+          "id": "e787d545-0147-5453-be42-479d7cb8fd0d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1886,
@@ -1701,8 +1701,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
+          "id": "4e0c96bb-a16c-5fb7-9672-992f796c5e8b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1974,
@@ -1715,8 +1715,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
+          "id": "95061471-14bb-5041-96c5-8f3c04c90df7",
           "sourceRange": [],
           "tag": {
             "commentStart": 2163,
@@ -1729,8 +1729,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "id": "6ffb0d6e-5411-5f19-929a-e6977ea365c7",
           "sourceRange": [],
           "tag": {
             "commentStart": 2394,
@@ -1743,8 +1743,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d25c343c-5efb-565f-8fe4-aa151b972d2c",
+          "id": "79584c2b-3e9c-52ae-b76b-74afa81f3f84",
           "sourceRange": [],
           "tag": {
             "commentStart": 2623,
@@ -1757,8 +1757,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "778953ec-3311-5339-a1a1-062d8bc2ad4c",
+          "id": "f3392c9f-2c65-57e1-b85d-432ccd574fc3",
           "sourceRange": [],
           "tag": {
             "commentStart": 2822,
@@ -1774,11 +1774,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "5288de96-84bb-518a-848b-5092b5d33e48",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e787d545-0147-5453-be42-479d7cb8fd0d",
               "sourceRange": []
             },
             "from": [
@@ -1802,7 +1802,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e0c96bb-a16c-5fb7-9672-992f796c5e8b",
               "sourceRange": []
             },
             "from": [
@@ -1826,7 +1826,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "95061471-14bb-5041-96c5-8f3c04c90df7",
               "sourceRange": []
             },
             "from": [
@@ -1850,7 +1850,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6ffb0d6e-5411-5f19-929a-e6977ea365c7",
               "sourceRange": []
             },
             "from": [
@@ -1874,7 +1874,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "79584c2b-3e9c-52ae-b76b-74afa81f3f84",
               "sourceRange": []
             },
             "from": [
@@ -1898,7 +1898,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f3392c9f-2c65-57e1-b85d-432ccd574fc3",
               "sourceRange": []
             },
             "from": [
@@ -1922,8 +1922,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
           "kind": "Custom",
           "objectId": 31,
           "origin": {
@@ -1964,7 +1964,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
             "sourceRange": []
           }
         },
@@ -1994,13 +1994,13 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "upperRightFacet"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48",
+        "originalId": "5288de96-84bb-518a-848b-5092b5d33e48",
+        "originSketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "91c9766d-c483-5cd6-bc6b-8cd723b9b113",
+      "endCapId": "a5d6a18a-f6ff-5192-81bd-adb3aa853744",
       "units": "mm",
       "sectional": false
     }
@@ -2009,11 +2009,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5288de96-84bb-518a-848b-5092b5d33e48",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e787d545-0147-5453-be42-479d7cb8fd0d",
             "sourceRange": []
           },
           "from": [
@@ -2037,7 +2037,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4e0c96bb-a16c-5fb7-9672-992f796c5e8b",
             "sourceRange": []
           },
           "from": [
@@ -2061,7 +2061,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "95061471-14bb-5041-96c5-8f3c04c90df7",
             "sourceRange": []
           },
           "from": [
@@ -2085,7 +2085,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6ffb0d6e-5411-5f19-929a-e6977ea365c7",
             "sourceRange": []
           },
           "from": [
@@ -2109,7 +2109,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "79584c2b-3e9c-52ae-b76b-74afa81f3f84",
             "sourceRange": []
           },
           "from": [
@@ -2133,7 +2133,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f3392c9f-2c65-57e1-b85d-432ccd574fc3",
             "sourceRange": []
           },
           "from": [
@@ -2157,8 +2157,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "kind": "Custom",
         "objectId": 31,
         "origin": {
@@ -2199,7 +2199,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
           "sourceRange": []
         }
       },
@@ -2229,9 +2229,9 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "value": "upperRightFacet"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48",
+      "originalId": "5288de96-84bb-518a-848b-5092b5d33e48",
+      "originSketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "units": "mm"
     }
   },
@@ -2244,7 +2244,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
                 "objectId": 57,
                 "kind": {
                   "line": {
@@ -2318,8 +2318,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -2348,7 +2348,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomFacet"
@@ -2364,7 +2364,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "objectId": 52,
                 "kind": {
                   "line": {
@@ -2438,8 +2438,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -2468,7 +2468,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerLeftFacet"
@@ -2484,7 +2484,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -2558,8 +2558,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -2588,7 +2588,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerRightFacet"
@@ -2605,11 +2605,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                     "sourceRange": []
                   },
                   "from": [
@@ -2633,7 +2633,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                     "sourceRange": []
                   },
                   "from": [
@@ -2657,7 +2657,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                     "sourceRange": []
                   },
                   "from": [
@@ -2681,7 +2681,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                     "sourceRange": []
                   },
                   "from": [
@@ -2705,7 +2705,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
                     "sourceRange": []
                   },
                   "from": [
@@ -2729,7 +2729,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                     "sourceRange": []
                   },
                   "from": [
@@ -2753,8 +2753,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "kind": "Custom",
                 "objectId": 31,
                 "origin": {
@@ -2795,7 +2795,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
                   "sourceRange": []
                 }
               },
@@ -2825,8 +2825,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "value": "upperRightFacet"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+              "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2840,7 +2840,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc312d38-2fa6-5583-a605-44880f646499",
                 "objectId": 69,
                 "kind": {
                   "line": {
@@ -2915,8 +2915,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -2945,7 +2945,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "socketRadiusGuide"
@@ -2961,7 +2961,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "objectId": 35,
                 "kind": {
                   "circle": {
@@ -3036,8 +3036,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -3066,7 +3066,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "socketReferenceCircle"
@@ -3082,7 +3082,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -3156,8 +3156,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -3186,7 +3186,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topFacet"
@@ -3202,7 +3202,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -3276,8 +3276,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -3306,7 +3306,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperLeftFacet"
@@ -3322,7 +3322,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -3396,8 +3396,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                  "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -3426,7 +3426,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperRightFacet"
@@ -3443,11 +3443,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -3471,7 +3471,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -3495,7 +3495,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -3519,7 +3519,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -3543,7 +3543,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -3567,8 +3567,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -3609,7 +3609,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "sourceRange": []
         }
       },
@@ -3635,8 +3635,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "value": "shankTopEdge"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -3645,11 +3645,11 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
             "sourceRange": []
           },
           "from": [
@@ -3673,7 +3673,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           },
           "from": [
@@ -3697,7 +3697,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "72dddee3-1330-5c4f-b767-659f762ad674",
             "sourceRange": []
           },
           "from": [
@@ -3721,7 +3721,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
             "sourceRange": []
           },
           "from": [
@@ -3745,7 +3745,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
             "sourceRange": []
           },
           "from": [
@@ -3769,7 +3769,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
             "sourceRange": []
           },
           "from": [
@@ -3793,8 +3793,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "kind": "Custom",
         "objectId": 31,
         "origin": {
@@ -3835,7 +3835,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
           "sourceRange": []
         }
       },
@@ -3865,8 +3865,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
           "value": "upperRightFacet"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+      "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "units": "mm",
       "isClosed": "implicitly"
     }

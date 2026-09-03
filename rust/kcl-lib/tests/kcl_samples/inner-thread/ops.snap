@@ -314,7 +314,7 @@ description: Operations executed inner-thread.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -344,7 +344,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
           }
         },
         "sourceRange": []
@@ -370,7 +370,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []
@@ -686,7 +686,7 @@ description: Operations executed inner-thread.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
               }
             ]
           },
@@ -716,7 +716,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
           }
         },
         "sourceRange": []
@@ -742,7 +742,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
           }
         },
         "sourceRange": []
@@ -1777,7 +1777,7 @@ description: Operations executed inner-thread.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
             }
           },
           "sourceRange": []
@@ -1833,11 +1833,11 @@ description: Operations executed inner-thread.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f481fd4-203e-57d7-b5d6-b16289577621"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e383621f-755a-5f2e-ada3-608aff393dab"
               }
             ]
           },
@@ -1867,7 +1867,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
           }
         },
         "sourceRange": []
@@ -1877,7 +1877,7 @@ description: Operations executed inner-thread.kcl
           "value": {
             "type": "Helix",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
             }
           },
           "sourceRange": []
@@ -1906,7 +1906,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
           }
         },
         "sourceRange": []
@@ -1932,7 +1932,7 @@ description: Operations executed inner-thread.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
           }
         },
         "sourceRange": []
@@ -1961,7 +1961,7 @@ description: Operations executed inner-thread.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
               }
             }
           ]
@@ -1976,13 +1976,13 @@ description: Operations executed inner-thread.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
                 }
               }
             ]

@@ -6,8 +6,8 @@ description: Variables in memory after executing dodecahedron.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -118,8 +118,8 @@ description: Variables in memory after executing dodecahedron.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -148,7 +148,7 @@ description: Variables in memory after executing dodecahedron.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -164,7 +164,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -238,8 +238,8 @@ description: Variables in memory after executing dodecahedron.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -268,7 +268,7 @@ description: Variables in memory after executing dodecahedron.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -284,7 +284,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -358,8 +358,8 @@ description: Variables in memory after executing dodecahedron.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -388,7 +388,7 @@ description: Variables in memory after executing dodecahedron.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -404,7 +404,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -478,8 +478,8 @@ description: Variables in memory after executing dodecahedron.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -508,7 +508,7 @@ description: Variables in memory after executing dodecahedron.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -525,11 +525,11 @@ description: Variables in memory after executing dodecahedron.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -553,7 +553,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -577,7 +577,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -601,7 +601,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -625,8 +625,8 @@ description: Variables in memory after executing dodecahedron.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -667,7 +667,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                   "sourceRange": []
                 }
               },
@@ -689,8 +689,8 @@ description: Variables in memory after executing dodecahedron.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "originalId": "7b681387-29ea-57f1-8713-d63280827139",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -705,11 +705,11 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -733,7 +733,7 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -757,7 +757,7 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -781,7 +781,7 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -805,8 +805,8 @@ description: Variables in memory after executing dodecahedron.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -847,7 +847,7 @@ description: Variables in memory after executing dodecahedron.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
           "sourceRange": []
         }
       },
@@ -869,9 +869,9 @@ description: Variables in memory after executing dodecahedron.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+      "originalId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+      "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
       "units": "in"
     }
   },
@@ -879,12 +879,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+      "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -897,8 +897,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -911,8 +911,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -925,8 +925,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -942,11 +942,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -970,7 +970,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -994,7 +994,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -1018,7 +1018,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -1042,8 +1042,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1084,7 +1084,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -1106,13 +1106,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "originalId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "in",
       "sectional": false
     }
@@ -1121,12 +1121,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+      "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "id": "b9270abb-8013-5214-8010-1b3a0e977704",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -1139,8 +1139,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -1153,8 +1153,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+          "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -1167,8 +1167,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
+          "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -1184,11 +1184,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b9270abb-8013-5214-8010-1b3a0e977704",
               "sourceRange": []
             },
             "from": [
@@ -1212,7 +1212,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
               "sourceRange": []
             },
             "from": [
@@ -1236,7 +1236,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
               "sourceRange": []
             },
             "from": [
@@ -1260,7 +1260,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
               "sourceRange": []
             },
             "from": [
@@ -1284,8 +1284,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1326,7 +1326,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -1348,13 +1348,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "originalId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b620e86e-3390-5b73-897e-9d5291058003",
+      "endCapId": "17940c6a-8399-5d56-9384-d0d6f676d048",
       "units": "in",
       "sectional": false
     }
@@ -1363,12 +1363,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+      "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "33a382ff-4e43-5c58-a0ae-cf68ce924f55",
+          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -1381,8 +1381,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7f1b023e-084a-585a-8615-9a206829084c",
+          "id": "663e209d-df18-5e9b-b139-668cc41baf79",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -1395,8 +1395,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+          "id": "50854142-6db4-531e-ab69-489fa496a253",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -1409,8 +1409,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "31faf920-8e8f-5ea7-8613-87b6f566220b",
+          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -1426,11 +1426,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
               "sourceRange": []
             },
             "from": [
@@ -1454,7 +1454,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "663e209d-df18-5e9b-b139-668cc41baf79",
               "sourceRange": []
             },
             "from": [
@@ -1478,7 +1478,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "50854142-6db4-531e-ab69-489fa496a253",
               "sourceRange": []
             },
             "from": [
@@ -1502,7 +1502,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
               "sourceRange": []
             },
             "from": [
@@ -1526,8 +1526,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1568,7 +1568,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -1590,13 +1590,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+        "originalId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0c53169e-3975-5ff1-8b61-3be2bf3f11d8",
+      "endCapId": "d79f34e4-5ec4-5fbf-ad19-348a5e48a0fe",
       "units": "in",
       "sectional": false
     }
@@ -1605,12 +1605,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "cc312d38-2fa6-5583-a605-44880f646499",
+      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "63a00bb7-2cd9-55fe-99a4-505985ed010d",
+          "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -1623,8 +1623,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "57dcebaf-f488-5f18-a3d0-8a7c5e588523",
+          "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -1637,8 +1637,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dc700ece-abf1-5d4d-b57d-8fa8eecf901d",
+          "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -1651,8 +1651,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2147b1bc-0e86-58cf-b979-a1abcf613618",
+          "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -1668,11 +1668,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "cc312d38-2fa6-5583-a605-44880f646499",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
               "sourceRange": []
             },
             "from": [
@@ -1696,7 +1696,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
               "sourceRange": []
             },
             "from": [
@@ -1720,7 +1720,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
               "sourceRange": []
             },
             "from": [
@@ -1744,7 +1744,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
               "sourceRange": []
             },
             "from": [
@@ -1768,8 +1768,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1810,7 +1810,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -1832,13 +1832,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
+        "originalId": "cc312d38-2fa6-5583-a605-44880f646499",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "6cbdfc69-8158-576b-9986-f2cbbea98a73",
+      "endCapId": "25662764-9b8b-5d82-98e0-84ff503bf2cc",
       "units": "in",
       "sectional": false
     }
@@ -1847,12 +1847,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+      "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
+          "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -1865,8 +1865,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3132128b-3a82-5446-aa11-78053c088f3c",
+          "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -1879,8 +1879,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
+          "id": "a78597bb-12cf-565b-b383-2fadea836030",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -1893,8 +1893,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
+          "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -1910,11 +1910,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
               "sourceRange": []
             },
             "from": [
@@ -1938,7 +1938,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
               "sourceRange": []
             },
             "from": [
@@ -1962,7 +1962,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a78597bb-12cf-565b-b383-2fadea836030",
               "sourceRange": []
             },
             "from": [
@@ -1986,7 +1986,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
               "sourceRange": []
             },
             "from": [
@@ -2010,8 +2010,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2052,7 +2052,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -2074,13 +2074,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+        "originalId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
+      "endCapId": "9700197b-45f4-5326-aea5-9ad8044a1658",
       "units": "in",
       "sectional": false
     }
@@ -2089,12 +2089,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "468f6520-a683-5392-9492-de009fdcddef",
+      "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "477be144-bb75-5271-8ba5-d3e844a16dfc",
+          "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -2107,8 +2107,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f2880d4-d771-5ebc-9cf1-0815ded3b5bb",
+          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -2121,8 +2121,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "44c976bf-fa25-54c3-994a-152b021a4da7",
+          "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -2135,8 +2135,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "caab2e75-951d-5d86-b9bb-bd94eb9cef11",
+          "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -2152,11 +2152,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "468f6520-a683-5392-9492-de009fdcddef",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
               "sourceRange": []
             },
             "from": [
@@ -2180,7 +2180,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
               "sourceRange": []
             },
             "from": [
@@ -2204,7 +2204,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
               "sourceRange": []
             },
             "from": [
@@ -2228,7 +2228,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
               "sourceRange": []
             },
             "from": [
@@ -2252,8 +2252,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2294,7 +2294,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -2316,13 +2316,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+        "originalId": "468f6520-a683-5392-9492-de009fdcddef",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2d5ec83e-723e-5e13-9c3f-0cfdcaf57fae",
+      "endCapId": "175dedae-41eb-53a3-a4ac-e5c0c236e1b7",
       "units": "in",
       "sectional": false
     }
@@ -2331,12 +2331,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "11238134-bd51-5920-907f-45af8ba43955",
+          "id": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -2349,8 +2349,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "72bf6900-96ac-5ebd-a788-216d48167e7a",
+          "id": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -2363,8 +2363,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e399799a-9d34-57d8-aaf4-123081b7efda",
+          "id": "0f126e7b-acca-5f24-aab5-a8b751c9d51e",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -2377,8 +2377,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "143f8a6b-cb5c-5294-b607-2fa264a0e255",
+          "id": "aa25b93a-10c8-5753-bb09-6ccc60a560df",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -2394,11 +2394,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
               "sourceRange": []
             },
             "from": [
@@ -2422,7 +2422,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
               "sourceRange": []
             },
             "from": [
@@ -2446,7 +2446,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f126e7b-acca-5f24-aab5-a8b751c9d51e",
               "sourceRange": []
             },
             "from": [
@@ -2470,7 +2470,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aa25b93a-10c8-5753-bb09-6ccc60a560df",
               "sourceRange": []
             },
             "from": [
@@ -2494,8 +2494,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2536,7 +2536,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -2558,13 +2558,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "originalId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "891296e8-0c13-519d-8afe-59158f8fca73",
+      "endCapId": "ce6cf2e3-333a-5d81-a218-ad72debffe40",
       "units": "in",
       "sectional": false
     }
@@ -2573,12 +2573,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d5eca564-8b66-523d-86bf-11e6c823a748",
+          "id": "35040f34-ec7c-53c2-bf45-2842aceba106",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -2591,8 +2591,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d27f313b-87a3-51db-88c0-ee8d0f1d9d61",
+          "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -2605,8 +2605,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "59bb9725-89b7-5757-b143-c11f2d149eb1",
+          "id": "f65fd9f3-2cf8-5b07-991e-aab90163da64",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -2619,8 +2619,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2838f9e9-89bd-5e52-9272-770d5200e10e",
+          "id": "f54764aa-b9e1-59a3-b779-d36eed525661",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -2636,11 +2636,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "35040f34-ec7c-53c2-bf45-2842aceba106",
               "sourceRange": []
             },
             "from": [
@@ -2664,7 +2664,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
               "sourceRange": []
             },
             "from": [
@@ -2688,7 +2688,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f65fd9f3-2cf8-5b07-991e-aab90163da64",
               "sourceRange": []
             },
             "from": [
@@ -2712,7 +2712,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f54764aa-b9e1-59a3-b779-d36eed525661",
               "sourceRange": []
             },
             "from": [
@@ -2736,8 +2736,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2778,7 +2778,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -2800,13 +2800,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "61b3cd1d-d63d-561a-a483-8f4acdbd84ba",
+      "endCapId": "abd5cb32-5a42-5e53-af50-805a0ef1b3ab",
       "units": "in",
       "sectional": false
     }
@@ -2815,12 +2815,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+      "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7b28e004-6963-55bc-9591-d015f83878de",
+          "id": "7148542b-9287-5c99-8227-c1bcf471f8aa",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -2833,8 +2833,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a397f2a-9e8a-53e5-8c19-5cdb08492c95",
+          "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -2847,8 +2847,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "62684c29-0407-5629-a0ad-98dc86578e27",
+          "id": "f02e5da2-fbdd-5690-92fa-69f3e613c7d6",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -2861,8 +2861,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b4e824e7-0c36-5590-a0b9-a99eb731e8fe",
+          "id": "f86f5118-8bad-5251-979f-9656444c7ea2",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -2878,11 +2878,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7148542b-9287-5c99-8227-c1bcf471f8aa",
               "sourceRange": []
             },
             "from": [
@@ -2906,7 +2906,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
               "sourceRange": []
             },
             "from": [
@@ -2930,7 +2930,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f02e5da2-fbdd-5690-92fa-69f3e613c7d6",
               "sourceRange": []
             },
             "from": [
@@ -2954,7 +2954,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f86f5118-8bad-5251-979f-9656444c7ea2",
               "sourceRange": []
             },
             "from": [
@@ -2978,8 +2978,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3020,7 +3020,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -3042,13 +3042,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+        "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "5b010224-2823-5bc8-b783-67a1d63cd2d0",
+      "endCapId": "f535c46c-af36-5853-8eee-82f8ac749ecd",
       "units": "in",
       "sectional": false
     }
@@ -3057,12 +3057,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+      "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+          "id": "d0d63603-d814-5737-8e2d-e8c9b5d2aba8",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -3075,8 +3075,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+          "id": "63b12073-df74-5244-901a-02948f2f33fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -3089,8 +3089,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "340c82c9-f48c-5c79-8871-11a62a63614f",
+          "id": "a0db11d9-0fde-594a-b905-3da436eef237",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -3103,8 +3103,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a1eae76-d164-5646-a055-609e2049fcc2",
+          "id": "718e5a0e-6663-58bb-adb5-6ef21c2eb07e",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -3120,11 +3120,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d0d63603-d814-5737-8e2d-e8c9b5d2aba8",
               "sourceRange": []
             },
             "from": [
@@ -3148,7 +3148,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "63b12073-df74-5244-901a-02948f2f33fc",
               "sourceRange": []
             },
             "from": [
@@ -3172,7 +3172,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a0db11d9-0fde-594a-b905-3da436eef237",
               "sourceRange": []
             },
             "from": [
@@ -3196,7 +3196,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "718e5a0e-6663-58bb-adb5-6ef21c2eb07e",
               "sourceRange": []
             },
             "from": [
@@ -3220,8 +3220,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3262,7 +3262,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -3284,13 +3284,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "originalId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+      "endCapId": "2d9c655e-d9db-5513-bf7b-df510009bff3",
       "units": "in",
       "sectional": false
     }
@@ -3299,12 +3299,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
+          "id": "a313d6e0-980f-5019-9385-54d91456a312",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -3317,8 +3317,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d25c343c-5efb-565f-8fe4-aa151b972d2c",
+          "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -3331,8 +3331,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "id": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -3345,8 +3345,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
+          "id": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -3362,11 +3362,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a313d6e0-980f-5019-9385-54d91456a312",
               "sourceRange": []
             },
             "from": [
@@ -3390,7 +3390,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
               "sourceRange": []
             },
             "from": [
@@ -3414,7 +3414,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
               "sourceRange": []
             },
             "from": [
@@ -3438,7 +3438,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
               "sourceRange": []
             },
             "from": [
@@ -3462,8 +3462,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3504,7 +3504,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -3526,13 +3526,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "originalId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "778953ec-3311-5339-a1a1-062d8bc2ad4c",
+      "endCapId": "a796ac51-f320-5542-b7e6-2eaeaba5cb25",
       "units": "in",
       "sectional": false
     }
@@ -3541,12 +3541,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b91ee84e-147c-5beb-aaa2-57e1a2b698f4",
+          "id": "3a64a61f-1518-5c74-8fe4-362eb7daddf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -3559,8 +3559,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d108f643-ff6d-5404-9c0d-e966e829d61a",
+          "id": "1e634f52-9c5c-514d-8653-eddaf8cec4c7",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -3573,8 +3573,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9c748f5d-0e3c-56d7-89f0-c8191104b892",
+          "id": "50d99e3d-e8f3-5786-bcbf-a50e21e6078f",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -3587,8 +3587,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ba14e2ef-ab03-5be8-abd2-8b8bffcc6c69",
+          "id": "16dd7845-22f7-5810-8b38-91d4f6acf94a",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -3604,11 +3604,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3a64a61f-1518-5c74-8fe4-362eb7daddf4",
               "sourceRange": []
             },
             "from": [
@@ -3632,7 +3632,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1e634f52-9c5c-514d-8653-eddaf8cec4c7",
               "sourceRange": []
             },
             "from": [
@@ -3656,7 +3656,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "50d99e3d-e8f3-5786-bcbf-a50e21e6078f",
               "sourceRange": []
             },
             "from": [
@@ -3680,7 +3680,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16dd7845-22f7-5810-8b38-91d4f6acf94a",
               "sourceRange": []
             },
             "from": [
@@ -3704,8 +3704,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3746,7 +3746,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -3768,13 +3768,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "originalId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d64e8039-e34e-51e6-9868-425aa1c434f2",
+      "endCapId": "2e50f57c-c068-5175-a0b0-37e0fa55e8db",
       "units": "in",
       "sectional": false
     }
@@ -3792,12 +3792,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+      "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
+          "id": "a313d6e0-980f-5019-9385-54d91456a312",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -3810,8 +3810,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d25c343c-5efb-565f-8fe4-aa151b972d2c",
+          "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -3824,8 +3824,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "id": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -3838,8 +3838,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
+          "id": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -3855,11 +3855,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a313d6e0-980f-5019-9385-54d91456a312",
               "sourceRange": []
             },
             "from": [
@@ -3883,7 +3883,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
               "sourceRange": []
             },
             "from": [
@@ -3907,7 +3907,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
               "sourceRange": []
             },
             "from": [
@@ -3931,7 +3931,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
               "sourceRange": []
             },
             "from": [
@@ -3955,8 +3955,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3997,7 +3997,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -4019,13 +4019,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "originalId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "778953ec-3311-5339-a1a1-062d8bc2ad4c",
+      "endCapId": "a796ac51-f320-5542-b7e6-2eaeaba5cb25",
       "units": "in",
       "sectional": false
     }
@@ -4034,11 +4034,11 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7b681387-29ea-57f1-8713-d63280827139",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -4062,7 +4062,7 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -4086,7 +4086,7 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -4110,7 +4110,7 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -4134,8 +4134,8 @@ description: Variables in memory after executing dodecahedron.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -4176,7 +4176,7 @@ description: Variables in memory after executing dodecahedron.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
           "sourceRange": []
         }
       },
@@ -4198,8 +4198,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+      "originalId": "7b681387-29ea-57f1-8713-d63280827139",
       "units": "in",
       "isClosed": "implicitly"
     }
@@ -4208,12 +4208,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -4226,8 +4226,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -4240,8 +4240,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -4254,8 +4254,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -4271,11 +4271,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -4299,7 +4299,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -4323,7 +4323,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -4347,7 +4347,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -4371,8 +4371,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -4413,7 +4413,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -4435,13 +4435,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "originalId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "in",
       "sectional": false
     }
@@ -4450,12 +4450,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "id": "b9270abb-8013-5214-8010-1b3a0e977704",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -4468,8 +4468,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -4482,8 +4482,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+          "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -4496,8 +4496,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
+          "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -4513,11 +4513,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b9270abb-8013-5214-8010-1b3a0e977704",
               "sourceRange": []
             },
             "from": [
@@ -4541,7 +4541,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
               "sourceRange": []
             },
             "from": [
@@ -4565,7 +4565,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
               "sourceRange": []
             },
             "from": [
@@ -4589,7 +4589,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
               "sourceRange": []
             },
             "from": [
@@ -4613,8 +4613,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -4655,7 +4655,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -4677,13 +4677,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "originalId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b620e86e-3390-5b73-897e-9d5291058003",
+      "endCapId": "17940c6a-8399-5d56-9384-d0d6f676d048",
       "units": "in",
       "sectional": false
     }
@@ -4692,12 +4692,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+      "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "33a382ff-4e43-5c58-a0ae-cf68ce924f55",
+          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -4710,8 +4710,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7f1b023e-084a-585a-8615-9a206829084c",
+          "id": "663e209d-df18-5e9b-b139-668cc41baf79",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -4724,8 +4724,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+          "id": "50854142-6db4-531e-ab69-489fa496a253",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -4738,8 +4738,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "31faf920-8e8f-5ea7-8613-87b6f566220b",
+          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -4755,11 +4755,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
               "sourceRange": []
             },
             "from": [
@@ -4783,7 +4783,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "663e209d-df18-5e9b-b139-668cc41baf79",
               "sourceRange": []
             },
             "from": [
@@ -4807,7 +4807,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "50854142-6db4-531e-ab69-489fa496a253",
               "sourceRange": []
             },
             "from": [
@@ -4831,7 +4831,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
               "sourceRange": []
             },
             "from": [
@@ -4855,8 +4855,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -4897,7 +4897,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -4919,13 +4919,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+        "originalId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0c53169e-3975-5ff1-8b61-3be2bf3f11d8",
+      "endCapId": "d79f34e4-5ec4-5fbf-ad19-348a5e48a0fe",
       "units": "in",
       "sectional": false
     }
@@ -4934,12 +4934,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
+      "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "63a00bb7-2cd9-55fe-99a4-505985ed010d",
+          "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -4952,8 +4952,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "57dcebaf-f488-5f18-a3d0-8a7c5e588523",
+          "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -4966,8 +4966,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dc700ece-abf1-5d4d-b57d-8fa8eecf901d",
+          "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -4980,8 +4980,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2147b1bc-0e86-58cf-b979-a1abcf613618",
+          "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -4997,11 +4997,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
               "sourceRange": []
             },
             "from": [
@@ -5025,7 +5025,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
               "sourceRange": []
             },
             "from": [
@@ -5049,7 +5049,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
               "sourceRange": []
             },
             "from": [
@@ -5073,7 +5073,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
               "sourceRange": []
             },
             "from": [
@@ -5097,8 +5097,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -5139,7 +5139,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -5161,13 +5161,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
+        "originalId": "cc312d38-2fa6-5583-a605-44880f646499",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "6cbdfc69-8158-576b-9986-f2cbbea98a73",
+      "endCapId": "25662764-9b8b-5d82-98e0-84ff503bf2cc",
       "units": "in",
       "sectional": false
     }
@@ -5176,12 +5176,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+      "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
+          "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -5194,8 +5194,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3132128b-3a82-5446-aa11-78053c088f3c",
+          "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -5208,8 +5208,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
+          "id": "a78597bb-12cf-565b-b383-2fadea836030",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -5222,8 +5222,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
+          "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -5239,11 +5239,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
               "sourceRange": []
             },
             "from": [
@@ -5267,7 +5267,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
               "sourceRange": []
             },
             "from": [
@@ -5291,7 +5291,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a78597bb-12cf-565b-b383-2fadea836030",
               "sourceRange": []
             },
             "from": [
@@ -5315,7 +5315,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
               "sourceRange": []
             },
             "from": [
@@ -5339,8 +5339,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -5381,7 +5381,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -5403,13 +5403,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+        "originalId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
+      "endCapId": "9700197b-45f4-5326-aea5-9ad8044a1658",
       "units": "in",
       "sectional": false
     }
@@ -5418,12 +5418,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "477be144-bb75-5271-8ba5-d3e844a16dfc",
+          "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -5436,8 +5436,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f2880d4-d771-5ebc-9cf1-0815ded3b5bb",
+          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -5450,8 +5450,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "44c976bf-fa25-54c3-994a-152b021a4da7",
+          "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -5464,8 +5464,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "caab2e75-951d-5d86-b9bb-bd94eb9cef11",
+          "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -5481,11 +5481,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
               "sourceRange": []
             },
             "from": [
@@ -5509,7 +5509,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
               "sourceRange": []
             },
             "from": [
@@ -5533,7 +5533,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
               "sourceRange": []
             },
             "from": [
@@ -5557,7 +5557,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
               "sourceRange": []
             },
             "from": [
@@ -5581,8 +5581,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -5623,7 +5623,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -5645,13 +5645,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+        "originalId": "468f6520-a683-5392-9492-de009fdcddef",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2d5ec83e-723e-5e13-9c3f-0cfdcaf57fae",
+      "endCapId": "175dedae-41eb-53a3-a4ac-e5c0c236e1b7",
       "units": "in",
       "sectional": false
     }
@@ -5660,12 +5660,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+      "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "11238134-bd51-5920-907f-45af8ba43955",
+          "id": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -5678,8 +5678,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "72bf6900-96ac-5ebd-a788-216d48167e7a",
+          "id": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -5692,8 +5692,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e399799a-9d34-57d8-aaf4-123081b7efda",
+          "id": "0f126e7b-acca-5f24-aab5-a8b751c9d51e",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -5706,8 +5706,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "143f8a6b-cb5c-5294-b607-2fa264a0e255",
+          "id": "aa25b93a-10c8-5753-bb09-6ccc60a560df",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -5723,11 +5723,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
               "sourceRange": []
             },
             "from": [
@@ -5751,7 +5751,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
               "sourceRange": []
             },
             "from": [
@@ -5775,7 +5775,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f126e7b-acca-5f24-aab5-a8b751c9d51e",
               "sourceRange": []
             },
             "from": [
@@ -5799,7 +5799,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aa25b93a-10c8-5753-bb09-6ccc60a560df",
               "sourceRange": []
             },
             "from": [
@@ -5823,8 +5823,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -5865,7 +5865,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -5887,13 +5887,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "originalId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "891296e8-0c13-519d-8afe-59158f8fca73",
+      "endCapId": "ce6cf2e3-333a-5d81-a218-ad72debffe40",
       "units": "in",
       "sectional": false
     }
@@ -5902,12 +5902,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+      "artifactId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d5eca564-8b66-523d-86bf-11e6c823a748",
+          "id": "35040f34-ec7c-53c2-bf45-2842aceba106",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -5920,8 +5920,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d27f313b-87a3-51db-88c0-ee8d0f1d9d61",
+          "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -5934,8 +5934,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "59bb9725-89b7-5757-b143-c11f2d149eb1",
+          "id": "f65fd9f3-2cf8-5b07-991e-aab90163da64",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -5948,8 +5948,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2838f9e9-89bd-5e52-9272-770d5200e10e",
+          "id": "f54764aa-b9e1-59a3-b779-d36eed525661",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -5965,11 +5965,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "35040f34-ec7c-53c2-bf45-2842aceba106",
               "sourceRange": []
             },
             "from": [
@@ -5993,7 +5993,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
               "sourceRange": []
             },
             "from": [
@@ -6017,7 +6017,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f65fd9f3-2cf8-5b07-991e-aab90163da64",
               "sourceRange": []
             },
             "from": [
@@ -6041,7 +6041,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f54764aa-b9e1-59a3-b779-d36eed525661",
               "sourceRange": []
             },
             "from": [
@@ -6065,8 +6065,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -6107,7 +6107,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -6129,13 +6129,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "61b3cd1d-d63d-561a-a483-8f4acdbd84ba",
+      "endCapId": "abd5cb32-5a42-5e53-af50-805a0ef1b3ab",
       "units": "in",
       "sectional": false
     }
@@ -6144,12 +6144,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7b28e004-6963-55bc-9591-d015f83878de",
+          "id": "7148542b-9287-5c99-8227-c1bcf471f8aa",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -6162,8 +6162,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a397f2a-9e8a-53e5-8c19-5cdb08492c95",
+          "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -6176,8 +6176,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "62684c29-0407-5629-a0ad-98dc86578e27",
+          "id": "f02e5da2-fbdd-5690-92fa-69f3e613c7d6",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -6190,8 +6190,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b4e824e7-0c36-5590-a0b9-a99eb731e8fe",
+          "id": "f86f5118-8bad-5251-979f-9656444c7ea2",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -6207,11 +6207,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7148542b-9287-5c99-8227-c1bcf471f8aa",
               "sourceRange": []
             },
             "from": [
@@ -6235,7 +6235,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
               "sourceRange": []
             },
             "from": [
@@ -6259,7 +6259,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f02e5da2-fbdd-5690-92fa-69f3e613c7d6",
               "sourceRange": []
             },
             "from": [
@@ -6283,7 +6283,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f86f5118-8bad-5251-979f-9656444c7ea2",
               "sourceRange": []
             },
             "from": [
@@ -6307,8 +6307,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -6349,7 +6349,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -6371,13 +6371,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+        "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "5b010224-2823-5bc8-b783-67a1d63cd2d0",
+      "endCapId": "f535c46c-af36-5853-8eee-82f8ac749ecd",
       "units": "in",
       "sectional": false
     }
@@ -6386,12 +6386,12 @@ description: Variables in memory after executing dodecahedron.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+      "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+          "id": "d0d63603-d814-5737-8e2d-e8c9b5d2aba8",
           "sourceRange": [],
           "tag": {
             "commentStart": 631,
@@ -6404,8 +6404,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+          "id": "63b12073-df74-5244-901a-02948f2f33fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 715,
@@ -6418,8 +6418,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "340c82c9-f48c-5c79-8871-11a62a63614f",
+          "id": "a0db11d9-0fde-594a-b905-3da436eef237",
           "sourceRange": [],
           "tag": {
             "commentStart": 836,
@@ -6432,8 +6432,8 @@ description: Variables in memory after executing dodecahedron.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a1eae76-d164-5646-a055-609e2049fcc2",
+          "id": "718e5a0e-6663-58bb-adb5-6ef21c2eb07e",
           "sourceRange": [],
           "tag": {
             "commentStart": 957,
@@ -6449,11 +6449,11 @@ description: Variables in memory after executing dodecahedron.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d0d63603-d814-5737-8e2d-e8c9b5d2aba8",
               "sourceRange": []
             },
             "from": [
@@ -6477,7 +6477,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "63b12073-df74-5244-901a-02948f2f33fc",
               "sourceRange": []
             },
             "from": [
@@ -6501,7 +6501,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a0db11d9-0fde-594a-b905-3da436eef237",
               "sourceRange": []
             },
             "from": [
@@ -6525,7 +6525,7 @@ description: Variables in memory after executing dodecahedron.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "718e5a0e-6663-58bb-adb5-6ef21c2eb07e",
               "sourceRange": []
             },
             "from": [
@@ -6549,8 +6549,8 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -6591,7 +6591,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -6613,13 +6613,13 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "originalId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+      "endCapId": "2d9c655e-d9db-5513-bf7b-df510009bff3",
       "units": "in",
       "sectional": false
     }

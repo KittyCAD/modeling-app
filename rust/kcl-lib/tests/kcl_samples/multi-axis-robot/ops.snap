@@ -5366,11 +5366,11 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "63822c13-f07f-5b31-907f-4dd6fa311b4a"
               }
             ]
           },
@@ -5400,7 +5400,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5af0bbb7-d491-5121-8272-8122355a7f96"
           }
         },
         "sourceRange": []
@@ -5429,7 +5429,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443"
           }
         },
         "sourceRange": []
@@ -5587,7 +5587,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d"
               }
             ]
           },
@@ -5617,7 +5617,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "52ab6b39-09d9-5eb3-89a9-b3b5c20f1771"
           }
         },
         "sourceRange": []
@@ -5775,7 +5775,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ef81f5e0-0835-59bd-8ae9-52c6731f1e4e"
               }
             ]
           },
@@ -5805,7 +5805,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "374c0bd6-2d94-5211-977c-e8748783b3ad"
           }
         },
         "sourceRange": []
@@ -5851,7 +5851,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c06ffe93-85d7-5099-9b42-804a1349a567"
           }
         },
         "sourceRange": []
@@ -5914,7 +5914,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "24b5e4d5-b7d4-51b9-8057-afc7dbec29ee"
           }
         },
         "sourceRange": []
@@ -5938,19 +5938,19 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "9e73947b-0fd5-5a42-a410-45c329517b3f"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "84dcab21-bafe-5857-9277-5cd2a264d695"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "cf5b2e71-1edb-55e8-a475-9243b87b41e1"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "c621bad2-7960-53b5-b9e4-a3eadd7690e4"
               }
             ]
           },
@@ -6558,11 +6558,11 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f1634645-3502-580b-a84b-0466ff4d66c4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9aa4f613-d255-5aaa-abf2-88a262722a67"
               }
             ]
           },
@@ -6592,7 +6592,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d"
           }
         },
         "sourceRange": []
@@ -6750,7 +6750,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f20a7800-7fb2-522c-abc3-645eaa4ca76a"
               }
             ]
           },
@@ -6780,7 +6780,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fa440d13-0bb0-5b73-a8b6-35e3f074bf22"
           }
         },
         "sourceRange": []
@@ -6938,7 +6938,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a7fa2368-0447-5fdb-8443-ec3222ab8648"
               }
             ]
           },
@@ -6968,7 +6968,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "db60e777-3679-5b88-b023-d22d28d62923"
           }
         },
         "sourceRange": []
@@ -7126,7 +7126,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e9f4b468-6510-5f17-b19b-14497d76aafa"
               }
             ]
           },
@@ -7156,7 +7156,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b1116a59-2e00-5448-ba5b-c509e6395cbf"
           }
         },
         "sourceRange": []
@@ -7199,7 +7199,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5aba47cf-8edd-5167-98b7-d3209024696a"
           }
         },
         "sourceRange": []
@@ -7907,19 +7907,19 @@ description: Operations executed multi-axis-robot.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1dda4566-8b38-5113-91c9-2b6e48fdecd7"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e8b306c4-0488-5f40-a601-7ae5478b62ef"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6de35640-41ab-5381-bda0-d44652f1a175"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "67e85d05-358f-57a2-a655-98c62e3c18c9"
               },
               "meta": {
                 "type": "Object",
@@ -7927,7 +7927,7 @@ description: Operations executed multi-axis-robot.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "84b34ef7-d89b-59aa-90de-06ed9d3ea37e"
                     }
                   }
                 }
@@ -7960,7 +7960,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b9cf2835-3bcf-51d5-87f0-30af82818dea"
           }
         },
         "sourceRange": []
@@ -8118,7 +8118,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2a26ca2a-368e-579d-994e-e3153e453eff"
               }
             ]
           },
@@ -8148,7 +8148,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bf18f8c3-70d8-5c6a-b100-e58ffbe62879"
           }
         },
         "sourceRange": []
@@ -8306,7 +8306,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2683330e-d365-57e6-8235-a813832ffe69"
               }
             ]
           },
@@ -8336,7 +8336,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7"
           }
         },
         "sourceRange": []
@@ -8501,7 +8501,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7bb4a46e-1d63-51b6-884f-dd2df9a0451b"
               }
             ]
           },
@@ -8531,7 +8531,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "64590b9a-7e06-5fd0-83bd-08b8b18b1405"
           }
         },
         "sourceRange": []
@@ -8725,7 +8725,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b8bd49e1-cdaa-5a54-adf0-a96af709c98c"
               }
             ]
           },
@@ -8755,7 +8755,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4d9ff857-4bf3-570a-80f2-de7152abbb6b"
           }
         },
         "sourceRange": []
@@ -9725,11 +9725,11 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "57d7e7b2-fdb6-5a09-ad11-012112b3044d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "01db4e78-e528-5341-9838-5700b64cb9a8"
               }
             ]
           },
@@ -9759,7 +9759,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1c4af35e-3789-555a-b480-2dc0aab22dd1"
           }
         },
         "sourceRange": []
@@ -10736,11 +10736,11 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e7e15343-cae7-5a64-92fd-2f2ebd501fa0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2fbfd809-efc9-55c0-b893-36974f17f468"
               }
             ]
           },
@@ -10770,7 +10770,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "301f8743-d0a0-5bd2-9197-fb19bed47af5"
           }
         },
         "sourceRange": []
@@ -10822,25 +10822,25 @@ description: Operations executed multi-axis-robot.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "967d8995-5b46-537a-ad8e-b602584bac31"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9a30239c-a41e-531d-aeaf-c591ff3682bf"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "19af0132-5e72-5833-acfb-fc1e190f7c95"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bd15d539-411e-53a8-9ecf-e6b965e8b947"
               }
             }
           ]
@@ -11134,7 +11134,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "515e71b6-5068-5314-a362-727be5fd92ee"
               }
             ]
           },
@@ -11164,7 +11164,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "389ea878-9075-54e8-9f0d-f5855f0295fb"
           }
         },
         "sourceRange": []
@@ -11210,7 +11210,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9aaf1824-b21b-5333-a9d1-b1fa8b5d27b8"
           }
         },
         "sourceRange": []
@@ -11852,11 +11852,11 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0522b012-e030-5688-a335-da7c2506e314"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f9a89775-cfba-5031-8e02-ff7b852c56d9"
               }
             ]
           },
@@ -11886,7 +11886,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93be3bcc-48af-500d-9d79-fd3aa827af91"
           }
         },
         "sourceRange": []
@@ -12147,7 +12147,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ddf73b0f-cf9d-5c37-baf5-cfe65ad2c434"
               }
             ]
           },
@@ -12177,7 +12177,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "88d53866-cebd-5812-a4d1-b473ef522ec8"
           }
         },
         "sourceRange": []
@@ -12438,7 +12438,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8038abe0-f104-567d-90cd-f71bd47954df"
               }
             ]
           },
@@ -12468,7 +12468,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ac76f166-501c-51bd-92cc-429a0ccc48df"
           }
         },
         "sourceRange": []
@@ -12514,7 +12514,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d92c90e1-7514-5ccd-aa46-d6567f1d43f7"
           }
         },
         "sourceRange": []
@@ -12796,7 +12796,7 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6d48e5c7-0046-5293-9787-f91af998100f"
               }
             ]
           },
@@ -12826,7 +12826,7 @@ description: Operations executed multi-axis-robot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb"
           }
         },
         "sourceRange": []

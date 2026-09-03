@@ -6,8 +6,8 @@ description: Variables in memory after executing blend-tutorial.kcl
   "__sketch_10_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing blend-tutorial.kcl
   "__sketch_19_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing blend-tutorial.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -103,8 +103,8 @@ description: Variables in memory after executing blend-tutorial.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "value": [],
       "sketch": {
         "creatorType": "procedural"
@@ -119,12 +119,12 @@ description: Variables in memory after executing blend-tutorial.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7e795a80-ed09-50c7-815f-b934bb1f99f5",
+          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -140,11 +140,11 @@ description: Variables in memory after executing blend-tutorial.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
               "sourceRange": []
             },
             "from": [
@@ -168,8 +168,8 @@ description: Variables in memory after executing blend-tutorial.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -210,7 +210,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
             "sourceRange": []
           }
         },
@@ -220,8 +220,8 @@ description: Variables in memory after executing blend-tutorial.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "originalId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "units": "mm",
         "isClosed": "no"
       },
@@ -235,12 +235,12 @@ description: Variables in memory after executing blend-tutorial.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "id": "907cac50-3701-5367-b35c-4ec2132c824f",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -256,11 +256,11 @@ description: Variables in memory after executing blend-tutorial.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "907cac50-3701-5367-b35c-4ec2132c824f",
               "sourceRange": []
             },
             "from": [
@@ -284,8 +284,8 @@ description: Variables in memory after executing blend-tutorial.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
           "kind": "Custom",
           "objectId": 9,
           "origin": {
@@ -326,7 +326,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -336,8 +336,8 @@ description: Variables in memory after executing blend-tutorial.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "originalId": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "units": "mm",
         "isClosed": "no"
       },
@@ -351,12 +351,12 @@ description: Variables in memory after executing blend-tutorial.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+      "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6a8d0063-e684-5dcf-aa8c-22d0e49f4bc1",
+          "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
           "sourceRange": [],
           "tag": {
             "commentStart": 0,
@@ -372,11 +372,11 @@ description: Variables in memory after executing blend-tutorial.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
               "sourceRange": []
             },
             "from": [
@@ -400,8 +400,8 @@ description: Variables in memory after executing blend-tutorial.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+          "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
           "kind": "Custom",
           "objectId": 18,
           "origin": {
@@ -442,7 +442,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
             "sourceRange": []
           }
         },
@@ -452,8 +452,8 @@ description: Variables in memory after executing blend-tutorial.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+        "originalId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "units": "mm",
         "isClosed": "no"
       },
@@ -467,11 +467,11 @@ description: Variables in memory after executing blend-tutorial.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -495,8 +495,8 @@ description: Variables in memory after executing blend-tutorial.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -537,7 +537,7 @@ description: Variables in memory after executing blend-tutorial.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
           "sourceRange": []
         }
       },
@@ -547,8 +547,8 @@ description: Variables in memory after executing blend-tutorial.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "units": "mm",
       "isClosed": "no"
     }
@@ -557,11 +557,11 @@ description: Variables in memory after executing blend-tutorial.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f084ad07-5777-5607-a544-c69f455c2aab",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           },
           "from": [
@@ -585,8 +585,8 @@ description: Variables in memory after executing blend-tutorial.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "kind": "Custom",
         "objectId": 9,
         "origin": {
@@ -627,7 +627,7 @@ description: Variables in memory after executing blend-tutorial.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "sourceRange": []
         }
       },
@@ -637,8 +637,8 @@ description: Variables in memory after executing blend-tutorial.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "originalId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "units": "mm",
       "isClosed": "no"
     }
@@ -647,11 +647,11 @@ description: Variables in memory after executing blend-tutorial.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7d4c814d-f292-503d-a012-68ab58c77524",
             "sourceRange": []
           },
           "from": [
@@ -675,8 +675,8 @@ description: Variables in memory after executing blend-tutorial.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "kind": "Custom",
         "objectId": 18,
         "origin": {
@@ -717,7 +717,7 @@ description: Variables in memory after executing blend-tutorial.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "sourceRange": []
         }
       },
@@ -727,8 +727,8 @@ description: Variables in memory after executing blend-tutorial.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "units": "mm",
       "isClosed": "no"
     }
@@ -747,7 +747,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -821,8 +821,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -851,7 +851,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -868,11 +868,11 @@ description: Variables in memory after executing blend-tutorial.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -896,8 +896,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -938,7 +938,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                   "sourceRange": []
                 }
               },
@@ -948,8 +948,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "units": "mm",
               "isClosed": "no"
             }
@@ -969,7 +969,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1043,8 +1043,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                  "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                   "kind": "Custom",
                   "objectId": 9,
                   "origin": {
@@ -1073,7 +1073,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1090,11 +1090,11 @@ description: Variables in memory after executing blend-tutorial.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -1118,8 +1118,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "kind": "Custom",
                 "objectId": 9,
                 "origin": {
@@ -1160,7 +1160,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "sourceRange": []
                 }
               },
@@ -1170,8 +1170,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+              "originalId": "f084ad07-5777-5607-a544-c69f455c2aab",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1191,7 +1191,7 @@ description: Variables in memory after executing blend-tutorial.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "objectId": 22,
                 "kind": {
                   "line": {
@@ -1265,8 +1265,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+                  "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -1295,7 +1295,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1312,11 +1312,11 @@ description: Variables in memory after executing blend-tutorial.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                     "sourceRange": []
                   },
                   "from": [
@@ -1340,8 +1340,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+                "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
                 "kind": "Custom",
                 "objectId": 18,
                 "origin": {
@@ -1382,7 +1382,7 @@ description: Variables in memory after executing blend-tutorial.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                   "sourceRange": []
                 }
               },
@@ -1392,8 +1392,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+              "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1411,12 +1411,12 @@ description: Variables in memory after executing blend-tutorial.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+          "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6a8d0063-e684-5dcf-aa8c-22d0e49f4bc1",
+              "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -1432,11 +1432,11 @@ description: Variables in memory after executing blend-tutorial.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                   "sourceRange": []
                 },
                 "from": [
@@ -1460,8 +1460,8 @@ description: Variables in memory after executing blend-tutorial.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+              "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
               "kind": "Custom",
               "objectId": 18,
               "origin": {
@@ -1502,7 +1502,7 @@ description: Variables in memory after executing blend-tutorial.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "sourceRange": []
               }
             },
@@ -1512,8 +1512,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+            "originalId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
             "units": "mm",
             "isClosed": "no"
           },
@@ -1527,12 +1527,12 @@ description: Variables in memory after executing blend-tutorial.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b1b41d99-e783-5c4e-a832-8ca59dc25d14",
+          "artifactId": "b1b41d99-e783-5c4e-a832-8ca59dc25d14",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6a8d0063-e684-5dcf-aa8c-22d0e49f4bc1",
+              "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
               "sourceRange": [],
               "tag": {
                 "commentStart": 0,
@@ -1548,11 +1548,11 @@ description: Variables in memory after executing blend-tutorial.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "b1b41d99-e783-5c4e-a832-8ca59dc25d14",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                   "sourceRange": []
                 },
                 "from": [
@@ -1576,8 +1576,8 @@ description: Variables in memory after executing blend-tutorial.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+              "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
               "kind": "Custom",
               "objectId": 18,
               "origin": {
@@ -1618,7 +1618,7 @@ description: Variables in memory after executing blend-tutorial.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "sourceRange": []
               }
             },
@@ -1628,8 +1628,8 @@ description: Variables in memory after executing blend-tutorial.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+            "originalId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
             "units": "mm",
             "isClosed": "no"
           },

@@ -5,7 +5,7 @@ description: Artifact commands linear-shelf-system.kcl
 {
   "public/kcl-samples/linear-shelf-system/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "to": {
           "x": -200.0,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -150,24 +150,24 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -179,11 +179,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "distance": 2000.0,
         "faces": null,
         "opposite": "None",
@@ -192,53 +192,53 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "edge_id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "edge_id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "transform": [],
         "transforms": [
           [
@@ -274,7 +274,7 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -299,20 +299,20 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -324,18 +324,18 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2f87eb95-71f2-5911-bdbf-6255b335334d",
         "to": {
           "x": -180.0,
           "y": 0.0,
@@ -344,18 +344,18 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2f87eb95-71f2-5911-bdbf-6255b335334d",
         "segment": {
           "type": "line",
           "end": {
@@ -368,11 +368,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2f87eb95-71f2-5911-bdbf-6255b335334d",
         "segment": {
           "type": "line",
           "end": {
@@ -385,11 +385,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2f87eb95-71f2-5911-bdbf-6255b335334d",
         "segment": {
           "type": "line",
           "end": {
@@ -402,11 +402,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2f87eb95-71f2-5911-bdbf-6255b335334d",
         "segment": {
           "type": "line",
           "end": {
@@ -419,24 +419,24 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+        "segment": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+        "intersection_segment": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -448,11 +448,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
@@ -461,49 +461,49 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ec50dfc5-8660-5f82-906a-6429c34099eb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "edge_id": "34ac3e23-e114-551a-bea6-86bc44865a42"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "edge_id": "34ac3e23-e114-551a-bea6-86bc44865a42"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -528,11 +528,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -542,20 +542,20 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -567,18 +567,18 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "to": {
           "x": -180.0,
           "y": 0.0,
@@ -587,18 +587,18 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "segment": {
           "type": "line",
           "end": {
@@ -611,11 +611,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "segment": {
           "type": "line",
           "end": {
@@ -628,11 +628,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "segment": {
           "type": "line",
           "end": {
@@ -645,11 +645,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "segment": {
           "type": "line",
           "end": {
@@ -662,24 +662,24 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+        "segment": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+        "intersection_segment": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -691,11 +691,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
         "distance": 20.0,
         "faces": null,
         "opposite": "None",
@@ -704,53 +704,53 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+        "edge_id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+        "edge_id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
         "transform": [],
         "transforms": [
           [
@@ -902,11 +902,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "transform": [],
         "transforms": [
           [
@@ -1029,11 +1029,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "24655609-c68c-5b76-9ccf-684a19064a93",
         "transform": [],
         "transforms": [
           [
@@ -1156,11 +1156,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "transform": [],
         "transforms": [
           [
@@ -1283,11 +1283,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
         "transform": [],
         "transforms": [
           [
@@ -1410,11 +1410,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
         "transform": [],
         "transforms": [
           [
@@ -1537,11 +1537,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "596470ab-316b-5569-92ba-64c1e0a93873",
         "transform": [],
         "transforms": [
           [
@@ -1664,11 +1664,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "1ca88202-28a4-5453-86b2-137341ba3b82",
         "transform": [],
         "transforms": [
           [
@@ -1791,11 +1791,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "c9ae8cf7-b03a-5e79-82fc-26f027419f85",
         "transform": [],
         "transforms": [
           [
@@ -1918,11 +1918,11 @@ description: Artifact commands linear-shelf-system.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "3e8aceef-4be9-502e-add8-3fb63b4b4761",
         "transform": [],
         "transforms": [
           [

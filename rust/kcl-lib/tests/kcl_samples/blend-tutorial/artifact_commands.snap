@@ -5,7 +5,7 @@ description: Artifact commands blend-tutorial.kcl
 {
   "public/kcl-samples/blend-tutorial/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "89316223-2ea1-5731-9c72-0492bc30fbe2",
         "to": {
           "x": -300.0,
           "y": -30.0,
@@ -75,18 +75,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89316223-2ea1-5731-9c72-0492bc30fbe2",
         "segment": {
           "type": "line",
           "end": {
@@ -99,7 +99,7 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -124,20 +124,20 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -149,18 +149,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f084ad07-5777-5607-a544-c69f455c2aab",
         "to": {
           "x": 600.0,
           "y": -30.0,
@@ -169,18 +169,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f084ad07-5777-5607-a544-c69f455c2aab",
         "segment": {
           "type": "line",
           "end": {
@@ -193,20 +193,20 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -218,18 +218,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "to": {
           "x": -300.0,
           "y": -30.0,
@@ -238,18 +238,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "segment": {
           "type": "line",
           "end": {
@@ -262,11 +262,11 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -278,11 +278,11 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
@@ -291,53 +291,53 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "edge_id": "037b0f2d-13ef-58af-b918-43b89e77393e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "edge_id": "037b0f2d-13ef-58af-b918-43b89e77393e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -349,18 +349,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "to": {
           "x": 600.0,
           "y": -30.0,
@@ -369,18 +369,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "segment": {
           "type": "line",
           "end": {
@@ -393,11 +393,11 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -409,11 +409,11 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
@@ -422,77 +422,77 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "edge_id": "907cac50-3701-5367-b35c-4ec2132c824f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "edge_id": "907cac50-3701-5367-b35c-4ec2132c824f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f084ad07-5777-5607-a544-c69f455c2aab",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "surface_blend",
         "surfaces": [
           {
-            "object_id": "[uuid]",
+            "object_id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
             "edges": [
               {
-                "edge_id": "[uuid]",
+                "edge_id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "lower_bound": 0.0,
                 "upper_bound": 1.0
               }
             ]
           },
           {
-            "object_id": "[uuid]",
+            "object_id": "6023bee8-3980-5182-88ac-ac06420ce00f",
             "edges": [
               {
-                "edge_id": "[uuid]",
+                "edge_id": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "lower_bound": 0.0,
                 "upper_bound": 1.0
               }
@@ -503,7 +503,7 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -528,20 +528,20 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -553,18 +553,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "to": {
           "x": 230.0,
           "y": -140.0,
@@ -573,18 +573,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "segment": {
           "type": "line",
           "end": {
@@ -597,20 +597,20 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -622,18 +622,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "to": {
           "x": 230.0,
           "y": -140.0,
@@ -642,18 +642,18 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "segment": {
           "type": "line",
           "end": {
@@ -666,11 +666,11 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -682,11 +682,11 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "01e801cc-22ef-5071-814b-847d3fcf22d5",
         "distance": 100.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -695,57 +695,57 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "01e801cc-22ef-5071-814b-847d3fcf22d5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+        "edge_id": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+        "edge_id": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "range": [],
       "command": {
         "type": "boolean_imprint",
         "body_ids": [
-          "[uuid]"
+          "01e801cc-22ef-5071-814b-847d3fcf22d5"
         ],
         "tool_ids": [
-          "[uuid]"
+          "663fe57f-e0fe-5661-bf24-d25b7a92874c"
         ],
         "separate_bodies": true,
         "keep_tools": true,
@@ -753,11 +753,11 @@ description: Artifact commands blend-tutorial.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b1b41d99-e783-5c4e-a832-8ca59dc25d14",
         "hidden": true
       }
     }

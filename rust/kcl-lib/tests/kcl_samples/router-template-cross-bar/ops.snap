@@ -4133,11 +4133,11 @@ description: Operations executed router-template-cross-bar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -4167,7 +4167,7 @@ description: Operations executed router-template-cross-bar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666"
           }
         },
         "sourceRange": []
@@ -5000,11 +5000,11 @@ description: Operations executed router-template-cross-bar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
               }
             ]
           },
@@ -5034,7 +5034,7 @@ description: Operations executed router-template-cross-bar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508"
           }
         },
         "sourceRange": []
@@ -5867,11 +5867,11 @@ description: Operations executed router-template-cross-bar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0a3927a3-4dca-5e67-855f-5c8045a33997"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
               }
             ]
           },
@@ -5901,7 +5901,7 @@ description: Operations executed router-template-cross-bar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7"
           }
         },
         "sourceRange": []
@@ -6734,11 +6734,11 @@ description: Operations executed router-template-cross-bar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511"
               }
             ]
           },
@@ -6768,7 +6768,7 @@ description: Operations executed router-template-cross-bar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
           }
         },
         "sourceRange": []

@@ -98,12 +98,12 @@ description: Variables in memory after executing involute_circular_units.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bf58f0a8-1c05-5add-869c-e440afd1676b",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": {
             "commentStart": 508,
@@ -116,15 +116,15 @@ description: Variables in memory after executing involute_circular_units.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7f2df6ef-6b67-53e2-8ea3-015c4e457f10",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "957d5fa4-1fc8-5e24-b523-9322436d5c46",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": {
             "commentStart": 714,
@@ -137,29 +137,29 @@ description: Variables in memory after executing involute_circular_units.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aba0ac5b-efa2-5360-82f1-1735e86807cf",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6242ceb5-5a7a-56f8-93ea-d05aa2cc65dc",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "acd8ec64-3cf7-58de-bade-6c448314c59b",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ca97be7e-230e-571c-a75a-7a583a1a0dc9",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
@@ -168,11 +168,11 @@ description: Variables in memory after executing involute_circular_units.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -196,7 +196,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -213,7 +213,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "ccw": true,
@@ -243,7 +243,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -260,7 +260,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -277,7 +277,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "sourceRange": []
             },
             "from": [
@@ -294,7 +294,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
               "sourceRange": []
             },
             "from": [
@@ -313,7 +313,7 @@ description: Variables in memory after executing involute_circular_units.kcl
         "innerPaths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "sourceRange": []
             },
             "ccw": true,
@@ -336,8 +336,8 @@ description: Variables in memory after executing involute_circular_units.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "kind": "XY",
           "objectId": 0,
           "origin": {
@@ -378,7 +378,7 @@ description: Variables in memory after executing involute_circular_units.kcl
           "units": "cm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
@@ -392,12 +392,12 @@ description: Variables in memory after executing involute_circular_units.kcl
             "value": "seg02"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "cm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "78ffa58f-431c-53f9-a090-062ebc437543",
+      "endCapId": "feb6b608-d0bd-5a4a-a45b-acc8d7c73298",
       "units": "cm",
       "sectional": false
     }
