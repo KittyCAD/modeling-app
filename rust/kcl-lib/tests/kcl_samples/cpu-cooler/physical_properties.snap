@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties cpu-cooler.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 85.23500000000001
+    },
+    "dimensions": {
+      "x": 170.2384081608256,
+      "y": 141.60000000000002,
+      "z": 171.13
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 672872.7215840691
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 522.5486175726365
+  }
+}

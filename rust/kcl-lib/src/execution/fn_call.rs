@@ -2411,6 +2411,26 @@ plane = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn deprecated_since_warns_for_prerelease_kcl_version() {
+        let program = r#"@settings(kclVersion = "3.0-preview")
+plane = startSketchOn(XY)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+        assert!(
+            warnings[0]
+                .message
+                .contains("`startSketchOn` is deprecated as of KCL 2.0"),
+            "found {}",
+            warnings[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn deprecation_version_override_does_not_change_program_version() {
         let program = crate::Program::parse_no_errs(
             r#"@settings(kclVersion = 1.0)
