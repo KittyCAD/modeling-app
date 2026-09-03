@@ -393,4 +393,30 @@ singular = airfoil(
             assert_eq!(arc_count, 9);
         }
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn roller_chain_is_not_experimental() {
+        let code = r#"
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+sprocket::rollerChain(
+  nTeeth = 24,
+  chainPitch = 0.25in,
+  rollerWidth = 0.125in,
+  rollerDiameter = 0.13in,
+  bore = 0.625in,
+)
+"#;
+
+        let result = crate::execution::parse_execute(code)
+            .await
+            .expect("the sprocket should execute");
+        assert!(
+            !result.issues().iter().any(|issue| {
+                issue.message.contains("sprocket::rollerChain") && issue.message.contains("experimental")
+            }),
+            "the stable sprocket API should not emit an experimental warning: {:#?}",
+            result.issues()
+        );
+    }
 }

@@ -5,8 +5,6 @@ excerpt: "Create an approximate roller-chain sprocket plate with a central bore 
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create an approximate roller-chain sprocket plate with a central bore and lightening holes.
 
 ```kcl
@@ -41,7 +39,7 @@ symmetric about that plane. Use `translate()` and `rotate()` to position it.
 
 ```kcl
 // A 24-tooth sprocket for ANSI #25 roller chain.
-@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 sprocket::rollerChain(
   nTeeth = 24,

@@ -8794,7 +8794,7 @@ export default {
     "returnType": "Solid",
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {

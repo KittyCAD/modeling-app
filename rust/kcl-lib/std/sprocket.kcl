@@ -9,7 +9,7 @@
 ///
 /// ```kcl,legacySketch
 /// // A 24-tooth sprocket for ANSI #25 roller chain.
-/// @settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+/// @settings(defaultLengthUnit = in, kclVersion = 1.0)
 ///
 /// sprocket::rollerChain(
 ///   nTeeth = 24,
@@ -19,7 +19,6 @@
 ///   bore = 0.625in,
 /// )
 /// ```
-@(experimental = true)
 export fn rollerChain(
   /// Number of teeth. Must be a whole number of at least three.
   nTeeth: number(Count),
