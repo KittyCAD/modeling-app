@@ -9,6 +9,7 @@ layout: manual
 ### Functions
 
 * [**std**](/docs/kcl-std/modules/std)
+  * [`airfoil`](/docs/kcl-std/functions/std-airfoil) Experimental
   * [`assert`](/docs/kcl-std/functions/std-assert)
   * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
   * [`clone`](/docs/kcl-std/functions/std-clone)

@@ -50,6 +50,74 @@ export default {
       }
     ]
   },
+  "airfoil": {
+    "name": "airfoil",
+    "preferredName": "airfoil",
+    "qualName": "std::airfoil",
+    "moduleName": "std",
+    "returnType": "Sketch",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "sketchPlane",
+        "ty": "Plane",
+        "docs": "Plane on which to create the profile. The leading edge starts at the plane origin and the chord follows its positive X axis.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "chordLength",
+        "ty": "number(Length)",
+        "docs": "Distance from the leading edge to the trailing edge.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "maxCamberPercent",
+        "ty": "number(_)",
+        "docs": "Maximum camber as a percentage of the chord. This is the first NACA digit.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "camberPositionPercent",
+        "ty": "number(_)",
+        "docs": "Chordwise position of maximum camber as a percentage of the chord. This is ten times the second NACA digit.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      },
+      {
+        "name": "thicknessPercent",
+        "ty": "number(_)",
+        "docs": "Maximum thickness as a percentage of the chord. This is the final two NACA digits.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedSince": null
+      }
+    ]
+  },
   "angledLine": {
     "name": "angledLine",
     "preferredName": "angledLine",

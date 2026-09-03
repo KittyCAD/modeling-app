@@ -53,6 +53,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`Y`](/docs/kcl-std/consts/std-Y)
 * [`YZ`](/docs/kcl-std/consts/std-YZ)
 * [`Z`](/docs/kcl-std/consts/std-Z)
+* [`airfoil`](/docs/kcl-std/functions/std-airfoil)
 * [`assert`](/docs/kcl-std/functions/std-assert)
 * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
 * [`clone`](/docs/kcl-std/functions/std-clone)

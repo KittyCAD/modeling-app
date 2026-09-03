@@ -44,6 +44,7 @@ pub fn do_for_all_example_test(item: proc_macro2::TokenStream) -> proc_macro2::T
 }
 
 pub const TEST_NAMES: &[&str] = &[
+    "std-airfoil-0",
     "std-appearance-hexString-0",
     "std-appearance-hexString-1",
     "std-appearance-hexString-2",
