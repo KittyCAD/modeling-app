@@ -1,4 +1,4 @@
-import { effect } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { useApp } from '@src/lib/boot'
 import { navigationService } from '@src/registry/contracts/navigation'
 import { routerService } from '@src/registry/contracts/router'
@@ -56,9 +56,13 @@ export function install(app: ReturnType<typeof useApp>) {
     const router = app.registry.get(routerService)
     const navigation = app.registry.get(navigationService)
 
-    let seeded = false
+    /**
+     * Whether the carried query string has been taken from the incoming URL
+     * yet. A signal rather than a flag so the outbound effect can wait for it
+     * without being created inside a subscriber.
+     */
+    const hasSeeded = signal(false)
     let wrote = false
-    let stopOutbound: (() => void) | undefined
 
     /**
      * Mirror the derived path into history.
@@ -68,33 +72,44 @@ export function install(app: ReturnType<typeof useApp>) {
      * matches — which is what stops a history pop from pushing the same entry
      * straight back.
      *
-     * The current location is read with `peek`, and it has to be. `getLocation()`
-     * looks equivalent and is not — it reads `location.value`, which subscribes
-     * this effect to the very signal the `navigate` below writes. Preact then
-     * throws `Cycle detected` the moment a navigation lands synchronously, which
-     * on desktop it does, and the app dies on startup.
+     * Three things here are load-bearing, and each was learned by breaking it:
+     *
+     * 1. The current location is read with `peek`. `getLocation()` looks
+     *    equivalent and is not — it reads `location.value`, subscribing this
+     *    effect to the signal its own `navigate` writes.
+     * 2. The effect is created here, at install time, and not inside the
+     *    location subscriber. Creating it there meant the first run happened
+     *    *during* a `location` notification, so the `navigate` below wrote
+     *    `location` from inside its own subscriber.
+     * 3. The write itself is deferred to a microtask. Even reached legitimately,
+     *    a synchronous `navigate` re-enters React Router's history from inside a
+     *    signal update, and Preact throws `Cycle detected` — which, thrown from
+     *    a React effect, takes the whole app down at startup. Desktop's hash
+     *    router lands writes synchronously, so it fails there and not on web.
      */
-    const startOutbound = () =>
-      effect(() => {
-        const next = navigation.path.value
-        // Before React Router is mounted the router service falls back to
-        // writing `window.history` itself, which is the one thing this must
-        // not do.
-        if (!router.isReady.peek()) return
+    const stopOutbound = effect(() => {
+      if (!hasSeeded.value) return
+      const next = navigation.path.value
+      // Before React Router is mounted the router service falls back to
+      // writing `window.history` itself, which is the one thing this must
+      // not do.
+      if (!router.isReady.value) return
 
-        const current = router.location.peek()
-        if (samePlace(next, `${current.pathname}${current.search}`)) {
-          wrote = true
-          return
-        }
+      const current = router.location.peek()
+      if (samePlace(next, `${current.pathname}${current.search}`)) {
+        wrote = true
+        return
+      }
 
-        if (wrote) {
-          void router.navigate(next)
-        } else {
-          wrote = true
-          void router.navigate(next, { replace: true })
-        }
+      const replace = !wrote
+      wrote = true
+      queueMicrotask(() => {
+        // Re-check: the URL may have caught up while this was queued.
+        const now = router.location.peek()
+        if (samePlace(next, `${now.pathname}${now.search}`)) return
+        void router.navigate(next, replace ? { replace: true } : undefined)
       })
+    })
 
     const unsubscribe = router.location.subscribe((location) => {
       /*
@@ -108,18 +123,13 @@ export function install(app: ReturnType<typeof useApp>) {
        * Verbatim, with the leading '?' stripped: round-tripping through
        * URLSearchParams re-encodes characters that were legal unencoded.
        */
-      if (!seeded) {
-        seeded = true
+      if (!hasSeeded.peek()) {
         navigation.setOpaqueSearch(location.search.replace(/^\?/, ''))
+        // Flipped last, so the outbound effect's first run already sees the
+        // carried query string. Without that ordering the first derived write
+        // would be a path stripped of every parameter the union does not model.
+        hasSeeded.value = true
       }
-
-      /*
-       * Started here rather than above so the first derived write already
-       * carries the query string. Starting it before the search was seeded
-       * would write a path stripped of every parameter the location union does
-       * not model.
-       */
-      stopOutbound ??= startOutbound()
 
       const actual = `${location.pathname}${location.search}`
       const derived = navigation.path.peek()
@@ -137,7 +147,7 @@ export function install(app: ReturnType<typeof useApp>) {
 
     return () => {
       unsubscribe()
-      stopOutbound?.()
+      stopOutbound()
     }
   }
 }

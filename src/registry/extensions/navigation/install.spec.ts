@@ -15,14 +15,17 @@ import { describe, expect, test } from 'vitest'
  * that threw `Cycle detected` from inside a React effect, which took the app
  * down at startup and failed thirty-four e2e tests at 0ms.
  *
- * **Read this before trusting it:** these tests do *not* reproduce that cycle.
- * They pass either way — verified by reintroducing the reactive read. Preact
- * tolerates an effect writing a signal it depends on, by re-running it, and
- * this harness then converges on the second pass. The real failure needs
- * React's synchronous flush and the hash router, and only CI has shown it.
+ * **Read this before trusting it:** these tests do not reproduce that cycle.
+ * Verified by reintroducing each fault in turn — they pass either way. Preact
+ * tolerates an effect writing a signal it depends on by re-running it, and this
+ * harness converges on the second pass. The real failure needs React Router's
+ * history and the hash router's synchronous commit, and only CI has shown it.
  *
- * What they do pin is the property the fix is *for*: one write per state
- * change, no runaway. That is worth having, and it is all that is claimed.
+ * What they do pin are the properties the fixes are *for*: one write per state
+ * change, no write when the URL already agrees, and — since the write is now
+ * deferred precisely so it never lands inside a signal notification — that it
+ * is asynchronous. That last one is the only mechanical guard against the
+ * regression, so it is the one to keep.
  */
 
 function createHarness({
@@ -76,7 +79,7 @@ function createHarness({
 }
 
 describe('the navigation bridge', () => {
-  test('writes once per state change, and settles', () => {
+  test('never writes synchronously', () => {
     const { app, derived, navigations } = createHarness({
       synchronousNavigate: true,
     })
@@ -84,7 +87,27 @@ describe('the navigation bridge', () => {
     const teardown = install(app)
     try {
       derived.value = '/file/%2Fa%2Fmain.kcl'
+
+      // The whole point of deferring: a navigation must never land inside the
+      // signal update that produced it. This is the one assertion here that
+      // would fail if the deferral were removed.
+      expect(navigations).toEqual([])
+    } finally {
+      teardown?.()
+    }
+  })
+
+  test('writes once per state change, and settles', async () => {
+    const { app, derived, navigations } = createHarness({
+      synchronousNavigate: true,
+    })
+
+    const teardown = install(app)
+    try {
+      derived.value = '/file/%2Fa%2Fmain.kcl'
+      await Promise.resolve()
       derived.value = '/file/%2Fb%2Fmain.kcl'
+      await Promise.resolve()
 
       // Two state changes, two writes. A location that is a dependency of the
       // effect rather than a `peek` is how this becomes a runaway.
@@ -121,6 +144,7 @@ describe('the navigation bridge', () => {
     const teardown = install(app)
     try {
       derived.value = '/file/%2Fa%2Fmain.kcl'
+      await Promise.resolve()
       await Promise.resolve()
       expect(navigations).toEqual(['/file/%2Fa%2Fmain.kcl'])
     } finally {
