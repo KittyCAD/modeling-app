@@ -8,6 +8,7 @@ import {
 } from '@src/lib/commandPaletteUsage'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import { describe, expect, it, vi } from 'vitest'
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -19,6 +20,7 @@ function command(name: string, overrides: Partial<Command> = {}): Command {
     needsReview: false,
     onSubmit: () => {},
     ...overrides,
+    scopes: overrides.scopes ?? GLOBAL_COMMAND_SCOPES,
   }
 }
 
