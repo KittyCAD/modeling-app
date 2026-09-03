@@ -53,7 +53,7 @@ interface FlattenedServiceContribution {
 interface RuntimeInstance {
   readonly key: RegistryItemKey
   readonly handle: RuntimeRegistryItemHandle<unknown>
-  readonly dispose?: () => void | PromiseLike<void>
+  readonly dispose?: () => unknown
 }
 
 interface FlattenResult {
@@ -66,6 +66,15 @@ function isServiceDefinition(
   arg: Service<unknown> | ValueSpec<unknown, unknown>
 ): arg is Service<unknown> {
   return 'multiple' in arg
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return (
+    (typeof value === 'object' || typeof value === 'function') &&
+    value !== null &&
+    'then' in value &&
+    typeof value.then === 'function'
+  )
 }
 
 /**
@@ -470,7 +479,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
   private reconcileRuntimeInstances(
     activeKeys: ReadonlySet<RegistryItemKey>
   ): void {
-    const disposers: Array<() => void | PromiseLike<void>> = []
+    const disposers: Array<() => unknown> = []
     for (const [key, instance] of this.runtimeInstances) {
       if (activeKeys.has(key)) continue
 
@@ -483,7 +492,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
 
   /** Start cleanup immediately while retaining its awaitable completion. */
   private enqueueDisposers(
-    disposers: readonly (() => void | PromiseLike<void>)[]
+    disposers: readonly (() => unknown)[]
   ): Promise<void> {
     if (disposers.length === 0) return Promise.resolve()
 
@@ -500,21 +509,40 @@ export class Registry implements ValueSpecReader, ServiceReader {
   }
 
   private async disposeBatch(
-    disposers: readonly (() => void | PromiseLike<void>)[]
+    disposers: readonly (() => unknown)[]
   ): Promise<void> {
+    const failures: Array<{ readonly index: number; readonly error: unknown }> =
+      []
+    const pending: Promise<void>[] = []
+
+    for (let index = 0; index < disposers.length; index++) {
+      const dispose = disposers[index]
+      try {
+        const result = dispose()
+        if (isPromiseLike(result)) {
+          pending.push(
+            Promise.resolve(result).then(
+              () => undefined,
+              (error) => {
+                failures.push({ index, error })
+              }
+            )
+          )
+        }
+      } catch (error) {
+        failures.push({ index, error })
+      }
+    }
+
     // Every runtime is deactivated in reverse construction order before an
-    // asynchronous finalizer can yield. The async wrapper also turns a
-    // synchronous throw into a rejected promise without stopping the batch.
-    const results = await Promise.allSettled(
-      disposers.map(async (dispose) => dispose())
-    )
-    const failures = results.flatMap((result) =>
-      result.status === 'rejected' ? [result.reason] : []
-    )
+    // asynchronous finalizer can yield. This prevents queued work from
+    // observing half-mounted sibling runtimes during teardown.
+    await Promise.all(pending)
 
     if (failures.length > 0) {
+      failures.sort((left, right) => left.index - right.index)
       throw new AggregateError(
-        failures,
+        failures.map((failure) => failure.error),
         'One or more registry runtime instances failed to dispose.'
       )
     }

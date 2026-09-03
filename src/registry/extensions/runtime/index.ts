@@ -71,9 +71,7 @@ export const runtimeExtension = defineRegistryItemFactory(() => {
     item: defineRuntimeRegistryItem({
       id: 'runtime-extension',
       providesServices: [provideService(runtimeService, serviceImpl)],
-      dispose: () => {
-        stopEnvironmentSync()
-      },
+      dispose: stopEnvironmentSync,
     }),
   }
 }, 'runtime-extension')
