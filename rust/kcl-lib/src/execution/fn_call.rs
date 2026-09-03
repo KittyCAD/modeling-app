@@ -27,6 +27,7 @@ use crate::execution::control_continue;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::NamedParam;
+use crate::execution::kcl_value::ParamUnavailable;
 use crate::execution::memory;
 use crate::execution::types::CoercionMode;
 use crate::execution::types::RuntimeType;
@@ -531,14 +532,16 @@ impl FunctionSource {
     }
 
     /// Compute a KCL function body's result while the callee environment is
-    /// still pushed: an `Exit` passes through untouched; otherwise the
-    /// function's result is the `__return` value recorded in the callee
-    /// environment, if any.
+    /// still pushed: an `Exit` or `Return` passes through untouched;
+    /// otherwise the function's result is the `__return` value recorded in
+    /// the callee environment, if any.
     ///
-    /// NOTE: a `return` statement does NOT stop the body -- it records
-    /// `__return` and execution continues to the following statements (see
-    /// exec_block's ReturnStatement arm). The block's own trailing value is
-    /// deliberately ignored here; only `__return` counts.
+    /// NOTE: under a pre-KCL-3.0 entry point, a `return` statement does NOT
+    /// stop the body -- it records `__return` and execution continues to the
+    /// following statements (see exec_block's ReturnStatement arm). The block's
+    /// own trailing value is deliberately ignored here; only `__return` counts.
+    /// Under KCL 3.0, `return` stops the body and arrives here as a `Return`
+    /// control flow instead; `__return` is never written.
     pub(super) fn kcl_body_result(
         &self,
         block_result: Result<Option<KclValueControlFlow>, KclError>,
@@ -584,7 +587,9 @@ impl FunctionSource {
     /// `Exit` control flow bypasses tags and coercion (it terminates the whole
     /// evaluation rather than completing this function normally), and errors
     /// skip them too; both still restore ambient state and finalize the
-    /// operation.
+    /// operation. `Return` control flow (a KCL 3.0 early return) is absorbed
+    /// here: it completes this function normally, so tags and coercion apply to
+    /// it exactly as they do to a `__return` value.
     pub(super) fn call_finish(
         &self,
         state: CallState,
@@ -626,12 +631,14 @@ impl FunctionSource {
 
         let mut result = match result {
             Ok(Some(value)) => {
-                if value.is_some_return() {
+                if value.is_exit() {
                     // `Exit` terminates the whole evaluation rather than completing this
                     // function normally, so it bypasses return-type validation, including
                     // the `never` contract.
                     return Ok(Some(value));
                 } else {
+                    // `Continue` and `Return` both complete this function
+                    // normally.
                     Ok(Some(value.into_value()))
                 }
             }
@@ -1004,6 +1011,28 @@ pub(crate) fn unexpected_kw_arg_message(label: &str, callee_name: Option<&str>) 
     )
 }
 
+/// Build the error message for a labeled argument whose parameter the callee
+/// declares, but not on the KCL version governing this execution. Extends
+/// [`unexpected_kw_arg_message`] with the version that made the parameter
+/// unavailable and the version this program uses, so the user can tell a
+/// version mismatch apart from a typo.
+fn unavailable_kw_arg_message(
+    label: &str,
+    callee_name: Option<&str>,
+    reason: ParamUnavailable<'_>,
+    program_version: &str,
+) -> String {
+    let base = unexpected_kw_arg_message(label, callee_name);
+    match reason {
+        ParamUnavailable::NotYetAdded(added) => {
+            format!("{base}; it was added in KCL {added}, but this program uses KCL {program_version}")
+        }
+        ParamUnavailable::Removed(since) => {
+            format!("{base}; it was removed as of KCL {since}, but this program uses KCL {program_version}")
+        }
+    }
+}
+
 /// Fetch the definition-time resolution of a type written in a function
 /// signature.
 ///
@@ -1044,7 +1073,7 @@ fn type_check_params_kw(
     if let Some((Some(label), _)) = args.unlabeled.first()
         && args.unlabeled.len() == 1
         && (fn_def.input_arg.is_none() || args.pipe_value.is_some())
-        && fn_def.named_args.iter().any(|p| p.0 == label)
+        && fn_def.active_named_arg(label, exec_state).is_some()
         && !args.labeled.contains_key(label)
     {
         let Some((label, arg)) = args.unlabeled.pop() else {
@@ -1061,7 +1090,7 @@ fn type_check_params_kw(
     // Apply the `a == a: a` shorthand by desugaring unlabeled args into labeled ones.
     let (labeled_unlabeled, unlabeled_unlabeled) = args.unlabeled.into_iter().partition(|(l, _)| {
         if let Some(l) = l
-            && fn_def.named_args.contains_key(l)
+            && fn_def.active_named_arg(l, exec_state).is_some()
             && !args.labeled.contains_key(l)
         {
             true
@@ -1165,9 +1194,8 @@ fn type_check_params_kw(
         // Not expecting an input arg, but found one or more
         let actuals = args.labeled.keys();
         let formals: Vec<_> = fn_def
-            .named_args
-            .keys()
-            .filter_map(|name| {
+            .active_named_args(exec_state)
+            .filter_map(|(name, _)| {
                 if actuals.clone().any(|a| a == name) {
                     return None;
                 }
@@ -1196,15 +1224,21 @@ fn type_check_params_kw(
     }
 
     for (label, mut arg) in args.labeled {
-        match fn_def.named_args.get(&label) {
-            Some(NamedParam {
-                experimental: _,
-                deprecated: _,
-                deprecated_since: _,
-                default_value: def,
-                ty,
-                resolved_ty,
-            }) => {
+        let param = fn_def.named_args.get(&label);
+        match param.map(|param| (param, param.unavailable_reason(exec_state))) {
+            Some((
+                NamedParam {
+                    experimental: _,
+                    added_in: _,
+                    deprecated: _,
+                    deprecated_since: _,
+                    removed_since: _,
+                    default_value: def,
+                    ty,
+                    resolved_ty,
+                },
+                None,
+            )) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
@@ -1233,6 +1267,10 @@ fn type_check_params_kw(
                     }
                     result.labeled.insert(label, arg);
                 }
+            }
+            Some((_, Some(reason))) => {
+                let message = unavailable_kw_arg_message(&label, fn_name, reason, exec_state.kcl_version().as_str());
+                exec_state.err(CompilationIssue::err(arg.source_range, message));
             }
             None => {
                 exec_state.err(CompilationIssue::err(
@@ -1495,8 +1533,10 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
+                removed_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -1507,8 +1547,10 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
+                removed_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,
@@ -2375,6 +2417,329 @@ x = f(1)
         );
     }
 
+    fn unexpected_arg_errors(result: &ExecTestResults) -> Vec<&CompilationIssue> {
+        result
+            .exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.message.contains("is not an argument of"))
+            .collect()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_removed_param_on_removed_version_errors_like_unknown_arg() {
+        // "3.0-preview" is a pre-release of 3.0, so a parameter removed as of
+        // 3.0 is already gone there.
+        let program = r#"@settings(kclVersion = "3.0-preview")
+fn f(
+  @a: number,
+  @(deprecated_since = "2.0", removed_since = "3.0")
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1, oldArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let errors = unexpected_arg_errors(&result);
+        assert_eq!(
+            errors.len(),
+            1,
+            "expected one unknown-argument error, got {:#?}",
+            result.issues()
+        );
+        assert_eq!(errors[0].severity, Severity::Error);
+        // Same path as an unknown argument, plus the two versions that explain
+        // the mismatch.
+        assert_eq!(
+            errors[0].message,
+            "`oldArg` is not an argument of `f`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+        );
+        // The error replaces the deprecation warning rather than adding to it.
+        assert!(
+            deprecation_warnings(&result).is_empty(),
+            "removed parameter should not also warn: {:#?}",
+            result.issues()
+        );
+        // Execution continues as if the argument had not been passed.
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 1.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_removed_param_before_removed_version_still_works() {
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @a: number,
+  @(deprecated_since = "2.0", removed_since = "3.0")
+  oldArg?: number,
+) {
+  return oldArg
+}
+x = f(1, oldArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(
+            unexpected_arg_errors(&result).is_empty(),
+            "parameter is not removed until 3.0: {:#?}",
+            result.issues()
+        );
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert!(
+            warnings[0].message.contains("`f(oldArg)` is deprecated as of KCL 2.0"),
+            "found {}",
+            warnings[0].message
+        );
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 2.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn removed_optional_param_binds_its_default() {
+        let program = r#"@settings(kclVersion = "3.0-preview")
+fn f(
+  @(removed_since = "3.0")
+  oldArg?: number = 7,
+) {
+  return oldArg
+}
+x = f()
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(result.issues().is_empty(), "unexpected issues: {:#?}", result.issues());
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 7.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn removed_param_is_not_matched_by_label_shorthand() {
+        // Before 3.0, `f(oldArg)` desugars to `f(oldArg = oldArg)`. Once the
+        // parameter is removed, the argument is just an unlabeled argument the
+        // function does not accept, and the removed parameter must not be
+        // suggested as a label.
+        let program = r#"@settings(kclVersion = "3.0-preview")
+fn f(
+  @(removed_since = "3.0")
+  oldArg?: number,
+) {
+  return 1
+}
+oldArg = 2
+x = f(oldArg)
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+        assert_eq!(err.message(), "This argument needs a label, but it doesn't have one");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_not_yet_added_param_errors_like_unknown_arg() {
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @a: number,
+  @(added_in = "3.0")
+  newArg?: number,
+) {
+  return a
+}
+x = f(1, newArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let errors = unexpected_arg_errors(&result);
+        assert_eq!(
+            errors.len(),
+            1,
+            "expected one unknown-argument error, got {:#?}",
+            result.issues()
+        );
+        assert_eq!(errors[0].severity, Severity::Error);
+        assert_eq!(
+            errors[0].message,
+            "`newArg` is not an argument of `f`; it was added in KCL 3.0, but this program uses KCL 2.0"
+        );
+        // Execution continues as if the argument had not been passed.
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 1.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_param_error_reports_default_kcl_version() {
+        // No `@settings(kclVersion = ...)`, so the program runs on the
+        // default version, and the message says which one that is.
+        let program = r#"fn f(
+  @(added_in = "2.0")
+  newArg?: number,
+) {
+  return 1
+}
+x = f(newArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let errors = unexpected_arg_errors(&result);
+        assert_eq!(errors.len(), 1, "got {:#?}", result.issues());
+        assert_eq!(
+            errors[0].message,
+            "`newArg` is not an argument of `f`; it was added in KCL 2.0, but this program uses KCL 1.0"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_added_param_on_or_after_added_version_works() {
+        // The boundary is inclusive, and a pre-release such as "3.0-preview"
+        // counts as the release it precedes.
+        for (kcl_version, added_in) in [("2.0", "1.0"), ("2.0", "2.0"), ("\"3.0-preview\"", "3.0")] {
+            let program = format!(
+                r#"@settings(kclVersion = {kcl_version})
+fn f(
+  @(added_in = "{added_in}")
+  newArg?: number,
+) {{
+  return newArg
+}}
+x = f(newArg = 2)
+"#
+            );
+
+            let result = parse_execute(&program).await.unwrap();
+            assert!(
+                result.issues().is_empty(),
+                "kclVersion {kcl_version}, added_in {added_in}: {:#?}",
+                result.issues()
+            );
+            assert!(
+                matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 2.0),
+                "kclVersion {kcl_version}, added_in {added_in}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_optional_param_binds_its_default() {
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @(added_in = "3.0")
+  newArg?: number = 7,
+) {
+  return newArg
+}
+x = f()
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(result.issues().is_empty(), "unexpected issues: {:#?}", result.issues());
+        assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 7.0));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_yet_added_param_is_not_matched_by_label_shorthand() {
+        // Once the parameter exists, `f(newArg)` desugars to
+        // `f(newArg = newArg)`. Before that, the argument is just an unlabeled
+        // argument the function does not accept, and the parameter must not
+        // be suggested as a label.
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @(added_in = "3.0")
+  newArg?: number,
+) {
+  return 1
+}
+newArg = 2
+x = f(newArg)
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+        assert_eq!(err.message(), "This argument needs a label, but it doesn't have one");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn param_lifecycle_added_then_deprecated_then_removed() {
+        let body = r#"fn f(
+  @(added_in = "2.0", deprecated_since = "2.0", removed_since = "3.0")
+  arg?: number,
+) {
+  return arg
+}
+x = f(arg = 2)
+"#;
+        for (kcl_version, expected_error) in [
+            (
+                "1.0",
+                Some("`arg` is not an argument of `f`; it was added in KCL 2.0, but this program uses KCL 1.0"),
+            ),
+            ("2.0", None),
+            (
+                "\"3.0-preview\"",
+                Some(
+                    "`arg` is not an argument of `f`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview",
+                ),
+            ),
+        ] {
+            let program = format!("@settings(kclVersion = {kcl_version})\n{body}");
+            let result = parse_execute(&program).await.unwrap();
+            let errors = unexpected_arg_errors(&result);
+            match expected_error {
+                Some(message) => {
+                    assert_eq!(errors.len(), 1, "kclVersion {kcl_version}: {:#?}", result.issues());
+                    assert_eq!(errors[0].message, message, "kclVersion {kcl_version}");
+                    assert!(
+                        deprecation_warnings(&result).is_empty(),
+                        "kclVersion {kcl_version}: an unavailable parameter should not also warn: {:#?}",
+                        result.issues()
+                    );
+                }
+                None => {
+                    assert!(errors.is_empty(), "kclVersion {kcl_version}: {:#?}", result.issues());
+                    // Available and deprecated on this version.
+                    assert_eq!(
+                        deprecation_warnings(&result).len(),
+                        1,
+                        "kclVersion {kcl_version}: {:#?}",
+                        result.issues()
+                    );
+                    assert!(
+                        matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 2.0),
+                        "kclVersion {kcl_version}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn stdlib_legacy_method_is_removed_in_kcl_3() {
+        let solids = r#"left = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 1)
+right = startSketchOn(XY)
+  |> circle(center = [1, 0], radius = 2)
+  |> extrude(length = 1)
+both = union([left, right], legacyMethod = true)
+"#;
+
+        let program = format!("@settings(kclVersion = \"3.0-preview\")\n{solids}");
+        let result = parse_execute(&program).await.unwrap();
+        let errors = unexpected_arg_errors(&result);
+        assert_eq!(errors.len(), 1, "got {:#?}", result.issues());
+        assert_eq!(
+            errors[0].message,
+            "`legacyMethod` is not an argument of `union`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+        );
+
+        // Still accepted, with a deprecation warning, before KCL 3.0.
+        let program = format!("@settings(kclVersion = 2.0)\n{solids}");
+        let result = parse_execute(&program).await.unwrap();
+        assert!(unexpected_arg_errors(&result).is_empty(), "got {:#?}", result.issues());
+        assert!(
+            deprecation_warnings(&result)
+                .iter()
+                .any(|w| w.message.contains("`union(legacyMethod)` is deprecated as of KCL 2.0")),
+            "got {:#?}",
+            result.issues()
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn deprecated_calls_inside_kcl_stdlib_do_not_warn() {
         let program = include_str!("../../tests/cube_with_hole/input.kcl");
@@ -2402,6 +2767,26 @@ plane = startSketchOn(XY)
             warnings[0].message
         );
         assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecated_since_warns_for_prerelease_kcl_version() {
+        let program = r#"@settings(kclVersion = "3.0-preview")
+plane = startSketchOn(XY)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+        assert!(
+            warnings[0]
+                .message
+                .contains("`startSketchOn` is deprecated as of KCL 2.0"),
+            "found {}",
+            warnings[0].message
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

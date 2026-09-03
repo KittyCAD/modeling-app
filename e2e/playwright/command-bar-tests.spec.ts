@@ -1,5 +1,8 @@
 import path, { join } from 'path'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_LENGTH,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+} from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
@@ -7,6 +10,9 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
+  // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
@@ -409,6 +415,24 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     await page.mouse.click(700, 200)
     await expect(toolbar.exitSketchBtn).toBeVisible()
+    await rectangleToolButton.click()
+    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
+
+    await page.keyboard.press('ControlOrMeta+K')
+    await expect(page.getByPlaceholder('Search commands')).toBeFocused()
+    await expect(
+      page.getByRole('option', { name: 'Reset view', exact: false })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('option', {
+        name: 'Pull a sketch into 3D',
+        exact: false,
+      })
+    ).toHaveCount(0)
+    await page.keyboard.press('Escape')
+    await expect(page.getByPlaceholder('Search commands')).not.toBeVisible()
+    await page.keyboard.press('l')
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
 
     // Switch between sketch tools via the command bar
     if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {
