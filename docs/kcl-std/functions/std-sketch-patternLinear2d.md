@@ -17,10 +17,12 @@ patternLinear2d(
 ): [Sketch; 1+]
 ```
 
-This function returns raw [`Sketch`](/docs/kcl-std/types/std-types-Sketch) values. If a KCL 2 sketch block is passed
-directly, its named members are not copied to the returned sketches. Create
-a region from the named segments before patterning, as shown below, or
-consume the returned sketches without accessing sketch-block members.
+Currently, KCL's type system limitations make the type signature here misleading.
+This function works with Regions from the new sketch blocks (that use constraint solvers),
+or the old, deprecated, imperative sketch/profile syntax from older versions of KCL.
+It does _not_ work as expected with sketch blocks, only with the regions that can be
+created from sketch blocks. In the following examples, a region is passed into the pattern
+function, which creates new regions in a pattern. You should _not_ pass a sketch block in.
 
 ### Arguments
 
