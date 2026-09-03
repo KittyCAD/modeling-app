@@ -924,7 +924,7 @@ export function addRevolve({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
-    labeledSelectionArgNames: edge ? ['axis'] : [],
+    labeledSelectionArgNames: edge && !axis ? ['axis'] : [],
     wasmInstance,
   })
   if (err(pathToNode)) {

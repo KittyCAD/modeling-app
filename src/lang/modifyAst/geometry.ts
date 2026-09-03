@@ -161,7 +161,11 @@ export function addHelix({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HELIX,
-    labeledSelectionArgNames: edge || cylinder ? ['axis', 'cylinder'] : [],
+    labeledSelectionArgNames: cylinder
+      ? ['axis', 'cylinder']
+      : edge && !axis
+        ? ['axis']
+        : [],
     wasmInstance,
   })
   if (err(pathToNode)) {
