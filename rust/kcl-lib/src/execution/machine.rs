@@ -66,7 +66,7 @@
 //! ```
 //!
 //! Core transitions. The long tail of evaluation frames (Unary, ArrayElems,
-//! ObjectProps, RangeStartDone/RangeEndDone, MemberPropDone/MemberObjDone,
+//! ObjectProps, RangeStartDone/RangeEndDone, LegacyMemberPropDone/LegacyMemberObjDone,
 //! AscribeDone, LabelDone, CallArgs, SketchArgs) follows the same
 //! left-to-right pattern as the binary-operator rules and is omitted.
 //!
@@ -540,12 +540,15 @@ enum Kont {
     },
 
     // ---- access / control / pipes ----
-    /// Computed member property evaluated next (property before object,
-    /// replicating the recursive executor's evaluation order).
-    MemberPropDone {
+    /// Legacy member access order: a computed property is evaluated before
+    /// the object, replicating the recursive executor's historical
+    /// evaluation order.
+    LegacyMemberPropDone {
         node: Arc<Node<MemberExpression>>,
     },
-    MemberObjDone {
+    /// Legacy member access order: the object is evaluated after the
+    /// property; apply the access.
+    LegacyMemberObjDone {
         node: Arc<Node<MemberExpression>>,
         property: Property,
     },
@@ -1059,8 +1062,8 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
         | Kont::ObjectProps { .. }
         | Kont::RangeStartDone { .. }
         | Kont::RangeEndDone { .. }
-        | Kont::MemberPropDone { .. }
-        | Kont::MemberObjDone { .. }
+        | Kont::LegacyMemberPropDone { .. }
+        | Kont::LegacyMemberObjDone { .. }
         | Kont::IfCondDone { .. }
         | Kont::AscribeDone { .. }
         | Kont::LabelDone { .. }
@@ -1254,7 +1257,7 @@ async fn step_eval(
             let node = node.arc();
             if node.computed {
                 let prop = EvalRequest::expr(&node.property);
-                konts.push(Kont::MemberPropDone { node });
+                konts.push(Kont::LegacyMemberPropDone { node });
                 Ok(Control::Eval(Box::new(prop)))
             } else {
                 // Non-computed properties are identifier names, not evaluated.
@@ -1268,7 +1271,7 @@ async fn step_eval(
                 };
                 let property = Property::String(identifier.to_string());
                 let object = EvalRequest::expr(&node.object);
-                konts.push(Kont::MemberObjDone { node, property });
+                konts.push(Kont::LegacyMemberObjDone { node, property });
                 Ok(Control::Eval(Box::new(object)))
             }
         }
@@ -1426,14 +1429,14 @@ async fn step_apply(
             Ok(Control::Apply(Applied::Value(value)))
         }
 
-        Kont::MemberPropDone { node } => {
+        Kont::LegacyMemberPropDone { node } => {
             let prop_value = applied.expect_value()?;
             let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
             let object = EvalRequest::expr(&node.object);
-            konts.push(Kont::MemberObjDone { node, property });
+            konts.push(Kont::LegacyMemberObjDone { node, property });
             Ok(Control::Eval(Box::new(object)))
         }
-        Kont::MemberObjDone { node, property } => {
+        Kont::LegacyMemberObjDone { node, property } => {
             let object = applied.expect_value()?;
             let cf = node.apply_member(object, property, exec_state, ctx).await?;
             // apply_member only ever produces Continue values.
