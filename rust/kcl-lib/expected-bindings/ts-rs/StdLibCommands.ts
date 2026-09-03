@@ -21,6 +21,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -46,6 +47,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -71,6 +73,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -82,6 +85,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -93,6 +97,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -104,6 +109,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -115,6 +121,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -126,6 +133,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -137,6 +145,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -148,6 +157,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -173,6 +183,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -184,6 +195,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -195,6 +207,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -209,6 +222,7 @@ export default {
           "source": "0mm"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -220,6 +234,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -245,6 +260,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -256,6 +272,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -267,6 +284,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -278,6 +296,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -289,6 +308,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -314,6 +334,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -339,6 +360,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -350,6 +372,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -361,6 +384,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -372,6 +396,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -383,6 +408,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -394,6 +420,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -405,6 +432,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -416,6 +444,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -441,6 +470,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -466,6 +496,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -477,6 +508,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -488,6 +520,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -499,6 +532,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -510,6 +544,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -521,6 +556,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -532,6 +568,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -543,6 +580,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -554,6 +592,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -579,6 +618,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -590,6 +630,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -615,6 +656,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -640,6 +682,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -651,6 +694,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -676,6 +720,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -687,6 +732,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -698,6 +744,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -709,6 +756,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -720,6 +768,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -731,6 +780,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -742,6 +792,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -753,6 +804,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -778,6 +830,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -803,6 +856,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -828,6 +882,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -839,6 +894,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -850,6 +906,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -861,6 +918,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -872,6 +930,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -883,6 +942,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -894,6 +954,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -905,6 +966,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": "2.0",
         "removedSince": "3.0"
@@ -916,6 +978,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": "3.0"
@@ -941,6 +1004,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -952,6 +1016,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -963,6 +1028,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -974,6 +1040,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -985,6 +1052,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1010,6 +1078,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1021,6 +1090,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1032,6 +1102,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1043,6 +1114,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1054,6 +1126,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1079,6 +1152,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1104,6 +1178,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1115,6 +1190,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1140,6 +1216,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1151,6 +1228,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1176,6 +1254,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1187,6 +1266,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1198,6 +1278,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1209,6 +1290,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1220,6 +1302,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1231,6 +1314,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1242,6 +1326,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1253,6 +1338,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1264,6 +1350,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1289,6 +1376,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1314,6 +1402,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1339,6 +1428,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1364,6 +1454,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1375,6 +1466,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1386,6 +1478,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1411,6 +1504,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1422,6 +1516,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1433,6 +1528,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1458,6 +1554,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1469,6 +1566,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1480,6 +1578,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1491,6 +1590,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1502,6 +1602,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1513,6 +1614,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1538,6 +1640,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1549,6 +1652,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1560,6 +1664,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1571,6 +1676,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1582,6 +1688,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1593,6 +1700,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1604,6 +1712,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1615,6 +1724,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1640,6 +1750,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1651,6 +1762,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1662,6 +1774,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1673,6 +1786,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1711,6 +1825,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1722,6 +1837,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1733,6 +1849,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1744,6 +1861,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1755,6 +1873,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1766,6 +1885,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1777,6 +1897,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1788,6 +1909,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1799,6 +1921,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1810,6 +1933,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1821,6 +1945,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1832,6 +1957,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1843,6 +1969,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1854,6 +1981,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1868,6 +1996,7 @@ export default {
           "source": "\"solid\""
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1893,6 +2022,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1904,6 +2034,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1929,6 +2060,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1940,6 +2072,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1965,6 +2098,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -1990,6 +2124,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2001,6 +2136,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2012,6 +2148,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2023,6 +2160,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2034,6 +2172,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2045,6 +2184,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2056,6 +2196,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": "2.0",
         "removedSince": "3.0"
@@ -2067,6 +2208,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": true,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": "3.0"
@@ -2092,6 +2234,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2117,6 +2260,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2142,6 +2286,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2167,6 +2312,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2178,6 +2324,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2189,6 +2336,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2200,6 +2348,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2211,6 +2360,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2222,6 +2372,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2233,6 +2384,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2244,6 +2396,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2255,6 +2408,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2266,6 +2420,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2291,6 +2446,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2302,6 +2458,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2313,6 +2470,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2324,6 +2482,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2335,6 +2494,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2346,6 +2506,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2357,6 +2518,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2368,6 +2530,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2393,6 +2556,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2404,6 +2568,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2415,6 +2580,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2426,6 +2592,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2437,6 +2604,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2448,6 +2616,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2459,6 +2628,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2470,6 +2640,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2481,6 +2652,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2506,6 +2678,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2517,6 +2690,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2528,6 +2702,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2539,6 +2714,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2550,6 +2726,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2561,6 +2738,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2572,6 +2750,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2583,6 +2762,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2594,6 +2774,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2605,6 +2786,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2630,6 +2812,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2641,6 +2824,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2652,6 +2836,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2663,6 +2848,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2674,6 +2860,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2685,6 +2872,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2696,6 +2884,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2707,6 +2896,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2718,6 +2908,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2743,6 +2934,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2754,6 +2946,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2765,6 +2958,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2776,6 +2970,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2787,6 +2982,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2798,6 +2994,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2809,6 +3006,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2837,6 +3035,7 @@ export default {
           "source": "0mm"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2848,6 +3047,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2859,6 +3059,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2870,6 +3071,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2881,6 +3083,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2892,6 +3095,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2903,6 +3107,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2914,6 +3119,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2925,6 +3131,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2936,6 +3143,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2961,6 +3169,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2972,6 +3181,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2983,6 +3193,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -2994,6 +3205,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3005,6 +3217,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3016,6 +3229,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3027,6 +3241,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3038,6 +3253,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3063,6 +3279,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3074,6 +3291,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3085,6 +3303,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3096,6 +3315,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3107,6 +3327,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3132,6 +3353,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3143,6 +3365,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3154,6 +3377,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3165,6 +3389,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3176,6 +3401,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3187,6 +3413,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3198,6 +3425,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3209,6 +3437,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3220,6 +3449,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3231,6 +3461,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3256,6 +3487,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3267,6 +3499,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3278,6 +3511,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3289,6 +3523,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3300,6 +3535,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3311,6 +3547,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3322,6 +3559,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3333,6 +3571,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3344,6 +3583,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3355,6 +3595,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3380,6 +3621,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3391,6 +3633,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3402,6 +3645,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3413,6 +3657,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3424,6 +3669,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3435,6 +3681,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3446,6 +3693,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3457,6 +3705,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3468,6 +3717,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3479,6 +3729,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3504,6 +3755,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3515,6 +3767,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3526,6 +3779,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3537,6 +3791,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3548,6 +3803,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3559,6 +3815,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3570,6 +3827,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3581,6 +3839,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3592,6 +3851,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3603,6 +3863,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3628,6 +3889,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3639,6 +3901,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3650,6 +3913,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3661,6 +3925,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3672,6 +3937,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3683,6 +3949,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3694,6 +3961,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3705,6 +3973,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3716,6 +3985,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3741,6 +4011,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3752,6 +4023,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3763,6 +4035,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3774,6 +4047,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3785,6 +4059,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3796,6 +4071,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3807,6 +4083,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3818,6 +4095,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3829,6 +4107,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3854,6 +4133,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3865,6 +4145,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3876,6 +4157,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3887,6 +4169,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3898,6 +4181,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3909,6 +4193,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3920,6 +4205,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3931,6 +4217,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3942,6 +4229,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3953,6 +4241,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3978,6 +4267,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -3989,6 +4279,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4000,6 +4291,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4011,6 +4303,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4022,6 +4315,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4033,6 +4327,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4044,6 +4339,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4055,6 +4351,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4066,6 +4363,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4091,6 +4389,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4102,6 +4401,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4113,6 +4413,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4124,6 +4425,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4135,6 +4437,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4146,6 +4449,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4157,6 +4461,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4168,6 +4473,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4179,6 +4485,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4190,6 +4497,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4215,6 +4523,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4226,6 +4535,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4237,6 +4547,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4248,6 +4559,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4259,6 +4571,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4284,6 +4597,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4295,6 +4609,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4306,6 +4621,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4317,6 +4633,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4328,6 +4645,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4353,6 +4671,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4364,6 +4683,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4375,6 +4695,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4386,6 +4707,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4397,6 +4719,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4422,6 +4745,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4433,6 +4757,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4444,6 +4769,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4455,6 +4781,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4480,6 +4807,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4491,6 +4819,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4502,6 +4831,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4513,6 +4843,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4538,6 +4869,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4563,6 +4895,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4588,6 +4921,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4613,6 +4947,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4638,6 +4973,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4649,6 +4985,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4660,6 +4997,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4671,6 +5009,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4682,6 +5021,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4693,6 +5033,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4704,6 +5045,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4729,6 +5071,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4754,6 +5097,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4765,6 +5109,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4790,6 +5135,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4801,6 +5147,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4826,6 +5173,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4837,6 +5185,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4851,6 +5200,7 @@ export default {
           "source": "0"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4876,6 +5226,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4914,6 +5265,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4925,6 +5277,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4936,6 +5289,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4947,6 +5301,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4958,6 +5313,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4969,6 +5325,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -4994,6 +5351,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5005,6 +5363,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5016,6 +5375,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5027,6 +5387,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5038,6 +5399,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5063,6 +5425,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5074,6 +5437,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5085,6 +5449,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5096,6 +5461,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5107,6 +5473,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5118,6 +5485,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5143,6 +5511,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5154,6 +5523,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5165,6 +5535,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5176,6 +5547,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5187,6 +5559,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5198,6 +5571,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5209,6 +5583,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5220,6 +5595,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5231,6 +5607,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5269,6 +5646,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5280,6 +5658,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5305,6 +5684,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5316,6 +5696,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5327,6 +5708,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5338,6 +5720,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5349,6 +5732,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5360,6 +5744,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5371,6 +5756,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5382,6 +5768,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5407,6 +5794,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5418,6 +5806,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5429,6 +5818,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5440,6 +5830,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5465,6 +5856,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5476,6 +5868,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5487,6 +5880,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": "2.0",
         "removedSince": "3.0"
@@ -5512,6 +5906,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5523,6 +5918,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5534,6 +5930,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5545,6 +5942,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5556,6 +5954,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5567,6 +5966,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5581,6 +5981,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5592,6 +5993,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5617,6 +6019,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5642,6 +6045,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5667,6 +6071,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5678,6 +6083,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5703,6 +6109,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5728,6 +6135,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5753,6 +6161,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5764,6 +6173,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5789,6 +6199,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5800,6 +6211,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5825,6 +6237,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5836,6 +6249,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5861,6 +6275,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5872,6 +6287,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5883,6 +6299,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5894,6 +6311,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5919,6 +6337,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5944,6 +6363,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5958,6 +6378,7 @@ export default {
           "source": "2"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5972,6 +6393,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5983,6 +6405,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -5994,6 +6417,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6005,6 +6429,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6016,6 +6441,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6030,6 +6456,7 @@ export default {
           "source": "\"solid\""
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6055,6 +6482,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6066,6 +6494,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6091,6 +6520,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6116,6 +6546,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6141,6 +6572,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6152,6 +6584,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6177,6 +6610,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6202,6 +6636,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6227,6 +6662,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6238,6 +6674,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6263,6 +6700,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6274,6 +6712,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6299,6 +6738,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6310,6 +6750,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6335,6 +6776,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6346,6 +6788,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6357,6 +6800,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6368,6 +6812,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6379,6 +6824,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6390,6 +6836,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6401,6 +6848,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6426,6 +6874,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6437,6 +6886,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6448,6 +6898,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6473,6 +6924,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6484,6 +6936,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6495,6 +6948,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6509,6 +6963,7 @@ export default {
           "source": "360deg"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6523,6 +6978,7 @@ export default {
           "source": "true"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6537,6 +6993,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6562,6 +7019,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6573,6 +7031,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6584,6 +7043,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6595,6 +7055,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6609,6 +7070,7 @@ export default {
           "source": "360deg"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6623,6 +7085,7 @@ export default {
           "source": "true"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6637,6 +7100,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6662,6 +7126,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6673,6 +7138,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6684,6 +7150,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6695,6 +7162,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6709,6 +7177,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6734,6 +7203,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6745,6 +7215,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6756,6 +7227,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6767,6 +7239,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6781,6 +7254,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6806,6 +7280,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6817,6 +7292,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6828,6 +7304,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6842,6 +7319,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6867,6 +7345,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6878,6 +7357,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6889,6 +7369,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6903,6 +7384,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6928,6 +7410,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6939,6 +7422,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6964,6 +7448,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -6975,6 +7460,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7000,6 +7486,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7011,6 +7498,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7022,6 +7510,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7033,6 +7522,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7047,6 +7537,7 @@ export default {
           "source": "true"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7072,6 +7563,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7097,6 +7589,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7108,6 +7601,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7133,6 +7627,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7158,6 +7653,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7183,6 +7679,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7208,6 +7705,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7219,6 +7717,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7244,6 +7743,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7255,6 +7755,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7266,6 +7767,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7277,6 +7779,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7288,6 +7791,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7313,6 +7817,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7324,6 +7829,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7335,6 +7841,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7360,6 +7867,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7371,6 +7879,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7382,6 +7891,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7396,6 +7906,7 @@ export default {
           "source": "\"ccw\""
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7407,6 +7918,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7432,6 +7944,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7443,6 +7956,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7468,6 +7982,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7479,6 +7994,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7490,6 +8006,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7501,6 +8018,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7512,6 +8030,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7523,6 +8042,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7534,6 +8054,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7545,6 +8066,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7559,6 +8081,7 @@ export default {
           "source": "\"solid\""
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7584,6 +8107,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7595,6 +8119,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7606,6 +8131,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7617,6 +8143,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7628,6 +8155,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7639,6 +8167,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7653,6 +8182,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7678,6 +8208,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7703,6 +8234,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7717,6 +8249,7 @@ export default {
           "source": "1"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7731,6 +8264,7 @@ export default {
           "source": "1"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7745,6 +8279,7 @@ export default {
           "source": "1"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7759,6 +8294,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7770,6 +8306,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7795,6 +8332,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7820,6 +8358,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7845,6 +8384,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7870,6 +8410,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7895,6 +8436,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7920,6 +8462,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7945,6 +8488,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7970,6 +8514,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -7995,6 +8540,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8006,6 +8552,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8017,6 +8564,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8042,6 +8590,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8067,6 +8616,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8078,6 +8628,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8089,6 +8640,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8114,6 +8666,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8125,6 +8678,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8150,6 +8704,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8161,6 +8716,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8175,6 +8731,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8186,6 +8743,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8211,6 +8769,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8222,6 +8781,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8233,6 +8793,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8244,6 +8805,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8255,6 +8817,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8280,6 +8843,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8291,6 +8855,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8302,6 +8867,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8327,6 +8893,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8352,6 +8919,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8363,6 +8931,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8388,6 +8957,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8399,6 +8969,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8424,6 +8995,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8435,6 +9007,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8460,6 +9033,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8485,6 +9059,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8510,6 +9085,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8535,6 +9111,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8560,6 +9137,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8571,6 +9149,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8596,6 +9175,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8607,6 +9187,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8618,6 +9199,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8643,6 +9225,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8654,6 +9237,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8679,6 +9263,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8704,6 +9289,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8729,6 +9315,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8754,6 +9341,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8765,6 +9353,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8790,6 +9379,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8801,6 +9391,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8826,6 +9417,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8851,6 +9443,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8876,6 +9469,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8887,6 +9481,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8912,6 +9507,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8923,6 +9519,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8934,6 +9531,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8945,6 +9543,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -8956,6 +9555,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": "2.0",
         "removedSince": "3.0"
@@ -8981,6 +9581,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9006,6 +9607,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9017,6 +9619,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9028,6 +9631,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9053,6 +9657,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9064,6 +9669,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9075,6 +9681,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9086,6 +9693,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9097,6 +9705,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9122,6 +9731,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9133,6 +9743,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9147,6 +9758,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9172,6 +9784,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9197,6 +9810,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9222,6 +9836,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9247,6 +9862,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9272,6 +9888,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9297,6 +9914,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9322,6 +9940,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9333,6 +9952,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9344,6 +9964,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9355,6 +9976,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": "2.0",
         "removedSince": "3.0"
@@ -9380,6 +10002,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9391,6 +10014,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9416,6 +10040,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9427,6 +10052,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9438,6 +10064,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9449,6 +10076,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9463,6 +10091,7 @@ export default {
           "source": "'trajectoryCurve'"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": true,
         "deprecatedSince": null,
         "removedSince": "3.0"
@@ -9477,6 +10106,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9488,6 +10118,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9499,6 +10130,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9510,6 +10142,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9524,6 +10157,7 @@ export default {
           "source": "\"solid\""
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9535,6 +10169,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": "3.0"
@@ -9560,6 +10195,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9585,6 +10221,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9610,6 +10247,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9621,6 +10259,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9632,6 +10271,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9643,6 +10283,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9654,6 +10295,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9665,6 +10307,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9676,6 +10319,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9701,6 +10345,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9715,6 +10360,7 @@ export default {
           "source": "0"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9729,6 +10375,7 @@ export default {
           "source": "0"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9743,6 +10390,7 @@ export default {
           "source": "0"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9757,6 +10405,7 @@ export default {
           "source": "false"
         },
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9768,6 +10417,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9793,6 +10443,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9804,6 +10455,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9815,6 +10467,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": "2.0",
         "removedSince": "3.0"
@@ -9840,6 +10493,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9865,6 +10519,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9890,6 +10545,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9915,6 +10571,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9940,6 +10597,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9965,6 +10623,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -9990,6 +10649,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10015,6 +10675,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10040,6 +10701,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10051,6 +10713,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10076,6 +10739,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10087,6 +10751,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10112,6 +10777,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10123,6 +10789,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10148,6 +10815,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10159,6 +10827,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10184,6 +10853,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10209,6 +10879,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10220,6 +10891,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10245,6 +10917,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10270,6 +10943,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10281,6 +10955,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10306,6 +10981,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10317,6 +10993,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10328,6 +11005,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10339,6 +11017,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10350,6 +11029,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10375,6 +11055,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10386,6 +11067,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10397,6 +11079,7 @@ export default {
         "required": true,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10408,6 +11091,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10433,6 +11117,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10444,6 +11129,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10455,6 +11141,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10466,6 +11153,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10491,6 +11179,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10502,6 +11191,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10513,6 +11203,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10524,6 +11215,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10549,6 +11241,7 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10560,6 +11253,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10571,6 +11265,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null
@@ -10582,6 +11277,7 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
         "removedSince": null

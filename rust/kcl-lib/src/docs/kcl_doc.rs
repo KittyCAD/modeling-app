@@ -931,6 +931,8 @@ pub struct ArgData {
     /// Optional parameters without an explicit default evaluate to `none` and
     /// are represented by `None` here.
     pub default_value: Option<String>,
+    /// Constraint on the KCL version in which this argument was added.
+    pub added_in: Option<VersionConstraint>,
     /// Whether this argument is deprecated regardless of the KCL version.
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
@@ -978,6 +980,7 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            added_in: arg.added_in.clone(),
             deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
             removed_since: arg.removed_since.clone(),
@@ -1770,6 +1773,30 @@ mod test {
                 .unwrap_or_else(|| panic!("{func} should declare {param}"));
             assert_eq!(arg.removed_since, VersionConstraint::parse("3.0"), "{func}({param})");
         }
+    }
+
+    #[test]
+    fn arg_data_carries_added_in() {
+        let program = crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+        let crate::parsing::ast::types::BodyItem::VariableDeclaration(decl) = &program.body[0] else {
+            panic!("expected a function declaration");
+        };
+        let Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected a function expression");
+        };
+
+        let arg = ArgData::from_ast(&func.params[0]);
+
+        assert_eq!(arg.added_in, VersionConstraint::parse("3.0"));
+        assert_eq!(arg.kind, ArgKind::Labelled(true));
     }
 
     #[test]

@@ -50,6 +50,7 @@ struct StdLibCommandArgShape {
     #[ts(optional)]
     default_value: Option<StdLibLiteralValueShape>,
     experimental: bool,
+    added_in: Option<String>,
     deprecated: bool,
     deprecated_since: Option<String>,
     removed_since: Option<String>,
@@ -113,6 +114,7 @@ fn stdlib_commands(stdlib: &ModData) -> BTreeMap<String, StdLibCommandShape> {
                             special: matches!(arg.kind, ArgKind::Special),
                             default_value: literal_value(&arg.default_value),
                             experimental: arg.experimental,
+                            added_in: arg.added_in.as_ref().map(ToString::to_string),
                             deprecated: arg.deprecated,
                             deprecated_since: arg.deprecated_since.as_ref().map(ToString::to_string),
                             removed_since: arg.removed_since.as_ref().map(ToString::to_string),

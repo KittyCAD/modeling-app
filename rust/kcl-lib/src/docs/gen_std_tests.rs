@@ -403,16 +403,10 @@ fn mod_name_std(name: &str) -> String {
     }
 }
 
-fn generate_function_from_kcl(
-    function: &FnData,
-    file_name: String,
-    example_name: String,
-    kcl_std: &ModData,
-) -> Result<()> {
-    if function.properties.doc_hidden {
-        return Ok(());
-    }
-
+/// Render the markdown page for a function. Split out of
+/// `generate_function_from_kcl` so the rendering can be unit tested with a
+/// synthetic `FnData`.
+fn render_function_page(function: &FnData, example_name: &str, kcl_std: &ModData) -> Result<String> {
     check_deprecation_attrs(&function.qual_name, &function.properties)?;
 
     let hbs = init_handlebars()?;
@@ -421,7 +415,7 @@ fn generate_function_from_kcl(
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, example_name))
         .collect();
     let args = function
         .args
@@ -442,6 +436,7 @@ fn generate_function_from_kcl(
                         .unwrap_or_default(),
                 "required": arg.kind.required(),
                 "experimental": arg.experimental,
+                "added_in": arg.added_in.as_ref().map(ToString::to_string),
                 "deprecated": arg.deprecated,
                 "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
                 "removed_since": arg.removed_since.as_ref().map(ToString::to_string),
@@ -468,9 +463,22 @@ fn generate_function_from_kcl(
         }),
     });
 
-    let output = hbs.render("function", &data)?;
-    let output = &cleanup_types(&output, kcl_std);
-    write_doc_output(&file_name, output)?;
+    Ok(hbs.render("function", &data)?)
+}
+
+fn generate_function_from_kcl(
+    function: &FnData,
+    file_name: String,
+    example_name: String,
+    kcl_std: &ModData,
+) -> Result<()> {
+    if function.properties.doc_hidden {
+        return Ok(());
+    }
+
+    let output = render_function_page(function, &example_name, kcl_std)?;
+    let output = cleanup_types(&output, kcl_std);
+    write_doc_output(&file_name, &output)?;
 
     Ok(())
 }
@@ -705,6 +713,73 @@ fn test_render_type_page_enum_variants() {
     let page = render_type_page(&ty, "std-turns-Direction").unwrap();
     assert!(!page.contains("### Variants"));
     assert!(!page.contains("Clockwise"));
+}
+
+/// Renders a synthetic function page so the argument table's lifecycle
+/// markers are covered even while std declares no `added_in` parameter. The
+/// exact whitespace of real pages is pinned by
+/// test_generate_stdlib_markdown_docs.
+#[test]
+fn test_render_function_page_marks_arg_lifecycle() {
+    fn arg(name: &str, docs: &str) -> super::kcl_doc::ArgData {
+        super::kcl_doc::ArgData {
+            name: name.to_owned(),
+            experimental: false,
+            ty: Some("number".to_owned()),
+            kind: super::kcl_doc::ArgKind::Labelled(true),
+            override_in_snippet: None,
+            docs: Some(docs.to_owned()),
+            snippet_array: None,
+            default_value: None,
+            added_in: None,
+            deprecated: false,
+            deprecated_since: None,
+            removed_since: None,
+        }
+    }
+    let version = crate::execution::annotations::VersionConstraint::parse;
+
+    let mut new_arg = arg("newArg", "A new argument.");
+    new_arg.added_in = version("3.0");
+    let mut old_arg = arg("oldArg", "An old argument.");
+    old_arg.added_in = version("2.0");
+    old_arg.deprecated_since = version("2.0");
+    old_arg.removed_since = version("3.0");
+
+    let function = FnData {
+        name: "foo".to_owned(),
+        preferred_name: "foo".to_owned(),
+        qual_name: "std::foo".to_owned(),
+        args: vec![new_arg, old_arg],
+        return_type: None,
+        properties: Properties {
+            deprecated: false,
+            deprecated_since: None,
+            experimental: false,
+            doc_hidden: false,
+            exported: true,
+            impl_kind: crate::execution::annotations::Impl::Kcl,
+            doc_category: None,
+        },
+        summary: Some("Does a thing.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "std".to_owned(),
+    };
+
+    let page = render_function_page(&function, "std-foo", &crate::docs::kcl_doc::walk_stdlib()).unwrap();
+
+    assert!(
+        page.contains("| `newArg` | `number` | **Added in KCL 3.0.** A new argument. | No |"),
+        "expected the added-in marker, got:\n{page}"
+    );
+    // Markers follow the parameter's lifecycle: added, deprecated, removed.
+    assert!(
+        page.contains(
+            "| `oldArg` | `number` | **Added in KCL 2.0.** **Deprecated as of KCL 2.0.** **Removed as of KCL 3.0.** An old argument. | No |"
+        ),
+        "expected the lifecycle markers in order, got:\n{page}"
+    );
 }
 
 #[test]
