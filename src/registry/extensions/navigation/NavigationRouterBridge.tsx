@@ -42,7 +42,17 @@ declare global {
 export function NavigationRouterBridge() {
   const app = useApp()
 
-  useEffect(() => {
+  useEffect(() => install(app), [app])
+
+  return null
+}
+
+/**
+ * Everything the bridge does, separated from the component so it can be tested
+ * without a browser. Returns its own teardown.
+ */
+export function install(app: ReturnType<typeof useApp>) {
+  {
     const router = app.registry.get(routerService)
     const navigation = app.registry.get(navigationService)
 
@@ -58,8 +68,11 @@ export function NavigationRouterBridge() {
      * matches — which is what stops a history pop from pushing the same entry
      * straight back.
      *
-     * The current location is read with `peek`, deliberately. Subscribing to it
-     * would make every navigation retrigger the write that caused it.
+     * The current location is read with `peek`, and it has to be. `getLocation()`
+     * looks equivalent and is not — it reads `location.value`, which subscribes
+     * this effect to the very signal the `navigate` below writes. Preact then
+     * throws `Cycle detected` the moment a navigation lands synchronously, which
+     * on desktop it does, and the app dies on startup.
      */
     const startOutbound = () =>
       effect(() => {
@@ -69,7 +82,7 @@ export function NavigationRouterBridge() {
         // not do.
         if (!router.isReady.peek()) return
 
-        const current = router.getLocation()
+        const current = router.location.peek()
         if (samePlace(next, `${current.pathname}${current.search}`)) {
           wrote = true
           return
@@ -126,7 +139,5 @@ export function NavigationRouterBridge() {
       unsubscribe()
       stopOutbound?.()
     }
-  }, [app])
-
-  return null
+  }
 }
