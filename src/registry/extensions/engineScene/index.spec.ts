@@ -160,7 +160,7 @@ describe('engineScene extension', () => {
     })
     expect(keymapItem).toMatchObject({
       title: 'Open measure tool',
-      scopes: [MODE_MODELING_COMMAND_SCOPE],
+      when: [MODE_MODELING_COMMAND_SCOPE],
       keystrokes: ['shift+m'],
       command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
     })
@@ -195,7 +195,7 @@ describe('engineScene extension', () => {
     })
     expect(keymapItem).toMatchObject({
       title: 'Open physical analysis tool',
-      scopes: [MODE_MODELING_COMMAND_SCOPE],
+      when: [MODE_MODELING_COMMAND_SCOPE],
       keystrokes: ['shift+p'],
       command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
     })

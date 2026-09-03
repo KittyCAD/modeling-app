@@ -94,7 +94,7 @@ const openMeasureToolKeymapItem: KeymapItem = {
   id: 'engine-scene.measure.open',
   title: 'Open measure tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_COMMAND_SCOPE],
+  when: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+m'],
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
 }
@@ -103,7 +103,7 @@ const openPhysicalAnalysisToolKeymapItem: KeymapItem = {
   id: 'engine-scene.physical-analysis.open',
   title: 'Open physical analysis tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_COMMAND_SCOPE],
+  when: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+p'],
   command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
 }
