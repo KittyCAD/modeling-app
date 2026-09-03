@@ -70,7 +70,7 @@ test.describe(
                   // Non-JSON messages should pass through unchanged.
                 }
               }
-              super.send(outgoing as string | Blob | BufferSource)
+              super.send(outgoing)
             }
           }
 
