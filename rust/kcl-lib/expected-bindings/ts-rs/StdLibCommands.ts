@@ -9218,7 +9218,7 @@ export default {
       {
         "name": "orientProfilePerpendicular",
         "ty": "bool",
-        "docs": "If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. Defaults to false.",
+        "docs": "If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. On KCL 2.0 and earlier, defaults to false. On KCL 3.0 and later, defaults to the value of `translateProfileToPath`, so a profile that is moved to the path is also oriented perpendicular to it unless you say otherwise.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -9262,13 +9262,13 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).",
+        "docs": "What version of the sweeping algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo sweep algorithm, 2 is the newer algorithm. On KCL 2.0 and earlier, the default is 0. KCL 3.0 and later always use the newest algorithm.",
         "required": false,
         "special": false,
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null,
-        "removedSince": null
+        "removedSince": "3.0"
       }
     ]
   },

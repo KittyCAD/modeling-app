@@ -1840,8 +1840,11 @@ export fn sweep(
   /// If true, before the sweep starts, the profile will be re-oriented
   /// so that it is perpendicular to the path being swept along.
   /// If false, the profile is left in its current orientation.
-  /// Defaults to false.
-  orientProfilePerpendicular?: bool = false,
+  /// On KCL 2.0 and earlier, defaults to false.
+  /// On KCL 3.0 and later, defaults to the value of `translateProfileToPath`,
+  /// so a profile that is moved to the path is also oriented perpendicular to
+  /// it unless you say otherwise.
+  orientProfilePerpendicular?: bool,
   /// A named tag for the face at the start of the sweep, i.e. the original sketch.
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.
@@ -1849,8 +1852,14 @@ export fn sweep(
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
-  /// What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).
-  version?: number(Count) = 0,
+  /// What version of the sweeping algorithm to use.
+  /// 0 means "let the Zoo engine choose whichever version is best",
+  /// 1 is the original Zoo sweep algorithm,
+  /// 2 is the newer algorithm.
+  /// On KCL 2.0 and earlier, the default is 0.
+  /// KCL 3.0 and later always use the newest algorithm.
+  @(removed_since = "3.0")
+  version?: number(Count),
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.

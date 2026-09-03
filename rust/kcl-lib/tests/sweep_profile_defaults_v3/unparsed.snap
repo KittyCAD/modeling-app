@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sweep_profile_defaults_v3.kcl
+---
+// Under KCL 3.0, `orientProfilePerpendicular` defaults to the value of
+// `translateProfileToPath`, and the sweep always uses algorithm version 2.
+@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
+
+// Two identical profiles on the XY plane.
+profileSketch = sketch(on = XY) {
+  movedProfile = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  stayingProfile = circle(start = [var 5mm, var 60mm], center = [var 0mm, var 60mm])
+}
+movedRegion = region(segments = [profileSketch.movedProfile])
+stayingRegion = region(segments = [profileSketch.stayingProfile])
+
+// Paths that start away from the profiles and head off at an angle.
+pathSketch = sketch(on = XZ) {
+  movedPath = line(start = [var 30mm, var 0mm], end = [var 60mm, var 40mm])
+  stayingPath = line(start = [var 30mm, var 60mm], end = [var 60mm, var 100mm])
+}
+
+// Only `translateProfileToPath` is set, so `orientProfilePerpendicular`
+// follows it: the profile is moved to the start of the path and turned to
+// face along it.
+moved = sweep(movedRegion, path = [pathSketch.movedPath], translateProfileToPath = true)
+
+// No flags at all: the profile stays where it is, in its current orientation.
+staying = sweep(stayingRegion, path = [pathSketch.stayingPath])
