@@ -2,6 +2,7 @@ import path, { join } from 'path'
 import {
   KCL_DEFAULT_LENGTH,
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
@@ -11,7 +12,9 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
   // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+  test.use({
+    userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG, OPFS_CLOUD_FEATURE_FLAG],
+  })
 
   test('Extrude from command bar selects extrude line after', async ({
     page,

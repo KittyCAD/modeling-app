@@ -1,11 +1,8 @@
 import { join } from 'node:path'
 import fsSync from 'node:fs'
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
-import {
-  closeOnboardingModalIfPresent,
-  getUtils,
-} from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -148,6 +145,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
 })
 
 test.describe('Query parameter command', { tag: '@web' }, () => {
+  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
   test('applies the ttc layout without opening the command palette', async ({
     page,
     cmdBar,
@@ -170,8 +168,6 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     toolbar,
     editor,
   }) => {
-    await closeOnboardingModalIfPresent(page)
-
     const sampleTitle = 'Socket Head Cap Screw'
     const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
