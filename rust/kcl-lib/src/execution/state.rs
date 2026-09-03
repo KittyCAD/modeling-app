@@ -1359,9 +1359,9 @@ impl ExecState {
 
     /// Gate for behaviors introduced in KCL 3.0. True only when the entry-point
     /// module of this execution declares KCL 3.0 or later. This never looks at
-    /// [`Self::legacy_caller_kcl_version()`] so that control flow behavior
-    /// never varies within a single execution.
-    pub(crate) fn use_kcl_v3_control_flow(&self) -> bool {
+    /// [`Self::legacy_caller_kcl_version()`] so that behavior never varies
+    /// within a single execution.
+    pub(crate) fn entry_point_version_is_v3_or_higher(&self) -> bool {
         self.global
             .entry_point_kcl_version
             .is_some_and(|v| v >= KclVersion::V3Preview)

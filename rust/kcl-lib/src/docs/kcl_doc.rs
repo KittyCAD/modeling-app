@@ -916,6 +916,8 @@ pub struct ArgData {
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
+    /// Constraint on the KCL version at or after which this argument is removed.
+    pub removed_since: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -956,6 +958,7 @@ impl ArgData {
             },
             deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
+            removed_since: arg.removed_since.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -1721,6 +1724,30 @@ mod test {
         );
         assert_eq!(fixed.examples.len(), 1);
         assert!(fixed.examples[0].0.contains("fixed([edge.start, ORIGIN])"));
+    }
+
+    #[test]
+    fn stdlib_parameters_removed_in_kcl_3_are_marked() {
+        let stdlib = walk_stdlib();
+        for (func, param) in [
+            ("chamfer", "legacyMethod"),
+            ("fillet", "legacyMethod"),
+            ("union", "legacyMethod"),
+            ("intersect", "legacyMethod"),
+            ("subtract", "legacyMethod"),
+            ("split", "legacyMethod"),
+            ("sweep", "relativeTo"),
+        ] {
+            let Some(DocData::Fn(f)) = stdlib.find_by_name(func) else {
+                panic!("{func} should be a documented function");
+            };
+            let arg = f
+                .args
+                .iter()
+                .find(|a| a.name == param)
+                .unwrap_or_else(|| panic!("{func} should declare {param}"));
+            assert_eq!(arg.removed_since, VersionConstraint::parse("3.0"), "{func}({param})");
+        }
     }
 
     #[test]

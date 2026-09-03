@@ -215,6 +215,9 @@ pub struct NamedParam {
     pub deprecated: bool,
     /// Constraint marking the KCL version at or after which this parameter is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
+    /// Constraint marking the KCL version at or after which this parameter is
+    /// removed. See [`NamedParam::is_removed`].
+    pub removed_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
     pub ty: Option<Type>,
     /// The `RuntimeType` that `ty` resolved to when the function declaration
@@ -222,6 +225,20 @@ pub struct NamedParam {
     /// is written. `None` when `ty` is `None`. Populated by
     /// [`FunctionSource::resolve_signature_types`].
     pub resolved_ty: Option<RuntimeType>,
+}
+
+impl NamedParam {
+    /// Whether this parameter is removed as of the KCL version governing the
+    /// current execution. A removed parameter behaves as if the function never
+    /// declared it: passing it is an error, and the function body sees the
+    /// parameter's default value, which the parser guarantees exists. A
+    /// pre-release version such as "3.0-preview" counts as the release it
+    /// precedes.
+    pub(crate) fn is_removed(&self, exec_state: &ExecState) -> bool {
+        self.removed_since
+            .as_ref()
+            .is_some_and(|since| crate::execution::annotations::version_ge(exec_state.kcl_version().as_str(), since))
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -318,6 +335,7 @@ impl FunctionSource {
                     experimental: p.experimental,
                     deprecated: p.deprecated,
                     deprecated_since: p.deprecated_since.clone(),
+                    removed_since: p.removed_since.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),
                     resolved_ty: None,
@@ -331,6 +349,24 @@ impl FunctionSource {
     #[doc(hidden)]
     pub fn is_std(&self) -> bool {
         self.std_props.is_some()
+    }
+
+    /// Look up a labeled parameter by name, treating parameters removed as of
+    /// the executing KCL version as if the function never declared them.
+    pub(crate) fn active_named_arg<'a>(&'a self, label: &str, exec_state: &ExecState) -> Option<&'a NamedParam> {
+        self.named_args.get(label).filter(|param| !param.is_removed(exec_state))
+    }
+
+    /// The labeled parameters a caller may pass on the executing KCL version,
+    /// in declaration order. Parameters removed as of that version are
+    /// excluded.
+    pub(crate) fn active_named_args<'a>(
+        &'a self,
+        exec_state: &'a ExecState,
+    ) -> impl Iterator<Item = (&'a String, &'a NamedParam)> + 'a {
+        self.named_args
+            .iter()
+            .filter(move |(_, param)| !param.is_removed(exec_state))
     }
 
     /// Resolve every parameter type and the return type of this function's
