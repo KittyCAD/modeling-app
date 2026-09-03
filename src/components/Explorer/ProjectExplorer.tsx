@@ -42,8 +42,8 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
-  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
 } from '@src/registry/contracts/keymap'
@@ -393,7 +393,7 @@ export const ProjectExplorer = ({
   )
 
   const focusProjectExplorer = useCallback(() => {
-    keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+    keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
     fileExplorerContainer.current?.focus()
   }, [keymap])
 
@@ -619,6 +619,7 @@ export const ProjectExplorer = ({
     () => [
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowLeft,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-left',
         groupId: 'project-explorer',
         displayName: 'Close selected project explorer row',
@@ -628,6 +629,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowRight,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-right',
         groupId: 'project-explorer',
         displayName: 'Open selected project explorer row',
@@ -637,6 +639,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-up',
         groupId: 'project-explorer',
         displayName: 'Move project explorer selection up',
@@ -646,6 +649,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-down',
         groupId: 'project-explorer',
         displayName: 'Move project explorer selection down',
@@ -655,6 +659,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.enter,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'enter',
         groupId: 'project-explorer',
         displayName: 'Open selected project explorer file',
@@ -664,6 +669,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.rename,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'rename',
         groupId: 'project-explorer',
         displayName: 'Rename selected project explorer row',
@@ -673,6 +679,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.delete,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'delete',
         groupId: 'project-explorer',
         displayName: 'Delete selected project explorer row',
@@ -682,6 +689,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.copy,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'copy',
         groupId: 'project-explorer',
         displayName: 'Copy selected project explorer row',
@@ -691,6 +699,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.paste,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'paste',
         groupId: 'project-explorer',
         displayName: 'Paste into selected project explorer row',
@@ -718,7 +727,7 @@ export const ProjectExplorer = ({
 
   useEffect(() => {
     return () => {
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
   }, [keymap])
@@ -859,7 +868,7 @@ export const ProjectExplorer = ({
       setIsRenaming(false)
       setIsDeleting(false)
       lastSyncedFilePathRef.current = undefined
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
 
@@ -1431,12 +1440,12 @@ export const ProjectExplorer = ({
   useEffect(() => {
     if (isRenaming) {
       const fileExplorerContainerElement = fileExplorerContainer.current
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.applyScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       return () => {
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         if (fileExplorerContainerElement?.contains(document.activeElement)) {
-          keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+          keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
         }
       }
     }
@@ -1453,7 +1462,7 @@ export const ProjectExplorer = ({
         projectExplorerRef.current &&
         !path.includes(projectExplorerRef.current)
       ) {
-        keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+        keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         setActiveIndexWrapper(NOTHING_IS_SELECTED)
       }
@@ -1484,7 +1493,7 @@ export const ProjectExplorer = ({
 
   const handleExplorerFocus = useCallback(
     (event: ReactFocusEvent<HTMLDivElement>) => {
-      keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       if (
         event.target === fileExplorerContainer.current &&
         activeIndexRef.current === NOTHING_IS_SELECTED
@@ -1505,7 +1514,7 @@ export const ProjectExplorer = ({
         return
       }
 
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
     },

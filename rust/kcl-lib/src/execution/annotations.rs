@@ -30,8 +30,10 @@ pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
 pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 
 pub(super) const NO_PRELUDE: &str = "no_std";
+pub(crate) const ADDED_IN: &str = "added_in";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const DEPRECATED_SINCE: &str = "deprecated_since";
+pub(crate) const REMOVED_SINCE: &str = "removed_since";
 pub(crate) const DOC_CATEGORY: &str = "doc_category";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
 pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
@@ -303,9 +305,9 @@ impl Default for FnAttrs {
     }
 }
 
-/// A constraint on a KCL version, e.g. the threshold that `@(deprecated_since =
-/// "2.0")` describes. Stored as the parsed component list so comparisons are
-/// numeric, not lexical.
+/// A constraint on a KCL version, e.g. the threshold that `@(added_in = "3.0")`,
+/// `@(deprecated_since = "2.0")`, or `@(removed_since = "3.0")` describes.
+/// Stored as the parsed component list so comparisons are numeric, not lexical.
 ///
 /// Distinct from the concrete `kclVersion` set in `@settings(...)`: this type
 /// represents a version *boundary*, and we expect to grow more constraint kinds
@@ -326,6 +328,12 @@ impl VersionConstraint {
             .collect::<Option<Vec<_>>>()?;
         if parts.is_empty() { None } else { Some(Self(parts)) }
     }
+
+    /// Whether this version boundary comes strictly before `other`, comparing
+    /// components numerically, like [`version_ge`] does for concrete versions.
+    pub(crate) fn is_before(&self, other: &Self) -> bool {
+        self.0 < other.0
+    }
 }
 
 impl fmt::Display for VersionConstraint {
@@ -344,12 +352,13 @@ impl fmt::Display for VersionConstraint {
 
 /// Returns true when the concrete `version` (e.g., from `@settings(kclVersion = ...)`)
 /// is greater than or equal to the `constraint`. Returns false if `version` cannot be
-/// parsed as a dotted integer version.
+/// parsed as a dotted integer version with an optional pre-release suffix.
 pub(crate) fn version_ge(version: &str, constraint: &VersionConstraint) -> bool {
-    let Some(parsed): Option<Vec<u32>> = version.split('.').map(|p| p.parse::<u32>().ok()).collect() else {
+    let release = version.split_once('-').map_or(version, |(release, _)| release);
+    let Some(parsed) = VersionConstraint::parse(release) else {
         return false;
     };
-    parsed >= constraint.0
+    parsed.0 >= constraint.0
 }
 
 pub(super) fn get_fn_attrs(
@@ -464,6 +473,17 @@ mod tests {
     }
 
     #[test]
+    fn version_constraint_is_before_compares_numerically() {
+        assert!(vc("2.0").is_before(&vc("3.0")));
+        assert!(vc("2.9").is_before(&vc("2.10")));
+        assert!(vc("9.0").is_before(&vc("10.0")));
+        assert!(vc("3.0").is_before(&vc("3.0.1")));
+        assert!(!vc("3.0").is_before(&vc("3.0")));
+        assert!(!vc("3.0").is_before(&vc("2.0")));
+        assert!(!vc("2.10").is_before(&vc("2.9")));
+    }
+
+    #[test]
     fn version_constraint_display_round_trips() {
         assert_eq!(vc("1.0").to_string(), "1.0");
         assert_eq!(vc("2.1.3").to_string(), "2.1.3");
@@ -482,5 +502,11 @@ mod tests {
         assert!(!version_ge("1.99", &vc("2.0")));
         // An unparsable concrete version never satisfies the constraint.
         assert!(!version_ge("bogus", &vc("1.0")));
+    }
+
+    #[test]
+    fn version_ge_supports_prerelease_versions() {
+        assert!(version_ge("3.0-preview", &vc("2.0")));
+        assert!(!version_ge("3.0-preview", &vc("4.0")));
     }
 }

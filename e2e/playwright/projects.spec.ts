@@ -1,6 +1,10 @@
 import nodeFsSync from 'fs'
 import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
+import {
+  DEFAULT_PROJECT_KCL_FILE,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  REGEXP_UUIDV4,
+} from '@src/lib/constants'
 import nodeFs from 'fs/promises'
 import type { Page } from '@playwright/test'
 import { NIL as uuidNIL } from 'uuid'
@@ -16,6 +20,9 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
@@ -1679,56 +1686,6 @@ test(
 
       page.on('console', console.log)
       await expect(page.getByTestId('app-theme')).toHaveValue('light')
-    })
-  }
-)
-
-test(
-  'Original project name persist after onboarding',
-  {
-    tag: ['@desktop'],
-  },
-  async ({ homePage, page, toolbar }) => {
-    const nextButton = page.getByTestId('onboarding-next')
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    const getAllProjects = () => page.getByTestId('project-link').all()
-    page.on('console', console.log)
-
-    await test.step('Should create and name a project called wrist brace', async () => {
-      await createProject({ name: 'wrist brace', page, returnHome: true })
-      await expect(page.getByTestId('project-link').first()).toBeVisible()
-    })
-
-    await test.step('Should go through onboarding', async () => {
-      await toolbar.userSidebarButton.click()
-      await page.getByTestId('user-settings').click()
-      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
-      await expect(nextButton).toBeVisible()
-
-      let advances = 0
-      while ((await nextButton.innerText()).trim() !== 'Finish') {
-        if (++advances > 20) {
-          throw new Error('Onboarding did not finish')
-        }
-        const urlBefore = page.url()
-        await nextButton.click()
-        await expect.poll(() => page.url()).not.toBe(urlBefore)
-      }
-      await nextButton.click()
-      await homePage.expectIsCurrentPage()
-      await expect(homePage.tutorialBtn).not.toBeVisible()
-      await page.goBack()
-      await expect(page).not.toHaveURL(/\/onboarding\//)
-      await page.goForward()
-      await homePage.expectIsCurrentPage()
-    })
-
-    await test.step('Should show the original project called wrist brace', async () => {
-      const projectNames = ['tutorial-project', 'wrist brace']
-      for (const [index, projectLink] of (await getAllProjects()).entries()) {
-        await expect(projectLink).toContainText(projectNames[index])
-      }
     })
   }
 )

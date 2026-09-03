@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties stylized-cybertruck.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0000023000006876827683,
+      "y": 34.99999921499989,
+      "z": 939.9999998880004
+    },
+    "dimensions": {
+      "x": 4439.9999959199995,
+      "y": 2229.9999906099997,
+      "z": 2020.0000002240004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 58086708.465480566
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 7275827.452317269
+  }
+}
