@@ -17,11 +17,15 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use super::axis_or_reference::Axis3dOrPoint3d;
+use crate::CompilationIssue;
 use crate::ExecutorContext;
+use crate::KclVersion;
 use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
+use crate::errors::Tag;
 use crate::execution::ArtifactId;
 use crate::execution::EarlyReturn;
 use crate::execution::ExecState;
@@ -35,6 +39,7 @@ use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::SolidOrImportedGeometry;
+use crate::execution::annotations;
 use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
@@ -65,6 +70,7 @@ pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
 ];
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
+const PATTERN_LINEAR_2D_REGIONS_ONLY: &str = "patternLinear2d should only be used with regions";
 
 /// Something that can be 3D patterned, e.g. a 3D body.
 #[derive(Debug)]
@@ -806,11 +812,79 @@ patterned = patternTransform(cube, instances = 3, transform = shift)
         assert_eq!(actual.unwrap(), expected);
         ctx.close().await;
     }
+
+    fn pattern_linear_2d_code(kcl_version: &str, input: &str) -> String {
+        format!(
+            r#"@settings(kclVersion = {kcl_version}, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {{
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+patterned = patternLinear2d({input}, instances = 2, distance = 20mm, axis = X)
+"#
+        )
+    }
+
+    async fn run_mock(code: &str) -> Result<crate::ExecOutcome, crate::KclErrorWithOutputs> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let result = ctx.run_mock(&program, &crate::execution::MockConfig::default()).await;
+        ctx.close().await;
+        result
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_sketch_warns_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = pattern_linear_2d_code(version, "profile");
+            let outcome = run_mock(&code).await.unwrap();
+            let warnings = outcome
+                .issues
+                .iter()
+                .filter(|issue| issue.message == PATTERN_LINEAR_2D_REGIONS_ONLY)
+                .collect::<Vec<_>>();
+
+            assert_eq!(
+                warnings.len(),
+                1,
+                "unexpected issues for KCL {version}: {:#?}",
+                outcome.issues
+            );
+            assert_eq!(warnings[0].severity, Severity::Warning);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_sketch_is_an_error_in_v3() {
+        let code = pattern_linear_2d_code(r#""3.0-preview""#, "profile");
+        let error = run_mock(&code).await.unwrap_err();
+
+        assert!(matches!(error.error, KclError::Semantic { .. }));
+        assert_eq!(error.error.message(), PATTERN_LINEAR_2D_REGIONS_ONLY);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_region_is_allowed_in_v3() {
+        let code = pattern_linear_2d_code(r#""3.0-preview""#, "region(segments = [profile.circle1])");
+        let outcome = run_mock(&code).await.unwrap();
+
+        assert!(
+            outcome
+                .issues
+                .iter()
+                .all(|issue| issue.message != PATTERN_LINEAR_2D_REGIONS_ONLY),
+            "unexpected regions-only issue: {:#?}",
+            outcome.issues
+        );
+    }
 }
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketches_source_range = args
+        .unlabeled_kw_arg_unconverted()
+        .map_or(args.source_range, |arg| arg.source_range);
+    let sketches: Vec<Sketch> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
     let distance: TyF64 = args.get_kw_arg("distance", &RuntimeType::length(), exec_state)?;
     let axis: Axis2dOrPoint2d = args.get_kw_arg(
@@ -822,6 +896,26 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
         exec_state,
     )?;
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
+
+    if sketches.iter().any(|sketch| sketch.origin_sketch_id.is_none()) {
+        if exec_state.kcl_version() >= KclVersion::V3Preview {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                PATTERN_LINEAR_2D_REGIONS_ONLY.to_owned(),
+                vec![sketches_source_range],
+            )));
+        }
+
+        exec_state.warn(
+            CompilationIssue {
+                source_range: sketches_source_range,
+                message: PATTERN_LINEAR_2D_REGIONS_ONLY.to_owned(),
+                suggestion: None,
+                severity: Severity::Warning,
+                tag: Tag::Deprecated,
+            },
+            annotations::WARN_DEPRECATED,
+        );
+    }
 
     let axis = axis.to_point2d();
     if axis[0].n == 0.0 && axis[1].n == 0.0 {
