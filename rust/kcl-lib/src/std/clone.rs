@@ -1486,4 +1486,97 @@ clonedCube = clone(cube)
 
         ctx.close().await;
     }
+
+    // KCL 3.0 copy of kcl_test_clone_solid_with_edge_cuts. Edge cuts are sent
+    // to the engine immediately, so every adjacent edge is looked up before
+    // the first fillet consumes any of them.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid_with_edge_cuts_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+
+baseCube = startSketchOn(XY)
+    |> startProfile(at = [0,0]) // tag this one
+    |> line(end = [0, 10], tag = $tag02)
+    |> line(end = [10, 0], tag = $tag03)
+    |> line(end = [0, -10], tag = $tag04)
+    |> close(tag = $tag05)
+    |> extrude(length = 5) // TODO: Tag these
+
+tag02NextAdjacentEdge = getNextAdjacentEdge(tag02)
+tag03NextAdjacentEdge = getNextAdjacentEdge(tag03)
+tag04NextAdjacentEdge = getNextAdjacentEdge(tag04)
+tag05NextAdjacentEdge = getNextAdjacentEdge(tag05)
+
+cube = baseCube
+  |> fillet(
+    radius = 2,
+    tags = [
+      tag02NextAdjacentEdge,
+    ],
+    tag = $fillet01,
+  )
+  |> fillet(
+    radius = 2,
+    tags = [
+      tag04NextAdjacentEdge,
+    ],
+    tag = $fillet02,
+  )
+  |> chamfer(
+    length = 2,
+    tags = [
+      tag03NextAdjacentEdge,
+    ],
+    tag = $chamfer01,
+  )
+  |> chamfer(
+    length = 2,
+    tags = [
+      tag05NextAdjacentEdge,
+    ],
+    tag = $chamfer02,
+  )
+
+clonedCube = clone(cube)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        let result = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cube = result.variables.get("cube").unwrap();
+        let cloned_cube = result.variables.get("clonedCube").unwrap();
+
+        assert_ne!(cube, cloned_cube);
+
+        let KclValueView::Solid { value: cube } = cube else {
+            panic!("Expected a solid, got: {cube:?}");
+        };
+        let KclValueView::Solid { value: cloned_cube } = cloned_cube else {
+            panic!("Expected a solid, got: {cloned_cube:?}");
+        };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
+
+        assert_ne!(cube.id, cloned_cube.id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
+        assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
+
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
+
+        for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
+            assert_ne!(value.get_id(), cloned_value.get_id());
+            assert_eq!(value.get_tag(), cloned_value.get_tag());
+        }
+
+        for (edge_cut, cloned_edge_cut) in cube.edge_cuts.iter().zip(cloned_cube.edge_cuts.iter()) {
+            assert_ne!(edge_cut.id(), cloned_edge_cut.id());
+            assert_ne!(edge_cut.edge_id(), cloned_edge_cut.edge_id());
+            assert_eq!(edge_cut.tag(), cloned_edge_cut.tag());
+        }
+
+        ctx.close().await;
+    }
 }
