@@ -8,11 +8,13 @@ import type {
   MarkdownEditorActions,
 } from '@kittycad/ui-components'
 import type { Command } from '@src/lib/commandTypes'
-import { provideCommand } from '@src/registry/contracts/commands'
+import {
+  provideCommand,
+  provideCommandScope,
+} from '@src/registry/contracts/commands'
 import {
   type KeymapItem,
   provideKeymapItem,
-  provideKeymapScope,
 } from '@src/registry/contracts/keymap'
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -173,6 +175,7 @@ const markdownEditorCommands: readonly Command[] = Object.values(
 
   return {
     id: commandId,
+    scopes: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
     name: commandId,
     groupId: MARKDOWN_EDITOR_COMMAND_GROUP_ID,
     displayName: keymap?.title ?? commandId,
@@ -230,7 +233,7 @@ const markdownEditorExtension = defineRegistryItemFactory(() => {
       provides: [
         ...commands.map(provideCommand),
         ...markdownEditorKeymapItems.map(provideKeymapItem),
-        provideKeymapScope({
+        provideCommandScope({
           id: MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
           displayName: 'Markdown editor focused',
           priority: 1200,

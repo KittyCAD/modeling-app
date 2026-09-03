@@ -1,5 +1,6 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
@@ -13,8 +14,11 @@ import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import {
-  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   commandScopeService,
+  commandScopesValueSpec,
+  getCommandPaletteScopes,
+  getEffectiveCommandScopeSet,
+  isCommandSearchable,
 } from '@src/registry/contracts/commands'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 
@@ -26,6 +30,30 @@ export const CommandBar = () => {
   const commandScopes = registry.optional(commandScopeService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
+  const [modalCommandBarHost, setModalCommandBarHost] =
+    useState<HTMLElement | null>(null)
+  const [commandPaletteSession, setCommandPaletteSession] = useState(() => ({
+    isOpen: isCommandBarOpen,
+    scopes: isCommandBarOpen
+      ? getCommandPaletteScopes(commandScopes?.getCurrentScopes() ?? [])
+      : [],
+  }))
+  let commandPaletteScopes = commandPaletteSession.scopes
+  if (commandPaletteSession.isOpen !== isCommandBarOpen) {
+    // Capture the launch context before the palette input's autofocus changes
+    // the active focus scope. React applies this update before committing.
+    commandPaletteScopes = isCommandBarOpen
+      ? getCommandPaletteScopes(commandScopes?.getCurrentScopes() ?? [])
+      : []
+    setCommandPaletteSession({
+      isOpen: isCommandBarOpen,
+      scopes: commandPaletteScopes,
+    })
+  }
+  const effectiveCommandScopes = getEffectiveCommandScopeSet(
+    commandPaletteScopes,
+    registry.signal(commandScopesValueSpec).value
+  )
   const {
     context: {
       selectedCommand,
@@ -49,6 +77,14 @@ export const CommandBar = () => {
     ? Popover
     : Dialog
 
+  // Keep the global command bar inside the active route modal's focus boundary.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname changes which modal host is mounted.
+  useEffect(() => {
+    setModalCommandBarHost(
+      document.querySelector<HTMLElement>('[data-command-bar-host]')
+    )
+  }, [pathname])
+
   // Close the command bar when navigating
   // but importantly not when the query parameters change
   // biome-ignore lint/correctness/useExhaustiveDependencies: this intentionally reacts only to path changes.
@@ -59,18 +95,6 @@ export const CommandBar = () => {
     cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
-
-  useEffect(() => {
-    if (!commandScopes || !isCommandBarOpen) {
-      return
-    }
-
-    commandScopes.applyScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
-
-    return () => {
-      commandScopes.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
-    }
-  }, [commandScopes, isCommandBarOpen])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper(
@@ -137,7 +161,7 @@ export const CommandBar = () => {
     }
   }
 
-  return (
+  const commandBar = (
     <Transition.Root
       show={isCommandBarOpen || false}
       afterLeave={() => {
@@ -173,8 +197,10 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command: Command) =>
-                  isCommandVisibleInSearch(command)
+                options={commands.filter(
+                  (command: Command) =>
+                    isCommandVisibleInSearch(command) &&
+                    isCommandSearchable(command, effectiveCommandScopes)
                 )}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
@@ -216,4 +242,8 @@ export const CommandBar = () => {
       </WrapperComponent>
     </Transition.Root>
   )
+
+  return modalCommandBarHost
+    ? createPortal(commandBar, modalCommandBarHost)
+    : commandBar
 }

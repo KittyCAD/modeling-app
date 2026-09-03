@@ -40,17 +40,34 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
-    let edge_cut_version: EdgeCutVersion = edge_cut_number
-        .map(|num| {
-            num.try_into().map_err(|()| {
-                KclError::new_semantic(KclErrorDetails::new(
-                    format!("{} is not a version of the Zoo edge cut algorithm", num),
-                    vec![args.source_range],
-                ))
+    // KCL 3.0: the version parameter is removed. The newest edge cut algorithm
+    // is always used, and all edges are cut at once in a single engine command.
+    let edge_cut_version: EdgeCutVersion = if exec_state.entry_point_version_is_v3_or_higher() {
+        if edge_cut_number.is_some() {
+            let source_range = args
+                .labeled
+                .get("version")
+                .map(|arg| arg.source_range)
+                .unwrap_or(args.source_range);
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "The version parameter has been removed as of KCL 3.0. The newest chamfer algorithm is always used; remove the argument.".to_string(),
+                vec![source_range],
+            )));
+        }
+        default_edge_cut_version(exec_state.kcl_version())
+    } else {
+        edge_cut_number
+            .map(|num| {
+                num.try_into().map_err(|()| {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!("{} is not a version of the Zoo edge cut algorithm", num),
+                        vec![args.source_range],
+                    ))
+                })
             })
-        })
-        .transpose()?
-        .unwrap_or_else(|| default_edge_cut_version(exec_state.kcl_version()));
+            .transpose()?
+            .unwrap_or_else(|| default_edge_cut_version(exec_state.kcl_version()))
+    };
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -87,45 +104,44 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             .await?;
             Ok(KclValue::Solid { value })
         }
-        super::fillet::TaggedEdgeInputs::Tags(tags) => {
-            match edge_cut_version {
-                EdgeCutVersion::V2 => {
-                    let value = inner_chamfer_v2(
-                        solid,
-                        length,
-                        tags,
-                        second_length,
-                        angle,
-                        None,
-                        tag,
-                        csg_algorithm,
-                        edge_cut_version,
-                        exec_state,
-                        args,
-                    )
-                    .await?;
-                    Ok(KclValue::Solid { value })
-                }
-                // TODO: When we change the default algorithm to V2, we need to make it so that V0 (default) takes the route above
-                _ => {
-                    let value = inner_chamfer(
-                        solid,
-                        length,
-                        tags,
-                        second_length,
-                        angle,
-                        None,
-                        tag,
-                        csg_algorithm,
-                        edge_cut_version,
-                        exec_state,
-                        args,
-                    )
-                    .await?;
-                    Ok(KclValue::Solid { value })
-                }
+        super::fillet::TaggedEdgeInputs::Tags(tags) => match edge_cut_version {
+            // TODO: When we change the default algorithm to V2, we need to make
+            // it so that V0 (default) takes the route below.
+            EdgeCutVersion::V0 | EdgeCutVersion::V1 => {
+                let value = inner_chamfer(
+                    solid,
+                    length,
+                    tags,
+                    second_length,
+                    angle,
+                    None,
+                    tag,
+                    csg_algorithm,
+                    edge_cut_version,
+                    exec_state,
+                    args,
+                )
+                .await?;
+                Ok(KclValue::Solid { value })
             }
-        }
+            EdgeCutVersion::V2 | _ => {
+                let value = inner_chamfer_v2(
+                    solid,
+                    length,
+                    tags,
+                    second_length,
+                    angle,
+                    None,
+                    tag,
+                    csg_algorithm,
+                    edge_cut_version,
+                    exec_state,
+                    args,
+                )
+                .await?;
+                Ok(KclValue::Solid { value })
+            }
+        },
     }
 }
 
