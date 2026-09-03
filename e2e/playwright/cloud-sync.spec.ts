@@ -43,6 +43,51 @@ async function expectCloudSyncHomeReady(page: Page) {
 }
 
 test(
+  'materializes a remote-only project through the OPFS worker write fallback',
+  { tag: ['@web'] },
+  async ({ context, page }, testInfo) => {
+    const remoteProject: CloudProject = {
+      id: 'remote-worker-fallback',
+      title: 'Remote worker fallback',
+      revision: 'remote-worker-fallback-rev-1',
+      files: {
+        'main.kcl': 'workerFallback = 1\n',
+        'project.toml': projectToml(
+          'Remote worker fallback',
+          'remote-worker-fallback'
+        ),
+      },
+    }
+    const { calls: apiCalls } = await routeCloudProjects(context, {
+      remoteProjects: [remoteProject],
+    })
+    await context.addInitScript(() => {
+      const fileHandlePrototype = globalThis.FileSystemFileHandle?.prototype
+      if (fileHandlePrototype) {
+        Object.defineProperty(fileHandlePrototype, 'createWritable', {
+          configurable: true,
+          value: undefined,
+        })
+      }
+    })
+
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await expectCloudFeatureEnabled(page)
+    await expectCloudSyncHomeReady(page)
+    await openHomeProject(page, remoteProject.title)
+
+    await expectProjectFileRoute(page)
+    await expect
+      .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
+      .toContain(remoteProject.id)
+    const files = await readOpfsTextFiles(page, {
+      main: `${PROJECT_DIR}/${remoteProject.id}/main.kcl`,
+    })
+    expect(files.main).toContain('workerFallback = 1')
+  }
+)
+
+test(
   'streams remote-only projects into an empty local list and materializes opened clones',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
