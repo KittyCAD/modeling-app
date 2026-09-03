@@ -1,0 +1,32 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing chamfer_version_removed_v3.kcl
+---
+KCL Semantic error
+
+  × semantic: The version parameter has been removed as of KCL 3.0. The newest
+  │ chamfer algorithm is always used; remove the argument.
+    ╭─[20:13]
+ 19 │   ],
+ 20 │   version = 2,
+    ·             ┬
+    ·             ╰── tests/chamfer_version_removed_v3/input.kcl
+ 21 │ )
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The version parameter has been removed as of KCL 3.0. The
+        │ newest chamfer algorithm is always used; remove the argument.
+          ╭─[14:13]
+       13 │
+       14 │ ╭─▶ chamfered = chamfer(
+       15 │ │     box,
+       16 │ │     length = 1mm,
+       17 │ │     tags = [
+       18 │ │       getCommonEdge(faces = [boxRegion.tags.bottom,
+      boxRegion.tags.right])
+       19 │ │     ],
+       20 │ │     version = 2,
+       21 │ ├─▶ )
+          · ╰──── tests/chamfer_version_removed_v3/input.kcl
+          ╰────

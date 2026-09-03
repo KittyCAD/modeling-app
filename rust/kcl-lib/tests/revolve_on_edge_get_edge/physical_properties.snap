@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties revolve_on_edge_get_edge.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 10.0,
+      "y": 5.0,
+      "z": 5.0
+    },
+    "dimensions": {
+      "x": 20.0,
+      "y": 10.0,
+      "z": 10.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 828.4789934691617
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.1570638331903638
+  }
+}

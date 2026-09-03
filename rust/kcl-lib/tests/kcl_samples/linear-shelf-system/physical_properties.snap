@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties linear-shelf-system.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 800.0,
+      "y": -175.0,
+      "z": 1000.0
+    },
+    "dimensions": {
+      "x": 2000.0,
+      "y": 450.0,
+      "z": 2000.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 28209000.63868612
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 279700.3071949196
+  }
+}

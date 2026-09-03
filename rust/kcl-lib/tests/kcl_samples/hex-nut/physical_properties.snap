@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties hex-nut.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.0000000000027995383788947947,
+      "y": -0.00000000005203926178865004,
+      "z": -0.00000000005203837361023034
+    },
+    "dimensions": {
+      "x": 19.050000000006747,
+      "y": 13.748153285299528,
+      "z": 16.497783942359433
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 718.7226708254002
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.7719561595139387
+  }
+}
