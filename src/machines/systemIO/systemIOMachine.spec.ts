@@ -22,6 +22,7 @@ import {
   buildTheWorldAndNoEngineConnection,
   createTestWasmRegistryItem,
 } from '@src/unitTestUtils'
+import toast from 'react-hot-toast'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
@@ -288,6 +289,9 @@ describe('systemIOMachine - XState', () => {
         actor.stop()
       })
       it('does not request navigation for an in-place bulk edit', async () => {
+        const toastSuccess = vi
+          .spyOn(toast, 'success')
+          .mockImplementation(() => 'toast-id')
         const actor = createActor(
           systemIOMachine.provide({
             actors: {
@@ -298,6 +302,7 @@ describe('systemIOMachine - XState', () => {
                   fileName: input.requestedFileNameWithExtension,
                   subRoute: '',
                   shouldNavigate: false,
+                  showSuccessToast: input.showSuccessToast,
                 })),
               [SystemIOMachineActors.readFoldersFromProjectDirectory]:
                 fromPromise(async () => [] as Project[]),
@@ -319,6 +324,7 @@ describe('systemIOMachine - XState', () => {
             files: [],
             requestedProjectName: 'demo-project',
             requestedFileNameWithExtension: 'main.kcl',
+            showSuccessToast: false,
           },
         })
         await waitFor(actor, (state) =>
@@ -328,7 +334,9 @@ describe('systemIOMachine - XState', () => {
         expect(actor.getSnapshot().context.requestedFileName).toBe(
           requestedFileNameBefore
         )
+        expect(toastSuccess).not.toHaveBeenCalled()
         actor.stop()
+        toastSuccess.mockRestore()
       })
       it.each([undefined, []])(
         'skips project lookup when filesToDelete is %j',

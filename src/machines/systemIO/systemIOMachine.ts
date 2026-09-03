@@ -163,6 +163,7 @@ export const systemIOMachine = setup({
             onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
+            showSuccessToast?: boolean
           }
         }
       | {
@@ -187,6 +188,7 @@ export const systemIOMachine = setup({
             shouldNavigate: boolean
             onProjectLoaderComplete?: () => void
             message?: string
+            showSuccessToast?: boolean
             toastId?: string
           }
         }
@@ -404,6 +406,16 @@ export const systemIOMachine = setup({
       },
     }),
     [SystemIOMachineActions.toastSuccess]: ({ event }) => {
+      if (
+        'output' in event &&
+        event.output !== null &&
+        typeof event.output === 'object' &&
+        'showSuccessToast' in event.output &&
+        event.output.showSuccessToast === false
+      ) {
+        return
+      }
+
       // Operations may carry a stable `toastId` on their output so repeated
       // completions collapse into a single updating toast instead of stacking
       // duplicates (e.g. Zookeeper streams several bulk writes per edit).
@@ -706,6 +718,7 @@ export const systemIOMachine = setup({
             onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
+            showSuccessToast?: boolean
           }
         }): Promise<{
           message: string
@@ -714,6 +727,7 @@ export const systemIOMachine = setup({
           subRoute: string
           shouldNavigate: boolean
           onProjectLoaderComplete?: () => void
+          showSuccessToast?: boolean
         }> => {
           return {
             message: '',
@@ -1730,6 +1744,7 @@ export const systemIOMachine = setup({
             onFileSystemError: event.data.onFileSystemError,
             onFileSystemSuccess: event.data.onFileSystemSuccess,
             onSuccess: event.data.onSuccess,
+            showSuccessToast: event.data.showSuccessToast,
           }
         },
         onDone: {
