@@ -216,7 +216,7 @@ pub struct NamedParam {
     /// Constraint marking the KCL version at or after which this parameter is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
     /// Constraint marking the KCL version at or after which this parameter is
-    /// removed. See [`NamedParam::is_removed`].
+    /// removed. See [`NamedParam::unavailable_reason`].
     pub removed_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
     pub ty: Option<Type>,
@@ -227,17 +227,36 @@ pub struct NamedParam {
     pub resolved_ty: Option<RuntimeType>,
 }
 
+/// Why a parameter that the callee declares cannot be passed on the KCL
+/// version governing the current execution. Such a parameter behaves as if
+/// the function never declared it: passing it is an error, and the function
+/// body sees the parameter's default value, which the parser guarantees
+/// exists.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ParamUnavailable<'a> {
+    /// The parameter was removed as of this KCL version, and the executing
+    /// version is at or after it.
+    Removed(&'a VersionConstraint),
+}
+
 impl NamedParam {
-    /// Whether this parameter is removed as of the KCL version governing the
-    /// current execution. A removed parameter behaves as if the function never
-    /// declared it: passing it is an error, and the function body sees the
-    /// parameter's default value, which the parser guarantees exists. A
-    /// pre-release version such as "3.0-preview" counts as the release it
-    /// precedes.
-    pub(crate) fn is_removed(&self, exec_state: &ExecState) -> bool {
-        self.removed_since
-            .as_ref()
-            .is_some_and(|since| crate::execution::annotations::version_ge(exec_state.kcl_version().as_str(), since))
+    /// Why this parameter cannot be passed on the KCL version governing the
+    /// current execution, or `None` if it can. A pre-release version such as
+    /// "3.0-preview" counts as the release it precedes.
+    pub(crate) fn unavailable_reason(&self, exec_state: &ExecState) -> Option<ParamUnavailable<'_>> {
+        let version = exec_state.kcl_version().as_str();
+        if let Some(since) = &self.removed_since
+            && crate::execution::annotations::version_ge(version, since)
+        {
+            return Some(ParamUnavailable::Removed(since));
+        }
+        None
+    }
+
+    /// Whether a caller may pass this parameter on the KCL version governing
+    /// the current execution. See [`NamedParam::unavailable_reason`].
+    pub(crate) fn is_available(&self, exec_state: &ExecState) -> bool {
+        self.unavailable_reason(exec_state).is_none()
     }
 }
 
@@ -351,14 +370,18 @@ impl FunctionSource {
         self.std_props.is_some()
     }
 
-    /// Look up a labeled parameter by name, treating parameters removed as of
-    /// the executing KCL version as if the function never declared them.
+    /// Look up a labeled parameter by name, treating parameters that are
+    /// unavailable on the executing KCL version (see
+    /// [`NamedParam::unavailable_reason`]) as if the function never declared
+    /// them.
     pub(crate) fn active_named_arg<'a>(&'a self, label: &str, exec_state: &ExecState) -> Option<&'a NamedParam> {
-        self.named_args.get(label).filter(|param| !param.is_removed(exec_state))
+        self.named_args
+            .get(label)
+            .filter(|param| param.is_available(exec_state))
     }
 
     /// The labeled parameters a caller may pass on the executing KCL version,
-    /// in declaration order. Parameters removed as of that version are
+    /// in declaration order. Parameters unavailable on that version are
     /// excluded.
     pub(crate) fn active_named_args<'a>(
         &'a self,
@@ -366,7 +389,7 @@ impl FunctionSource {
     ) -> impl Iterator<Item = (&'a String, &'a NamedParam)> + 'a {
         self.named_args
             .iter()
-            .filter(move |(_, param)| !param.is_removed(exec_state))
+            .filter(move |(_, param)| param.is_available(exec_state))
     }
 
     /// Resolve every parameter type and the return type of this function's

@@ -27,6 +27,7 @@ use crate::execution::control_continue;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::NamedParam;
+use crate::execution::kcl_value::ParamUnavailable;
 use crate::execution::memory;
 use crate::execution::types::CoercionMode;
 use crate::execution::types::RuntimeType;
@@ -1010,6 +1011,25 @@ pub(crate) fn unexpected_kw_arg_message(label: &str, callee_name: Option<&str>) 
     )
 }
 
+/// Build the error message for a labeled argument whose parameter the callee
+/// declares, but not on the KCL version governing this execution. Extends
+/// [`unexpected_kw_arg_message`] with the version that made the parameter
+/// unavailable and the version this program uses, so the user can tell a
+/// version mismatch apart from a typo.
+fn unavailable_kw_arg_message(
+    label: &str,
+    callee_name: Option<&str>,
+    reason: ParamUnavailable<'_>,
+    program_version: &str,
+) -> String {
+    let base = unexpected_kw_arg_message(label, callee_name);
+    match reason {
+        ParamUnavailable::Removed(since) => {
+            format!("{base}; it was removed as of KCL {since}, but this program uses KCL {program_version}")
+        }
+    }
+}
+
 /// Fetch the definition-time resolution of a type written in a function
 /// signature.
 ///
@@ -1201,16 +1221,20 @@ fn type_check_params_kw(
     }
 
     for (label, mut arg) in args.labeled {
-        match fn_def.active_named_arg(&label, exec_state) {
-            Some(NamedParam {
-                experimental: _,
-                deprecated: _,
-                deprecated_since: _,
-                removed_since: _,
-                default_value: def,
-                ty,
-                resolved_ty,
-            }) => {
+        let param = fn_def.named_args.get(&label);
+        match param.map(|param| (param, param.unavailable_reason(exec_state))) {
+            Some((
+                NamedParam {
+                    experimental: _,
+                    deprecated: _,
+                    deprecated_since: _,
+                    removed_since: _,
+                    default_value: def,
+                    ty,
+                    resolved_ty,
+                },
+                None,
+            )) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
@@ -1239,6 +1263,10 @@ fn type_check_params_kw(
                     }
                     result.labeled.insert(label, arg);
                 }
+            }
+            Some((_, Some(reason))) => {
+                let message = unavailable_kw_arg_message(&label, fn_name, reason, exec_state.kcl_version().as_str());
+                exec_state.err(CompilationIssue::err(arg.source_range, message));
             }
             None => {
                 exec_state.err(CompilationIssue::err(
@@ -2416,7 +2444,12 @@ x = f(1, oldArg = 2)
             result.issues()
         );
         assert_eq!(errors[0].severity, Severity::Error);
-        assert_eq!(errors[0].message, "`oldArg` is not an argument of `f`");
+        // Same path as an unknown argument, plus the two versions that explain
+        // the mismatch.
+        assert_eq!(
+            errors[0].message,
+            "`oldArg` is not an argument of `f`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+        );
         // The error replaces the deprecation warning rather than adding to it.
         assert!(
             deprecation_warnings(&result).is_empty(),
@@ -2509,7 +2542,10 @@ both = union([left, right], legacyMethod = true)
         let result = parse_execute(&program).await.unwrap();
         let errors = unexpected_arg_errors(&result);
         assert_eq!(errors.len(), 1, "got {:#?}", result.issues());
-        assert_eq!(errors[0].message, "`legacyMethod` is not an argument of `union`");
+        assert_eq!(
+            errors[0].message,
+            "`legacyMethod` is not an argument of `union`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+        );
 
         // Still accepted, with a deprecation warning, before KCL 3.0.
         let program = format!("@settings(kclVersion = 2.0)\n{solids}");
