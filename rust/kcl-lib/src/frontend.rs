@@ -2062,6 +2062,8 @@ impl FrontendState {
 
         Ok(ExecOutcome {
             variables,
+            #[cfg(test)]
+            test_program_memory: Default::default(),
             filenames,
             operations,
             artifact_graph,
@@ -9262,6 +9264,7 @@ cylinder = startSketchOn(XY)
         frontend.program = Program::parse(initial_source).unwrap().0.unwrap();
         let outcome = ExecOutcome {
             variables: Default::default(),
+            test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
             scene_objects: Default::default(),
@@ -9417,6 +9420,7 @@ sketch(on = XY) {
     ) -> ExecOutcome {
         ExecOutcome {
             variables: Default::default(),
+            test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
             scene_objects: Default::default(),

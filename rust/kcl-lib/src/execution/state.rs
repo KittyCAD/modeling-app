@@ -637,6 +637,14 @@ impl ExecState {
         self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
+    #[cfg(test)]
+    pub(crate) fn program_memory_for_tests(
+        &self,
+        main_ref: EnvironmentRef,
+    ) -> Result<IndexMap<String, KclValue>, KclError> {
+        self.mod_local.variables(main_ref)
+    }
+
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
@@ -647,9 +655,10 @@ impl ExecState {
     ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        let variables = self
-            .mod_local
-            .variables(main_ref)?
+        let variables = self.mod_local.variables(main_ref)?;
+        #[cfg(test)]
+        let test_program_memory = variables.clone();
+        let variables = variables
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
@@ -665,6 +674,8 @@ impl ExecState {
             issues: self.global.issues,
             source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
+            #[cfg(test)]
+            test_program_memory,
         })
     }
 
@@ -989,6 +1000,17 @@ impl ExecState {
 
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
         self.mod_local.artifacts.artifacts.get_mut(&id)
+    }
+
+    pub(crate) fn is_sketch_block_path(&self, path_id: ArtifactId) -> bool {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .any(|artifact| {
+                matches!(artifact, Artifact::SketchBlock(sketch_block) if sketch_block.path_id == Some(path_id))
+            })
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {

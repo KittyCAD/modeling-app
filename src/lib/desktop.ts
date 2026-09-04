@@ -42,6 +42,7 @@ import {
 } from '@src/lib/projectLibraries'
 import {
   getCloudProjectIdFromProjectTomlContents,
+  getProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   preserveProjectTomlMetadataInProjectSettingsContents,
   setProjectTitleInProjectTomlContents,
@@ -123,6 +124,7 @@ async function readProjectTomlMetadata(projectPath: string) {
     const environmentName = getEnvironmentNameFromEnv(env())
     return {
       title: getProjectTitleFromProjectTomlContents(projectToml),
+      projectId: getProjectIdFromProjectTomlContents(projectToml),
       cloudProjectId: getCloudProjectIdFromProjectTomlContents(
         projectToml,
         environmentName
@@ -131,6 +133,7 @@ async function readProjectTomlMetadata(projectPath: string) {
   } catch {
     return {
       title: undefined,
+      projectId: undefined,
       cloudProjectId: undefined,
     }
   }
@@ -678,7 +681,7 @@ export async function getProjectInfo(
   }
   const projectTomlMetadata = canReadWriteProjectPath
     ? await readProjectTomlMetadata(projectPath)
-    : { title: undefined, cloudProjectId: undefined }
+    : { title: undefined, projectId: undefined, cloudProjectId: undefined }
 
   const project = {
     ...walked,
