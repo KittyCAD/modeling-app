@@ -12,10 +12,7 @@ import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import { ZookeeperFileRequestProcessor } from '@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor'
-import {
-  type ZookeeperConversationStore,
-  zookeeperConversationStore,
-} from '@src/lib/zookeeper/zookeeperConversationStore'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   createZookeeperManagerActor,
   hasBeenInterruptedOnLast,
@@ -36,7 +33,7 @@ import type { SnapshotFrom, Subscription } from 'xstate'
 export interface ZookeeperSessionControllerDependencies {
   apiToken: string
   billing: BillingRegistryService
-  conversationStore?: ZookeeperConversationStore
+  conversationStore: ZookeeperConversationStore
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
@@ -320,9 +317,7 @@ class SessionController implements ZookeeperSessionController {
     try {
       if (projectId !== undefined && projectId !== uuidNIL) {
         await this.trackPersistence(
-          (
-            this.deps.conversationStore ?? zookeeperConversationStore
-          ).deleteProjectConversationId(projectId)
+          this.deps.conversationStore.deleteProjectConversationId(projectId)
         )
       }
     } catch (error: unknown) {
@@ -591,9 +586,7 @@ class SessionController implements ZookeeperSessionController {
     }
 
     this.savingConversationIds.add(conversationId)
-    const operation = (
-      this.deps.conversationStore ?? zookeeperConversationStore
-    )
+    const operation = this.deps.conversationStore
       .saveProjectConversationId({ projectId, conversationId })
       .then(() => {
         this.lastSavedConversationId = conversationId
@@ -637,7 +630,7 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
-    const lookup = (this.deps.conversationStore ?? zookeeperConversationStore)
+    const lookup = this.deps.conversationStore
       .getProjectConversationId(projectId)
       .then(finish)
       .catch((error: unknown) => {

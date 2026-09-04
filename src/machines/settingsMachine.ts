@@ -30,6 +30,7 @@ import {
 } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
 import decamelize from 'decamelize'
 import toast from 'react-hot-toast'
@@ -50,6 +51,7 @@ export type SettingsActorDepsType = {
   defaultProjectLibraries: readonly ProjectLibrarySetting[]
   projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
   extensionSettings: ResolvedExtensionSettings
+  fileOperations: FileOperationsRegistryService
   wasmInstancePromise: Promise<ModuleType>
 }
 export type SettingsMachineInput = SettingsType & SettingsActorDepsType
@@ -114,10 +116,12 @@ export const settingsMachine = setup({
         extensionSettings,
         wasmInstancePromise,
         commandBarActor: _c,
+        fileOperations,
         ...settings
       } = input.context
 
       await saveSettings(
+        fileOperations,
         wasmInstancePromise,
         settings,
         extensionSettings,
@@ -134,10 +138,12 @@ export const settingsMachine = setup({
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
+        fileOperations: FileOperationsRegistryService
         wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
+        input.fileOperations,
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
@@ -154,12 +160,14 @@ export const settingsMachine = setup({
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
+        fileOperations: FileOperationsRegistryService
         project: Project
         settings: SettingsType
         wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
+        input.fileOperations,
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
@@ -178,10 +186,12 @@ export const settingsMachine = setup({
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
+        fileOperations: FileOperationsRegistryService
         wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
+        input.fileOperations,
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
@@ -607,6 +617,7 @@ export const settingsMachine = setup({
           },
         },
         input: ({ context }) => ({
+          fileOperations: context.fileOperations,
           currentProject: context.currentProject,
           defaultProjectLibraries: context.defaultProjectLibraries,
           projectLibrarySettingDefaultPolicies:
@@ -662,6 +673,7 @@ export const settingsMachine = setup({
       invoke: {
         src: 'loadUserSettings',
         input: ({ context }) => ({
+          fileOperations: context.fileOperations,
           defaultProjectLibraries: context.defaultProjectLibraries,
           projectLibrarySettingDefaultPolicies:
             context.projectLibrarySettingDefaultPolicies,
@@ -714,6 +726,7 @@ export const settingsMachine = setup({
         input: ({ event, context }) => {
           assertEvent(event, 'load.project')
           return {
+            fileOperations: context.fileOperations,
             defaultProjectLibraries: context.defaultProjectLibraries,
             projectLibrarySettingDefaultPolicies:
               context.projectLibrarySettingDefaultPolicies,

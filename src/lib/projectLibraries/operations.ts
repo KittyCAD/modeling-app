@@ -18,6 +18,7 @@ import {
 } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { v4 } from 'uuid'
 
 export interface MoveProjectIntoLocalDirectoryResult {
@@ -25,9 +26,14 @@ export interface MoveProjectIntoLocalDirectoryResult {
   defaultFile?: string
 }
 
-async function getProjectDirectoryEntryNames(projectDirectoryPath: string) {
+async function getProjectDirectoryEntryNames(
+  fileOperations: FileOperationsRegistryService,
+  projectDirectoryPath: string
+) {
   try {
-    return await fsZds.readdir(projectDirectoryPath)
+    return (await fileOperations.readDirectory(projectDirectoryPath)).map(
+      ({ name }) => name
+    )
   } catch (error) {
     if (isPathNotFoundError(error)) {
       return []
@@ -48,16 +54,16 @@ function projectEntriesFromNames(
 }
 
 async function rejectProjectImport(
+  fileOperations: FileOperationsRegistryService,
   temporaryProjectPath: string,
   error: unknown
 ): Promise<never> {
-  await fsZds
-    .rm(temporaryProjectPath, { recursive: true })
-    .catch(() => undefined)
+  await fileOperations.remove(temporaryProjectPath).catch(() => undefined)
   return Promise.reject(error)
 }
 
 export async function createProjectInLocalDirectory({
+  fileOperations,
   projectDirectoryPath,
   requestedProjectName,
   requestedProjectTitle,
@@ -65,6 +71,7 @@ export async function createProjectInLocalDirectory({
   initialKclFile,
   initialProject,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectDirectoryPath: string
   requestedProjectName: string
   requestedProjectTitle: string
@@ -75,8 +82,10 @@ export async function createProjectInLocalDirectory({
   }
   initialProject?: ProjectLibraryInitialProject
 }): Promise<Project> {
-  const existingProjectNames =
-    await getProjectDirectoryEntryNames(projectDirectoryPath)
+  const existingProjectNames = await getProjectDirectoryEntryNames(
+    fileOperations,
+    projectDirectoryPath
+  )
   const uniqueProjectName = getUniqueProjectName(
     requestedProjectName,
     projectEntriesFromNames(projectDirectoryPath, existingProjectNames)
@@ -89,6 +98,7 @@ export async function createProjectInLocalDirectory({
 
   if (initialProject) {
     return createProjectFromFilesInLocalDirectory({
+      fileOperations,
       projectDirectoryPath,
       requestedProjectName,
       projectName: uniqueProjectName,
@@ -99,6 +109,7 @@ export async function createProjectInLocalDirectory({
   }
 
   return createNewProjectDirectory(
+    fileOperations,
     uniqueProjectName,
     await wasmInstancePromise,
     initialKclFile?.code,
@@ -110,6 +121,7 @@ export async function createProjectInLocalDirectory({
 }
 
 async function createProjectFromFilesInLocalDirectory({
+  fileOperations,
   projectDirectoryPath,
   requestedProjectName,
   projectName,
@@ -117,6 +129,7 @@ async function createProjectFromFilesInLocalDirectory({
   initialProject,
   wasmInstancePromise,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectDirectoryPath: string
   requestedProjectName: string
   projectName: string
@@ -147,7 +160,7 @@ async function createProjectFromFilesInLocalDirectory({
     )
   }
 
-  await fsZds.mkdir(temporaryProjectPath, { recursive: true })
+  await fileOperations.createDirectory(temporaryProjectPath)
   try {
     for (const file of initialProject.files) {
       if (file.requestedFileName === PROJECT_SETTINGS_FILE_NAME) {
@@ -169,6 +182,7 @@ async function createProjectFromFilesInLocalDirectory({
         relativeTargetPath === fsZds.resolve(relativeTargetPath)
       ) {
         return rejectProjectImport(
+          fileOperations,
           temporaryProjectPath,
           new Error(
             `The shared project contained an invalid file path: "${file.requestedFileName}".`
@@ -176,8 +190,7 @@ async function createProjectFromFilesInLocalDirectory({
         )
       }
 
-      await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
-      await fsZds.writeFile(targetPath, file.requestedData)
+      await fileOperations.writeFile(targetPath, file.requestedData)
     }
 
     const sourceProjectToml = initialProject.files.find(
@@ -196,18 +209,22 @@ async function createProjectFromFilesInLocalDirectory({
       v4()
     )
     if (isErr(projectToml)) {
-      return rejectProjectImport(temporaryProjectPath, projectToml)
+      return rejectProjectImport(
+        fileOperations,
+        temporaryProjectPath,
+        projectToml
+      )
     }
-    await fsZds.writeFile(
+    await fileOperations.writeFile(
       fsZds.join(temporaryProjectPath, PROJECT_SETTINGS_FILE_NAME),
       new TextEncoder().encode(projectToml)
     )
-    await fsZds.rename(temporaryProjectPath, projectPath)
+    await fileOperations.rename(temporaryProjectPath, projectPath)
   } catch (error) {
-    return rejectProjectImport(temporaryProjectPath, error)
+    return rejectProjectImport(fileOperations, temporaryProjectPath, error)
   }
 
-  return getProjectInfo(projectPath, await wasmInstancePromise)
+  return getProjectInfo(fileOperations, projectPath, await wasmInstancePromise)
 }
 
 function getMovedDefaultFile({
@@ -236,41 +253,34 @@ function getMovedDefaultFile({
 }
 
 async function moveProjectDirectory({
+  fileOperations,
   sourceProjectPath,
   targetProjectPath,
 }: {
+  fileOperations: FileOperationsRegistryService
   sourceProjectPath: string
   targetProjectPath: string
 }) {
-  await fsZds.mkdir(fsZds.dirname(targetProjectPath), { recursive: true })
-
-  try {
-    await fsZds.rename(sourceProjectPath, targetProjectPath)
-    return
-  } catch {
-    // Fall back to copy/remove for cases like cross-device moves.
-  }
-
-  await fsZds.cp(sourceProjectPath, targetProjectPath, {
-    recursive: true,
-    force: false,
-  })
-  await fsZds.rm(sourceProjectPath, { recursive: true })
+  await fileOperations.move(sourceProjectPath, targetProjectPath)
 }
 
 export async function moveProjectIntoLocalDirectory({
+  fileOperations,
   projectDirectoryPath,
   sourceProjectPath,
   sourceProjectName,
   defaultFile,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectDirectoryPath: string
   sourceProjectPath: string
   sourceProjectName: string
   defaultFile?: string
 }): Promise<MoveProjectIntoLocalDirectoryResult> {
-  const existingProjectNames =
-    await getProjectDirectoryEntryNames(projectDirectoryPath)
+  const existingProjectNames = await getProjectDirectoryEntryNames(
+    fileOperations,
+    projectDirectoryPath
+  )
   const targetProjectName = getUniqueProjectName(
     sourceProjectName,
     projectEntriesFromNames(projectDirectoryPath, existingProjectNames)
@@ -278,6 +288,7 @@ export async function moveProjectIntoLocalDirectory({
   const targetProjectPath = fsZds.join(projectDirectoryPath, targetProjectName)
 
   await moveProjectDirectory({
+    fileOperations,
     sourceProjectPath,
     targetProjectPath,
   })
