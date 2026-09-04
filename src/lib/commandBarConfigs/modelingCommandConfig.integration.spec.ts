@@ -641,6 +641,7 @@ describe('Revolve dialog arguments', () => {
     expect(
       axisOrEdge.defaultValue({
         argumentsToSubmit: { edge: selectionsForArtifact() },
+        selectedCommand: { useModelingDialog: true },
       } as never)
     ).toBe('Edge')
     expect(extentType.defaultValue({ argumentsToSubmit: {} } as never)).toBe(
@@ -667,6 +668,69 @@ describe('Revolve dialog arguments', () => {
     expect(evaluateHidden('extentType', {}, false)).toBe(true)
     expect(evaluateHidden('directionMode', {}, false)).toBe(true)
     expect(evaluateRequired('angle', {}, false)).toBe(true)
+  })
+
+  it('waits for the legacy reference step before requiring an axis or edge', () => {
+    for (const argumentsToSubmit of [
+      {},
+      { axis: 'X' },
+      { edge: selectionsForArtifact() },
+    ]) {
+      expect(evaluateRequired('axis', argumentsToSubmit, false)).toBe(false)
+      expect(evaluateRequired('edge', argumentsToSubmit, false)).toBe(false)
+      expect(evaluateHidden('edge', argumentsToSubmit, false)).toBe(true)
+    }
+
+    expect(evaluateRequired('axis', { axisOrEdge: 'Axis' }, false)).toBe(true)
+    expect(evaluateRequired('edge', { axisOrEdge: 'Axis' }, false)).toBe(false)
+    expect(evaluateRequired('axis', { axisOrEdge: 'Edge' }, false)).toBe(false)
+    expect(evaluateRequired('edge', { axisOrEdge: 'Edge' }, false)).toBe(true)
+    expect(evaluateHidden('edge', { axisOrEdge: 'Edge' }, false)).toBe(false)
+
+    expect(evaluateRequired('axis', {})).toBe(true)
+    expect(evaluateRequired('edge', { edge: selectionsForArtifact() })).toBe(
+      true
+    )
+  })
+
+  it('preserves legacy reference options and the unseeded optional axis', () => {
+    const { axisOrEdge, axis } = revolveConfig().args ?? {}
+    if (
+      axisOrEdge?.inputType !== 'options' ||
+      axis?.inputType !== 'options' ||
+      typeof axisOrEdge.options !== 'function' ||
+      typeof axis.options !== 'function' ||
+      typeof axisOrEdge.defaultValue !== 'function' ||
+      typeof axis.defaultValue !== 'function'
+    ) {
+      throw new Error('Revolve reference controls should depend on the surface')
+    }
+
+    for (const useModelingDialog of [undefined, false]) {
+      const context = {
+        argumentsToSubmit: { edge: selectionsForArtifact() },
+        selectedCommand: { useModelingDialog },
+      }
+      expect(axisOrEdge.defaultValue(context as never)).toBe('Axis')
+      expect(axis.defaultValue(context as never)).toBeUndefined()
+      expect(axisOrEdge.options(context)).toEqual([
+        { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
+        { name: 'Edge', isCurrent: false, value: 'Edge' },
+      ])
+      expect(axis.options(context)).toEqual([
+        { name: 'X Axis', isCurrent: true, value: 'X' },
+        { name: 'Y Axis', isCurrent: false, value: 'Y' },
+      ])
+    }
+
+    const dialogContext = {
+      argumentsToSubmit: {},
+      selectedCommand: { useModelingDialog: true },
+    }
+    expect(axis.defaultValue(dialogContext as never)).toBe('X')
+    expect(
+      axisOrEdge.options(dialogContext).map((option) => option.name)
+    ).toEqual(['Sketch axis', 'Selected edge'])
   })
 })
 

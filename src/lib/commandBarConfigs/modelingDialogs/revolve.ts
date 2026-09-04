@@ -7,6 +7,7 @@ import {
   isEditingNode,
   isEditingNodeSelection,
   isUsingModelingDialog,
+  type ModelingDialogContext,
   modelingDialogLayout,
   profileSelectionRequiresBodyType,
 } from '@src/lib/commandBarConfigs/modelingDialogShared'
@@ -17,6 +18,12 @@ import {
   normalizeRevolveDialogArguments,
 } from '@src/lib/commandBarConfigs/revolveDialog'
 import { KCL_DEFAULT_DEGREE } from '@src/lib/constants'
+
+function selectedAxisMode(context: ModelingDialogContext) {
+  return isUsingModelingDialog(context)
+    ? getRevolveAxisMode(context.argumentsToSubmit)
+    : context.argumentsToSubmit.axisOrEdge
+}
 
 export const revolveDialogLayout = modelingDialogLayout(
   [
@@ -52,15 +59,20 @@ export const revolveDialogOverrides = {
   axisOrEdge: {
     inputType: 'options',
     required: true,
-    defaultValue: ({
-      argumentsToSubmit,
-    }: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => getRevolveAxisMode(argumentsToSubmit),
-    options: [
-      { name: 'Sketch axis', value: 'Axis' },
-      { name: 'Selected edge', value: 'Edge' },
-    ],
+    defaultValue: (context: ModelingDialogContext) =>
+      isUsingModelingDialog(context)
+        ? getRevolveAxisMode(context.argumentsToSubmit)
+        : 'Axis',
+    options: (context) =>
+      isUsingModelingDialog(context)
+        ? [
+            { name: 'Sketch axis', value: 'Axis' },
+            { name: 'Selected edge', value: 'Edge' },
+          ]
+        : [
+            { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
+            { name: 'Edge', isCurrent: false, value: 'Edge' },
+          ],
     hidden: isEditingNode,
     dialog: {
       displayName: 'Reference',
@@ -70,18 +82,24 @@ export const revolveDialogOverrides = {
     },
   },
   axis: {
-    required: (context) =>
-      getRevolveAxisMode(context.argumentsToSubmit) === 'Axis',
+    required: (context) => selectedAxisMode(context) === 'Axis',
     inputType: 'options',
     displayName: 'Sketch Axis',
-    defaultValue: 'X',
+    defaultValue: (context: ModelingDialogContext) =>
+      isUsingModelingDialog(context) ? 'X' : undefined,
     hidden: (context) =>
       isUsingModelingDialog(context) &&
       getRevolveAxisMode(context.argumentsToSubmit) !== 'Axis',
-    options: [
-      { name: 'X axis', value: 'X' },
-      { name: 'Y axis', value: 'Y' },
-    ],
+    options: (context) =>
+      isUsingModelingDialog(context)
+        ? [
+            { name: 'X axis', value: 'X' },
+            { name: 'Y axis', value: 'Y' },
+          ]
+        : [
+            { name: 'X Axis', isCurrent: true, value: 'X' },
+            { name: 'Y Axis', isCurrent: false, value: 'Y' },
+          ],
     dialog: {
       displayName: 'Sketch axis',
       group: 'axis',
@@ -90,14 +108,12 @@ export const revolveDialogOverrides = {
     },
   },
   edge: {
-    required: (context) =>
-      getRevolveAxisMode(context.argumentsToSubmit) === 'Edge',
+    required: (context) => selectedAxisMode(context) === 'Edge',
     inputType: 'selection',
     selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
     multiple: false,
     hidden: (context) =>
-      isEditingNode(context) ||
-      getRevolveAxisMode(context.argumentsToSubmit) !== 'Edge',
+      isEditingNode(context) || selectedAxisMode(context) !== 'Edge',
     dialog: {
       displayName: 'Axis edge',
       ...compactSelectionDialog('axis', 'Select an axis edge', {
