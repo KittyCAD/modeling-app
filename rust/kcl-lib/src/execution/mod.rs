@@ -4928,6 +4928,172 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn conflicting_kcl_versions_are_rejected() {
+        let versions = [("1.0", "1.0"), ("2.0", "2.0"), ("\"3.0-preview\"", "3.0-preview")];
+        for (first, first_name) in versions {
+            for (second, second_name) in versions {
+                if first == second {
+                    continue;
+                }
+                for settings in [
+                    format!("@settings(kclVersion = {first})\n@settings(kclVersion = {second})"),
+                    format!("@settings(kclVersion = {first}, kclVersion = {second})"),
+                    format!(
+                        "@settings(kclVersion = {first})\n@settings(defaultLengthUnit = in)\n@settings(kclVersion = {second})"
+                    ),
+                ] {
+                    let code = format!("{settings}\nx = 1\n");
+                    let Err(error) = parse_execute(&code).await else {
+                        panic!("conflicting KCL versions must fail: {code}");
+                    };
+                    assert_eq!(
+                        error.message(),
+                        format!(
+                            "Conflicting `kclVersion` settings: this file already declares KCL {first_name}, but this setting declares KCL {second_name}"
+                        )
+                    );
+                    let ranges = error.source_ranges();
+                    assert_eq!(ranges.len(), 1);
+                    assert_eq!(ranges[0].start(), code.rfind("kclVersion").unwrap());
+                    assert_eq!(
+                        &code[ranges[0].start()..ranges[0].end()],
+                        format!("kclVersion = {second}")
+                    );
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn repeated_kcl_versions_are_allowed() {
+        for (first, second) in [
+            ("1.0", "\"1.0\""),
+            ("2.0", "\"2.0\""),
+            ("\"3.0-preview\"", "\"3.0-preview\""),
+            ("1", "\"1.0.0\""),
+            ("2", "\"2.0.0\""),
+            ("\"3-preview\"", "\"3.0.0-preview\""),
+        ] {
+            for settings in [
+                format!("@settings(kclVersion = {first})\n@settings(kclVersion = {second})"),
+                format!("@settings(kclVersion = {first}, kclVersion = {second})"),
+            ] {
+                let result = parse_execute(&format!("{settings}\nx = 1\n")).await.unwrap();
+                assert!(result.issues().is_empty());
+                assert_eq!(variable_f64(&result, "x"), 1.0);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn conflicting_kcl_versions_in_imports_are_rejected() {
+        let dep = "@settings(kclVersion = 1.0)\n@settings(kclVersion = 2.0)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let Err(error) = execute_with_modules(&main, &[("dep.kcl", dep)]).await else {
+                panic!("conflicting KCL versions in an import must fail");
+            };
+            assert_eq!(
+                error.message(),
+                "Conflicting `kclVersion` settings: this file already declares KCL 1.0, but this setting declares KCL 2.0"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn conflicting_kcl_versions_across_imports_are_rejected() {
+        let versions = [("1.0", "1.0"), ("2.0", "2.0"), ("\"3.0-preview\"", "3.0-preview")];
+        for (parent, parent_name) in versions {
+            for (child, child_name) in versions {
+                let dep = format!("@settings(kclVersion = {child})\nexport x = 1\n");
+                let main = format!("@settings(kclVersion = {parent})\nimport x from \"dep.kcl\"\n");
+                let result = execute_with_modules(&main, &[("dep.kcl", &dep)]).await;
+                if parent == child {
+                    assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0);
+                } else {
+                    let Err(error) = result else {
+                        panic!("conflicting imported versions must fail");
+                    };
+                    assert_eq!(
+                        error.message(),
+                        format!(
+                            "Cannot import `dep.kcl`: it declares KCL {child_name}, but the importing file declares KCL {parent_name}"
+                        )
+                    );
+                    assert_eq!(
+                        error.source_ranges(),
+                        vec![SourceRange::new(
+                            main.find("import").unwrap(),
+                            main.len() - 1,
+                            ModuleId::default()
+                        )]
+                    );
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn conflicting_kcl_versions_in_nested_and_shared_imports_are_rejected() {
+        let leaf = "@settings(kclVersion = 2.0)\nexport x = 1\n";
+        let mid = "@settings(kclVersion = 1.0)\nexport import x from \"leaf.kcl\"\n";
+        for main in [
+            "import x from \"mid.kcl\"\n",
+            "import \"leaf.kcl\" as leaf\nimport x from \"mid.kcl\"\n",
+        ] {
+            let Err(error) = execute_with_modules(main, &[("leaf.kcl", leaf), ("mid.kcl", mid)]).await else {
+                panic!("conflicting nested versions must fail");
+            };
+            assert_eq!(
+                error.message(),
+                "Cannot import `leaf.kcl`: it declares KCL 2.0, but the importing file declares KCL 1.0"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn omitted_kcl_versions_do_not_conflict_with_imports() {
+        for (main_header, dep_header) in [
+            ("@settings(kclVersion = 2.0)\n", ""),
+            ("", "@settings(kclVersion = 2.0)\n"),
+            ("@settings(defaultLengthUnit = mm)\n", "@settings(kclVersion = 2.0)\n"),
+        ] {
+            let main = format!("{main_header}import x from \"dep.kcl\"\n");
+            let dep = format!("{dep_header}export x = 1\n");
+            assert_eq!(
+                variable_f64(&execute_with_modules(&main, &[("dep.kcl", &dep)]).await.unwrap(), "x"),
+                1.0
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn conflicting_kcl_versions_in_mock_imports_are_rejected() {
+        let tmp = tempfile::TempDir::new().unwrap();
+        tokio::fs::write(
+            tmp.path().join("dep.kcl"),
+            "@settings(kclVersion = 1.0)\nexport x = 1\n",
+        )
+        .await
+        .unwrap();
+        let ctx = new_mock_executor_context(
+            Some(crate::TypedPath(tmp.path().into())),
+            machine::ExecutorKind::resolve(),
+        );
+        let mut state = ExecState::new(&ctx);
+        let program =
+            crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nimport x from \"dep.kcl\"\n").unwrap();
+        let error = ctx
+            .inner_run(&program, &mut state, PreserveMem::Normal)
+            .await
+            .unwrap_err();
+        assert_eq!(
+            error.error.message(),
+            "Cannot import `dep.kcl`: it declares KCL 1.0, but the importing file declares KCL 2.0"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn entry_point_kcl_version_recorded_only_for_v3() {
         let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
             .await
@@ -5125,25 +5291,27 @@ export fn filletedBox() {
 "#;
 
     /// A KCL 3.0 entry point pins the kclVersion for the whole execution: an
-    /// imported 2.0 module observes KCL 3.0 both in its module-level code and
+    /// imported module without a version observes KCL 3.0 both in its module-level code and
     /// in its functions, wherever they are called from.
     #[tokio::test(flavor = "multi_thread")]
     async fn entry_point_v3_pins_kcl_version_for_imported_modules() {
         use kittycad_modeling_cmds::shared::EdgeCutVersion;
 
-        let dep = format!("@settings(kclVersion = 2.0)\n{FILLET_AT_MODULE_TOP_LEVEL}");
         let main = r#"@settings(kclVersion = "3.0-preview")
 import "dep.kcl" as dep
 "#;
-        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        let result = execute_with_modules(main, &[("dep.kcl", FILLET_AT_MODULE_TOP_LEVEL)])
+            .await
+            .unwrap();
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
 
-        let dep = format!("@settings(kclVersion = 2.0)\n{FILLET_IN_EXPORTED_FN}");
         let main = r#"@settings(kclVersion = "3.0-preview")
 import filletedBox from "dep.kcl"
 box = filletedBox()
 "#;
-        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        let result = execute_with_modules(main, &[("dep.kcl", FILLET_IN_EXPORTED_FN)])
+            .await
+            .unwrap();
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
     }
 
@@ -5156,15 +5324,13 @@ box = filletedBox()
         use kittycad_modeling_cmds::shared::EdgeCutVersion;
 
         let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_AT_MODULE_TOP_LEVEL}");
-        let main = r#"@settings(kclVersion = 2.0)
-import "dep.kcl" as dep
+        let main = r#"import "dep.kcl" as dep
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
 
         let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_IN_EXPORTED_FN}");
-        let main = r#"@settings(kclVersion = 2.0)
-import filletedBox from "dep.kcl"
+        let main = r#"import filletedBox from "dep.kcl"
 box = filletedBox()
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
@@ -5440,7 +5606,7 @@ x = f()
     /// defining module's.
     #[tokio::test(flavor = "multi_thread")]
     async fn return_semantics_gated_on_entry_point_not_module() {
-        // A 2.0 entry point keeps write-and-continue everywhere, even inside an
+        // An entry point without a version keeps write-and-continue everywhere, even inside an
         // imported KCL 3.0 module: its function still runs code after return,
         // and a return escaping its module-level if-arm is still silently
         // ignored.
@@ -5457,8 +5623,7 @@ export fn f() {
   assert(1, isEqualTo = 2, error = "ran past return")
 }
 "#;
-        let main = r#"@settings(kclVersion = 2.0)
-import f from "dep.kcl"
+        let main = r#"import f from "dep.kcl"
 x = f()
 "#;
         let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
@@ -5469,9 +5634,8 @@ x = f()
         );
 
         // A KCL 3.0 entry point applies early return everywhere, including
-        // inside an imported 2.0 module.
-        let dep = r#"@settings(kclVersion = 2.0)
-export fn f() {
+        // inside an imported module without a version.
+        let dep = r#"export fn f() {
   return 1
   assert(1, isEqualTo = 2, error = "ran past return")
 }
@@ -5542,8 +5706,7 @@ assert(total, isEqualTo = 100, error = "each call returns 1")
     /// top_level_if_arm_return_ignored_without_v3.)
     #[tokio::test(flavor = "multi_thread")]
     async fn top_level_if_arm_return_in_imported_module_errors_in_v3() {
-        let dep = r#"@settings(kclVersion = 2.0)
-x = if true {
+        let dep = r#"x = if true {
   return 1
   0
 } else {
@@ -5958,7 +6121,7 @@ assert(1, isEqualTo = 2, error = "code after exit ran")
     /// defining module's.
     #[tokio::test(flavor = "multi_thread")]
     async fn if_arm_scoping_gated_on_entry_point_not_module() {
-        // A 2.0 entry point keeps leaking arms everywhere, even inside an
+        // An entry point without a version keeps leaking arms everywhere, even inside an
         // imported KCL 3.0 module.
         let dep = r#"@settings(kclVersion = "3.0-preview")
 ignored = if true {
@@ -5969,17 +6132,15 @@ ignored = if true {
 }
 export leakCheck = leaked
 "#;
-        let main = r#"@settings(kclVersion = 2.0)
-import leakCheck from "dep.kcl"
+        let main = r#"import leakCheck from "dep.kcl"
 x = leakCheck
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
         assert_eq!(variable_f64(&result, "x"), 1.0);
 
         // A KCL 3.0 entry point applies arm scoping everywhere,
-        // including inside an imported 2.0 module.
-        let dep = r#"@settings(kclVersion = 2.0)
-ignored = if true {
+        // including inside an imported module without a version.
+        let dep = r#"ignored = if true {
   arm = 1
   arm
 } else {

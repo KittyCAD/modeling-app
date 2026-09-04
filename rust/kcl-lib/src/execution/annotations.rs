@@ -11,6 +11,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::KclError;
+use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
@@ -19,6 +20,7 @@ use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::ObjectProperty;
+use crate::parsing::ast::types::Program;
 
 /// Annotations which should cause re-execution if they change.
 pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];
@@ -258,6 +260,57 @@ pub(super) fn many_of(
                 .copied()
         })
         .collect::<Result<Vec<&str>, KclError>>()
+}
+
+/// Read and validate all explicit version declarations in a file.
+pub(super) fn declared_kcl_version<'a>(
+    annotations: impl Iterator<Item = &'a Node<Annotation>>,
+) -> Result<Option<KclVersion>, KclError> {
+    let mut declared: Option<KclVersion> = None;
+    for annotation in annotations.filter(|a| a.name() == Some(SETTINGS)) {
+        for property in expect_properties(SETTINGS, annotation)? {
+            if property.key.name != SETTINGS_VERSION {
+                continue;
+            }
+            let version: KclVersion = expect_kcl_version(&property.value)?.parse()?;
+            if let Some(previous) = declared
+                && previous != version
+            {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Conflicting `kclVersion` settings: this file already declares KCL {}, but this setting declares KCL {}",
+                        previous.as_str(),
+                        version.as_str(),
+                    ),
+                    property.as_source_ranges(),
+                )));
+            }
+            declared = Some(version);
+        }
+    }
+    Ok(declared)
+}
+
+pub(super) fn validate_import_kcl_version(
+    importing_version: Option<KclVersion>,
+    imported_program: &Node<Program>,
+    import_name: &str,
+    import_range: SourceRange,
+) -> Result<(), KclError> {
+    let imported_version = declared_kcl_version(imported_program.inner_attrs.iter())?;
+    if let (Some(importing), Some(imported)) = (importing_version, imported_version)
+        && importing != imported
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Cannot import `{import_name}`: it declares KCL {}, but the importing file declares KCL {}",
+                imported.as_str(),
+                importing.as_str(),
+            ),
+            vec![import_range],
+        )));
+    }
+    Ok(())
 }
 
 /// Returns a KCL version.

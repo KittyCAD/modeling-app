@@ -10,6 +10,7 @@ use crate::KclError;
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
+use crate::execution::annotations;
 use crate::execution::typed_path::TypedPath;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
@@ -259,6 +260,10 @@ pub(crate) async fn import_universe(
     out: &mut Universe,
     exec_state: &mut ExecState,
 ) -> Result<UniverseMap, KclError> {
+    let importing_version = match repr {
+        ModuleRepr::Kcl(program, _) => annotations::declared_kcl_version(program.inner_attrs.iter())?,
+        _ => None,
+    };
     let modules = import_dependencies(path, repr, ctx)?;
     let mut module_imports = HashMap::new();
     for (filename, import_stmt, module_path) in modules {
@@ -272,10 +277,6 @@ pub(crate) async fn import_universe(
             ModulePath::Std { .. } => {
                 // We don't care about std imports.
             }
-        }
-
-        if out.contains_key(&filename) {
-            continue;
         }
 
         let source_range = SourceRange::from(&import_stmt);
@@ -293,6 +294,14 @@ pub(crate) async fn import_universe(
             };
             module_info.repr.clone()
         };
+
+        if let ModuleRepr::Kcl(program, _) = &repr {
+            annotations::validate_import_kcl_version(importing_version, program, &filename, source_range)?;
+        }
+        // Validate every import edge, even if another file already loaded this dependency.
+        if out.contains_key(&filename) {
+            continue;
+        }
 
         out.insert(filename, (import_stmt, module_id, module_path.clone(), repr.clone()));
         Box::pin(import_universe(ctx, &module_path, &repr, out, exec_state)).await?;

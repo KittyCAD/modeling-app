@@ -317,6 +317,8 @@ pub(super) struct ModuleState {
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+    /// The version explicitly declared by this module, excluding defaults and entry-point overrides.
+    pub declared_kcl_version: Option<KclVersion>,
     /// True if executing in sketch mode. Only a single sketch block will be
     /// executed. All other code is ignored.
     pub sketch_mode: bool,
@@ -1585,6 +1587,7 @@ impl ModuleState {
             explicit_length_units: false,
             path,
             settings: Default::default(),
+            declared_kcl_version: None,
             sketch_mode,
             freedom_analysis,
             artifacts: Default::default(),

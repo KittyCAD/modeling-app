@@ -47,6 +47,11 @@ Valid properties are:
   cause a warning), `deny` (the default, experimental features cause an error).
 - `kclVersion`: the version of the KCL language and standard libary to execute with.
   - Accepted values: `1.0`, `2.0`, `"3.0-preview"` (experimental).
+  - Conflicting versions in the same file are an error, whether declared in one
+    `@settings` attribute or across several. Repeating the same version is allowed.
+  - If a file and a module it imports both declare a version, those versions must
+    match. This also applies to nested user imports. Files without a version declaration
+    and standard-library imports are exempt from this check.
   - When the file being executed declares `"3.0-preview"`, that version governs the whole
     execution, including any files it imports. Under `"3.0-preview"`:
     - `return` immediately exits the enclosing function; statements after an executed

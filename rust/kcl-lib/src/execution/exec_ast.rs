@@ -925,11 +925,14 @@ impl ExecutorContext {
     /// Returns true if importing the prelude should be skipped.
     pub(super) async fn handle_annotations(
         &self,
-        annotations: impl Iterator<Item = &Node<Annotation>>,
+        annotations: impl Iterator<Item = &Node<Annotation>> + Clone,
         body_type: BodyType,
         exec_state: &mut ExecState,
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
+        if matches!(body_type, BodyType::Root) {
+            exec_state.mod_local.declared_kcl_version = annotations::declared_kcl_version(annotations.clone())?;
+        }
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
@@ -1282,6 +1285,17 @@ impl ExecutorContext {
         let module_id = self
             .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
             .await?;
+
+        if matches!(module_path, ModulePath::Local { .. })
+            && let ModuleRepr::Kcl(program, _) = &exec_state.global.module_infos[&module_id].repr
+        {
+            annotations::validate_import_kcl_version(
+                exec_state.mod_local.declared_kcl_version,
+                program,
+                &import_stmt.path.to_string(),
+                source_range,
+            )?;
+        }
 
         if let ModulePath::Local { value, .. } = &module_path {
             let name = import_stmt
