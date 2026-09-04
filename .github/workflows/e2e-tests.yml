@@ -217,7 +217,7 @@ jobs:
             test_script: test:e2e:web
             playwright_cache_path: ~/AppData/Local/ms-playwright
           - os: namespace-profile-macos-8-cores
-            label: macos-webkit
+            label: macos, webkit
             test_script: test:e2e:web:webkit
             playwright_cache_path: ~/Library/Caches/ms-playwright
     runs-on: ${{ matrix.os }}

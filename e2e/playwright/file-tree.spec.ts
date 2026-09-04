@@ -116,6 +116,10 @@ test.describe(
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
 
+      // Let the reload from folderSetupFn finish initializing before replacing
+      // the document; WebKit otherwise interrupts in-flight OPFS reads.
+      await u.waitForPageLoad()
+
       const startingFilePath = await fs.join(
         dir,
         'browser-file-tree-project',
