@@ -485,7 +485,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         toast.success(result.message)
       }
     },
-    rename: async (project, requestedName) => {
+    rename: async (project, requestedName, options) => {
       const renameProject = getProjectOperation(project, 'renameProject')
       if (!serviceImpl.canRename(project) || !renameProject) {
         return
@@ -499,7 +499,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         })
       ) {
         const message = `Project with title "${requestedName}" already exists`
-        toast.error(message)
+        if (options?.notify !== false) {
+          toast.error(message)
+        }
         return Promise.reject(new Error(message))
       }
 
@@ -508,9 +510,11 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project,
         requestedName,
       })
-      toast.success(
-        `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
-      )
+      if (options?.notify !== false) {
+        toast.success(
+          `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
+        )
+      }
     },
     delete: async (project) => {
       const deleteProject = getProjectOperation(project, 'deleteProject')
@@ -570,6 +574,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       return result?.defaultFile
         ? {
             defaultFile: result.defaultFile,
+            localProjectPath: result.localProjectPath,
           }
         : undefined
     },

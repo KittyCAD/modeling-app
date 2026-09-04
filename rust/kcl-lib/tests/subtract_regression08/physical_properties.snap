@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties subtract_regression08.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 59.37250000000001,
+      "y": 23.1775,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 118.74500000000002,
+      "y": 118.74500000000002,
+      "z": 72.39000000000001
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 49587.30882336226
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 150.6507442261551
+  }
+}

@@ -251,6 +251,15 @@ impl ProgramMemory {
         }
     }
 
+    /// The number of environments currently retaining bindings. A test-only
+    /// observable for memory reclamation.
+    #[cfg(test)]
+    pub(crate) fn envs_with_bindings(&self) -> usize {
+        match &self.backend {
+            ProgramMemoryBackend::Arena(memory) => memory.envs_with_bindings(),
+        }
+    }
+
     pub fn get_from_owned(
         &self,
         var: &str,
@@ -327,6 +336,15 @@ impl Stack {
     pub fn push_new_env_for_scope(&mut self) -> Result<(), KclError> {
         match &mut self.backend {
             StackBackend::Arena(stack) => stack.push_new_env_for_scope(),
+        }
+    }
+
+    /// Push a stack frame for a block scope, e.g. a KCL 3.0 if-arm body. Unlike
+    /// [`Self::push_new_env_for_scope`], an unreferenced block doesn't pin its
+    /// enclosing frame in memory; see the arena's `push_new_env_for_block`.
+    pub fn push_new_env_for_block(&mut self) -> Result<(), KclError> {
+        match &mut self.backend {
+            StackBackend::Arena(stack) => stack.push_new_env_for_block(),
         }
     }
 

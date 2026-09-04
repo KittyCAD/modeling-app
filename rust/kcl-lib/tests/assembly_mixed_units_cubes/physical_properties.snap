@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties assembly_mixed_units_cubes.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -119.5,
+      "y": -185.5,
+      "z": 63.5
+    },
+    "dimensions": {
+      "x": 269.0,
+      "y": 391.0,
+      "z": 127.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 96924.00067069684
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2048.508389269917
+  }
+}

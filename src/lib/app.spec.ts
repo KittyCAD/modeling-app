@@ -29,6 +29,7 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -267,6 +268,7 @@ describe('project system', () => {
       )
       const registryBilling = app.registry.get(billingService)
       const registryRustContext = app.registry.get(rustContextService)
+      const registryProjectSession = app.registry.get(projectSession)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
@@ -276,6 +278,10 @@ describe('project system', () => {
       )
       expect(app.billing.actor).toBe(registryBilling.actor)
       expect(app.rustContext).toBe(registryRustContext.context)
+      expect(app.projectSignal).toBe(registryProjectSession.project)
+      expect(app.currentProjectLibraryIdSignal).toBe(
+        registryProjectSession.currentProjectLibraryId
+      )
     } finally {
       app.dispose()
     }
@@ -844,6 +850,114 @@ describe('project system', () => {
     } finally {
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('refreshes sketch grids without clearing the scene', async () => {
+    const app = createAppForTest()
+    const kclManager = app.singletons.kclManager
+    const engineCommandManager = kclManager.engineCommandManager
+    const previousConnection = engineCommandManager.connection
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const updateSketchGrid = vi.spyOn(
+        kclManager.sceneEntitiesManager,
+        'updateSketchGrid'
+      )
+      const clearSceneAndBustCache = vi.spyOn(
+        kclManager.rustContext,
+        'clearSceneAndBustCache'
+      )
+      const executeCode = vi
+        .spyOn(kclManager, 'executeCode')
+        .mockResolvedValue(undefined)
+      engineCommandManager.connection = {
+        connected: false,
+      } as typeof engineCommandManager.connection
+
+      const setGridSetting = async (
+        setting:
+          | 'showSketchGrid'
+          | 'fixedSizeGrid'
+          | 'majorGridSpacing'
+          | 'minorGridsPerMajor',
+        value: boolean | number
+      ) => {
+        app.settings.actor.send({
+          type: `set.modeling.${setting}`,
+          data: { level: 'user', value },
+          doNotPersist: true,
+        } as never)
+        await waitForSettingsIdle(app)
+      }
+
+      await setGridSetting(
+        'fixedSizeGrid',
+        !app.settings.get().modeling.fixedSizeGrid.default
+      )
+      await app.openProject(mockProject)
+      await Promise.resolve()
+
+      expect(updateSketchGrid).not.toHaveBeenCalled()
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      const modeling = app.settings.get().modeling
+      expect(modeling.showSketchGrid.default).toBe(false)
+      expect(modeling.showSketchGrid.current).toBe(false)
+      await setGridSetting('showSketchGrid', !modeling.showSketchGrid.current)
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      await setGridSetting('fixedSizeGrid', !modeling.fixedSizeGrid.current)
+      await vi.waitFor(() => {
+        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+        expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+        expect(executeCode).toHaveBeenCalledTimes(1)
+      })
+
+      updateSketchGrid.mockClear()
+      clearSceneAndBustCache.mockClear()
+      executeCode.mockClear()
+
+      await setGridSetting(
+        'majorGridSpacing',
+        modeling.majorGridSpacing.current + 1
+      )
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      await setGridSetting(
+        'minorGridsPerMajor',
+        modeling.minorGridsPerMajor.current + 1
+      )
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      const currentTheme = app.settings.get().app.theme.current
+      app.settings.actor.send({
+        type: 'set.app.theme',
+        data: {
+          level: 'user',
+          value: currentTheme === 'dark' ? 'light' : 'dark',
+        },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
+      await vi.waitFor(() => {
+        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      })
+    } finally {
+      engineCommandManager.connection = previousConnection
+      app.dispose()
     }
   })
 

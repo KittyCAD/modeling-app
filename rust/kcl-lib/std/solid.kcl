@@ -213,7 +213,6 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///     profile001.tags.seg01
 ///   ]),
 ///   radius = 10,
-///   version=2
 /// )
 ///   |> rotate(yaw = 70deg, pitch = 10deg)
 /// ```
@@ -239,15 +238,15 @@ export fn fillet(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
   /// What version of the fillet algorithm to use.
   /// 0 means "let the Zoo engine choose whichever version is best",
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
   /// On KCL 2.0 and before, the default is 1.
-  /// On KCL 3.0 and later, the default is 2.
-  @(experimental = true) version?: number(Count),
+  /// KCL 3.0 and later always use the newest algorithm.
+  @(experimental = true, removed_since = "3.0") version?: number(Count),
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.
@@ -444,13 +443,15 @@ export fn chamfer(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
-  /// What version of the fillet algorithm to use. Defaults to 1.
+  /// What version of the fillet algorithm to use.
   /// 0 means "let the Zoo engine choose whichever version is best",
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
-  @(experimental = true) version?: number(Count) = 1,
+  /// On KCL 2.0 and before, the default is 1.
+  /// KCL 3.0 and later always use the newest algorithm.
+  @(experimental = true, removed_since = "3.0") version?: number(Count),
 ): Solid {}
 
 /// Remove volume from a 3-dimensional shape such that a wall of the
@@ -1161,7 +1162,7 @@ export fn union(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
@@ -1229,7 +1230,7 @@ export fn intersect(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
@@ -1324,7 +1325,7 @@ export fn subtract(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid] {}
 
@@ -1739,7 +1740,7 @@ export fn split(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
