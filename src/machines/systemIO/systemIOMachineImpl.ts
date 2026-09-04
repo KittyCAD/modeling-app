@@ -18,8 +18,11 @@ import {
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
+import {
+  FileAlreadyExists,
+  FileNotFound,
+} from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
@@ -50,6 +53,7 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { fromPromise } from 'xstate'
 
 export {
@@ -57,71 +61,39 @@ export {
   sortProjectDirectoryEntriesByModifiedDesc,
 } from '@src/lib/projectLibraries/directoryScanner'
 
-async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
+const fileOperations = (context: SystemIOContext) =>
+  context.app.registry.get(fileOperationsService)
+
+async function getProjectDirectoryEntryNames(
+  context: SystemIOContext,
+  projectDirectoryPath?: string
+) {
   if (!projectDirectoryPath) {
     return []
   }
 
   try {
-    return await fsZds.readdir(projectDirectoryPath)
+    return (
+      await fileOperations(context).readDirectory(projectDirectoryPath)
+    ).map((entry) => entry.name)
   } catch (error) {
-    if (error === 'ENOENT') {
+    if (error instanceof FileNotFound) {
       return []
     }
     return Promise.reject(error)
   }
 }
 
-function isPathNotFoundError(error: unknown) {
-  return (
-    error === 'ENOENT' ||
-    (typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 'ENOENT')
-  )
-}
-
-async function pathExists(targetPath: string) {
-  try {
-    await fsZds.stat(targetPath)
-    return true
-  } catch (error) {
-    if (isPathNotFoundError(error)) {
-      return false
-    }
-    return Promise.reject(error)
-  }
-}
-
 async function moveRecursivePath({
+  context,
   src,
   target,
 }: {
+  context: SystemIOContext
   src: string
   target: string
 }) {
-  const statRes = await fsZds.stat(src)
-  const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
-  const targetAlreadyExists = await pathExists(target)
-
-  if (!targetAlreadyExists) {
-    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
-    try {
-      await fsZds.rename(src, target)
-      return
-    } catch {
-      // Fall back to copy/remove for cases like cross-device moves.
-    }
-  }
-
-  if (isDirectory) {
-    await fsZds.mkdir(target, { recursive: true })
-  } else {
-    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
-  }
-  await fsZds.cp(src, target, { recursive: true })
-  await fsZds.rm(src, { recursive: true })
+  await fileOperations(context).move(src, target)
 }
 
 async function getUniqueProjectNameForCreate({
@@ -138,6 +110,7 @@ async function getUniqueProjectNameForCreate({
     knownProjectNames.add(folder.name)
   }
   for (const entryName of await getProjectDirectoryEntryNames(
+    context,
     projectDirectoryPath
   )) {
     knownProjectNames.add(entryName)
@@ -307,11 +280,12 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
       )
     }
 
-    await fsZds.mkdir(projectRoot, { recursive: true })
     for (const file of input.files) {
       const targetPath = fsZds.join(projectRoot, file.requestedFileName)
-      await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
-      await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
+      await fileOperations(input.context).writeFile(
+        targetPath,
+        file.requestedData
+      )
     }
 
     if (requestedFileNameWithExtension) {
@@ -320,7 +294,7 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
         requestedFileNameWithExtension
       )
       try {
-        await fsZds.stat(entrypointPath)
+        await fileOperations(input.context).stat(entrypointPath)
       } catch (error) {
         return Promise.reject(
           new Error(
@@ -402,7 +376,7 @@ export const sharedBulkDeleteWorkflow = async ({
       file.type === 'kcl'
         ? file.absPath
         : fsZds.join(project.path, file.relPath)
-    await fsZds.rm(absPath)
+    await fileOperations(input.context).remove(absPath)
     totalDeleted += 1
   }
 
@@ -587,14 +561,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        await fsZds.rm(
+        await fileOperations(input.context).remove(
           fsZds.join(
             input.context.projectDirectoryPath,
             input.requestedProjectName
-          ),
-          {
-            recursive: true,
-          }
+          )
         )
 
         return {
@@ -695,7 +666,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.requestedProjectName,
           input.requestedFileName
         )
-        await fsZds.rm(path)
+        await fileOperations(input.context).remove(path)
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -919,17 +890,19 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }
 
       // if there are any siblings with the same name, report error.
-      const entries = await fsZds.readdir(fsZds.dirname(newPath))
+      const entries = await fileOperations(input.context).readDirectory(
+        fsZds.dirname(newPath)
+      )
 
       for (const entry of entries) {
-        if (entry === requestedFolderName) {
+        if (entry.name === requestedFolderName) {
           return Promise.reject(
             new ExpectedSystemIOError('Folder name already exists.')
           )
         }
       }
 
-      await fsZds.rename(oldPath, newPath)
+      await fileOperations(input.context).rename(oldPath, newPath)
 
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
@@ -988,17 +961,19 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }
 
       // if there are any siblings with the same name, report error.
-      const entries = await fsZds.readdir(fsZds.dirname(newPath))
+      const entries = await fileOperations(input.context).readDirectory(
+        fsZds.dirname(newPath)
+      )
 
       for (const entry of entries) {
-        if (entry === requestedFileNameWithExtension) {
+        if (entry.name === requestedFileNameWithExtension) {
           return Promise.reject(
             new ExpectedSystemIOError('Filename already exists.')
           )
         }
       }
 
-      await fsZds.rename(oldPath, newPath)
+      await fileOperations(input.context).rename(oldPath, newPath)
 
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
@@ -1028,7 +1003,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
-        await fsZds.rm(input.requestedPath, { recursive: true })
+        await fileOperations(input.context).remove(input.requestedPath)
         const response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -1049,18 +1024,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         const fileNameWithExtension = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )
-        try {
-          const result = await fsZds.stat(input.requestedAbsolutePath)
-          if (result) {
-            return Promise.reject(
-              new ExpectedSystemIOError(
-                `File ${fileNameWithExtension} already exists`
-              )
-            )
-          }
-        } catch (e) {
-          console.error(e)
-        }
         let fileContents = new Uint8Array()
         if (fsZds.extname(input.requestedAbsolutePath) === FILE_EXT) {
           const wasmInstance = await input.context.wasmInstancePromise
@@ -1079,7 +1042,21 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           }
           fileContents = new TextEncoder().encode(codeToWrite)
         }
-        await fsZds.writeFile(input.requestedAbsolutePath, fileContents)
+        try {
+          await fileOperations(input.context).createFile(
+            input.requestedAbsolutePath,
+            fileContents
+          )
+        } catch (error) {
+          if (error instanceof FileAlreadyExists) {
+            return Promise.reject(
+              new ExpectedSystemIOError(
+                `File ${fileNameWithExtension} already exists`
+              )
+            )
+          }
+          return Promise.reject(error)
+        }
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -1099,25 +1076,17 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.requestedAbsolutePath
         )
         try {
-          const result = await fsZds.stat(input.requestedAbsolutePath)
-          if (result) {
+          await fileOperations(input.context).createDirectory(
+            input.requestedAbsolutePath
+          )
+        } catch (error) {
+          if (error instanceof FileAlreadyExists) {
             return Promise.reject(
               new ExpectedSystemIOError(`Folder ${folderName} already exists`)
             )
           }
-        } catch (e) {
-          if (e === 'ENOENT') {
-            console.warn(
-              `checking if folder is created, ${input.requestedAbsolutePath}`
-            )
-            console.warn(e)
-          } else {
-            console.error(e)
-          }
+          return Promise.reject(error)
         }
-        await fsZds.mkdir(input.requestedAbsolutePath, {
-          recursive: true,
-        })
         return {
           message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -1134,9 +1103,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           target: string
         }
       }) => {
-        await fsZds.cp(input.src, input.target, {
-          recursive: true,
-          force: false,
+        await fileOperations(input.context).copy(input.src, input.target, {
+          overwrite: false,
         })
         return {
           message: 'Copied successfully',
@@ -1161,6 +1129,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         // dedicated archive/restore code paths for that if we need cases
         // where we want to check with the user before going through with forcing.
         await moveRecursivePath({
+          context: input.context,
           src: input.src,
           target: input.target,
         })
