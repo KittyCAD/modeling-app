@@ -72,6 +72,7 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
         }
       }
     })
+    await page.reload()
     await page.setBodyDimensions({ width: 1500, height: 1000 })
     await homePage.goToModelingScene()
     await scene.settled()
