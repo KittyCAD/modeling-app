@@ -1661,7 +1661,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         variableName: {
           inputType: 'string',
-          required: true,
+          required: (context) => !isEditingNodeSelection(context),
+          hidden: isEditingNodeSelection,
           defaultValue: (
             _: unknown,
             modelingContext?: ModelingMachineContext
