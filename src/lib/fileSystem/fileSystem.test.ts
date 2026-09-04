@@ -9,10 +9,11 @@ import {
   stat,
   writeFile,
 } from '@src/lib/fileSystem/fileSystem'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
 import { Effect } from 'effect'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('Effect filesystem capability', () => {
   let root: string
@@ -70,16 +71,53 @@ describe('Effect filesystem capability', () => {
     await expect(Effect.runPromise(program)).resolves.toEqual({
       root: {
         kind: 'directory',
+        device: expect.any(Number),
+        inode: expect.any(Number),
         size: expect.any(Number),
+        accessedAt: expect.any(Number),
         modifiedAt: expect.any(Number),
+        changedAt: expect.any(Number),
+        createdAt: expect.any(Number),
       },
       source: {
         kind: 'file',
+        device: expect.any(Number),
+        inode: expect.any(Number),
         size: 4,
+        accessedAt: expect.any(Number),
         modifiedAt: expect.any(Number),
+        changedAt: expect.any(Number),
+        createdAt: expect.any(Number),
       },
       entries: [{ name: 'main.kcl', kind: 'file' }],
     })
+  })
+
+  it('distinguishes denied access from unexpected access failures', async () => {
+    const access = vi
+      .fn<IZooDesignStudioFS['access']>()
+      .mockRejectedValueOnce(new Error('EACCES: permission denied'))
+      .mockRejectedValueOnce(new Error('EIO: device failure'))
+    const fileSystem = makeFileSystem({ ...nodeFileSystem.impl, access })
+
+    await expect(
+      Effect.runPromise(fileSystem.canReadWrite('/restricted'))
+    ).resolves.toBe(false)
+    await expect(
+      Effect.runPromise(fileSystem.canReadWrite('/broken').pipe(Effect.flip))
+    ).resolves.toEqual(
+      expect.objectContaining({
+        _tag: 'FileIoFailure',
+        operation: 'access',
+        path: '/broken',
+      })
+    )
+
+    expect(access).toHaveBeenNthCalledWith(
+      1,
+      '/restricted',
+      fsZdsConstants.R_OK | fsZdsConstants.W_OK
+    )
   })
 
   it('snapshots mutable bytes before passing them to the backing', async () => {

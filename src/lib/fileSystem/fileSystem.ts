@@ -9,8 +9,13 @@ export type FileKind = 'file' | 'directory'
 
 export interface FileStat {
   readonly kind: FileKind
+  readonly device: number
+  readonly inode: number
   readonly size: number
+  readonly accessedAt: number
   readonly modifiedAt: number
+  readonly changedAt: number
+  readonly createdAt: number
 }
 
 export interface DirectoryEntry {
@@ -19,6 +24,7 @@ export interface DirectoryEntry {
 }
 
 export type FileSystemOperation =
+  | 'access'
   | 'copy'
   | 'create-directory'
   | 'create-file'
@@ -78,6 +84,9 @@ export type FileSystemError =
  */
 export interface FileSystemService {
   readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  readonly canReadWrite: (
+    path: string
+  ) => Effect.Effect<boolean, FileSystemError>
   readonly exists: (path: string) => Effect.Effect<boolean, FileSystemError>
   readonly readDirectory: (
     path: string
@@ -108,7 +117,7 @@ export class FileSystem extends Context.Tag('zds/FileSystem')<
 
 function errorCode(cause: unknown): string | undefined {
   if (typeof cause === 'string') {
-    return cause
+    return cause.match(/^([A-Z]+):/)?.[1] ?? cause
   }
   if (typeof cause !== 'object' || cause === null) {
     return undefined
@@ -120,7 +129,14 @@ function errorCode(cause: unknown): string | undefined {
   }
 
   const name = 'name' in cause ? cause.name : undefined
-  return typeof name === 'string' ? name : undefined
+  if (typeof name === 'string' && name !== 'Error') {
+    return name
+  }
+
+  const message = 'message' in cause ? cause.message : undefined
+  return typeof message === 'string'
+    ? message.match(/^([A-Z]+):/)?.[1]
+    : undefined
 }
 
 function describeOperation(
@@ -182,8 +198,13 @@ function tryBacking<A>(
 function toFileStat(stat: BackingFileStat): FileStat {
   return {
     kind: stat.mode & fsZdsConstants.S_IFDIR ? 'directory' : ('file' as const),
+    device: stat.dev,
+    inode: stat.ino,
     size: stat.size,
+    accessedAt: stat.atimeMs,
     modifiedAt: stat.mtimeMs,
+    changedAt: stat.ctimeMs,
+    createdAt: stat.birthtimeMs,
   }
 }
 
@@ -204,6 +225,14 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
     stat(path).pipe(
       Effect.as(true),
       Effect.catchTag('FileNotFound', () => Effect.succeed(false))
+    )
+
+  const canReadWrite = (path: string) =>
+    tryBacking('access', path, () =>
+      backing.access(path, fsZdsConstants.R_OK | fsZdsConstants.W_OK)
+    ).pipe(
+      Effect.as(true),
+      Effect.catchTag('FilePermissionDenied', () => Effect.succeed(false))
     )
 
   const readFile = (path: string) =>
@@ -234,6 +263,7 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
 
   const service: FileSystemService = {
     stat,
+    canReadWrite,
     exists,
     readFile,
     makeDirectory,
@@ -281,6 +311,9 @@ export const fileSystemLayer = (backing: IZooDesignStudioFS) =>
 
 export const stat = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.stat(path)))
+
+export const canReadWrite = (path: string) =>
+  FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.canReadWrite(path)))
 
 export const exists = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.exists(path)))
