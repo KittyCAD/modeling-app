@@ -141,7 +141,7 @@ describe('Zookeeper runtime', () => {
       })
     )
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('waits for the executing editor and file before starting', async () => {
@@ -176,7 +176,7 @@ describe('Zookeeper runtime', () => {
       createZookeeperSessionController.mock.calls[0]?.[0].project.value
     ).toBe(projectFixture.project)
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('updates auth in place without replacing the controller', async () => {
@@ -201,7 +201,7 @@ describe('Zookeeper runtime', () => {
     expect(runtime.session.value).toBe(session)
     expect(createZookeeperSessionController).toHaveBeenCalledOnce()
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('replaces the controller when the executing editor is replaced', async () => {
@@ -227,7 +227,7 @@ describe('Zookeeper runtime', () => {
       expect.objectContaining({ kclManager: replacement })
     )
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('retains the controller while the same editor switches files', async () => {
@@ -253,7 +253,7 @@ describe('Zookeeper runtime', () => {
     expect(runtime.session.value).toBe(controllers[0]?.controller)
     expect(loadController).toHaveBeenCalledOnce()
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('retains the controller through a temporary executing editor gap', async () => {
@@ -277,7 +277,7 @@ describe('Zookeeper runtime', () => {
     expect(runtime.session.value).toBe(controllers[0]?.controller)
     expect(loadController).toHaveBeenCalledOnce()
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('retains the controller when a file route republishes the same project', async () => {
@@ -300,7 +300,7 @@ describe('Zookeeper runtime', () => {
     expect(controllers[0]?.dispose).not.toHaveBeenCalled()
     expect(loadController).toHaveBeenCalledOnce()
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('retains the controller when the project session signal is rewrapped', async () => {
@@ -329,7 +329,7 @@ describe('Zookeeper runtime', () => {
       createZookeeperSessionController.mock.calls[0]?.[0].project.value
     ).toBe(replacementProject)
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('retains an active controller through a transient blank token', async () => {
@@ -359,7 +359,7 @@ describe('Zookeeper runtime', () => {
     expect(runtime.session.value).toBe(session)
     expect(createZookeeperSessionController).toHaveBeenCalledOnce()
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('stops on auth loss and starts fresh after login', async () => {
@@ -384,7 +384,7 @@ describe('Zookeeper runtime', () => {
     })
     expect(runtime.session.value).toBe(controllers[1]?.controller)
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('stops a stale project and starts its replacement', async () => {
@@ -407,7 +407,7 @@ describe('Zookeeper runtime', () => {
     })
     expect(runtime.session.value).toBe(controllers[1]?.controller)
 
-    runtime.dispose()
+    await runtime.dispose()
     expect(controllers[1]?.dispose).toHaveBeenCalledOnce()
   })
 
@@ -445,7 +445,7 @@ describe('Zookeeper runtime', () => {
     })
     expect(runtime.session.value).toBe(controllers[1]?.controller)
 
-    runtime.dispose()
+    await runtime.dispose()
   })
 
   it('does not create a controller when disposed during its lazy load', async () => {
@@ -465,7 +465,7 @@ describe('Zookeeper runtime', () => {
     await Promise.resolve()
     expect(loadController).toHaveBeenCalledOnce()
 
-    runtime.dispose()
+    await runtime.dispose()
     controllerModule.resolve({ createZookeeperSessionController })
     await Promise.resolve()
     await Promise.resolve()
@@ -503,7 +503,7 @@ describe('Zookeeper runtime', () => {
       expect(createZookeeperSessionController).toHaveBeenCalledOnce()
       expect(runtime.session.value).toBe(controller)
 
-      runtime.dispose()
+      await runtime.dispose()
     } finally {
       consoleError.mockRestore()
       vi.useRealTimers()
@@ -522,7 +522,7 @@ describe('Zookeeper runtime', () => {
       await vi.advanceTimersByTimeAsync(0)
       expect(loadController).toHaveBeenCalledOnce()
 
-      runtime.dispose()
+      await runtime.dispose()
       await vi.runAllTimersAsync()
 
       expect(loadController).toHaveBeenCalledOnce()
@@ -532,10 +532,12 @@ describe('Zookeeper runtime', () => {
     }
   })
 
-  it('waits for the previous runtime to drain before restarting a project session', async () => {
-    const { services } = createServices()
+  it('returns an in-progress project drain and gates the next runtime by editor', async () => {
+    const { currentProject, projectFixture, services } = createServices({
+      projectPath: '/first',
+    })
     const drain = deferred<undefined>()
-    const firstController = createController('/project', drain.promise)
+    const firstController = createController('/first', drain.promise)
     const firstFactory = vi.fn(() => firstController.controller)
     const firstRuntime = createZookeeperRuntime(
       services,
@@ -545,7 +547,21 @@ describe('Zookeeper runtime', () => {
     )
 
     await vi.waitFor(() => expect(firstFactory).toHaveBeenCalledOnce())
-    firstRuntime.dispose()
+    projectFixture.kclManager.path = '/second/main.kcl'
+    currentProject.value = createProject(
+      '/second',
+      true,
+      projectFixture.kclManager
+    ).project
+    await vi.waitFor(() => expect(firstController.dispose).toHaveBeenCalled())
+
+    const firstDisposal = firstRuntime.dispose()
+    let firstDisposalFinished = false
+    void firstDisposal.then(() => {
+      firstDisposalFinished = true
+    })
+    await Promise.resolve()
+    expect(firstDisposalFinished).toBe(false)
 
     const secondLoader = createControllerLoader()
     const secondRuntime = createZookeeperRuntime(
@@ -558,12 +574,14 @@ describe('Zookeeper runtime', () => {
     expect(secondLoader.loadController).not.toHaveBeenCalled()
 
     drain.resolve(undefined)
+    await firstDisposal
+    expect(firstDisposalFinished).toBe(true)
     await vi.waitFor(() => {
       expect(
         secondLoader.createZookeeperSessionController
       ).toHaveBeenCalledOnce()
     })
 
-    secondRuntime.dispose()
+    await secondRuntime.dispose()
   })
 })

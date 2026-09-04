@@ -9,14 +9,23 @@ const ZOOKEEPER_TEST_TAGS = ['@desktop', '@web', '@zookeeper']
 const ZOOKEEPER_SESSION_KEY = '__zookeeperSessionBeforePaneClose'
 
 async function rememberZookeeperSession(page: Page) {
-  await page.evaluate((key) => {
-    const actor = window.app.debug.zookeeperManagerActor
-    const webSocket = actor?.getSnapshot().context.ws
-    if (!actor || webSocket?.readyState !== WebSocket.OPEN) {
-      throw new Error('Expected a connected Zookeeper session')
-    }
-    Reflect.set(window, key, [actor, webSocket])
-  }, ZOOKEEPER_SESSION_KEY)
+  await page.waitForFunction(
+    (key) => {
+      const actor = window.app.debug.zookeeperManagerActor
+      const snapshot = actor?.getSnapshot()
+      const webSocket = snapshot?.context.ws
+      if (
+        snapshot?.matches('ready' as never) !== true ||
+        webSocket?.readyState !== WebSocket.OPEN
+      ) {
+        return false
+      }
+      Reflect.set(window, key, [actor, webSocket])
+      return true
+    },
+    ZOOKEEPER_SESSION_KEY,
+    { timeout: 60_000 }
+  )
 }
 
 async function expectZookeeperSessionUnchanged(page: Page) {
@@ -43,6 +52,26 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     toolbar,
     copilot,
   }) => {
+    let holdResponses = false
+    let releaseResponses: () => void = () => {
+      throw new Error('Zookeeper WebSocket was not intercepted')
+    }
+    await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
+      const bufferedMessages: Parameters<typeof client.send>[0][] = []
+      const server = client.connectToServer()
+      server.onMessage((message) => {
+        if (holdResponses) {
+          bufferedMessages.push(message)
+          return
+        }
+        client.send(message)
+      })
+      releaseResponses = () => {
+        for (const message of bufferedMessages.splice(0)) {
+          client.send(message)
+        }
+      }
+    })
     await page.setBodyDimensions({ width: 1500, height: 1000 })
     await homePage.goToModelingScene()
     await scene.settled()
@@ -54,19 +83,34 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await copilot.setMode('fast')
       await copilot.conversationInput.fill(prompt)
+      await rememberZookeeperSession(page)
+      holdResponses = true
       await copilot.submitButton.click()
       await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
         prompt
       )
+      await expect(copilot.placeHolderResponse).toBeVisible()
+
+      const zookeeperPaneButton = page.getByTestId(
+        `${DefaultLayoutPaneID.Zookeeper}-pane-button`
+      )
+      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      await expect(
+        zookeeperPaneButton.locator('svg[aria-label="loading"]')
+      ).toBeVisible()
+      await expectZookeeperSessionUnchanged(page)
+      holdResponses = false
+      releaseResponses()
+      await expect(
+        zookeeperPaneButton.locator('svg[aria-label="sparkles"]')
+      ).toBeVisible({ timeout: 30_000 })
+      await expectZookeeperSessionUnchanged(page)
+
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+      await expect(copilot.conversationInput).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
         timeout: 30_000,
       })
-      await rememberZookeeperSession(page)
-
-      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
-      await page.waitForTimeout(250)
-      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-      await expect(copilot.conversationInput).toBeVisible()
       await expectZookeeperSessionUnchanged(page)
       expect(
         await page.getByTestId('ml-response-chat-bubble').isVisible()
@@ -85,45 +129,6 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
       await expect(extrude).toBeVisible()
     })
-  })
-  test('Closing and reopening the pane keeps the Zookeeper session alive', async ({
-    page,
-    homePage,
-    scene,
-    toolbar,
-  }) => {
-    await page.setBodyDimensions({ width: 1500, height: 1000 })
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-
-    await page.waitForFunction(
-      () => {
-        const actor = window.app.debug.zookeeperManagerActor
-        const snapshot = actor?.getSnapshot()
-        return (
-          snapshot?.matches('ready' as never) === true &&
-          snapshot.context.ws?.readyState === WebSocket.OPEN
-        )
-      },
-      undefined,
-      { timeout: 60_000 }
-    )
-
-    await rememberZookeeperSession(page)
-
-    await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-        })
-    )
-
-    await expectZookeeperSessionUnchanged(page)
-
-    await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-    await expectZookeeperSessionUnchanged(page)
   })
   test(
     'Chat history can be cleared',

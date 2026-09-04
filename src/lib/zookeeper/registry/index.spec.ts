@@ -144,7 +144,7 @@ describe('zookeeper plugin', () => {
       registry.get(appHeaderItemsValueSpec).map((item) => item.id)
     ).not.toContain('zookeeper.runtime-host')
 
-    registry.get(plugin.service).enable()
+    await registry.get(plugin.service).enable()
 
     expect(
       registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]

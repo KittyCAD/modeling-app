@@ -105,6 +105,23 @@ function trackSessionDisposal(
   })
 }
 
+async function waitForDisposals(disposals: readonly Promise<void>[]) {
+  const failures = (await Promise.allSettled(disposals)).flatMap((result) =>
+    result.status === 'rejected' ? [result.reason] : []
+  )
+  if (failures.length === 1) {
+    return Promise.reject(failures[0])
+  }
+  if (failures.length > 1) {
+    return Promise.reject(
+      new AggregateError(
+        failures,
+        'One or more Zookeeper sessions failed to stop.'
+      )
+    )
+  }
+}
+
 export function createZookeeperRuntime(
   services: ZookeeperRuntimeServices,
   loadController: () => Promise<ZookeeperSessionControllerModule> = loadZookeeperSessionController
@@ -121,6 +138,20 @@ export function createZookeeperRuntime(
   let stopObserver: (() => void) | undefined
   let waitingForDisposal: Promise<void> | undefined
   let controllerLoadRetry: ReturnType<typeof setTimeout> | undefined
+  let runtimeDisposal: Promise<void> | undefined
+  const controllerDisposals = new Set<Promise<void>>()
+
+  const disposeController = (
+    controller: ZookeeperSessionController,
+    projectPath: string,
+    kclManager: KclManager
+  ) => {
+    const disposal = controller.dispose()
+    controllerDisposals.add(disposal)
+    trackSessionDisposal(projectPath, kclManager, disposal)
+    const finish = () => controllerDisposals.delete(disposal)
+    void disposal.then(finish, finish)
+  }
 
   const scheduleControllerLoadRetry = () => {
     if (controllerLoadRetry !== undefined) {
@@ -137,8 +168,11 @@ export function createZookeeperRuntime(
     activation = undefined
     session.value = undefined
     if (previous?.controller) {
-      const disposal = previous.controller.dispose()
-      trackSessionDisposal(previous.projectPath, previous.kclManager, disposal)
+      disposeController(
+        previous.controller,
+        previous.projectPath,
+        previous.kclManager
+      )
     }
   }
 
@@ -260,11 +294,7 @@ export function createZookeeperRuntime(
           systemIO,
         })
         if (disposed || activation !== next) {
-          trackSessionDisposal(
-            next.projectPath,
-            next.kclManager,
-            controller.dispose()
-          )
+          disposeController(controller, next.projectPath, next.kclManager)
           return
         }
         next.controller = controller
@@ -294,13 +324,15 @@ export function createZookeeperRuntime(
     currentProject,
     session,
     dispose() {
-      if (disposed) {
-        return
+      if (runtimeDisposal) {
+        return runtimeDisposal
       }
       disposed = true
       stopObserver?.()
       clearTimeout(controllerLoadRetry)
       deactivate()
+      runtimeDisposal = waitForDisposals([...controllerDisposals])
+      return runtimeDisposal
     },
   }
 }
