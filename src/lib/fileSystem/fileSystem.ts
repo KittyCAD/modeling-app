@@ -3,7 +3,10 @@ import type {
   IStat as BackingFileStat,
   IZooDesignStudioFS,
 } from '@src/lib/fs-zds/interface'
-import { Context, Data, Effect, Layer } from 'effect'
+import * as Context from 'effect/Context'
+import * as Data from 'effect/Data'
+import * as Effect from 'effect/Effect'
+import * as Layer from 'effect/Layer'
 
 export type FileKind = 'file' | 'directory'
 
@@ -96,7 +99,8 @@ export interface FileSystemService {
   ) => Effect.Effect<Uint8Array, FileSystemError>
   readonly copy: (
     source: string,
-    destination: string
+    destination: string,
+    overwrite?: boolean
   ) => Effect.Effect<void, FileSystemError>
   readonly writeFile: (
     path: string,
@@ -282,11 +286,15 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
           )
         )
       ),
-    copy: (source, destination) =>
+    copy: (source, destination, overwrite) =>
       tryBacking(
         'copy',
         source,
-        () => backing.cp(source, destination, { recursive: true }),
+        () =>
+          backing.cp(source, destination, {
+            recursive: true,
+            ...(overwrite === undefined ? {} : { force: overwrite }),
+          }),
         destination
       ).pipe(Effect.asVoid),
     writeFile,
@@ -326,9 +334,15 @@ export const readDirectory = (path: string) =>
 export const readFile = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.readFile(path)))
 
-export const copy = (source: string, destination: string) =>
+export const copy = (
+  source: string,
+  destination: string,
+  overwrite?: boolean
+) =>
   FileSystem.pipe(
-    Effect.flatMap((fileSystem) => fileSystem.copy(source, destination))
+    Effect.flatMap((fileSystem) =>
+      fileSystem.copy(source, destination, overwrite)
+    )
   )
 
 export const writeFile = (path: string, contents: Uint8Array) =>
