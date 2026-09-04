@@ -64,6 +64,10 @@ export interface FileOperationsService {
   readonly pendingChanges: Stream.Stream<number>
   /** Observe one path while coordinated mutations of it are excluded. */
   readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  /** Check read/write access while coordinated mutations of this path wait. */
+  readonly canReadWrite: (
+    path: string
+  ) => Effect.Effect<boolean, FileSystemError>
   /**
    * Observe whether one path currently exists.
    *
@@ -364,6 +368,8 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       pending: SubscriptionRef.get(pending),
       pendingChanges: pending.changes,
       stat: (path) => coordinateRead(path, fileSystem.stat(path)),
+      canReadWrite: (path) =>
+        coordinateRead(path, fileSystem.canReadWrite(path)),
       exists: (path) => coordinateRead(path, fileSystem.exists(path)),
       readDirectory: (path) =>
         coordinateDirectoryRead(path, fileSystem.readDirectory(path)),
@@ -427,6 +433,11 @@ export const fileOperationChanges = FileOperations.pipe(
 
 export const stat = (path: string) =>
   FileOperations.pipe(Effect.flatMap((operations) => operations.stat(path)))
+
+export const canReadWrite = (path: string) =>
+  FileOperations.pipe(
+    Effect.flatMap((operations) => operations.canReadWrite(path))
+  )
 
 export const exists = (path: string) =>
   FileOperations.pipe(Effect.flatMap((operations) => operations.exists(path)))

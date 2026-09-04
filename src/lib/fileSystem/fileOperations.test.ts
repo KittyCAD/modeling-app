@@ -505,6 +505,35 @@ describe('Effect filesystem operations', () => {
     expect(events).toEqual(['read:start', 'read:end', 'rename'])
   })
 
+  it('coordinates access checks with mutations of the same path', async () => {
+    const path = '/project/main.kcl'
+    const finishAccess = createGate()
+    const accessStarted = createGate()
+    const events: string[] = []
+    const backing: IZooDesignStudioFS = {
+      ...nodeFileSystem.impl,
+      access: async () => {
+        events.push('access:start')
+        accessStarted.open()
+        await finishAccess.promise
+        events.push('access:end')
+      },
+      mkdir: async () => undefined,
+      writeFile: async () => {
+        events.push('write')
+      },
+    }
+    const runtime = createRuntime(backing)
+
+    const access = runtime.operations.canReadWrite(path)
+    await accessStarted.promise
+    const write = runtime.operations.writeFile(path, 'updated')
+    setTimeout(finishAccess.open, 0)
+
+    await Promise.all([access, write])
+    expect(events).toEqual(['access:start', 'access:end', 'write'])
+  })
+
   it('releases locks and pending state after a failed operation', async () => {
     const root = testPath(
       nodeFileSystem.impl.join(
