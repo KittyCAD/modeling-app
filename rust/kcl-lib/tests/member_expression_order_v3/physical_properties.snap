@@ -1,29 +1,29 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Physical properties utility-sink.kcl
+description: Physical properties member_expression_order_v3.kcl
 ---
 {
   "bounding_box": {
     "center": {
-      "x": 596.3249999938,
-      "y": 366.0,
-      "z": 485.0
+      "x": 3.1999999999999993,
+      "y": 3.2,
+      "z": 5.0
     },
     "dimensions": {
-      "x": 1292.6499999876,
-      "y": 832.0,
-      "z": 1070.0
+      "x": 53.6,
+      "y": 13.6,
+      "z": 10.0
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 7738136.351269883
+    "value": 825.3367226425112
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 34383.10704067585
+    "value": 1.153245842611724
   }
 }

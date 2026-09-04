@@ -564,7 +564,10 @@ mod tests {
             result
                 .issues()
                 .iter()
-                .any(|issue| issue.message == "`version` is not an argument of `chamfer`"),
+                .any(|issue| {
+                    issue.message
+                        == "`version` is not an argument of `chamfer`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+                }),
             "issues: {:#?}",
             result.issues()
         );

@@ -30,6 +30,7 @@ pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
 pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 
 pub(super) const NO_PRELUDE: &str = "no_std";
+pub(crate) const ADDED_IN: &str = "added_in";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const DEPRECATED_SINCE: &str = "deprecated_since";
 pub(crate) const REMOVED_SINCE: &str = "removed_since";
@@ -304,9 +305,9 @@ impl Default for FnAttrs {
     }
 }
 
-/// A constraint on a KCL version, e.g. the threshold that `@(deprecated_since =
-/// "2.0")` or `@(removed_since = "3.0")` describes. Stored as the parsed
-/// component list so comparisons are numeric, not lexical.
+/// A constraint on a KCL version, e.g. the threshold that `@(added_in = "3.0")`,
+/// `@(deprecated_since = "2.0")`, or `@(removed_since = "3.0")` describes.
+/// Stored as the parsed component list so comparisons are numeric, not lexical.
 ///
 /// Distinct from the concrete `kclVersion` set in `@settings(...)`: this type
 /// represents a version *boundary*, and we expect to grow more constraint kinds
@@ -326,6 +327,12 @@ impl VersionConstraint {
             .map(|p| p.parse::<u32>().ok())
             .collect::<Option<Vec<_>>>()?;
         if parts.is_empty() { None } else { Some(Self(parts)) }
+    }
+
+    /// Whether this version boundary comes strictly before `other`, comparing
+    /// components numerically, like [`version_ge`] does for concrete versions.
+    pub(crate) fn is_before(&self, other: &Self) -> bool {
+        self.0 < other.0
     }
 }
 
@@ -463,6 +470,17 @@ mod tests {
         assert_eq!(VersionConstraint::parse(""), None);
         assert_eq!(VersionConstraint::parse("1.x"), None);
         assert_eq!(VersionConstraint::parse("1.-1"), None);
+    }
+
+    #[test]
+    fn version_constraint_is_before_compares_numerically() {
+        assert!(vc("2.0").is_before(&vc("3.0")));
+        assert!(vc("2.9").is_before(&vc("2.10")));
+        assert!(vc("9.0").is_before(&vc("10.0")));
+        assert!(vc("3.0").is_before(&vc("3.0.1")));
+        assert!(!vc("3.0").is_before(&vc("3.0")));
+        assert!(!vc("3.0").is_before(&vc("2.0")));
+        assert!(!vc("2.10").is_before(&vc("2.9")));
     }
 
     #[test]
