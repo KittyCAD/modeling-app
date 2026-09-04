@@ -270,7 +270,7 @@ pub struct EditConstraintOptions {
 }
 
 #[derive(Debug, Clone)]
-struct SolidAstReference {
+struct BodyAstReference {
     variable_name: String,
     output_index: Option<usize>,
 }
@@ -279,8 +279,8 @@ struct SolidAstReference {
 pub struct FrontendState {
     program: Program,
     scene_graph: SceneGraph,
-    /// Lightweight map from engine solid IDs to their latest KCL references.
-    solid_references: HashMap<Uuid, SolidAstReference>,
+    /// Lightweight map from engine body IDs to their latest KCL references.
+    body_references: HashMap<Uuid, BodyAstReference>,
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
@@ -318,7 +318,7 @@ impl FrontendState {
                 settings: Default::default(),
                 sketch_mode: Default::default(),
             },
-            solid_references: HashMap::new(),
+            body_references: HashMap::new(),
             point_freedom_cache: HashMap::new(),
             next_drag_anchor_segment_ids: None,
             next_segment_drag_anchors: None,
@@ -556,7 +556,11 @@ impl FrontendState {
 
         self.program = checkpoint.program;
         self.scene_graph = checkpoint.scene_graph.clone();
-        self.solid_references = solid_references_from_variables(&self.program.ast, &checkpoint.exec_outcome.variables);
+        self.body_references = body_references_from_execution(
+            &self.program.ast,
+            &checkpoint.exec_outcome.variables,
+            &checkpoint.exec_outcome.artifact_graph,
+        );
         self.point_freedom_cache = checkpoint.point_freedom_cache;
         self.next_drag_anchor_segment_ids = None;
         self.next_segment_drag_anchors = None;
@@ -735,7 +739,7 @@ impl SketchApi for FrontendState {
 
         let mut new_ast = self.program.ast.clone();
         // Create updated KCL source from args.
-        let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &self.solid_references, &args.on)
+        let mut plane_ast = sketch_on_ast_expr(&mut new_ast, &self.scene_graph, &self.body_references, &args.on)
             .map_err(KclErrorWithOutputs::no_outputs)?;
         let mut defined_names = find_defined_names(&new_ast);
         let is_face_of_expr = matches!(
@@ -4909,7 +4913,8 @@ impl FrontendState {
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome, freedom_analysis_ran: bool) -> ExecOutcome {
         let mut outcome = outcome;
-        self.solid_references = solid_references_from_variables(&self.program.ast, &outcome.variables);
+        self.body_references =
+            body_references_from_execution(&self.program.ast, &outcome.variables, &outcome.artifact_graph);
         let mut new_objects = std::mem::take(&mut outcome.scene_objects);
 
         if freedom_analysis_ran {
@@ -5190,7 +5195,7 @@ fn only_sketch_block(
 fn sketch_on_ast_expr(
     ast: &mut ast::Node<ast::Program>,
     scene_graph: &SceneGraph,
-    solid_references: &HashMap<Uuid, SolidAstReference>,
+    body_references: &HashMap<Uuid, BodyAstReference>,
     on: &Plane,
 ) -> Result<ast::Expr, KclError> {
     match on {
@@ -5206,40 +5211,69 @@ fn sketch_on_ast_expr(
             get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
         }
         Plane::PrimitiveFace(face) => {
-            let solid_expr = solid_expr_for_engine_id(solid_references, face.solid_id).ok_or_else(|| {
+            let body_expr = body_expr_for_engine_id(body_references, face.solid_id).ok_or_else(|| {
                 KclError::refactor(format!(
-                    "Could not resolve a KCL solid for selected primitive face: solid_id={}",
+                    "Could not resolve a KCL body for selected primitive face: body_id={}",
                     face.solid_id
                 ))
             })?;
-            let face_id_expr = create_face_id_ast(solid_expr.clone(), face.index);
-            Ok(create_face_of_ast(solid_expr, face_id_expr))
+            let face_id_expr = create_face_id_ast(body_expr.clone(), face.index);
+            Ok(create_face_of_ast(body_expr, face_id_expr))
         }
     }
 }
 
-fn solid_references_from_variables(
+fn body_references_from_execution(
     ast: &ast::Node<ast::Program>,
     variables: &IndexMap<String, KclValueView>,
-) -> HashMap<Uuid, SolidAstReference> {
+    artifact_graph: &ArtifactGraph,
+) -> HashMap<Uuid, BodyAstReference> {
     let mut references = HashMap::new();
 
-    // In-place operations such as shell reuse their input solid's engine ID.
+    // In-place operations such as shell reuse their input body's engine ID.
     // Later variables overwrite earlier references so mutations target the result.
     for item in &ast.body {
-        let ast::BodyItem::VariableDeclaration(declaration) = item else {
-            continue;
-        };
-        let name = &declaration.declaration.id.name;
-        let Some(value) = variables.get(name) else {
-            continue;
+        let (name, value) = match item {
+            ast::BodyItem::VariableDeclaration(declaration) => {
+                let name = declaration.declaration.id.name.clone();
+                let Some(value) = variables.get(&name) else {
+                    continue;
+                };
+                (name, value)
+            }
+            ast::BodyItem::ImportStatement(import) => {
+                let Some(name) = import.module_name() else {
+                    continue;
+                };
+                // Foreign import aliases are stored as module values, not geometry in
+                // `ExecOutcome.variables`. Their artifact supplies the engine ID while
+                // the import statement supplies the KCL name.
+                let import_range = SourceRange::from(item);
+                let Some(imported_id) = artifact_graph.values().find_map(|artifact| match artifact {
+                    Artifact::ImportedGeometry(imported) if imported.code_ref.range == import_range => {
+                        Some(Uuid::from(imported.id))
+                    }
+                    _ => None,
+                }) else {
+                    continue;
+                };
+                references.insert(
+                    imported_id,
+                    BodyAstReference {
+                        variable_name: name,
+                        output_index: None,
+                    },
+                );
+                continue;
+            }
+            _ => continue,
         };
 
         match value {
             KclValueView::Solid { value } => {
                 references.insert(
                     value.id,
-                    SolidAstReference {
+                    BodyAstReference {
                         variable_name: name.clone(),
                         output_index: None,
                     },
@@ -5247,16 +5281,30 @@ fn solid_references_from_variables(
             }
             KclValueView::Tuple { value } | KclValueView::HomArray { value } => {
                 for (output_index, entry) in value.iter().enumerate() {
-                    if let KclValueView::Solid { value } = entry {
+                    let body_id = match entry {
+                        KclValueView::Solid { value } => Some(value.id),
+                        KclValueView::ImportedGeometry(value) => Some(value.id),
+                        _ => None,
+                    };
+                    if let Some(body_id) = body_id {
                         references.insert(
-                            value.id,
-                            SolidAstReference {
+                            body_id,
+                            BodyAstReference {
                                 variable_name: name.clone(),
                                 output_index: Some(output_index),
                             },
                         );
                     }
                 }
+            }
+            KclValueView::ImportedGeometry(value) => {
+                references.insert(
+                    value.id,
+                    BodyAstReference {
+                        variable_name: name.clone(),
+                        output_index: None,
+                    },
+                );
             }
             _ => {}
         }
@@ -5265,10 +5313,10 @@ fn solid_references_from_variables(
     references
 }
 
-fn solid_expr_for_engine_id(solid_references: &HashMap<Uuid, SolidAstReference>, solid_id: Uuid) -> Option<ast::Expr> {
-    let reference = solid_references.get(&solid_id)?;
-    let solid_expr = ast_name_expr(reference.variable_name.clone());
-    Some(indexed_solid_expr_for_sweep_output(solid_expr, reference.output_index))
+fn body_expr_for_engine_id(body_references: &HashMap<Uuid, BodyAstReference>, body_id: Uuid) -> Option<ast::Expr> {
+    let reference = body_references.get(&body_id)?;
+    let body_expr = ast_name_expr(reference.variable_name.clone());
+    Some(indexed_solid_expr_for_sweep_output(body_expr, reference.output_index))
 }
 
 fn sketch_face_of_scene_object_ast_expr(
@@ -14290,14 +14338,14 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             Some(KclValueView::Solid { value }) => value.id,
             value => panic!("expected shell001 to be a solid, got {value:?}"),
         };
-        let solid_references = solid_references_from_variables(&program.ast, &outcome.variables);
+        let body_references = body_references_from_execution(&program.ast, &outcome.variables, &outcome.artifact_graph);
 
         let mut ast = program.ast;
         let scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
         let face_expr = sketch_on_ast_expr(
             &mut ast,
             &scene_graph,
-            &solid_references,
+            &body_references,
             &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane { solid_id, index: 6 }),
         )
         .unwrap();
@@ -14316,6 +14364,118 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
 
         let program = Program::parse(&new_source).unwrap().0.unwrap();
         ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+    }
+
+    #[test]
+    fn test_new_sketch_on_imported_primitive_index_face() {
+        let initial_source = "import \"part.step\" as importedPart\n";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let imported_id = Uuid::new_v4();
+        let artifact_id = ArtifactId::new(imported_id);
+        let import_range = SourceRange::from(&program.ast.body[0]);
+        let artifact_graph = ArtifactGraph::from_parts(
+            IndexMap::from([(
+                artifact_id,
+                Artifact::ImportedGeometry(kcl_api::artifact::ImportedGeometryArtifact {
+                    id: artifact_id,
+                    code_ref: CodeRef::placeholder(import_range),
+                }),
+            )]),
+            1,
+        );
+        let body_references = body_references_from_execution(&program.ast, &IndexMap::new(), &artifact_graph);
+        assert_eq!(body_references[&imported_id].variable_name, "importedPart");
+
+        let mut ast = program.ast;
+        let scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
+        let face_expr = sketch_on_ast_expr(
+            &mut ast,
+            &scene_graph,
+            &body_references,
+            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane {
+                solid_id: imported_id,
+                index: 4,
+            }),
+        )
+        .unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", face_expr),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
+                face_decl,
+            ))));
+
+        assert!(
+            source_from_ast(&ast).contains("face001 = faceOf(importedPart, face = faceId(importedPart, index = 4))")
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_imported_primitive_face_with_real_engine() {
+        let initial_source = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+@(targetRepresentation = brep)
+import "cube.step" as cube
+"#;
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let current_file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("inputs")
+            .join("main.kcl");
+        let ctx = crate::test_server::new_context(true, Some(current_file)).await.unwrap();
+        let mut frontend = FrontendState::new();
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+
+        let imported_id = frontend
+            .body_references
+            .iter()
+            .find_map(|(id, reference)| (reference.variable_name == "cube").then_some(*id))
+            .expect("the import artifact should resolve to its KCL alias");
+        let mut ast = frontend.program.ast.clone();
+        let face_expr = sketch_on_ast_expr(
+            &mut ast,
+            &frontend.scene_graph,
+            &frontend.body_references,
+            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane {
+                solid_id: imported_id,
+                index: 0,
+            }),
+        )
+        .unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", face_expr),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
+                face_decl,
+            ))));
+
+        assert!(source_from_ast(&ast).contains("face001 = faceOf(cube, face = faceId(cube, index = 0))"));
+
+        let sketch_args = SketchCtor {
+            on: Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane {
+                solid_id: imported_id,
+                index: 0,
+            }),
+        };
+        let (source_delta, _scene_delta, _sketch_id) = tokio::time::timeout(
+            std::time::Duration::from_secs(30),
+            frontend.new_sketch(&ctx, ProjectId(0), FileId(0), Version(0), sketch_args),
+        )
+        .await
+        .expect("creating a sketch on an imported BREP face should not hang")
+        .unwrap();
+        assert!(
+            source_delta
+                .text
+                .contains("face001 = faceOf(cube, face = faceId(cube, index = 0))")
+        );
         ctx.close().await;
     }
 
@@ -14609,7 +14769,7 @@ part = subtract(boxSolid, tools = [cutSolid])
         let cap_expr = sketch_on_ast_expr(
             &mut ast,
             &frontend.scene_graph,
-            &frontend.solid_references,
+            &frontend.body_references,
             &Plane::Object(cap_object.id),
         )
         .unwrap();

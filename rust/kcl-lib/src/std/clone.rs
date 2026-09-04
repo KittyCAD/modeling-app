@@ -335,7 +335,7 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
                     id: surface.get_id(),
                     surface: Some(surface.clone()),
                     path: None,
-                    geometry: Geometry::Solid(solid_copy),
+                    geometry: Geometry::Solid(solid_copy).into(),
                 },
             )],
             meta: vec![Metadata {
@@ -1136,7 +1136,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
+            assert_ne!(tag_info.geometry.raw_id(), cloned_tag_info.geometry.raw_id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_eq!(tag_info.surface, None);
             assert_eq!(cloned_tag_info.surface, None);
@@ -1204,7 +1204,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
+            assert_ne!(tag_info.geometry.raw_id(), cloned_tag_info.geometry.raw_id());
             assert_eq!(tag_info.path.is_some(), cloned_tag_info.path.is_some());
             if let (Some(path), Some(cloned_path)) = (&tag_info.path, &cloned_tag_info.path) {
                 assert_ne!(path, cloned_path);
@@ -1222,7 +1222,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
+            assert_ne!(tag_info.geometry.raw_id(), cloned_tag_info.geometry.raw_id());
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
         assert!(cube.faces.contains_key("endCap"));
@@ -1389,7 +1389,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
+            assert_ne!(tag_info.geometry.raw_id(), cloned_tag_info.geometry.raw_id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }

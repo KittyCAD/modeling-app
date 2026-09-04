@@ -129,6 +129,43 @@ impl GeometryWithImportedGeometry {
             GeometryWithImportedGeometry::ImportedGeometry(_) => None,
         }
     }
+
+    /// Return the engine ID without waiting for an imported geometry to finish.
+    ///
+    /// Callers that can receive a newly-created imported geometry should call
+    /// [`Self::id`] first. This accessor is useful for geometry stored in tags
+    /// and completed execution outcomes.
+    pub fn raw_id(&self) -> uuid::Uuid {
+        match self {
+            GeometryWithImportedGeometry::Sketch(s) => s.id,
+            GeometryWithImportedGeometry::Solid(s) => s.id,
+            GeometryWithImportedGeometry::ImportedGeometry(i) => i.id,
+        }
+    }
+
+    pub fn as_solid(&self) -> Option<&Solid> {
+        match self {
+            GeometryWithImportedGeometry::Solid(solid) => Some(solid),
+            GeometryWithImportedGeometry::Sketch(_) | GeometryWithImportedGeometry::ImportedGeometry(_) => None,
+        }
+    }
+
+    pub fn into_geometry(self) -> Option<Geometry> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(sketch) => Some(Geometry::Sketch(sketch)),
+            GeometryWithImportedGeometry::Solid(solid) => Some(Geometry::Solid(solid)),
+            GeometryWithImportedGeometry::ImportedGeometry(_) => None,
+        }
+    }
+}
+
+impl From<Geometry> for GeometryWithImportedGeometry {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(sketch) => Self::Sketch(sketch),
+            Geometry::Solid(solid) => Self::Solid(solid),
+        }
+    }
 }
 
 /// A set of geometry.
@@ -1229,7 +1266,7 @@ impl Sketch {
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: base.geo_meta.id,
-                geometry: Geometry::Sketch(sketch_copy),
+                geometry: Geometry::Sketch(sketch_copy).into(),
                 path: Some(current_path.clone()),
                 surface: surface.cloned(),
             },
@@ -1435,6 +1472,17 @@ impl From<&Solid> for FaceParentSolid {
             creator_sketch_id: solid.sketch_id(),
             creator_sketch_is_closed: solid.sketch().map(|sketch| sketch.is_closed),
             edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
+        }
+    }
+}
+
+impl From<&ImportedGeometry> for FaceParentSolid {
+    fn from(imported_geometry: &ImportedGeometry) -> Self {
+        Self {
+            solid_id: imported_geometry.id,
+            creator_sketch_id: None,
+            creator_sketch_is_closed: None,
+            edge_cut_ids: Vec::new(),
         }
     }
 }

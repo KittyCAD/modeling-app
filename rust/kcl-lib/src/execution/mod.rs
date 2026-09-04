@@ -753,12 +753,17 @@ impl TagIdentifier {
     }
 
     pub fn geometry(&self) -> Option<Geometry> {
-        self.get_cur_info().map(|info| info.geometry.clone())
+        self.get_cur_info()
+            .and_then(|info| info.geometry.clone().into_geometry())
     }
 
     pub(crate) fn is_body_created_tag(&self) -> bool {
         self.get_cur_info().is_some_and(|info| {
-            matches!(&info.geometry, Geometry::Solid(_)) && info.path.is_none() && info.surface.is_some()
+            matches!(
+                &info.geometry,
+                GeometryWithImportedGeometry::Solid(_) | GeometryWithImportedGeometry::ImportedGeometry(_)
+            ) && info.path.is_none()
+                && info.surface.is_some()
         })
     }
 }
@@ -809,7 +814,7 @@ pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
     /// The geometry the tag is on.
-    pub geometry: Geometry,
+    pub geometry: GeometryWithImportedGeometry,
     /// The path the tag is on.
     pub path: Option<Path>,
     /// The surface information for the tag.
@@ -2484,6 +2489,45 @@ mod tests {
         };
         assert_eq!(artifact.id, artifact_id);
         assert!(!artifact.code_ref.node_path.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_brep_supports_primitive_topology_operations() {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_imported_brep_topology").unwrap();
+        let step_fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("inputs")
+            .join("cube.step");
+        tokio::fs::copy(step_fixture, tmpdir.path().join("part.step"))
+            .await
+            .unwrap();
+
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 2.0)
+
+import "part.step" as importedPart
+
+selectedFace = faceId(importedPart, index = 0)
+selectedEdge = edgeId(importedPart, index = 0)
+sketchFace = faceOf(importedPart, face = selectedFace)
+result = deleteFace(importedPart, faces = selectedFace)
+"#,
+        )
+        .unwrap();
+        let ctx = new_mock_executor_context(
+            Some(crate::TypedPath(tmpdir.path().into())),
+            machine::ExecutorKind::resolve(),
+        );
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        assert!(matches!(
+            outcome.variables["selectedFace"],
+            KclValueView::TagIdentifier(_)
+        ));
+        assert!(matches!(outcome.variables["selectedEdge"], KclValueView::Uuid { .. }));
+        assert!(matches!(outcome.variables["sketchFace"], KclValueView::Face { .. }));
+        assert!(matches!(outcome.variables["result"], KclValueView::ImportedGeometry(_)));
     }
 
     #[tokio::test(flavor = "multi_thread")]

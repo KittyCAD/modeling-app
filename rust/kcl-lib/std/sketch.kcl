@@ -3300,8 +3300,8 @@ export fn ellipticPoint(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn planeOf(
-  /// The solid whose face is being queried.
-  @solid: Solid,
+  /// The body whose face is being queried.
+  @solid: Solid | ImportedGeometry,
   /// Find the plane which this face lies on.
   face: TaggedFace | Segment,
 ): Plane {}
@@ -3341,8 +3341,8 @@ export fn planeOf(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn faceOf(
-  /// The solid that has the face.
-  @solid: Solid,
+  /// The body that has the face.
+  @solid: Solid | ImportedGeometry,
   /// Which face of the solid.
   face: TaggedFace | Segment,
 ): Face {}

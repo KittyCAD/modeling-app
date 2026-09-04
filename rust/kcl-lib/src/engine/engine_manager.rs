@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 use std::sync::atomic::Ordering::Relaxed;
 
@@ -77,6 +78,7 @@ pub struct EngineManager {
     pending_errors: Arc<RwLock<Vec<String>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
+    completed_async_commands: Arc<RwLock<HashSet<Uuid>>>,
 
     /// The default planes for the scene.
     #[builder(default)]
@@ -98,6 +100,7 @@ impl std::fmt::Debug for EngineManager {
             .field("pending_errors", &self.pending_errors)
             .field("socket_health", &self.socket_health)
             .field("ids_of_async_commands", &self.ids_of_async_commands)
+            .field("completed_async_commands", &self.completed_async_commands)
             .field("default_planes", &self.default_planes)
             .field("session_data", &self.session_data)
             .field("stats", &self.stats)
@@ -114,6 +117,7 @@ impl EngineManager {
     ) -> Self {
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
+        let completed_async_commands = Arc::new(RwLock::new(HashSet::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let responses = response_context.response_information();
@@ -124,6 +128,7 @@ impl EngineManager {
             pending_errors,
             socket_health,
             ids_of_async_commands,
+            completed_async_commands,
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
@@ -137,6 +142,7 @@ impl EngineManager {
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
+        let completed_async_commands = Arc::new(RwLock::new(HashSet::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let responses = ResponseInformation {
@@ -159,6 +165,7 @@ impl EngineManager {
             pending_errors,
             socket_health,
             ids_of_async_commands,
+            completed_async_commands,
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
@@ -171,6 +178,7 @@ impl EngineManager {
     pub fn new_mock() -> Self {
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
+        let completed_async_commands = Arc::new(RwLock::new(HashSet::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let responses = ResponseInformation {
@@ -182,6 +190,7 @@ impl EngineManager {
             pending_errors,
             socket_health,
             ids_of_async_commands,
+            completed_async_commands,
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
@@ -207,6 +216,7 @@ impl EngineManager {
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
+        self.completed_async_commands.write().await.clear();
 
         self.batch_modeling_cmd(
             batch_context,
@@ -233,6 +243,12 @@ impl EngineManager {
         id: uuid::Uuid,
         source_range: Option<SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        if self.completed_async_commands.read().await.contains(&id) {
+            return Ok(OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::Empty {},
+            });
+        }
+
         let source_range = if let Some(source_range) = source_range {
             source_range
         } else {
@@ -277,6 +293,7 @@ impl EngineManager {
             // If the response is an error, return it.
             // Parsing will do that and we can ignore the result, we don't care.
             let response = self.parse_websocket_response(resp.clone(), source_range)?;
+            self.completed_async_commands.write().await.insert(id);
             return Ok(response);
         }
 
@@ -465,6 +482,10 @@ impl EngineManager {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        // Deterministic command IDs can be reused after a scene reset. Drop any
+        // completion marker and stale response before starting the new command.
+        self.completed_async_commands.write().await.remove(&id);
+        self.responses().write().await.shift_remove(&id);
         // Add the command ID to the list of async commands.
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
@@ -944,4 +965,32 @@ impl EngineManager {
 pub enum SocketHealth {
     Active,
     Inactive,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn async_command_completion_is_idempotent_after_responses_are_consumed() {
+        let manager = EngineManager::new_mock();
+        let id = Uuid::new_v4();
+        let source_range = SourceRange::default();
+        let command = ModelingCmd::from(mcmd::EdgeLinesVisible::builder().hidden(false).build());
+
+        manager.async_modeling_cmd(id, source_range, &command).await.unwrap();
+        manager
+            .ensure_async_command_completed(id, Some(source_range))
+            .await
+            .unwrap();
+        manager.take_responses().await;
+
+        tokio::time::timeout(
+            std::time::Duration::from_millis(100),
+            manager.ensure_async_command_completed(id, Some(source_range)),
+        )
+        .await
+        .expect("a completed command should not wait for its consumed response")
+        .unwrap();
+    }
 }
