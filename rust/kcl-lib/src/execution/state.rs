@@ -991,6 +991,17 @@ impl ExecState {
         self.mod_local.artifacts.artifacts.get_mut(&id)
     }
 
+    pub(crate) fn is_sketch_block_path(&self, path_id: ArtifactId) -> bool {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .any(|artifact| {
+                matches!(artifact, Artifact::SketchBlock(sketch_block) if sketch_block.path_id == Some(path_id))
+            })
+    }
+
     pub(crate) fn push_op(&mut self, op: Operation) {
         let index = self.mod_local.artifacts.operations.len();
         self.mod_local.artifacts.operations.push(op);

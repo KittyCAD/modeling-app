@@ -877,6 +877,26 @@ patterned = patternLinear2d({input}, instances = 2, distance = 20mm, axis = X)
             outcome.issues
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_linear_2d_with_sketch_v1_profile_is_allowed() {
+        let code = r#"@settings(kclVersion = 2.0, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+patterned = startSketchOn(XY)
+  |> rectangle(width = 4mm, height = 3mm, center = [0mm, 0mm])
+  |> patternLinear2d(instances = 10, distance = 10mm, axis = [1, 0])
+"#;
+        let outcome = run_mock(code).await.unwrap();
+
+        assert!(
+            outcome
+                .issues
+                .iter()
+                .all(|issue| issue.message != PATTERN_LINEAR_2D_REGIONS_ONLY),
+            "unexpected regions-only issue: {:#?}",
+            outcome.issues
+        );
+    }
 }
 
 /// A linear pattern on a 2D sketch.
@@ -897,7 +917,12 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
     )?;
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
-    if sketches.iter().any(|sketch| sketch.origin_sketch_id.is_none()) {
+    let has_sketch_solver_block = sketches.iter().any(|sketch| {
+        sketch.origin_sketch_id.is_none()
+            && (exec_state.is_sketch_block_path(sketch.artifact_id)
+                || exec_state.is_sketch_block_path(sketch.original_id.into()))
+    });
+    if has_sketch_solver_block {
         if exec_state.kcl_version() >= KclVersion::V3Preview {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 PATTERN_LINEAR_2D_REGIONS_ONLY.to_owned(),
