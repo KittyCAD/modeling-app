@@ -9,7 +9,7 @@ const { defaultBrowserType: _defaultBrowserType, ...desktopSafari } =
 const persistentWebKitTest = playwrightTest.extend({
   context: async (
     { baseURL, browserName, headless, launchOptions, playwright },
-    use
+    provide
   ) => {
     if (browserName !== 'webkit') {
       throw new Error(
@@ -28,14 +28,14 @@ const persistentWebKitTest = playwrightTest.extend({
     })
 
     try {
-      await use(context)
+      await provide(context)
     } finally {
       await context.close()
     }
   },
-  page: async ({ context }, use) => {
+  page: async ({ context }, provide) => {
     const page = context.pages()[0] ?? (await context.newPage())
-    await use(page)
+    await provide(page)
   },
 })
 
