@@ -5,6 +5,9 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -29,6 +32,11 @@ const BOOLEAN_SELECTION_ERROR_MESSAGE =
 
 type BooleanSelectionGroup = {
   selections: Selections
+  exprs: Expr[]
+  pathIfPipe?: PathToNode
+}
+
+type BooleanSelectionExprs = {
   exprs: Expr[]
   pathIfPipe?: PathToNode
 }
@@ -73,6 +81,42 @@ function validateBooleanSelections(
       inputKeys.add(key)
     }
   }
+}
+
+function materializeSinglePipeSelectionForLabeledArg({
+  ast,
+  selectionExprs,
+  variablePrefix,
+}: {
+  ast: Node<Program>
+  selectionExprs: BooleanSelectionExprs
+  variablePrefix: string
+}): Error | BooleanSelectionExprs {
+  if (
+    !selectionExprs.pathIfPipe ||
+    selectionExprs.exprs.length !== 1 ||
+    selectionExprs.exprs[0].type !== 'PipeSubstitution'
+  ) {
+    return selectionExprs
+  }
+
+  const bodyIndex = selectionExprs.pathIfPipe[1]?.[0]
+  if (typeof bodyIndex !== 'number') {
+    return new Error('Could not materialize pipe selection')
+  }
+
+  const bodyItem = ast.body[bodyIndex]
+  if (bodyItem?.type !== 'ExpressionStatement') {
+    return selectionExprs
+  }
+
+  const variableName = findUniqueName(ast, variablePrefix)
+  ast.body[bodyIndex] = createVariableDeclaration(
+    variableName,
+    structuredClone(bodyItem.expression)
+  )
+
+  return { exprs: [createLocalName(variableName)] }
 }
 
 export function addUnion({
@@ -278,9 +322,23 @@ export function addSubtract({
   if (selectionError) {
     return selectionError
   }
+  if (vars.pathIfPipe && toolVars.pathIfPipe) {
+    return new Error(
+      'Cannot use both solids and tools in a subtraction operation with a pipe'
+    )
+  }
+
+  const materializedToolVars = materializeSinglePipeSelectionForLabeledArg({
+    ast: modifiedAst,
+    selectionExprs: toolVars,
+    variablePrefix: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+  })
+  if (err(materializedToolVars)) {
+    return materializedToolVars
+  }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
+  const toolsExpr = createVariableExpressionsArray(materializedToolVars.exprs)
   if (toolsExpr === null) {
     return new Error('No tools provided for subtraction operation')
   }
@@ -298,13 +356,8 @@ export function addSubtract({
   if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
-  if (vars.pathIfPipe && toolVars.pathIfPipe) {
-    return new Error(
-      'Cannot use both solids and tools in a subtraction operation with a pipe'
-    )
-  }
 
-  const pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
+  const pathIfNewPipe = vars.pathIfPipe ?? materializedToolVars.pathIfPipe
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -400,18 +453,27 @@ export function addSplit({
     if (selectionError) {
       return selectionError
     }
-
-    const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
-    if (toolsExpr === null) {
-      return new Error('No tools provided for split operation')
-    }
     if (vars.pathIfPipe && toolVars.pathIfPipe) {
       return new Error(
         'Cannot use both targets and tools in a split operation with a pipe'
       )
     }
 
-    pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
+    const materializedToolVars = materializeSinglePipeSelectionForLabeledArg({
+      ast: modifiedAst,
+      selectionExprs: toolVars,
+      variablePrefix: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    })
+    if (err(materializedToolVars)) {
+      return materializedToolVars
+    }
+
+    const toolsExpr = createVariableExpressionsArray(materializedToolVars.exprs)
+    if (toolsExpr === null) {
+      return new Error('No tools provided for split operation')
+    }
+
+    pathIfNewPipe = vars.pathIfPipe ?? materializedToolVars.pathIfPipe
     labeledArgs.push(createLabeledArg('tools', toolsExpr))
   }
 
