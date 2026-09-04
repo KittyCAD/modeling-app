@@ -47,20 +47,21 @@ export function addFlipSurface({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
-  if (surface.graphSelections.length < 1) {
+  if (!mNodeToEdit && surface.graphSelections.length < 1) {
     return new Error('flipSurface surfaces must have at least one selection.')
   }
 
-  const vars = getVariableExprsFromSelection(
-    surface,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        surface,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+        }
+      )
   if (err(vars)) {
     return vars
   }
@@ -121,21 +122,22 @@ export function addJoinSurfaces({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
-  if (selection.graphSelections.length < 1) {
+  if (!mNodeToEdit && selection.graphSelections.length < 1) {
     return new Error('join selection must have at least one selection.')
   }
 
-  const vars = getVariableExprsFromSelection(
-    selection,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        selection,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
   if (err(vars)) {
     return vars
   }

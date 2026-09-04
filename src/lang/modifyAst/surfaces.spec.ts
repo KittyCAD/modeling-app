@@ -1,6 +1,9 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
-import { type Artifact, recast } from '@src/lang/wasm'
+import { type Artifact, assertParse, recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -157,6 +160,33 @@ surface001 = joinSurfaces([blend001, blend002])`
   })
 
   describe('Testing addJoinSurfaces', () => {
+    it('should edit parameters without reconstructing its surface selection', async () => {
+      const code = 'surface001 = joinSurfaces([first, second], tolerance = 0.1)'
+      const ast = assertParse(code, instanceInThisFile)
+      const selection: Selections = {
+        graphSelections: [],
+        otherSelections: [],
+      }
+      const tolerance = (await stringToKclExpression(
+        '0.2',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addJoinSurfaces({
+        ast,
+        artifactGraph: new Map(),
+        selection,
+        tolerance,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'surface001 = joinSurfaces([first, second], tolerance = 0.2)'
+      )
+    })
+
     it('should add a simple join call on body selections', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [-0.2, 0], radius = 0.1)

@@ -824,7 +824,6 @@ function createPrimitiveIndexReferenceExpr({
     artifactGraph,
     kclManager.ast,
     wasmInstance,
-    undefined,
     {
       lastChildLookup: true,
       artifactTypeFilter: BODY_REFERENCE_ARTIFACT_TYPES,
@@ -900,14 +899,13 @@ function createExpressionReferences({
   artifactGraph: ArtifactGraph
   kclManager: KclManager
   wasmInstance: ModuleType
-  options?: Parameters<typeof getVariableExprsFromSelection>[5]
+  options?: Parameters<typeof getVariableExprsFromSelection>[4]
 }): SelectionReference[] {
   const variableExprs = getVariableExprsFromSelection(
     { graphSelections: [selection], otherSelections: [] },
     artifactGraph,
     kclManager.ast,
     wasmInstance,
-    undefined,
     options
   )
   if (err(variableExprs)) {

@@ -55,16 +55,17 @@ export function addPatternCircular3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        solids,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+        }
+      )
   if (err(vars)) {
     return vars
   }
@@ -226,16 +227,17 @@ export function addPatternLinear3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        solids,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+        }
+      )
   if (err(vars)) {
     return vars
   }

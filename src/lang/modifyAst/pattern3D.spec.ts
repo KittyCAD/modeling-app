@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -600,6 +601,33 @@ extrude(exampleSketch, length = -5)
   })
 
   describe('Testing addPatternLinear3D', () => {
+    it('should edit parameters without reconstructing its solid selection', async () => {
+      const code =
+        'pattern001 = patternLinear3d(source, instances = 2, distance = 1, axis = X)'
+      const ast = assertParse(code, instanceInThisFile)
+      const solids: Selections = { graphSelections: [], otherSelections: [] }
+      const instances = await getKclCommandValue('3', rustContextInThisFile)
+      const distance = await getKclCommandValue('2', rustContextInThisFile)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph: new Map(),
+        solids,
+        instances,
+        distance,
+        axis: 'Y',
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('  source,')
+      expect(newCode).toContain('instances = 3')
+      expect(newCode).toContain('distance = 2')
+      expect(newCode).toContain('axis = Y')
+    })
+
     it('should add patternLinear3d with named axis', async () => {
       const code = `
 exampleSketch = startSketchOn(XZ)

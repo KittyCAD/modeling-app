@@ -143,8 +143,7 @@ export function modifyAstWithTagsForSelection(
       selection,
       result.expr,
       artifactGraph,
-      wasmInstance,
-      options?.nodeToEdit
+      wasmInstance
     )
     if (err(qualifiedExpr)) {
       return qualifiedExpr
@@ -215,7 +214,6 @@ export type EdgeSelectionContext = {
 export type ModifyAstWithTagsOptions = {
   tagMethods?: string[]
   edgeContext?: EdgeSelectionContext
-  nodeToEdit?: PathToNode
 }
 
 export function getEdgeBodyKey(
@@ -245,7 +243,6 @@ function resolveSweepSelectionContext(
   selectedSweep: Extract<Artifact, { type: 'sweep' }>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode,
   lastChildLookup = true
 ): EdgeSelectionContext | Error {
   const sourceSweep = selectedSweep.sourceSweepId
@@ -279,7 +276,6 @@ function resolveSweepSelectionContext(
     artifactGraph,
     ast,
     wasmInstance,
-    nodeToEdit,
     {
       lastChildLookup,
       artifactTypeFilter: ['compositeSolid', 'sweep'],
@@ -308,7 +304,6 @@ export function resolveEdgeSelectionContext(
   selection: Selection,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode,
   lastChildLookup = true
 ): EdgeSelectionContext | Error {
   if (
@@ -335,7 +330,6 @@ export function resolveEdgeSelectionContext(
     selectedSweep,
     artifactGraph,
     wasmInstance,
-    nodeToEdit,
     lastChildLookup
   )
 }
@@ -466,8 +460,7 @@ function qualifyClonedFaceTag(
   selection: Selection,
   expr: Expr,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 ): Expr | Error {
   const face = selection.artifact
   if (face?.type !== 'wall' && face?.type !== 'cap') {
@@ -483,8 +476,7 @@ function qualifyClonedFaceTag(
     ast,
     selectedSweep,
     artifactGraph,
-    wasmInstance,
-    nodeToEdit
+    wasmInstance
   )
   if (err(context)) {
     return context
@@ -554,8 +546,7 @@ function modifyAstWithTagsForEdgeSelection(
         astClone,
         selection,
         artifactGraph,
-        wasmInstance,
-        options?.nodeToEdit
+        wasmInstance
       )
     if (err(edgeContext)) return edgeContext
 

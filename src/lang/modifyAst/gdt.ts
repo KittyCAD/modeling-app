@@ -12,7 +12,7 @@ import {
   createPoint2dExpression,
   deduplicateFaceExprs,
   insertVariableAndOffsetPathToNode,
-  setCallInAst,
+  setCallInAst as setBaseCallInAst,
 } from '@src/lang/modifyAst'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -25,6 +25,47 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+const GDT_LABELED_SELECTION_ARG_NAMES = [
+  'faces',
+  'edges',
+  'from',
+  'to',
+  'face',
+] as const
+
+function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
+  return setBaseCallInAst({
+    ...args,
+    labeledSelectionArgNames: GDT_LABELED_SELECTION_ARG_NAMES,
+  })
+}
+
+type GdtSelectionTarget = {
+  argName: 'faces' | 'edges'
+  expr: Expr
+}
+
+function gdtSelectionTargets(
+  faceExprs: readonly Expr[],
+  edgeExprs: readonly Expr[],
+  isEditing: boolean
+): Array<GdtSelectionTarget | undefined> {
+  if (isEditing) {
+    return [undefined]
+  }
+
+  return [
+    ...faceExprs.map((expr) => ({ argName: 'faces' as const, expr })),
+    ...edgeExprs.map((expr) => ({ argName: 'edges' as const, expr })),
+  ]
+}
+
+function gdtSelectionArgs(target?: GdtSelectionTarget): LabeledArg[] {
+  return target
+    ? [createLabeledArg(target.argName, createArrayExpression([target.expr]))]
+    : []
+}
 
 function isProfileEdgeArtifact(
   artifact: Selections['graphSelections'][number]['artifact']
@@ -91,11 +132,13 @@ export function addFlatnessGdt({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Filter to only include face selections
-  const faceSelections = faces.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : faces.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0) {
+  if (!mNodeToEdit && faceSelections.length === 0) {
     return new Error(
       'No valid face selections found. Please select faces (caps, walls, or edge cuts).'
     )
@@ -124,7 +167,7 @@ export function addFlatnessGdt({
     facesExprs.push(tagResult.exprs[0])
   }
 
-  if (facesExprs.length === 0) {
+  if (!mNodeToEdit && facesExprs.length === 0) {
     return new Error(
       'No valid face expressions could be generated from selection'
     )
@@ -133,7 +176,7 @@ export function addFlatnessGdt({
   // Deduplicate face expressions based on their string representation
   const uniqueFacesExprs = deduplicateFaceExprs(facesExprs)
 
-  if (uniqueFacesExprs.length === 0) {
+  if (!mNodeToEdit && uniqueFacesExprs.length === 0) {
     return new Error('No unique faces found after deduplication')
   }
 
@@ -163,12 +206,14 @@ export function addFlatnessGdt({
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Flatness')
 
-  for (const faceExpr of uniqueFacesExprs) {
-    const facesArray = createArrayExpression([faceExpr])
-
+  for (const target of gdtSelectionTargets(
+    uniqueFacesExprs,
+    [],
+    Boolean(mNodeToEdit)
+  )) {
     // Build labeled arguments starting with function-specific parameters
     const labeledArgs = [
-      createLabeledArg('faces', facesArray),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -254,14 +299,22 @@ export function addStraightnessGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -310,7 +363,11 @@ export function addStraightnessGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -337,12 +394,9 @@ export function addStraightnessGdt({
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Straightness')
 
-  const createStraightnessCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createStraightnessCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -363,25 +417,14 @@ export function addStraightnessGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createStraightnessCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createStraightnessCall('edges', edgeExpr),
+      call: createStraightnessCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -436,14 +479,22 @@ export function addCircularityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -492,7 +543,11 @@ export function addCircularityGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -519,12 +574,9 @@ export function addCircularityGdt({
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Circularity')
 
-  const createCircularityCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createCircularityCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -545,25 +597,14 @@ export function addCircularityGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createCircularityCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createCircularityCall('edges', edgeExpr),
+      call: createCircularityCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -618,14 +659,22 @@ export function addCylindricityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -674,7 +723,11 @@ export function addCylindricityGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -701,12 +754,9 @@ export function addCylindricityGdt({
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Cylindricity')
 
-  const createCylindricityCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createCylindricityCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -727,25 +777,14 @@ export function addCylindricityGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createCylindricityCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createCylindricityCall('edges', edgeExpr),
+      call: createCylindricityCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -797,14 +836,22 @@ export function addPositionGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -853,7 +900,11 @@ export function addPositionGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -882,12 +933,9 @@ export function addPositionGdt({
 
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Position')
-  const createPositionCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createPositionCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -912,25 +960,14 @@ export function addPositionGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createPositionCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createPositionCall('edges', edgeExpr),
+      call: createPositionCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -989,44 +1026,62 @@ export function addProfileGdt({
   const mNodeToEdit = structuredClone(nodeToEdit)
   const selections = objects ?? edges ?? faces
 
-  if (!selections) {
+  if (!mNodeToEdit && !selections) {
     return new Error(
       'No selections found. Please select faces or edges for profile.'
     )
   }
 
   const unsupportedSelections =
-    selections.otherSelections.length > 0 ||
-    selections.graphSelections.some(
-      (selection) =>
-        !isProfileEdgeArtifact(selection.artifact) &&
-        !isFaceArtifact(selection.artifact)
-    )
+    !mNodeToEdit &&
+    selections !== undefined &&
+    (selections.otherSelections.length > 0 ||
+      selections.graphSelections.some(
+        (selection) =>
+          !isProfileEdgeArtifact(selection.artifact) &&
+          !isFaceArtifact(selection.artifact)
+      ))
   if (unsupportedSelections) {
     return new Error('Profile supports face selections or sketch/sweep edges.')
   }
 
-  const faceSelections = selections.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = selections.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : (selections?.graphSelections ?? []).filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : (selections?.graphSelections ?? []).filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length > 0 && edgeSelections.length > 0) {
+  if (!mNodeToEdit && faceSelections.length > 0 && edgeSelections.length > 0) {
     return new Error(
       'Profile requires either faces or edges, not both. Select faces for profileSurface or edges for profileLine.'
     )
   }
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
-  if (profileFunction === 'profileLine' && faceSelections.length > 0) {
+  if (
+    !mNodeToEdit &&
+    profileFunction === 'profileLine' &&
+    faceSelections.length > 0
+  ) {
     return new Error('profileLine requires edge selections.')
   }
-  if (profileFunction === 'profileSurface' && edgeSelections.length > 0) {
+  if (
+    !mNodeToEdit &&
+    profileFunction === 'profileSurface' &&
+    edgeSelections.length > 0
+  ) {
     return new Error('profileSurface requires face selections.')
   }
 
@@ -1075,7 +1130,11 @@ export function addProfileGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -1104,20 +1163,17 @@ export function addProfileGdt({
 
   let lastPathToNode: PathToNode | undefined
 
-  const createProfileCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createProfileCall = (target?: GdtSelectionTarget) => {
     const functionName =
       profileFunction ??
-      (mNodeToEdit
-        ? 'profile'
-        : targetArgName === 'faces'
-          ? 'profileSurface'
-          : 'profileLine')
+      (target?.argName === 'faces'
+        ? 'profileSurface'
+        : target?.argName === 'edges'
+          ? 'profileLine'
+          : 'profile')
 
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -1142,25 +1198,14 @@ export function addProfileGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createProfileCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createProfileCall('edges', edgeExpr),
+      call: createProfileCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -1213,18 +1258,20 @@ export function addDistanceGdt({
   const mNodeToEdit = structuredClone(nodeToEdit)
   const selections = objects ?? edges
 
-  if (!selections) {
+  if (!mNodeToEdit && !selections) {
     return new Error(
       'No selections found. Select one edge for an edge length, or exactly two faces or edges for a distance.'
     )
   }
 
-  const targetSelections = selections.graphSelections.filter(
-    (selection) =>
-      isFaceArtifact(selection.artifact) ||
-      isProfileEdgeArtifact(selection.artifact)
-  )
-  if (targetSelections.length === 0) {
+  const targetSelections = mNodeToEdit
+    ? []
+    : (selections?.graphSelections ?? []).filter(
+        (selection) =>
+          isFaceArtifact(selection.artifact) ||
+          isProfileEdgeArtifact(selection.artifact)
+      )
+  if (!mNodeToEdit && targetSelections.length === 0) {
     return new Error(
       'No valid selections found. Select one edge, or exactly two faces or edges.'
     )
@@ -1265,11 +1312,11 @@ export function addDistanceGdt({
     }
   }
 
-  if (targets.length === 0) {
+  if (!mNodeToEdit && targets.length === 0) {
     return new Error('No valid distance targets could be generated')
   }
 
-  if (targets.length === 1 && targets[0].kind !== 'edge') {
+  if (!mNodeToEdit && targets.length === 1 && targets[0].kind !== 'edge') {
     return new Error(
       'A single distance selection must be an edge. Select two faces or edges to measure between entities.'
     )
@@ -1277,7 +1324,7 @@ export function addDistanceGdt({
 
   const allTargetsAreEdges = targets.every((target) => target.kind === 'edge')
 
-  if (targets.length > 2 && !allTargetsAreEdges) {
+  if (!mNodeToEdit && targets.length > 2 && !allTargetsAreEdges) {
     return new Error(
       'Select one or more edges for edge lengths, or exactly two faces or edges for a distance.'
     )
@@ -1303,25 +1350,29 @@ export function addDistanceGdt({
     return styleResult
   }
 
-  const edgeLengthExprs =
-    targets.length === 1 || targets.length > 2
-      ? deduplicateFaceExprs(targets.map((target) => target.expr))
-      : []
+  const labeledArgs: LabeledArg[] = []
+  if (!mNodeToEdit) {
+    const edgeLengthExprs =
+      targets.length === 1 || targets.length > 2
+        ? deduplicateFaceExprs(targets.map((target) => target.expr))
+        : []
 
-  if (
-    (targets.length === 1 || targets.length > 2) &&
-    edgeLengthExprs.length === 0
-  ) {
-    return new Error('No valid edge expressions could be generated')
+    if (
+      (targets.length === 1 || targets.length > 2) &&
+      edgeLengthExprs.length === 0
+    ) {
+      return new Error('No valid edge expressions could be generated')
+    }
+
+    labeledArgs.push(
+      ...(edgeLengthExprs.length > 0
+        ? [createLabeledArg('edges', createArrayExpression(edgeLengthExprs))]
+        : [
+            createLabeledArg('from', targets[0].expr),
+            createLabeledArg('to', targets[1].expr),
+          ])
+    )
   }
-
-  const labeledArgs: LabeledArg[] =
-    edgeLengthExprs.length > 0
-      ? [createLabeledArg('edges', createArrayExpression(edgeLengthExprs))]
-      : [
-          createLabeledArg('from', targets[0].expr),
-          createLabeledArg('to', targets[1].expr),
-        ]
 
   if (tolerance !== undefined) {
     labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
@@ -1390,14 +1441,22 @@ export function addPerpendicularityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -1446,7 +1505,11 @@ export function addPerpendicularityGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -1476,12 +1539,9 @@ export function addPerpendicularityGdt({
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Perpendicularity')
 
-  const createPerpendicularityCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createPerpendicularityCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -1506,25 +1566,14 @@ export function addPerpendicularityGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createPerpendicularityCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createPerpendicularityCall('edges', edgeExpr),
+      call: createPerpendicularityCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -1576,14 +1625,22 @@ export function addAngularityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -1632,7 +1689,11 @@ export function addAngularityGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -1662,12 +1723,9 @@ export function addAngularityGdt({
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Angularity')
 
-  const createAngularityCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createAngularityCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -1692,25 +1750,14 @@ export function addAngularityGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createAngularityCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createAngularityCall('edges', edgeExpr),
+      call: createAngularityCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -1762,14 +1809,22 @@ export function addConcentricityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -1818,7 +1873,11 @@ export function addConcentricityGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -1847,12 +1906,9 @@ export function addConcentricityGdt({
 
   let lastPathToNode: PathToNode | undefined
 
-  const createConcentricityCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createConcentricityCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('datums', valueOrVariable(datums)),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
@@ -1874,25 +1930,14 @@ export function addConcentricityGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createConcentricityCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createConcentricityCall('edges', edgeExpr),
+      call: createConcentricityCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -1944,14 +1989,22 @@ export function addSymmetryGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -2000,7 +2053,11 @@ export function addSymmetryGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -2029,12 +2086,9 @@ export function addSymmetryGdt({
 
   let lastPathToNode: PathToNode | undefined
 
-  const createSymmetryCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createSymmetryCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('datums', valueOrVariable(datums)),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
@@ -2056,25 +2110,14 @@ export function addSymmetryGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createSymmetryCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createSymmetryCall('edges', edgeExpr),
+      call: createSymmetryCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -2126,14 +2169,22 @@ export function addRunoutGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -2182,7 +2233,11 @@ export function addRunoutGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -2211,12 +2266,9 @@ export function addRunoutGdt({
 
   let lastPathToNode: PathToNode | undefined
 
-  const createRunoutCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createRunoutCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('datums', valueOrVariable(datums)),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
@@ -2238,25 +2290,14 @@ export function addRunoutGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createRunoutCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createRunoutCall('edges', edgeExpr),
+      call: createRunoutCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -2308,14 +2349,22 @@ export function addParallelismGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -2364,7 +2413,11 @@ export function addParallelismGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -2394,12 +2447,9 @@ export function addParallelismGdt({
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Parallelism')
 
-  const createParallelismCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) => {
+  const createParallelismCall = (target?: GdtSelectionTarget) => {
     const labeledArgs = [
-      createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+      ...gdtSelectionArgs(target),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
@@ -2424,25 +2474,14 @@ export function addParallelismGdt({
     )
   }
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createParallelismCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createParallelismCall('edges', edgeExpr),
+      call: createParallelismCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -2490,14 +2529,22 @@ export function addAnnotationGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
+  const edgeSelections = mNodeToEdit
+    ? []
+    : objects.graphSelections.filter((selection) =>
+        isProfileEdgeArtifact(selection.artifact)
+      )
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (
+    !mNodeToEdit &&
+    faceSelections.length === 0 &&
+    edgeSelections.length === 0
+  ) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
@@ -2546,7 +2593,11 @@ export function addAnnotationGdt({
 
   const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
   const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+  if (
+    !mNodeToEdit &&
+    uniqueFaceExprs.length === 0 &&
+    uniqueEdgeExprs.length === 0
+  ) {
     return new Error('No valid face or edge expressions could be generated')
   }
 
@@ -2565,15 +2616,12 @@ export function addAnnotationGdt({
 
   let lastPathToNode: PathToNode | undefined
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Annotation')
-  const createAnnotationCall = (
-    targetArgName: 'faces' | 'edges',
-    targetExpr: Expr
-  ) =>
+  const createAnnotationCall = (target?: GdtSelectionTarget) =>
     createCallExpressionStdLibKw(
       stdLibCall.name,
       null,
       [
-        createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+        ...gdtSelectionArgs(target),
         createLabeledArg('annotation', createLiteral(annotation, wasmInstance)),
         ...styleResult.labeledArgs,
       ],
@@ -2581,25 +2629,14 @@ export function addAnnotationGdt({
       stdLibCall.modulePath
     )
 
-  for (const faceExpr of uniqueFaceExprs) {
+  for (const target of gdtSelectionTargets(
+    uniqueFaceExprs,
+    uniqueEdgeExprs,
+    Boolean(mNodeToEdit)
+  )) {
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call: createAnnotationCall('faces', faceExpr),
-      pathToEdit: mNodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
-  }
-
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call: createAnnotationCall('edges', edgeExpr),
+      call: createAnnotationCall(target),
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
@@ -2741,9 +2778,11 @@ export function addDatumGdt({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Filter to only include face selections
-  const faceSelections = faces.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
+  const faceSelections = mNodeToEdit
+    ? []
+    : faces.graphSelections.filter((selection) =>
+        isFaceArtifact(selection.artifact)
+      )
 
   // Validate datum name is a single character
   if (name.length !== 1) {
@@ -2756,33 +2795,29 @@ export function addDatumGdt({
   }
 
   // Datum requires exactly one face
-  if (faceSelections.length === 0) {
+  if (!mNodeToEdit && faceSelections.length === 0) {
     return new Error('No face selected for datum annotation')
   }
-  if (faceSelections.length > 1) {
+  if (!mNodeToEdit && faceSelections.length > 1) {
     return new Error(
       'Datum annotation requires exactly one face, but multiple faces were selected'
     )
   }
 
-  const faceSelection = faceSelections[0]
-
-  // Get face expression with tag
-  const tagResult = modifyAstWithTagsForSelection(
-    modifiedAst,
-    faceSelection,
-    artifactGraph,
-    wasmInstance
-  )
-  if (err(tagResult)) {
-    return tagResult
+  let faceExpr: Expr | undefined
+  if (!mNodeToEdit) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelections[0],
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      return tagResult
+    }
+    modifiedAst = tagResult.modifiedAst
+    faceExpr = tagResult.exprs[0]
   }
-
-  // Update the AST with the tagged version
-  modifiedAst = tagResult.modifiedAst
-
-  // Create expression from the first tag
-  const faceExpr = tagResult.exprs[0]
 
   // Process common GDT style parameters
   const styleResult = processGdtStyleParameters({
@@ -2800,7 +2835,7 @@ export function addDatumGdt({
 
   // Build labeled arguments starting with function-specific parameters
   const labeledArgs = [
-    createLabeledArg('face', faceExpr),
+    ...(faceExpr ? [createLabeledArg('face', faceExpr)] : []),
     createLabeledArg('name', createLiteral(name, wasmInstance)),
   ]
 

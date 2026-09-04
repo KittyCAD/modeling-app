@@ -5,15 +5,12 @@ import {
   addHole,
   addOffsetPlane,
   addShell,
-  retrieveFaceSelectionsFromOpArgs,
   retrieveHoleBodyArgs,
   retrieveHoleBottomArgs,
   retrieveHoleTypeArgs,
-  retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
-import type { StdLibCallOp } from '@src/lang/queryAst'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
-import { type PlaneArtifact, getAllOperations, recast } from '@src/lang/wasm'
+import { getAllOperations, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { bracket } from '@src/lib/exampleKcl'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -140,23 +137,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
        ],
      )`
 
-  const boxWithOneTagAndChamferAndPlane = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 10, tag = $seg01)
-  |> yLine(length = 10)
-  |> xLine(length = -10)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
-  |> chamfer(
-       length = 1,
-       tags = [
-         getCommonEdge(faces = [seg01, capEnd001])
-       ],
-       tag = $seg02,
-     )
-plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 1)`
-
   const boxWithTwoTags = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 10, tag = $seg01)
@@ -258,7 +238,7 @@ extrude(p, length = 1000, tagEnd = $capEnd001)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should edit a basic shell call on cylinder end cap with new thickness', async () => {
+    it('should edit shell parameters without reconstructing its face selection', async () => {
       const code = `${cylinder}
 shell001 = shell(extrude001, faces = END, thickness = 1)
 `
@@ -267,7 +247,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getCapFromCylinder(artifactGraph)
+      const faces: Selections = { graphSelections: [], otherSelections: [] }
       const thickness = (await stringToKclExpression(
         '2',
         rustContextInThisFile
@@ -286,9 +266,9 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinderWithEndTag)
+      expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
-        `shell001 = shell(extrude001, faces = capEnd001, thickness = 2)`
+        `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1453,250 +1433,19 @@ hole001 = hole::hole(
     })
   })
 
-  describe('Testing retrieveFaceSelectionsFromOpArgs', () => {
-    it('should find the solid and face of basic shell on cylinder cap', async () => {
-      const circleProfileInVar = `sketch001 = startSketchOn(XY)
-profile001 = circle(sketch001, center = [0, 0], radius = 1)
-extrude001 = extrude(profile001, length = 1)
-shell001 = shell(extrude001, faces = END, thickness = 0.1)
-`
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        circleProfileInVar,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const op = getAllOperations(operations).find(
-        (o) => o.type === 'StdLibCall' && o.name === 'shell'
-      )
-      if (
-        !op ||
-        op.type !== 'StdLibCall' ||
-        !op.unlabeledArg ||
-        !op.labeledArgs?.faces
-      ) {
-        throw new Error('Extrude operation not found')
-      }
-
-      const selections = retrieveFaceSelectionsFromOpArgs(
-        op.unlabeledArg,
-        op.labeledArgs.faces,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-
-      expect(selections.solids.graphSelections).toHaveLength(1)
-      const solid = selections.solids.graphSelections[0]
-      if (!solid.artifact) {
-        throw new Error('Artifact not found in the selection')
-      }
-      expect(solid.artifact.type).toEqual('sweep')
-
-      expect(selections.faces.graphSelections).toHaveLength(1)
-      const face = selections.faces.graphSelections[0]
-      if (!face.artifact || face.artifact.type !== 'cap') {
-        throw new Error('Artifact not found in the selection')
-      }
-      expect(face.artifact.subType).toEqual('end')
-      expect(face.artifact.sweepId).toEqual(solid.artifact.id)
-    })
-
-    it('should find the sweeps and faces of complex shell', async () => {
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        multiSolidsShell,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const lastTwoSweeps = [...artifactGraph.values()]
-        .filter((a) => a.type === 'sweep')
-        .slice(-2)
-      const op = getAllOperations(operations).find(
-        (o) => o.type === 'StdLibCall' && o.name === 'shell'
-      )
-      if (
-        !op ||
-        op.type !== 'StdLibCall' ||
-        !op.unlabeledArg ||
-        !op.labeledArgs?.faces
-      ) {
-        throw new Error('Extrude operation not found')
-      }
-
-      const selections = retrieveFaceSelectionsFromOpArgs(
-        op.unlabeledArg,
-        op.labeledArgs.faces,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-
-      expect(selections.solids.graphSelections).toHaveLength(2)
-      expect(selections.solids.graphSelections[0].artifact!.id).toEqual(
-        lastTwoSweeps[0].id
-      )
-      expect(selections.solids.graphSelections[1].artifact!.id).toEqual(
-        lastTwoSweeps[1].id
-      )
-      expect(selections.faces.graphSelections).toHaveLength(2)
-      expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
-      expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
-    })
-  })
-
-  describe('Testing retrieveNonDefaultPlaneSelectionFromOpArg', () => {
-    it('should find an offset plane on an offset plane', async () => {
-      const code = `plane001 = offsetPlane(XY, offset = 1)
-plane002 = offsetPlane(plane001, offset = 2)`
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const op = getAllOperations(operations).findLast(
-        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
-      ) as StdLibCallOp
-      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
-        op.unlabeledArg!,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual('plane')
-      expect(
-        (selections.graphSelections[0].artifact as PlaneArtifact).codeRef
-          .pathToNode[1][0]
-      ).toEqual(0)
-    })
-
-    it('should find an offset plane on a sweep face', async () => {
-      const code = `${cylinder}
-plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const op = getAllOperations(operations).find(
-        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
-      ) as StdLibCallOp
-      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
-        op.unlabeledArg!,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual('cap')
-      const cap = [...artifactGraph.values()].find(
-        (a) => a.type === 'cap' && a.subType === 'end'
-      )
-      expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
-    })
-
-    it('should keep a variable-backed planeOf face as a planeOfFace selection', async () => {
-      const code = `${cylinder}
-plane001 = planeOf(extrude001, face = END)
-plane002 = offsetPlane(plane001, offset = 1)`
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const op = getAllOperations(operations).findLast(
-        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
-      ) as StdLibCallOp
-      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
-        op.unlabeledArg!,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual(
-        'planeOfFace'
-      )
-      expect(selections.graphSelections[0].codeRef.range).not.toEqual(
-        op.unlabeledArg!.sourceRange
-      )
-    })
-
-    it('should find an offset plane on a chamfer face', async () => {
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        boxWithOneTagAndChamferAndPlane,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const op = getAllOperations(operations).find(
-        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
-      ) as StdLibCallOp
-      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
-        op.unlabeledArg!,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual('edgeCut')
-    })
-
-    it('should map offset plane on a primitive face to a primitive face selection', async () => {
-      const shellWithOffsetPlane = `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(sketch001, length = 30)
-shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)
-plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6)), offset = 2)`
-      const { artifactGraph, operations } = await getAstAndArtifactGraph(
-        shellWithOffsetPlane,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const op = getAllOperations(operations).find(
-        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
-      ) as StdLibCallOp
-      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
-        op.unlabeledArg!,
-        artifactGraph
-      )
-      if (err(selections)) throw selections
-
-      expect(selections.graphSelections).toHaveLength(1)
-      expect(selections.graphSelections[0].artifact!.type).toEqual(
-        'primitiveFace'
-      )
-      expect(selections.otherSelections).toHaveLength(0)
-    })
-  })
-
   describe('Testing addOffsetPlane', () => {
     const getOffsetPlaneEditInputs = async (code: string) => {
-      const { artifactGraph, ast, variables, operations } =
-        await getAstAndArtifactGraph(
-          code,
-          instanceInThisFile,
-          kclManagerInThisFile
-        )
-      const offsetPlaneOp = getAllOperations(operations).findLast(
-        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
-      ) as StdLibCallOp | undefined
-      if (!offsetPlaneOp?.unlabeledArg) {
-        throw new Error('Expected offsetPlane operation with an unlabeled arg')
-      }
-      const plane = retrieveNonDefaultPlaneSelectionFromOpArg(
-        offsetPlaneOp.unlabeledArg,
-        artifactGraph
+      const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
       )
-      if (err(plane)) {
-        throw plane
-      }
 
       return {
         artifactGraph,
         ast,
         variables,
-        plane,
+        plane: { graphSelections: [], otherSelections: [] },
         nodeToEdit: createPathToNodeForLastVariable(ast),
       }
     }

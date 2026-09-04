@@ -14,7 +14,7 @@ import {
   getEdgeTagCall,
   getPrimitiveEdgeSelections,
   groupSelectionsByBodyAndAddTags,
-  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
+  insertPrimitiveEdgeVariables,
 } from '@src/lang/modifyAst/edges'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
@@ -76,13 +76,12 @@ export function addHelix({
   let pathIfNewPipe: PathToNode | undefined
   const axisExpr: LabeledArg[] = []
   const cylinderExpr: LabeledArg[] = []
-  if (cylinder) {
+  if (!mNodeToEdit && cylinder) {
     const vars = getVariableExprsFromSelection(
       cylinder,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit,
       {
         lastChildLookup: true,
       }
@@ -92,7 +91,7 @@ export function addHelix({
     }
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
-  } else if (axis || edge) {
+  } else if (axis || (!mNodeToEdit && edge)) {
     const result = getAxisExpression(
       axis,
       edge,
@@ -105,7 +104,7 @@ export function addHelix({
     }
     axisExpr.push(createLabeledArg('axis', result.generatedAxis))
     modifiedAst = result.modifiedAst
-  } else {
+  } else if (!mNodeToEdit) {
     return new Error('Helix must have either an axis or a cylinder')
   }
 
@@ -161,6 +160,7 @@ export function addHelix({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HELIX,
+    labeledSelectionArgNames: mNodeToEdit && !axis ? ['axis', 'cylinder'] : [],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -178,8 +178,7 @@ export function getAxisExpression(
   edge: Selections | undefined,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  artifactGraph?: ArtifactGraph,
-  nodeToEdit?: PathToNode
+  artifactGraph?: ArtifactGraph
 ) {
   let modifiedAst = structuredClone(ast)
   if (axis) {
@@ -190,8 +189,7 @@ export function getAxisExpression(
       edge,
       artifactGraph,
       modifiedAst,
-      wasmInstance,
-      nodeToEdit
+      wasmInstance
     )
     if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
       const directAxisExpr = segmentAxisExpr.exprs[0]
@@ -227,8 +225,7 @@ export function getAxisExpression(
       edge,
       artifactGraph,
       modifiedAst,
-      wasmInstance,
-      nodeToEdit
+      wasmInstance
     )
     if (err(bodyData)) return bodyData
     let bodies = bodyData.bodies
@@ -236,14 +233,13 @@ export function getAxisExpression(
 
     const primitiveEdgeSelections = getPrimitiveEdgeSelections(edge)
     if (primitiveEdgeSelections.length > 0) {
-      const primitiveEdgeResult =
-        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
-          primitiveEdgeSelections,
-          bodies,
-          modifiedAst,
-          artifactGraph,
-          wasmInstance,
-        })
+      const primitiveEdgeResult = insertPrimitiveEdgeVariables({
+        primitiveEdgeSelections,
+        bodies,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
       if (err(primitiveEdgeResult)) return primitiveEdgeResult
       bodies = primitiveEdgeResult.bodies
     }

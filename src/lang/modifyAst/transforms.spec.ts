@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addAppearance,
   addClone,
@@ -1127,6 +1128,25 @@ extrude001 = extrude(profile001, length = 1)`
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should edit in place without reconstructing its selection', () => {
+      const code = `source = extrude(profile001, length = 1)
+copy = clone(source)`
+      const ast = assertParse(code, instanceInThisFile)
+      const objects: Selections = { graphSelections: [], otherSelections: [] }
+
+      const result = addClone({
+        ast,
+        artifactGraph: new Map(),
+        objects,
+        variableName: 'unused',
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(code)
     })
   })
 

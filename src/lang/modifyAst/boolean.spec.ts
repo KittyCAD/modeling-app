@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addIntersect,
   addSplit,
@@ -6,7 +7,9 @@ import {
   addUnion,
 } from '@src/lang/modifyAst/boolean'
 import { recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -279,6 +282,42 @@ extrude002 = extrude(profile002, length = -1)`
   })
 
   describe('Testing addSubtract', () => {
+    it('edits parameters without reconstructing target or tool selections', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 2)
+target = extrude(profile001, length = 2)
+tool = extrude(profile001, length = 1)
+result = subtract(target, tools = tool, tolerance = 0.1)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const noSelections: Selections = {
+        graphSelections: [],
+        otherSelections: [],
+      }
+      const tolerance = (await stringToKclExpression(
+        '0.2',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addSubtract({
+        ast,
+        artifactGraph,
+        solids: noSelections,
+        tools: noSelections,
+        tolerance,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'result = subtract(target, tools = tool, tolerance = 0.2)'
+      )
+    })
+
     async function runAddSubtractTest(
       code: string,
       solidIds: number[],

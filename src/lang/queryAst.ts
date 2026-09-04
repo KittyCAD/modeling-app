@@ -19,7 +19,6 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
-  getPatternArtifactForCopyId,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -63,7 +62,7 @@ import {
 
 import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
-import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -1271,7 +1270,6 @@ export function getVariableExprsFromSelection(
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode,
   options: GetVariableExprsOptions = {}
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
   const { lastChildLookup = false, artifactTypeFilter } = options
@@ -1310,8 +1308,7 @@ export function getVariableExprsFromSelection(
       s,
       artifactGraph,
       ast,
-      wasmInstance,
-      nodeToEdit
+      wasmInstance
     )
     if (sweepOutputExpr) {
       const key = outputExprKey(sweepOutputExpr)
@@ -1429,8 +1426,7 @@ export function getVariableExprsFromSelection(
           children,
           ast,
           wasmInstance,
-          artifactTypeFilter,
-          nodeToEdit
+          artifactTypeFilter
         )
         if (!lastChildVariable) {
           continue
@@ -1453,26 +1449,6 @@ export function getVariableExprsFromSelection(
 
     if (variable.node.type === 'VariableDeclaration') {
       const name = variable.node.declaration.id.name
-      if (nodeToEdit) {
-        const result = getNodeFromPath<VariableDeclaration>(
-          ast,
-          nodeToEdit,
-          wasmInstance,
-          'VariableDeclaration'
-        )
-        if (
-          !err(result) &&
-          result.node.type === 'VariableDeclaration' &&
-          name === result.node.declaration.id.name
-        ) {
-          // Pointing to same variable case
-          exprs.push(createPipeSubstitution())
-          pathIfPipe = nodeToEdit
-          continue
-        }
-      }
-
-      // Pointing to different variable case
       if (pushedNames[name]) {
         continue
       }
@@ -1560,8 +1536,7 @@ function getSweepOutputExprFromSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 ): Expr | null {
   const selectionArtifact = selection.artifact
   let artifact: (Artifact & { type: 'sweep' }) | undefined
@@ -1575,19 +1550,6 @@ function getSweepOutputExprFromSelection(
   }
 
   if (!artifact) {
-    return null
-  }
-
-  if (
-    nodeToEdit &&
-    [
-      getNodePathFromSourceRange(ast, artifact.codeRef.range),
-      artifact.codeRef.pathToNode,
-    ].some(
-      (pathToNode) =>
-        stringifyPathToNode(pathToNode) === stringifyPathToNode(nodeToEdit)
-    )
-  ) {
     return null
   }
 
@@ -1738,96 +1700,6 @@ export function getSketchVariableNameForSegment(
   }
 
   return sketchVarDec.node.declaration.id.name
-}
-
-// Go from the sketches argument in a KCL call declaration
-// to a list of graph selections, useful for edit flows.
-// Somewhat of an inverse of getVariableExprsFromSelection.
-export function retrieveSelectionsFromOpArg(
-  opArg: OpArg,
-  artifactGraph: ArtifactGraph
-): Error | Selections {
-  const error = new Error("Couldn't retrieve sketches from operation")
-  let artifactIds: string[] = []
-  if (
-    opArg.value.type === 'Solid' ||
-    opArg.value.type === 'Sketch' ||
-    opArg.value.type === 'Helix'
-  ) {
-    artifactIds = [opArg.value.value.artifactId]
-  } else if (opArg.value.type === 'Segment') {
-    artifactIds = [opArg.value.artifact_id]
-  } else if (opArg.value.type === 'Uuid') {
-    artifactIds = [opArg.value.value]
-  } else if (opArg.value.type === 'ImportedGeometry') {
-    artifactIds = [opArg.value.artifact_id]
-  } else if (opArg.value.type === 'Array') {
-    artifactIds = opArg.value.value.flatMap((v) => {
-      if (v.type === 'Solid' || v.type === 'Sketch' || v.type === 'Helix') {
-        return [v.value.artifactId]
-      }
-      if (v.type === 'Segment') {
-        return [v.artifact_id]
-      }
-      if (v.type === 'Uuid') {
-        return [v.value]
-      }
-      if (v.type === 'TagIdentifier' && v.artifact_id) {
-        return [v.artifact_id]
-      }
-      return []
-    })
-  } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
-    artifactIds = [opArg.value.artifact_id]
-  } else {
-    return error
-  }
-
-  const graphSelections: Selection[] = []
-  for (const artifactId of artifactIds) {
-    let artifact =
-      artifactGraph.get(artifactId) ??
-      getPatternArtifactForCopyId(artifactId, artifactGraph)
-    if (!artifact) {
-      continue
-    }
-
-    if (artifact.type === 'segment') {
-      const correspondingWall = Array.from(artifactGraph.values()).find(
-        (a) => a.type === 'wall' && a.segId === artifact?.id
-      )
-      if (correspondingWall) {
-        artifact = correspondingWall
-      }
-    }
-
-    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-    if (!codeRefs || codeRefs.length === 0) {
-      continue
-    }
-
-    const isArtifactFromImportedModule = codeRefs.some(
-      (c) => c.pathToNode.length === 0
-    )
-    if (isArtifactFromImportedModule) {
-      // TODO: retrieve module import alias instead of throwing here
-      // https://github.com/KittyCAD/modeling-app/issues/8463
-      return new Error(
-        "The selected artifact is from an imported module, editing isn't supported yet. Please delete the operation and recreate."
-      )
-    }
-
-    graphSelections.push({
-      artifact,
-      codeRef: codeRefs[0],
-    })
-  }
-
-  if (graphSelections.length === 0) {
-    return error
-  }
-
-  return { graphSelections, otherSelections: [] }
 }
 
 export function findOperationArtifact(
@@ -2258,8 +2130,7 @@ export function getLastVariable(
   orderedDescArtifacts: Artifact[],
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  typeFilter?: Array<Artifact['type']>,
-  nodeToEdit?: PathToNode
+  typeFilter?: Array<Artifact['type']>
 ) {
   for (const artifact of orderedDescArtifacts) {
     if (typeFilter && !typeFilter.includes(artifact.type)) {
@@ -2269,10 +2140,7 @@ export function getLastVariable(
     if (codeRef) {
       const pathToNode =
         codeRef.pathToNode ?? getNodePathFromSourceRange(ast, codeRef.range)
-      const isSameAsNodeToEdit =
-        nodeToEdit &&
-        stringifyPathToNode(pathToNode) === stringifyPathToNode(nodeToEdit)
-      if (pathToNode && pathToNode.length > 1 && !isSameAsNodeToEdit) {
+      if (pathToNode && pathToNode.length > 1) {
         const varDec = getNodeFromPath<VariableDeclaration>(
           ast,
           pathToNode,
