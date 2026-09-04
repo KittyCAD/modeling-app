@@ -1,3 +1,4 @@
+import type { ModelingDialogKclChange } from '@src/components/ModelingDialog/ModelingDialogKclInput'
 import type { Command } from '@src/lib/commandTypes'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -11,6 +12,10 @@ const mocks = vi.hoisted(() => {
   }
   return {
     send: vi.fn(),
+    kclInputChanges: new Map<
+      string,
+      (change: ModelingDialogKclChange) => void
+    >(),
     state: {
       context: {} as CommandBarContext,
       matches: () => false,
@@ -60,14 +65,19 @@ vi.mock('@src/components/ModelingDialog/ModelingDialogKclInput', () => ({
   }: {
     name: string
     value: string
-    onChange: (value: unknown) => void
-  }) => (
-    <input
-      aria-label={name}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-    />
-  ),
+    onChange: (change: ModelingDialogKclChange) => void
+  }) => {
+    mocks.kclInputChanges.set(name, onChange)
+    return (
+      <input
+        aria-label={name}
+        value={value}
+        onChange={(event) =>
+          onChange({ source: 'edit', value: event.target.value })
+        }
+      />
+    )
+  },
 }))
 vi.mock('@src/lang/std/artifactGraph', () => ({
   coerceSelectionsToBody: vi.fn(),
@@ -103,6 +113,7 @@ describe('modeling dialog submission lifetime', () => {
 
   beforeEach(() => {
     mocks.send.mockClear()
+    mocks.kclInputChanges.clear()
     mocks.kclManager.showPlanes.mockReset().mockResolvedValue()
     mocks.kclManager.hidePlanes.mockReset().mockResolvedValue()
     mocks.modeling.context.selectionRanges = {
@@ -269,6 +280,27 @@ describe('modeling dialog submission lifetime', () => {
     expect(screen.getByRole('textbox')).toHaveValue('Second feature')
     expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled()
   })
+
+  it.each(['calculation', 'edit'] as const)(
+    'only preserves user edits when KCL defaults load after a %s update',
+    async (source) => {
+      mocks.state.context.selectedCommand = {
+        ...command(),
+        args: {
+          length: { inputType: 'kcl', required: true, defaultValue: '10' },
+        },
+      }
+      render(<ModelingDialog />)
+      act(() => {
+        mocks.kclInputChanges.get('length')?.({ source, value: '27' })
+      })
+      await act(async () => resolveWasm({}))
+
+      expect(screen.getByRole('textbox', { name: 'length' })).toHaveValue(
+        source === 'edit' ? '27' : '10'
+      )
+    }
+  )
 
   it('preserves an inactive KCL draft when changing Extrude extent', async () => {
     mocks.state.context.selectedCommand = {

@@ -10,7 +10,7 @@ import type {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { describe, expect, it } from 'vitest'
 
-describe('stdlib command semantic fallbacks', () => {
+describe('stdlib command metadata', () => {
   it('reads canonical KCL command summaries', () => {
     expect(stdLibCommandSummary('sweep')).toBe(
       'Create a 3D surface or solid by sweeping a sketch along a path.'
@@ -26,7 +26,7 @@ describe('stdlib command semantic fallbacks', () => {
     )
   })
 
-  it('does not expose argument docs or defaults without an opt-in', () => {
+  it('keeps command argument descriptions and defaults explicit', () => {
     const args = modelingStdLibCommandArgs<SweepCommandArgs>('Sweep')
 
     expect(args.version.description).toBeUndefined()
@@ -51,45 +51,6 @@ describe('stdlib command semantic fallbacks', () => {
       ty: 'number(Length)',
       required: false,
       defaultValue: '0',
-    })
-  })
-
-  it('uses selected argument docs and typed literal defaults as fallbacks', () => {
-    const args = modelingStdLibCommandArgs<SweepCommandArgs>('Sweep', {
-      stdLibFallbacks: {
-        relativeTo: { defaultValue: true },
-        translateProfileToPath: { defaultValue: true },
-        version: { description: true, defaultValue: true },
-      },
-    })
-
-    expect(args.relativeTo).toMatchObject({ defaultValue: 'trajectoryCurve' })
-    expect(args.translateProfileToPath).toMatchObject({ defaultValue: false })
-    expect(args.version).toMatchObject({
-      description: expect.stringContaining(
-        'What version of the sweeping algorithm to use.'
-      ),
-    })
-    // The runtime chooses the default according to the file's KCL version.
-    expect(args.version).not.toHaveProperty('defaultValue')
-  })
-
-  it('keeps Sweep product version config ahead of the KCL default', () => {
-    const args = modelingStdLibCommandArgs<SweepCommandArgs>('Sweep', {
-      stdLibFallbacks: {
-        version: { description: true, defaultValue: true },
-      },
-      overrides: {
-        version: {
-          description: 'Use the current product-selected sweep algorithm.',
-          defaultValue: '2',
-        },
-      },
-    })
-
-    expect(args.version).toMatchObject({
-      description: 'Use the current product-selected sweep algorithm.',
-      defaultValue: '2',
     })
   })
 })

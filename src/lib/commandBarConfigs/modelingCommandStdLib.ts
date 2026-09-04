@@ -54,23 +54,11 @@ export type ModelingCommandArgOverrides<CommandArgs extends object> = Partial<{
   >
 }>
 
-export type StdLibCommandArgFallback = {
-  /** Use the KCL argument docs when no command-bar description is provided. */
-  description?: boolean
-  /** Use the explicit KCL literal default when no command-bar default is provided. */
-  defaultValue?: boolean
-}
-
-export type StdLibCommandArgFallbacks<CommandArgs extends object> = Partial<
-  Record<Extract<keyof CommandArgs, string>, StdLibCommandArgFallback>
->
-
-type StdLibCommandArgsOptions<CommandArgs extends object> = {
+type StdLibCommandArgsOptions = {
   omitted?: readonly string[]
   includeDeprecated?: readonly string[]
   argAliases?: Readonly<Record<string, string>>
   overrides?: Readonly<Record<string, StdLibCommandArgOverride>>
-  stdLibFallbacks?: StdLibCommandArgFallbacks<CommandArgs>
   includeEditFlowArgs?: boolean
   flowArgOrder?: readonly string[]
 }
@@ -168,18 +156,6 @@ const stdLibArgDefaultValue = (
   return source
 }
 
-const stdLibArgDefaultConfig = (
-  arg: StdLibSemanticCommandArg,
-  enabled: boolean | undefined
-) => {
-  if (!enabled || !arg.defaultValue) {
-    return {}
-  }
-
-  const defaultValue = stdLibArgDefaultValue(arg)
-  return defaultValue === undefined ? {} : { defaultValue }
-}
-
 export type StdLibCommandArgMetadata = Readonly<{
   name: string
   ty: StdLibCommandArg['ty']
@@ -226,15 +202,10 @@ const hasExistingEditFlowArgument = (
 
 const stdLibArgBaseConfig = (
   arg: StdLibCommandArg,
-  commandArgName: string,
-  fallbacks: StdLibCommandArgFallback = {}
+  commandArgName: string
 ) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
-  ...(fallbacks.description && arg.docs?.trim()
-    ? { description: arg.docs }
-    : {}),
-  ...stdLibArgDefaultConfig(arg, fallbacks.defaultValue),
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
     : isDeprecatedStdLibArg(arg)
@@ -281,7 +252,7 @@ function orderCommandArgs(
 
 export function stdLibCommandArgs<CommandArgs extends object>(
   stdLibName: StdLibCommandName,
-  options: StdLibCommandArgsOptions<CommandArgs> = {}
+  options: StdLibCommandArgsOptions = {}
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
   const includeDeprecated = new Set(options.includeDeprecated ?? [])
@@ -296,13 +267,7 @@ export function stdLibCommandArgs<CommandArgs extends object>(
         return [
           commandArgName,
           {
-            ...stdLibArgBaseConfig(
-              arg,
-              commandArgName,
-              options.stdLibFallbacks?.[
-                commandArgName as Extract<keyof CommandArgs, string>
-              ]
-            ),
+            ...stdLibArgBaseConfig(arg, commandArgName),
             ...(options.overrides?.[commandArgName] ?? {}),
           },
         ]
@@ -793,10 +758,7 @@ export function modelingStdLibCommandSummary(
 
 export function modelingStdLibCommandArgs<CommandArgs extends object>(
   commandName: keyof typeof modelingCommandStdLibDriftConfig,
-  options: Pick<
-    StdLibCommandArgsOptions<CommandArgs>,
-    'overrides' | 'stdLibFallbacks'
-  > = {}
+  options: Pick<StdLibCommandArgsOptions, 'overrides'> = {}
 ) {
   const driftConfig = modelingCommandStdLibDriftConfig[
     commandName
@@ -807,7 +769,6 @@ export function modelingStdLibCommandArgs<CommandArgs extends object>(
     includeDeprecated: driftConfig.deprecatedStdLibArgs,
     argAliases: driftConfig.argAliases,
     overrides: options.overrides,
-    stdLibFallbacks: options.stdLibFallbacks,
     includeEditFlowArgs: driftConfig.editFlow,
     flowArgOrder: driftConfig.flowArgOrder,
   })

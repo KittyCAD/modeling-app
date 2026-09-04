@@ -603,8 +603,8 @@ export function ModelingDialog() {
           selectionRanges={selectionRanges}
           submittedValue={submittedValue}
           autoFocus={firstVisibleKclFieldName === argName}
-          onChange={(nextValue) => {
-            if (typeof nextValue === 'string') {
+          onChange={(change) => {
+            if (change.source === 'edit') {
               markArgumentDirty(argName)
             }
             setDraftValues((prev) =>
@@ -612,7 +612,7 @@ export function ModelingDialog() {
                 commandBarState.context,
                 {
                   ...prev,
-                  [argName]: nextValue,
+                  [argName]: change.value,
                 },
                 selectedMachineContext
               )
@@ -686,7 +686,6 @@ export function ModelingDialog() {
         }}
         onStartSelecting={() => startSelectingArgument(argName, arg)}
         onRemoveSelection={(item) => {
-          startSelectingArgument(argName, arg)
           removeSceneSelection(
             argName,
             item.source,
@@ -695,7 +694,6 @@ export function ModelingDialog() {
           )
         }}
         onMoveSelection={(item, direction) => {
-          startSelectingArgument(argName, arg)
           moveSceneSelection(
             argName,
             item.source,
@@ -704,10 +702,7 @@ export function ModelingDialog() {
             capturedSelection
           )
         }}
-        onClearSelection={() => {
-          startSelectingArgument(argName, arg)
-          clearSceneSelection(argName)
-        }}
+        onClearSelection={() => clearSceneSelection(argName)}
       />
     )
 

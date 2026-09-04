@@ -81,7 +81,7 @@ export function ModelingDialogKclInput({
   selectionRanges: Selections
   submittedValue?: unknown
   autoFocus?: boolean
-  onChange: (value: unknown) => void
+  onChange: (change: ModelingDialogKclChange) => void
   onValidationChange: (state: ModelingDialogKclValidationState) => void
 }) {
   useSignals()
@@ -340,7 +340,10 @@ export function ModelingDialogKclInput({
           compartments.setValue.of(
             EditorView.updateListener.of((update) => {
               if (update.docChanged && !isSyncingEditorValueRef.current) {
-                onChangeRef.current(update.state.doc.toString())
+                onChangeRef.current({
+                  source: 'edit',
+                  value: update.state.doc.toString(),
+                })
               }
             })
           ),
@@ -451,7 +454,7 @@ export function ModelingDialogKclInput({
     }
 
     lastReportedValueRef.current = nextValue
-    onChangeRef.current(nextValue)
+    onChangeRef.current({ source: 'calculation', value: nextValue })
   }, [resolvedKclValue, value])
 
   useEffect(() => {
@@ -579,6 +582,11 @@ export function ModelingDialogKclInput({
     </div>
   )
 }
+
+export type ModelingDialogKclChange =
+  | { source: 'edit'; value: string }
+  // Keep the raw text while its expression is empty, invalid, or calculating.
+  | { source: 'calculation'; value: KclCommandValue | string }
 
 export type ModelingDialogKclValidationState = {
   canSubmit: boolean

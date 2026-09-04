@@ -311,6 +311,12 @@ export function useModelingDialogSelection({
       selectionIndex: number,
       selection: Selections | undefined = selectionRanges
     ) => {
+      const arg = selectedCommand?.args?.[argName]
+      if (!arg || !isSelectionArgument(arg)) {
+        return
+      }
+      startSelectingArgument(argName, arg)
+
       const nextSelection = removeSelectionItem(
         selection,
         source,
@@ -319,8 +325,6 @@ export function useModelingDialogSelection({
 
       const selectionForScene = nextSelection ?? EMPTY_SELECTION
 
-      markArgumentDirty(argName)
-      setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
         data: {
@@ -329,7 +333,12 @@ export function useModelingDialogSelection({
         },
       })
     },
-    [markArgumentDirty, modelingSend, selectionRanges]
+    [
+      modelingSend,
+      selectedCommand?.args,
+      selectionRanges,
+      startSelectingArgument,
+    ]
   )
 
   const moveSceneSelection = useCallback(
@@ -340,6 +349,12 @@ export function useModelingDialogSelection({
       direction: 'up' | 'down',
       selection: Selections | undefined = selectionRanges
     ) => {
+      const arg = selectedCommand?.args?.[argName]
+      if (!arg || !isSelectionArgument(arg)) {
+        return
+      }
+      startSelectingArgument(argName, arg)
+
       const nextSelection = moveSelectionInSequence(
         selection,
         source,
@@ -350,8 +365,6 @@ export function useModelingDialogSelection({
         return
       }
 
-      markArgumentDirty(argName)
-      setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
         data: {
@@ -360,13 +373,22 @@ export function useModelingDialogSelection({
         },
       })
     },
-    [markArgumentDirty, modelingSend, selectionRanges]
+    [
+      modelingSend,
+      selectedCommand?.args,
+      selectionRanges,
+      startSelectingArgument,
+    ]
   )
 
   const clearSceneSelection = useCallback(
     (argName: string) => {
-      markArgumentDirty(argName)
-      setActiveSelectionArgName(argName)
+      const arg = selectedCommand?.args?.[argName]
+      if (!arg || !isSelectionArgument(arg)) {
+        return
+      }
+      startSelectingArgument(argName, arg)
+
       modelingSend({
         type: 'Set selection',
         data: {
@@ -375,7 +397,7 @@ export function useModelingDialogSelection({
         },
       })
     },
-    [markArgumentDirty, modelingSend]
+    [modelingSend, selectedCommand?.args, startSelectingArgument]
   )
 
   useLayoutEffect(() => {

@@ -16,7 +16,6 @@ export type ArgumentFieldInputType =
   | 'options'
   | 'selection'
   | 'selectionMixed'
-  | 'kcl'
   | 'string'
   | 'color'
   | 'tagDeclarator'
@@ -308,11 +307,7 @@ export function ArgumentField<Item extends SelectionListItem>({
     )
   }
 
-  if (
-    inputType === 'kcl' ||
-    inputType === 'vector2d' ||
-    inputType === 'vector3d'
-  ) {
+  if (inputType === 'vector2d' || inputType === 'vector3d') {
     return (
       <label className={fieldClassName}>
         <FieldLabel label={label} isRequired={isRequired} />
@@ -322,15 +317,7 @@ export function ArgumentField<Item extends SelectionListItem>({
           disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
           className={inputClassName}
-          placeholder={
-            inputType === 'vector2d'
-              ? '[x, y]'
-              : inputType === 'vector3d'
-                ? '[x, y, z]'
-                : typeof label === 'string'
-                  ? label
-                  : name
-          }
+          placeholder={inputType === 'vector2d' ? '[x, y]' : '[x, y, z]'}
         />
         <FieldDescription description={description} />
       </label>

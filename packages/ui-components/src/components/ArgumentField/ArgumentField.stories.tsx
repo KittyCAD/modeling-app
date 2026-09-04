@@ -46,9 +46,9 @@ const meta = {
     layout: 'centered',
   },
   args: {
-    name: 'distance',
-    inputType: 'kcl',
-    label: 'Distance',
+    name: 'name',
+    inputType: 'string',
+    label: 'Name',
     isRequired: false,
     value: '',
     onChange: () => {},
@@ -198,18 +198,6 @@ export const Text: Story = {
       label="Prompt"
       initialValue="Create mounting holes on the selected face."
       description="Free-form text for commands that need longer input."
-    />
-  ),
-}
-
-export const Kcl: Story = {
-  render: () => (
-    <FieldPreview
-      name="distance"
-      inputType="kcl"
-      label="Distance"
-      initialValue="wallThickness"
-      description="Accepts a KCL expression, variable, or numeric value."
     />
   ),
 }

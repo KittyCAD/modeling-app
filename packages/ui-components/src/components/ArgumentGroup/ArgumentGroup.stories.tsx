@@ -35,7 +35,7 @@ export const Default: Story = {
     >
       <ArgumentField
         name="distance"
-        inputType="kcl"
+        inputType="string"
         label="Distance"
         isRequired={false}
         value="10"

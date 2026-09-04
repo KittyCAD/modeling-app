@@ -55,7 +55,7 @@ export const Open: Story = {
     <AdvancedSection defaultOpen description="Less common command parameters.">
       <ArgumentField
         name="twistAngle"
-        inputType="kcl"
+        inputType="string"
         label="Twist Angle"
         isRequired={false}
         value="15deg"

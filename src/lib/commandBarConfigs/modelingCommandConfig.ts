@@ -1014,9 +1014,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Chamfer']>(
       'Chamfer',
       {
-        stdLibFallbacks: {
-          version: { defaultValue: true },
-        },
         overrides: chamferDialogOverrides,
       }
     ),
