@@ -1396,6 +1396,7 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
+    let lastChildSelection: Selection | undefined
 
     if (lastChildLookup && s.artifact) {
       const children = findAllChildrenAndOrderByPlaceInCode(
@@ -1435,6 +1436,10 @@ export function getVariableExprsFromSelection(
         if (!lastChildVariable) {
           continue
         }
+        lastChildSelection = {
+          artifact: lastChildVariable.artifact,
+          codeRef: { ...s.codeRef, pathToNode: lastChildVariable.pathToNode },
+        }
         variable = lastChildVariable.variableDeclaration
       }
     } else {
@@ -1468,6 +1473,31 @@ export function getVariableExprsFromSelection(
           // Pointing to same variable case
           exprs.push(createPipeSubstitution())
           pathIfPipe = nodeToEdit
+          continue
+        }
+      }
+
+      if (lastChildSelection) {
+        const childOutputExpr =
+          getCompositeSolidOutputExprFromSelection(
+            lastChildSelection,
+            ast,
+            wasmInstance,
+            artifactTypeFilter
+          ) ??
+          getSweepOutputExprFromSelection(
+            lastChildSelection,
+            artifactGraph,
+            ast,
+            wasmInstance,
+            nodeToEdit
+          )
+        if (childOutputExpr) {
+          const key = outputExprKey(childOutputExpr)
+          if (!pushedNames[key]) {
+            exprs.push(childOutputExpr)
+            pushedNames[key] = true
+          }
           continue
         }
       }

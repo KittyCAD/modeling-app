@@ -10,6 +10,7 @@ import {
 } from '@src/lang/modifyAst/edges'
 import {
   codeRefFromRange,
+  getCommonFacesForEdge,
   getOriginalSegmentArtifact,
 } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -613,6 +614,109 @@ fillet001 = fillet(
       )
       expect(kclManagerInThisFile.errors).toEqual([])
     })
+
+    it.each([
+      ['fillet', 'inherited'],
+      ['chamfer', 'inherited'],
+      ['fillet', 'created'],
+    ] as const)(
+      'should add one %s for merged array outputs with %s caps and primitive edges',
+      async (name, capKind) => {
+        const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 30mm, var 0mm])
+  line2 = line(start = [var 30mm, var 0mm], end = [var 30mm, var 20mm])
+  line3 = line(start = [var 30mm, var 20mm], end = [var 0mm, var 20mm])
+  line4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+}
+region001 = region(point = [15mm, 10mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
+
+sketch002 = sketch(on = faceOf(extrude001, face = END)) {
+  circle1 = circle(start = [var 8mm, var 10mm], center = [var 5mm, var 10mm])
+  circle2 = circle(start = [var 23mm, var 10mm], center = [var 20mm, var 10mm])
+}
+region002 = region(point = [5mm, 10mm], sketch = sketch002)
+region003 = region(point = [20mm, 10mm], sketch = sketch002)
+extrude002 = extrude([region002, region003], length = -2)`
+        const { ast, artifactGraph } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const sweeps = [...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'sweep'
+        )
+        expect(sweeps).toHaveLength(3)
+        const [base, ...merged] = sweeps
+        // Cover both the inherited top face and the new pocket bottom caps.
+        const edges = merged.map((sweep) => {
+          const edge = [...artifactGraph.values()].find((artifact) => {
+            if (capKind === 'created') {
+              return (
+                artifact.type === 'sweepEdge' &&
+                artifact.subType === 'opposite' &&
+                artifact.sweepId === sweep.id
+              )
+            }
+            if (artifact.type !== 'segment' || artifact.pathId !== sweep.pathId)
+              return false
+            const faces = getCommonFacesForEdge(artifact, artifactGraph)
+            return (
+              !(faces instanceof Error) &&
+              faces.some(
+                (face) => face.type === 'cap' && face.sweepId === base.id
+              )
+            )
+          })
+          if (!edge) throw new Error('Missing pocket rim edge')
+          return edge
+        })
+        const selection = createSelectionFromArtifacts(edges, artifactGraph)
+        selection.otherSelections.push({
+          type: 'enginePrimitive',
+          primitiveType: 'edge',
+          entityId: 'selected-primitive-edge',
+          parentEntityId: base.id,
+          primitiveIndex: 0,
+        })
+        const size = (await stringToKclExpression(
+          '0.23',
+          rustContextInThisFile
+        )) as KclCommandValue
+        const result =
+          name === 'fillet'
+            ? addFillet({
+                ast,
+                artifactGraph,
+                selection,
+                radius: size,
+                wasmInstance: instanceInThisFile,
+              })
+            : addChamfer({
+                ast,
+                artifactGraph,
+                selection,
+                length: size,
+                wasmInstance: instanceInThisFile,
+              })
+        if (err(result)) throw result
+        expect(result.pathToNode).toHaveLength(1)
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(newCode).toContain('edge001 = edgeId(extrude001, index = 0)')
+        if (capKind === 'created') {
+          expect(newCode).toContain('extrude002[0].faces.capEnd002')
+          expect(newCode).toContain('extrude002[1].faces.capEnd002')
+        } else {
+          expect(newCode).toContain('extrude001.faces.capEnd001')
+        }
+        await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
 
     it('should add a basic fillet call on a sweepEdge and a segment', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
