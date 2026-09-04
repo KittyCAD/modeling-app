@@ -43,8 +43,11 @@ const LIBRARY_ROUTE = new RegExp(`^${PATHS.LIBRARY}/([^/]+)`)
  * argument, and the registration in `app.ts` disappears.
  */
 export function createNavigationContributions(app: App) {
-  /** URL-seeded placeholder. See the note above. */
-  const overlay = signal<AppOverlay | undefined>(undefined)
+  /**
+   * Owned by `App` now, not seeded here. The location is still *derived* from
+   * app state — this reads it, nothing assigns a location.
+   */
+  const overlay = app.overlaySignal
   /** URL-seeded placeholder. See the note above. */
   const libraryId = signal<string | undefined>(undefined)
 
@@ -153,7 +156,7 @@ export function createNavigationContributions(app: App) {
           const match = FILE_ROUTE.exec(url.pathname)
           const encodedId = match?.[1]
           if (!encodedId) return false
-          overlay.value = parseOverlay(url.pathname)
+          app.setOverlay(parseOverlay(url.pathname))
           libraryId.value = undefined
           await app.openFile({ id: decodeURIComponent(encodedId) })
           return true
@@ -169,7 +172,7 @@ export function createNavigationContributions(app: App) {
         load: (url) => {
           const id = LIBRARY_ROUTE.exec(url.pathname)?.[1]
           if (!id) return false
-          overlay.value = parseOverlay(url.pathname)
+          app.setOverlay(parseOverlay(url.pathname))
           libraryId.value = id
           app.closeProject()
           return true
@@ -197,7 +200,7 @@ export function createNavigationContributions(app: App) {
           })
           if (target.kind === 'defer') return false
 
-          overlay.value = undefined
+          app.setOverlay(undefined)
           libraryId.value = undefined
 
           if (target.kind === 'home') {
@@ -218,7 +221,7 @@ export function createNavigationContributions(app: App) {
             : null,
         load: (url) => {
           if (!url.pathname.startsWith(PATHS.HOME)) return false
-          overlay.value = parseOverlay(url.pathname)
+          app.setOverlay(parseOverlay(url.pathname))
           libraryId.value = undefined
           app.closeProject()
           return true
