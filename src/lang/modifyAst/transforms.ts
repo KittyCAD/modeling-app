@@ -668,6 +668,7 @@ export function addMirror3D({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    labeledSelectionArgNames: ['across'],
     wasmInstance,
   })
   if (err(pathToNode)) {

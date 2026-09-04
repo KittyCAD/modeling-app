@@ -161,6 +161,9 @@ export function addHelix({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HELIX,
+    // During edits, `axis` is set only for explicit X/Y/Z values. If it is
+    // undefined, keep whichever selection-backed input exists: `axis` or `cylinder`.
+    labeledSelectionArgNames: mNodeToEdit && !axis ? ['axis', 'cylinder'] : [],
     wasmInstance,
   })
   if (err(pathToNode)) {

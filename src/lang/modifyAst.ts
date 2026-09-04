@@ -40,6 +40,7 @@ import type {
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  LabeledArg,
   NumericSuffix,
   PathToNode,
   PipeExpression,
@@ -1310,13 +1311,28 @@ export function pathsReferToSamePipe(
 
 export function replaceCallInPlace(
   existingCall: CallExpressionKw,
-  replacementCall: CallExpressionKw
+  replacementCall: CallExpressionKw,
+  labeledSelectionArgNames: readonly string[] = []
 ) {
-  const unlabeled =
-    replacementCall.unlabeled === null
-      ? structuredClone(existingCall.unlabeled)
-      : replacementCall.unlabeled
-  Object.assign(existingCall, replacementCall, { unlabeled })
+  // Until selection edits can roll back, reconstructed selections are
+  // display-only. Drop them, then restore the originals at their old positions.
+  const isLabeledSelectionArgument = (argument: LabeledArg) =>
+    argument.label !== null &&
+    labeledSelectionArgNames.includes(argument.label.name)
+  const mergedArguments = replacementCall.arguments.filter(
+    (argument) => !isLabeledSelectionArgument(argument)
+  )
+
+  for (const [index, argument] of existingCall.arguments.entries()) {
+    if (isLabeledSelectionArgument(argument)) {
+      mergedArguments.splice(index, 0, structuredClone(argument))
+    }
+  }
+
+  Object.assign(existingCall, replacementCall, {
+    unlabeled: structuredClone(existingCall.unlabeled),
+    arguments: mergedArguments,
+  })
 }
 
 export function setCallInAst({
@@ -1325,6 +1341,7 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  labeledSelectionArgNames,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1332,6 +1349,7 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  labeledSelectionArgNames?: readonly string[]
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
@@ -1353,7 +1371,7 @@ export function setCallInAst({
       return result
     }
 
-    replaceCallInPlace(result.node, call)
+    replaceCallInPlace(result.node, call, labeledSelectionArgNames)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
     const pipe = getNodeFromPath<PipeExpression>(

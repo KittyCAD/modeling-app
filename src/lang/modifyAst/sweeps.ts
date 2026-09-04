@@ -370,6 +370,7 @@ export function addExtrude({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
+    labeledSelectionArgNames: ['to', 'direction'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -605,6 +606,7 @@ export function addSweep({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP,
+    labeledSelectionArgNames: ['path'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -922,6 +924,9 @@ export function addRevolve({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
+    // During edits, `axis` is set only for explicit X/Y/Z values. If it is
+    // undefined, keep the existing selection-backed `axis` argument.
+    labeledSelectionArgNames: mNodeToEdit && !axis ? ['axis'] : [],
     wasmInstance,
   })
   if (err(pathToNode)) {

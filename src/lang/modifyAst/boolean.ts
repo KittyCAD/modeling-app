@@ -314,6 +314,7 @@ export function addSubtract({
     pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    labeledSelectionArgNames: ['tools'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -441,6 +442,7 @@ export function addSplit({
     pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SPLIT,
+    labeledSelectionArgNames: ['tools'],
     wasmInstance,
   })
   if (err(pathToNode)) {
