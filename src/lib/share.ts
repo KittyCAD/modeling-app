@@ -19,9 +19,11 @@ import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import toast from 'react-hot-toast'
 
 export type PublishCurrentProjectArgs = {
+  fileOperations: FileOperationsRegistryService
   token: string
   project: Project | undefined
   currentFilePath: string
@@ -124,11 +126,13 @@ function getPublishErrorMessage(error: Error) {
 }
 
 export async function getCurrentProjectPublicationDetails({
+  fileOperations,
   token,
   project,
   wasmInstance,
   remoteProjectId,
 }: {
+  fileOperations: FileOperationsRegistryService
   token: string
   project: Project | undefined
   wasmInstance: ModuleType
@@ -145,6 +149,7 @@ export async function getCurrentProjectPublicationDetails({
       return environmentName
     }
     const localProjectId = await getCloudProjectIdForEnvironment(
+      fileOperations,
       project.path,
       wasmInstance,
       environmentName
@@ -196,6 +201,7 @@ async function ensureCurrentProjectUploaded(
   }
 
   const uploadFiles = await buildProjectUploadFiles({
+    fileOperations: args.fileOperations,
     project,
     currentFilePath: args.currentFilePath,
     currentFileContents: args.currentFileContents,
@@ -209,6 +215,7 @@ async function ensureCurrentProjectUploaded(
   const existingProjectId =
     args.remoteProjectId ??
     (await getCloudProjectIdForEnvironment(
+      args.fileOperations,
       project.path,
       args.wasmInstance,
       environmentName
@@ -290,6 +297,7 @@ function getRemoteProject({
 }
 
 async function buildProjectUploadFiles({
+  fileOperations,
   project,
   currentFilePath,
   currentFileContents,
@@ -300,7 +308,7 @@ async function buildProjectUploadFiles({
   let files: ProjectArchiveFile[]
   try {
     files = await collectLocalProjectFilesForCloudSync({
-      localFs: fsZds,
+      fileOperations,
       projectRoot: project.path,
     })
   } catch (error) {
@@ -330,6 +338,7 @@ async function buildProjectUploadFiles({
   }
 
   const projectToml = await getProjectTomlContents({
+    fileOperations,
     projectPath: project.path,
     wasmInstance,
   })
@@ -347,12 +356,14 @@ async function buildProjectUploadFiles({
 }
 
 async function getCloudProjectIdForEnvironment(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   wasmInstance: ModuleType,
   environmentName: string
 ): Promise<string | undefined | Error> {
   try {
     const projectSettings = await readProjectSettingsFile(
+      fileOperations,
       projectPath,
       wasmInstance
     )

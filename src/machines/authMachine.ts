@@ -37,6 +37,7 @@ import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { mark, markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { xstateEventError } from '@src/machines/utils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { assign, fromPromise, setup } from 'xstate'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
@@ -82,6 +83,7 @@ function isNoTokenFoundError(error: unknown) {
 }
 
 export interface UserContext {
+  fileOperations: Promise<FileOperationsRegistryService>
   user?: UserResponse
   token: string
 }
@@ -115,27 +117,47 @@ console.table([
 ])
 
 export const authMachine = setup({
-  types: {},
+  types: {
+    context: {} as UserContext,
+    input: {} as { fileOperations: Promise<FileOperationsRegistryService> },
+  },
   actors: {
-    getUser: fromPromise(({ input }: { input: { token?: string } }) =>
-      getUser(input)
+    getUser: fromPromise(
+      ({
+        input,
+      }: {
+        input: {
+          fileOperations: Promise<FileOperationsRegistryService>
+          token?: string
+        }
+      }) => getUser(input)
     ),
-    logout: fromPromise(logout),
-    logoutAllEnvironments: fromPromise(logoutAllEnvironments),
+    logout: fromPromise(
+      ({ input }: { input: Promise<FileOperationsRegistryService> }) =>
+        logout(input)
+    ),
+    logoutAllEnvironments: fromPromise(
+      ({ input }: { input: Promise<FileOperationsRegistryService> }) =>
+        logoutAllEnvironments(input)
+    ),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
   id: 'auth',
   initial: 'checkIfLoggedIn',
-  context: {
+  context: ({ input }) => ({
+    fileOperations: input.fileOperations,
     token: persistedToken,
-  },
+  }),
   states: {
     checkIfLoggedIn: {
       id: 'check-if-logged-in',
       invoke: {
         src: 'getUser',
-        input: ({ context }) => ({ token: context.token }),
+        input: ({ context }) => ({
+          fileOperations: context.fileOperations,
+          token: context.token,
+        }),
         id: 'check-logged-in',
         onDone: [
           {
@@ -213,6 +235,7 @@ export const authMachine = setup({
     loggingOut: {
       invoke: {
         src: 'logout',
+        input: ({ context }) => context.fileOperations,
         onDone: 'loggedOut',
         onError: {
           target: 'loggedIn',
@@ -240,6 +263,7 @@ export const authMachine = setup({
     loggingOutAllEnvironments: {
       invoke: {
         src: 'logoutAllEnvironments',
+        input: ({ context }) => context.fileOperations,
         onDone: 'loggedOut',
         onError: {
           target: 'loggedIn',
@@ -281,9 +305,15 @@ export const authMachine = setup({
   schema: { events: {} as Events },
 })
 
-async function getUser(input: { token?: string }) {
+async function getUser(input: {
+  fileOperations: Promise<FileOperationsRegistryService>
+  token?: string
+}) {
+  const fileOperations = await input.fileOperations
   const environment =
-    (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
+    (await readEnvironmentFile(fileOperations)) ||
+    env().VITE_ZOO_BASE_DOMAIN ||
+    ''
   updateEnvironment(environment)
   mark('config/env', {
     name: 'config/env',
@@ -302,7 +332,10 @@ async function getUser(input: { token?: string }) {
 
   // Update the Engine WebSocket URL override
   const cachedKittycadWebSocketUrl =
-    await readEnvironmentConfigurationKittycadWebSocketUrl(environment)
+    await readEnvironmentConfigurationKittycadWebSocketUrl(
+      fileOperations,
+      environment
+    )
   if (cachedKittycadWebSocketUrl) {
     updateEnvironmentKittycadWebSocketUrl(
       environment,
@@ -312,7 +345,10 @@ async function getUser(input: { token?: string }) {
 
   // Update the Zookeeper WebSocket URL override
   const cachedZookeeperWebSocketUrl =
-    await readEnvironmentConfigurationZookeeperWebSocketUrl(environment)
+    await readEnvironmentConfigurationZookeeperWebSocketUrl(
+      fileOperations,
+      environment
+    )
   if (cachedZookeeperWebSocketUrl) {
     updateEnvironmentZookeeperWebSocketUrl(
       environment,
@@ -322,7 +358,7 @@ async function getUser(input: { token?: string }) {
 
   let token = ''
   try {
-    token = await getAndSyncStoredToken(input)
+    token = await getAndSyncStoredToken(fileOperations, input)
   } catch (e) {
     console.error(e)
     reportAuthClientError({
@@ -411,20 +447,24 @@ function getTokenFromEnvOrCookie(): string {
   return ''
 }
 
-async function getTokenFromFile(): Promise<string> {
+async function getTokenFromFile(
+  fileOperations: FileOperationsRegistryService
+): Promise<string> {
   const environmentName = env().VITE_ZOO_BASE_DOMAIN
   if (!window.electron || !environmentName) return ''
-  return readEnvironmentConfigurationToken(environmentName)
+  return readEnvironmentConfigurationToken(fileOperations, environmentName)
 }
 
 /**
  * Get token from environment variable, cookie (web), or file (desktop).
  * @returns The token string, or empty string if no source has a token
  */
-export async function getToken(): Promise<string> {
+export async function getToken(
+  fileOperations: FileOperationsRegistryService
+): Promise<string> {
   const token = getTokenFromEnvOrCookie()
   if (token) return token
-  return getTokenFromFile()
+  return getTokenFromFile(fileOperations)
 }
 
 function getCookieByName(cname: string): string | null {
@@ -443,9 +483,12 @@ function getCookieByName(cname: string): string | null {
   return null
 }
 
-async function getAndSyncStoredToken(input: {
-  token?: string
-}): Promise<string> {
+async function getAndSyncStoredToken(
+  fileOperations: FileOperationsRegistryService,
+  input: {
+    token?: string
+  }
+): Promise<string> {
   // Local mode
   const localToken = env().VITE_ZOO_API_TOKEN
   if (localToken) {
@@ -461,7 +504,7 @@ async function getAndSyncStoredToken(input: {
   const cookieToken = getCookie()
   const fileToken =
     window.electron && environmentName
-      ? await readEnvironmentConfigurationToken(environmentName)
+      ? await readEnvironmentConfigurationToken(fileOperations, environmentName)
       : ''
   const token = inputToken || cookieToken || fileToken
 
@@ -480,7 +523,11 @@ async function getAndSyncStoredToken(input: {
     if (window.electron) {
       // has just logged in, update storage
       if (environmentName)
-        await writeEnvironmentConfigurationToken(environmentName, token)
+        await writeEnvironmentConfigurationToken(
+          fileOperations,
+          environmentName,
+          token
+        )
     }
     return token
   }
@@ -493,21 +540,24 @@ async function getAndSyncStoredToken(input: {
 /**
  * Logout function that will do a default logout within the AuthMachine
  */
-async function logout() {
-  return logoutEnvironment()
+async function logout(fileOperations: Promise<FileOperationsRegistryService>) {
+  return logoutEnvironment(await fileOperations)
 }
 
 /**
  * Logout function that will do a specific environment logout if environment name is passed in
  */
-async function logoutEnvironment(requestedDomain?: string) {
+async function logoutEnvironment(
+  fileOperations: FileOperationsRegistryService,
+  requestedDomain?: string
+) {
   // TODO: 7/10/2025 Remove this months from now, we want to clear the localStorage of the key.
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   try {
     const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
     let token = ''
     if (domain) {
-      token = await readEnvironmentConfigurationToken(domain)
+      token = await readEnvironmentConfigurationToken(fileOperations, domain)
     } else {
       const error = new Error('Unable to logout, cannot find domain')
       reportAuthClientError({
@@ -571,9 +621,9 @@ async function logoutEnvironment(requestedDomain?: string) {
       }
 
       if (domain) {
-        await writeEnvironmentConfigurationToken(domain, '')
+        await writeEnvironmentConfigurationToken(fileOperations, domain, '')
       }
-      await writeEnvironmentFile('')
+      await writeEnvironmentFile(fileOperations, '')
       return Promise.resolve(null)
     }
   } catch (e) {
@@ -599,11 +649,14 @@ async function logoutEnvironment(requestedDomain?: string) {
  * To logout you need to revoke the token via the `oauth2/token/revoke` deleting the token off disk for electron
  * will not be sufficient.
  */
-async function logoutAllEnvironments() {
-  const environments = await listAllEnvironments()
+async function logoutAllEnvironments(
+  fileOperationsPromise: Promise<FileOperationsRegistryService>
+) {
+  const fileOperations = await fileOperationsPromise
+  const environments = await listAllEnvironments(fileOperations)
   for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
     // Make the oauth2/token/revoke request per environment
-    await logoutEnvironment(environmentName)
+    await logoutEnvironment(fileOperations, environmentName)
   }
 }

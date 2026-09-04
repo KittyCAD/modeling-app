@@ -2,7 +2,8 @@ import type { WebSocketResponse } from '@kittycad/lib'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { err } from '@src/lib/trap'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -68,6 +69,9 @@ beforeAll(async () => {
 
 // Mock dependencies
 const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
+  fileOperations: {
+    writeFile: mockElectron.writeFile,
+  } as unknown as FileOperationsRegistryService,
   engineCommandManager: {
     sendSceneCommand: vi.fn(),
     engineConnection: undefined,

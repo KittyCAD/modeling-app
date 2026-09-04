@@ -4,11 +4,11 @@ import type { App } from '@src/lib/app'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
+  appendGitignoreForDirectoryWithFs,
+  createInitialGitignoreStackWithFs,
+  fileOperationsGitignoreFs,
   type GitignoreStackEntry,
-  appendGitignoreForDirectory,
-  createInitialGitignoreStack,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
@@ -23,6 +23,7 @@ import {
 } from '@src/lib/zookeeper/zookeeperEditPatch'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom, EventObject } from 'xstate'
 
@@ -241,6 +242,7 @@ const normalizePathForComparison = (filePath: string) => {
 }
 
 export const collectProjectFiles = async (args: {
+  fileOperations: FileOperationsRegistryService
   selectedFileContents: string
   fileNames: ExecState['filenames']
   projectContext?: Project
@@ -259,6 +261,7 @@ export const collectProjectFiles = async (args: {
   ]
   let basePath = ''
   if (args.projectContext) {
+    const gitignoreFs = fileOperationsGitignoreFs(args.fileOperations)
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
     const execStateNameToIndexMap: { [fileName: string]: number } = {}
@@ -323,7 +326,9 @@ export const collectProjectFiles = async (args: {
           .then(() =>
             isSelectedFilePath(absolutePathToFileNameWithExtension)
               ? new TextEncoder().encode(args.selectedFileContents)
-              : fsZds.readFile(absolutePathToFileNameWithExtension)
+              : args.fileOperations.readFile(
+                  absolutePathToFileNameWithExtension
+                )
           )
           .then((file): FileMeta => {
             uploadSize += file.byteLength
@@ -364,14 +369,13 @@ export const collectProjectFiles = async (args: {
       path: string,
       gitignoreStack: GitignoreStackEntry[]
     ) => {
-      const entries = await fsZds.readdir(path)
-      for (const entry of entries) {
+      const entries = await args.fileOperations.readDirectory(path)
+      for (const { name: entry, kind } of entries) {
         const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
         const relativePath = (
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
         ).replace(/\\/g, '/')
-        const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
-        const isDirectory = Boolean(stat.mode & fsZdsConstants.S_IFDIR)
+        const isDirectory = kind === 'directory'
 
         if (
           isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
@@ -380,7 +384,8 @@ export const collectProjectFiles = async (args: {
         }
 
         if (isDirectory) {
-          const childGitignoreStack = await appendGitignoreForDirectory(
+          const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
+            gitignoreFs,
             gitignoreStack,
             absolutePathToFileNameWithExtension,
             basePath
@@ -396,7 +401,10 @@ export const collectProjectFiles = async (args: {
       }
     }
 
-    const gitignoreStack = await createInitialGitignoreStack(basePath)
+    const gitignoreStack = await createInitialGitignoreStackWithFs(
+      gitignoreFs,
+      basePath
+    )
     await recursivelyPushFilePromisesFromPath(basePath, gitignoreStack)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64

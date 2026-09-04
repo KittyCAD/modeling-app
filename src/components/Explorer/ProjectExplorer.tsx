@@ -1,21 +1,21 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
-import {
-  CONTAINER_IS_SELECTED,
-  FILE_PLACEHOLDER_NAME,
-  FOLDER_PLACEHOLDER_NAME,
-  NOTHING_IS_SELECTED,
-  STARTING_INDEX_TO_SELECT,
-  constructPath,
-  copyPasteSourceAndTarget,
-  flattenProject,
-  isExternalFileDrag,
-  isPathWithinFileExplorerEntry,
-} from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
   FileExplorerRow,
+} from '@src/components/Explorer/utils'
+import {
+  CONTAINER_IS_SELECTED,
+  constructPath,
+  copyPasteSourceAndTarget,
+  FILE_PLACEHOLDER_NAME,
+  FOLDER_PLACEHOLDER_NAME,
+  flattenProject,
+  isExternalFileDrag,
+  isPathWithinFileExplorerEntry,
+  NOTHING_IS_SELECTED,
+  STARTING_INDEX_TO_SELECT,
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -43,14 +43,14 @@ import {
 } from '@src/machines/systemIO/utils'
 import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
-  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
+  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FocusEvent as ReactFocusEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (
@@ -194,7 +194,7 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, systemIOActor } = useApp()
+  const { commands, fileOperations, registry, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
@@ -791,21 +791,14 @@ export const ProjectExplorer = ({
       if (supportedFiles.length > 0) {
         setFileTreeMutationPending(true)
         const targetPath = getDropTargetPath(target, project.path)
-        const createdDirs = new Set<string>()
-
         for (const { file, relativePath } of supportedFiles) {
           try {
             const destinationDirPath = relativePath
               ? joinOSPaths(targetPath, relativePath)
               : targetPath
 
-            // Create parent directories if needed
-            if (relativePath && !createdDirs.has(destinationDirPath)) {
-              await fsZds.mkdir(destinationDirPath, { recursive: true })
-              createdDirs.add(destinationDirPath)
-            }
-
             const { path: destinationPath } = await getNextFileName({
+              fileOperations,
               entryName: file.name,
               baseDir: destinationDirPath,
               wasmInstance,
@@ -813,7 +806,10 @@ export const ProjectExplorer = ({
             })
 
             const arrayBuffer = await file.arrayBuffer()
-            await fsZds.writeFile(destinationPath, new Uint8Array(arrayBuffer))
+            await fileOperations.writeFile(
+              destinationPath,
+              new Uint8Array(arrayBuffer)
+            )
           } catch (e) {
             console.error('Failed to copy file:', file.name, e)
             toast.error(`Failed to import ${file.name}.`)
@@ -839,6 +835,7 @@ export const ProjectExplorer = ({
     },
     [
       readOnly,
+      fileOperations,
       project.path,
       wasmInstance,
       systemIOActor,

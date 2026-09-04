@@ -8,32 +8,33 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { isErr } from '@src/lib/trap'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import {
+  isZookeeperProjectEntrypointPath,
+  normalizeZookeeperPatchPath,
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
   type ZookeeperModifiedPatchFile,
-  isZookeeperProjectEntrypointPath,
-  normalizeZookeeperPatchPath,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
+import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { EditorView } from 'codemirror'
 import {
-  type StructuredPatch,
   applyPatch,
   parsePatch,
   reversePatch,
+  type StructuredPatch,
 } from 'diff'
 import toast from 'react-hot-toast'
 
+export type {
+  ZookeeperEditPatch,
+  ZookeeperEditPatchFile,
+} from '@src/lib/zookeeper/zookeeperEditPatch'
 export {
   getZookeeperEditPatchFromToolOutput,
   isZookeeperProjectEntrypointPath,
   mergeZookeeperEditPatches,
   normalizeZookeeperPatchPath,
-} from '@src/lib/zookeeper/zookeeperEditPatch'
-export type {
-  ZookeeperEditPatch,
-  ZookeeperEditPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
 
 type ZookeeperPatchReplayDirection = 'undo' | 'redo'
@@ -86,11 +87,13 @@ export type PreparedZookeeperPatchFileReplay = {
 export type ZookeeperSnapshotFileReplay = PreparedZookeeperPatchFileReplay
 
 type ZookeeperPatchReplayOptions = {
+  fileOperations: FileOperationsRegistryService
   fileContentOverrides?: Map<string, string>
   alreadyReplayedFilePaths?: Set<string>
 }
 
 type ZookeeperHistoryExtensionDependencies = {
+  fileOperations: FileOperationsRegistryService
   kclManager: KclManager
   onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
   onActiveFileRestore: (
@@ -133,6 +136,7 @@ export function zookeeperEditPatchHistoryEvent({
 }
 
 export function buildZookeeperHistoryExtension({
+  fileOperations,
   kclManager,
   onCurrentFileDelete,
   onActiveFileRestore,
@@ -154,6 +158,7 @@ export function buildZookeeperHistoryExtension({
 
           kclManager.globalHistoryView.setOperationInProgress(true)
           void replayZookeeperEditPatch({
+            fileOperations,
             ...e.value,
             kclManager,
             onCurrentFileDelete,
@@ -221,6 +226,7 @@ export function zookeeperHistoryExtension(): Extension {
 }
 
 export async function applyZookeeperEditPatch({
+  fileOperations,
   projectPath,
   patch,
   direction,
@@ -237,7 +243,9 @@ export async function applyZookeeperEditPatch({
   }
 
   await writeZookeeperPatchReplay(
+    fileOperations,
     await prepareZookeeperPatchReplay(replayFiles, {
+      fileOperations,
       alreadyReplayedFilePaths,
       fileContentOverrides,
     })
@@ -245,9 +253,11 @@ export async function applyZookeeperEditPatch({
 }
 
 async function replayZookeeperEditPatch({
+  fileOperations,
   kclManager,
   ...effectProps
 }: ZookeeperPatchEffectProps & {
+  fileOperations: FileOperationsRegistryService
   kclManager: KclManager
   onCurrentFileDelete: (deletedPaths: Set<string>) => void | Promise<void>
   onActiveFileRestore: (
@@ -263,6 +273,7 @@ async function replayZookeeperEditPatch({
     alreadyReplayedFilePaths.add(kclManager.path)
   }
   const replayOptions = {
+    fileOperations,
     alreadyReplayedFilePaths,
     fileContentOverrides: new Map([[kclManager.path, kclManager.code]]),
   }
@@ -291,7 +302,7 @@ async function replayZookeeperEditPatch({
   )
 
   const deletesCurrentFile = currentFileReplay?.nextContent === null
-  await writeZookeeperPatchReplay(preparedReplayFiles)
+  await writeZookeeperPatchReplay(fileOperations, preparedReplayFiles)
   await effectProps.onProjectFilesReplay?.(preparedReplayFiles)
   if (effectProps.activeFilePath && activeFileReplay) {
     kclManager.synchronizeCachedEditorHistoryAfterDirectGlobalReplay({
@@ -403,9 +414,10 @@ async function prepareZookeeperSnapshotReplay(
   snapshotFiles: readonly ZookeeperSnapshotFileReplay[],
   direction: ZookeeperPatchReplayDirection,
   {
+    fileOperations,
     alreadyReplayedFilePaths,
     fileContentOverrides,
-  }: ZookeeperPatchReplayOptions = {}
+  }: ZookeeperPatchReplayOptions
 ): Promise<PreparedZookeeperPatchFileReplay[]> {
   const preparedReplayFiles: PreparedZookeeperPatchFileReplay[] = []
 
@@ -418,7 +430,10 @@ async function prepareZookeeperSnapshotReplay(
       direction === 'undo'
         ? snapshotFile.previousContent
         : snapshotFile.nextContent
-    const diskContent = await readTextFileIfExists(snapshotFile.absolutePath)
+    const diskContent = await readTextFileIfExists(
+      fileOperations,
+      snapshotFile.absolutePath
+    )
     const currentContent =
       fileContentOverrides?.get(snapshotFile.absolutePath) ?? diskContent
 
@@ -519,14 +534,18 @@ function getZookeeperPatchReplayContents(
 async function prepareZookeeperPatchReplay(
   replayFiles: ZookeeperPatchReplay[],
   {
+    fileOperations,
     alreadyReplayedFilePaths,
     fileContentOverrides,
-  }: ZookeeperPatchReplayOptions = {}
+  }: ZookeeperPatchReplayOptions
 ): Promise<PreparedZookeeperPatchFileReplay[]> {
   const preparedReplayFiles: PreparedZookeeperPatchFileReplay[] = []
 
   for (const replayFile of replayFiles) {
-    const diskContent = await readTextFileIfExists(replayFile.absolutePath)
+    const diskContent = await readTextFileIfExists(
+      fileOperations,
+      replayFile.absolutePath
+    )
     const currentContent =
       diskContent === null
         ? null
@@ -722,6 +741,7 @@ function countLines(lines: string[]) {
 }
 
 async function writeZookeeperPatchReplay(
+  fileOperations: FileOperationsRegistryService,
   replayFiles: PreparedZookeeperPatchFileReplay[]
 ) {
   const attemptedFiles: PreparedZookeeperPatchFileReplay[] = []
@@ -731,6 +751,7 @@ async function writeZookeeperPatchReplay(
     for (const replayFile of replayFiles) {
       attemptedFiles.push(replayFile)
       await writeZookeeperReplayFile(
+        fileOperations,
         replayFile.absolutePath,
         replayFile.nextContent
       )
@@ -740,7 +761,7 @@ async function writeZookeeperPatchReplay(
     const rollbackErrors: unknown[] = []
     for (const replayFile of [...attemptedFiles].reverse()) {
       try {
-        await restoreZookeeperReplayFile(replayFile)
+        await restoreZookeeperReplayFile(fileOperations, replayFile)
       } catch (rollbackError: unknown) {
         rollbackErrors.push(rollbackError)
       }
@@ -773,10 +794,12 @@ async function writeZookeeperPatchReplay(
 }
 
 async function restoreZookeeperReplayFile(
+  fileOperations: FileOperationsRegistryService,
   replayFile: PreparedZookeeperPatchFileReplay
 ) {
   if (replayFile.previousContent !== null) {
     await writeZookeeperReplayFile(
+      fileOperations,
       replayFile.absolutePath,
       replayFile.previousContent
     )
@@ -784,7 +807,7 @@ async function restoreZookeeperReplayFile(
   }
 
   try {
-    await fsZds.rm(replayFile.absolutePath)
+    await fileOperations.remove(replayFile.absolutePath)
   } catch (error: unknown) {
     if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
@@ -793,21 +816,24 @@ async function restoreZookeeperReplayFile(
 }
 
 async function writeZookeeperReplayFile(
+  fileOperations: FileOperationsRegistryService,
   absolutePath: string,
   content: string | null
 ) {
   if (content === null) {
-    await fsZds.rm(absolutePath)
+    await fileOperations.remove(absolutePath)
     return
   }
 
-  await fsZds.mkdir(fsZds.dirname(absolutePath), { recursive: true })
-  await fsZds.writeFile(absolutePath, textEncoder.encode(content))
+  await fileOperations.writeFile(absolutePath, textEncoder.encode(content))
 }
 
-async function readTextFileIfExists(path: string): Promise<string | null> {
+async function readTextFileIfExists(
+  fileOperations: FileOperationsRegistryService,
+  path: string
+): Promise<string | null> {
   try {
-    return await fsZds.readFile(path, 'utf8')
+    return new TextDecoder().decode(await fileOperations.readFile(path))
   } catch (error: unknown) {
     if (isPathNotFoundError(error)) {
       return null

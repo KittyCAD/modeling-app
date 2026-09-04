@@ -5,7 +5,11 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
+import {
+  getInitialDefaultDir,
+  getProjectInfo,
+  isPathNotFoundError,
+} from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
   getParentAbsolutePath,
@@ -38,6 +42,7 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -60,16 +65,20 @@ function loadRouteSettings(
   wasmInstance: Awaited<App['wasmPromise']>,
   projectPath?: string
 ) {
-  return loadAndValidateSettings(wasmInstance, {
-    defaultProjectLibraries: app.registry.get(
-      projectLibrarySettingDefaultsValueSpec
-    ),
-    projectLibrarySettingDefaultPolicies: app.registry.get(
-      projectLibrarySettingDefaultPoliciesValueSpec
-    ),
-    extensionSettings: app.registry.get(settingsValueSpec),
-    projectPath,
-  })
+  return loadAndValidateSettings(
+    app.registry.get(fileOperationsService),
+    wasmInstance,
+    {
+      defaultProjectLibraries: app.registry.get(
+        projectLibrarySettingDefaultsValueSpec
+      ),
+      projectLibrarySettingDefaultPolicies: app.registry.get(
+        projectLibrarySettingDefaultPoliciesValueSpec
+      ),
+      extensionSettings: app.registry.get(settingsValueSpec),
+      projectPath,
+    }
+  )
 }
 
 async function getCanonicalWebProjectLibrary(
@@ -102,24 +111,24 @@ async function getCanonicalWebProjectLibrary(
 }
 
 async function maybeGetExistingDefaultFilePath(
+  app: App,
   projectPath: string,
   wasmInstance: Awaited<App['wasmPromise']>
 ) {
   try {
-    const project = await getProjectInfo(projectPath, wasmInstance)
+    const project = await getProjectInfo(
+      app.registry.get(fileOperationsService),
+      projectPath,
+      wasmInstance
+    )
     return project.default_file
   } catch {
     return undefined
   }
 }
 
-async function fileExists(filePath: string) {
-  try {
-    await fsZds.stat(filePath)
-    return true
-  } catch {
-    return false
-  }
+async function fileExists(app: App, filePath: string) {
+  return app.registry.get(fileOperationsService).exists(filePath)
 }
 
 function redirectToFile(filePath: string, routerSearch: string) {
@@ -164,12 +173,14 @@ export const baseLoader =
     const canonicalLibrary = await getCanonicalWebProjectLibrary(settings)
     let defaultFilePath =
       (await maybeGetExistingDefaultFilePath(
+        app,
         canonicalLibrary.projectPath,
         wasmInstance
       )) ?? canonicalLibrary.defaultFilePath
 
-    if (!(await fileExists(defaultFilePath))) {
+    if (!(await fileExists(app, defaultFilePath))) {
       await projectSkeletonCreate(
+        app.fileOperations,
         canonicalLibrary.defaultFilePath,
         settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
         wasmInstance
@@ -235,14 +246,19 @@ export const fileLoader =
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-        .default_file
+      const fallbackFile = (
+        await getProjectInfo(
+          app.registry.get(fileOperationsService),
+          projectPath,
+          wasmInstance
+        )
+      ).default_file
       let fileExists = true
       if (currentFilePath && fileExists) {
         try {
-          await fsZds.stat(currentFilePath)
+          await app.registry.get(fileOperationsService).stat(currentFilePath)
         } catch (e) {
-          if (e === 'ENOENT') {
+          if (isPathNotFoundError(e)) {
             fileExists = false
           }
         }
@@ -285,7 +301,11 @@ export const fileLoader =
       readWriteAccess: true,
     }
 
-    const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
+    const maybeProjectInfo = await getProjectInfo(
+      app.registry.get(fileOperationsService),
+      projectPath,
+      wasmInstance
+    )
 
     const project = maybeProjectInfo ?? defaultProjectData
 

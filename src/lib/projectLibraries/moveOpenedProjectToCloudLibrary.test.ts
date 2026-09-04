@@ -49,8 +49,10 @@ test('moves an open directory project before navigating directly to its new file
   } as unknown as HomeProjectActionsService
   const closeProject = vi.fn()
   const clearProjectSettings = vi.fn()
+  const fileOperations = {} as App['fileOperations']
   const app = {
     closeProject,
+    fileOperations,
     settings: { actor: { send: clearProjectSettings } },
     registry: {
       optional: (service: unknown) =>
@@ -76,6 +78,7 @@ test('moves an open directory project before navigating directly to its new file
   expect(closeProject).toHaveBeenCalledOnce()
   expect(clearProjectSettings).toHaveBeenCalledWith({ type: 'clear.project' })
   expect(writeProjectTitleToProjectToml).toHaveBeenCalledWith(
+    fileOperations,
     '/projects/example',
     'Published example'
   )

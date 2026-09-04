@@ -1,8 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { UserResponse } from '@kittycad/lib'
-import { Fragment, useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -16,11 +13,13 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 let didListEnvironments = false
 
 const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
-  const { auth } = useApp()
+  const { auth, fileOperations } = useApp()
   const platform = usePlatform()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -33,13 +32,13 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
   useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      listAllEnvironmentsWithTokens()
+      listAllEnvironmentsWithTokens(fileOperations)
         .then((environmentsWithTokens) => {
           setHasMultipleEnvironments(environmentsWithTokens.length > 1)
         })
         .catch(reportRejection)
     }
-  }, [])
+  }, [fileOperations])
 
   // Do not show the environment items on web
   const hideEnvironmentItems = !isDesktop()

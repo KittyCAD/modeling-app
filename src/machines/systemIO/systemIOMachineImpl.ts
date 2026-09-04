@@ -142,11 +142,12 @@ const prepareBulkProjectWrite = async ({
   useReservedProjectName?: boolean
   useSettingsProjectDirectoryFallback?: boolean
 }) => {
-  const configuration = await readAppSettingsFile(wasmInstance)
+  const operations = fileOperations(context)
+  const configuration = await readAppSettingsFile(operations, wasmInstance)
   const projectDirectoryPath =
     context.projectDirectoryPath ||
     (useSettingsProjectDirectoryFallback
-      ? await ensureProjectDirectoryExists(configuration)
+      ? await ensureProjectDirectoryExists(operations, configuration)
       : '')
 
   if (!projectDirectoryPath) {
@@ -208,6 +209,7 @@ const sharedBulkCreateWorkflow = async ({
       ? requestedFileName
       : (
           await getNextFileName({
+            fileOperations: fileOperations(input.context),
             entryName: requestedFileName,
             baseDir: projectRoot,
             wasmInstance: input.wasmInstance,
@@ -216,6 +218,7 @@ const sharedBulkCreateWorkflow = async ({
 
     // Create the project around the file if newProject
     await createNewProjectDirectory(
+      fileOperations(input.context),
       newProjectName,
       input.wasmInstance,
       requestedCode,
@@ -349,6 +352,7 @@ export const sharedBulkDeleteWorkflow = async ({
   }
 
   const filesInProject = await collectProjectFiles({
+    fileOperations: fileOperations(input.context),
     selectedFileContents: '',
     fileNames: [],
     projectContext: project,
@@ -394,6 +398,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         const projects = await readProjectsFromProjectDirectory({
+          fileOperations: fileOperations(context),
           projectDirectoryPath,
           wasmInstancePromise: context.wasmInstancePromise,
           previousProjects: context.folders,
@@ -452,6 +457,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           uniqueProjectDirectoryName: uniqueName,
         })
         await createNewProjectDirectory(
+          fileOperations(input.context),
           uniqueName,
           await input.context.wasmInstancePromise,
           undefined,
@@ -479,6 +485,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }) => {
         const projectDirectoryPath = fsZds.dirname(input.projectPath)
         const result = await duplicateProjectInDirectory({
+          fileOperations: fileOperations(input.context),
           source: {
             directoryName: input.projectName,
             displayName: input.requestedProjectName,
@@ -539,7 +546,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        await writeProjectTitleToProjectToml(projectPath, requestedProjectTitle)
+        await writeProjectTitleToProjectToml(
+          fileOperations(input.context),
+          projectPath,
+          requestedProjectTitle
+        )
 
         return {
           message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectTitle}"`,
@@ -610,15 +621,18 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         newProjectName
       )
       const { name: newFileName } = await getNextFileName({
+        fileOperations: fileOperations(input.context),
         entryName: requestedFileNameWithExtension,
         baseDir,
         wasmInstance,
       })
 
-      const configuration = await readAppSettingsFile(wasmInstance)
+      const operations = fileOperations(input.context)
+      const configuration = await readAppSettingsFile(operations, wasmInstance)
 
       // Create the project around the file if newProject
       await createNewProjectDirectory(
+        operations,
         newProjectName,
         wasmInstance,
         requestedCode,
@@ -647,7 +661,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         if (!requestProjectDirectoryPath) {
           return { value: true, error: undefined }
         }
-        const result = await canReadWriteDirectory(requestProjectDirectoryPath)
+        const result = await canReadWriteDirectory(
+          fileOperations(input.context),
+          requestProjectDirectoryPath
+        )
         return result
       }
     ),
@@ -1027,7 +1044,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         let fileContents = new Uint8Array()
         if (fsZds.extname(input.requestedAbsolutePath) === FILE_EXT) {
           const wasmInstance = await input.context.wasmInstancePromise
-          const configuration = await readAppSettingsFile(wasmInstance)
+          const configuration = await readAppSettingsFile(
+            fileOperations(input.context),
+            wasmInstance
+          )
           if (err(configuration)) {
             return Promise.reject(configuration)
           }

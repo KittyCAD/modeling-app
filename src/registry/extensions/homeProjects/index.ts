@@ -25,6 +25,7 @@ import {
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectDuplicateRealization,
@@ -523,6 +524,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const projectInfo = await getProjectInfo(
+        ctx.services.get(fileOperationsService),
         syncedProject.projectPath,
         await wasmInstancePromise
       )

@@ -1,5 +1,6 @@
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 const getVisibleCanvasCrop = (canvas: HTMLCanvasElement) => {
   const canvasRect = canvas.getBoundingClientRect()
@@ -160,8 +161,10 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
 }
 
 export function createThumbnailPNGOnDesktop({
+  fileOperations,
   projectDirectoryWithoutEndingSlash,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
 }) {
   setTimeout(() => {
@@ -170,7 +173,11 @@ export function createThumbnailPNGOnDesktop({
     }
     const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
     // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-    writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
+    writeProjectThumbnailFile(
+      fileOperations,
+      dataUrl,
+      projectDirectoryWithoutEndingSlash
+    )
       .then(() => {})
       .catch((e) => {
         console.error(

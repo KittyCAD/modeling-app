@@ -1,13 +1,24 @@
 import type { MlToolResult } from '@kittycad/lib'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
-  collectProjectFiles,
+  collectProjectFiles as collectProjectFilesWithFileOperations,
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { beforeAll, describe, expect, it } from 'vitest'
+
+const collectProjectFiles = (
+  args: Omit<
+    Parameters<typeof collectProjectFilesWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  collectProjectFilesWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
 
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,

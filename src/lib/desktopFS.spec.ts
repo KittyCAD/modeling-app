@@ -1,6 +1,6 @@
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -82,6 +82,7 @@ describe(`Getting unique project names`, () => {
       )
 
       const nextFile = await getNextFileName({
+        fileOperations: testFileOperations,
         entryName: 'notes.pdf',
         baseDir,
         wasmInstance,
@@ -105,6 +106,7 @@ describe(`Getting unique project names`, () => {
       )
 
       const nextFile = await getNextFileName({
+        fileOperations: testFileOperations,
         entryName: 'bracket.prt.2',
         baseDir,
         wasmInstance,

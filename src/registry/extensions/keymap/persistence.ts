@@ -1,14 +1,16 @@
 import { KEYMAP_FILE_NAME } from '@src/lib/constants'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
 import { isArray } from '@src/lib/utils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
+  createEmptyPersistedKeymap,
   KEYMAP_SCHEMA_VERSION,
   type KeymapArguments,
   type KeymapBinding,
-  type PersistedKeymap,
-  createEmptyPersistedKeymap,
   normalizePersistedKeymap,
+  type PersistedKeymap,
 } from '@src/registry/contracts/keymap'
 import { parse, stringify } from 'smol-toml'
 
@@ -17,28 +19,33 @@ export async function getUserKeymapFilePath() {
   return fsZds.join(fsZds.dirname(settingsFilePath), KEYMAP_FILE_NAME)
 }
 
-export async function readUserKeymapFile(): Promise<PersistedKeymap> {
+export async function readUserKeymapFile(
+  fileOperations: FileOperationsRegistryService
+): Promise<PersistedKeymap> {
   const keymapFilePath = await getUserKeymapFilePath()
 
   try {
-    await fsZds.stat(keymapFilePath)
+    await fileOperations.stat(keymapFilePath)
   } catch (error) {
-    if (error === 'ENOENT') {
+    if (error instanceof FileNotFound) {
       return createEmptyPersistedKeymap()
     }
 
     return Promise.reject(error)
   }
 
-  const content = await fsZds.readFile(keymapFilePath, {
-    encoding: 'utf-8',
-  })
+  const content = new TextDecoder().decode(
+    await fileOperations.readFile(keymapFilePath)
+  )
   return parsePersistedKeymap(parse(content))
 }
 
-export async function writeUserKeymapFile(keymap: PersistedKeymap) {
+export async function writeUserKeymapFile(
+  fileOperations: FileOperationsRegistryService,
+  keymap: PersistedKeymap
+) {
   const keymapFilePath = await getUserKeymapFilePath()
-  await fsZds.writeFile(
+  await fileOperations.writeFile(
     keymapFilePath,
     new TextEncoder().encode(stringify(serializePersistedKeymap(keymap)))
   )

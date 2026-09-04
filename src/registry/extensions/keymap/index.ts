@@ -15,28 +15,29 @@ import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
-  DEFAULT_COMMAND_SCOPES,
-  EDITABLE_FOCUSED_COMMAND_SCOPE,
-  GLOBAL_COMMAND_SCOPES,
-  SETTINGS_COMMAND_SCOPE,
+  type CommandScopeService,
   commandKey,
   commandScopeService,
   commandScopesValueSpec,
   commandSystemService,
+  DEFAULT_COMMAND_SCOPES,
+  EDITABLE_FOCUSED_COMMAND_SCOPE,
+  GLOBAL_COMMAND_SCOPES,
   getEffectiveCommandScopeSet,
   isCommandAvailable,
-  type CommandScopeService,
+  SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  createEmptyPersistedKeymap,
+  createKeymapTree,
+  createUnbindBinding,
   type KeymapArguments,
   type KeymapItem,
   type KeymapService,
   type KeymapSource,
-  createEmptyPersistedKeymap,
-  createKeymapTree,
-  createUnbindBinding,
   keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
@@ -61,6 +62,7 @@ type BuiltInKeymapCommand = {
 }
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
+  const fileOperations = () => ctx.services.get(fileOperationsService)
   const contributedKeymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
   const commandScopesSignal = ctx.valueSpecs.signal(commandScopesValueSpec)
   const persistedKeymap = signal(createEmptyPersistedKeymap())
@@ -192,7 +194,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  const initialPersistedKeymapLoad = readUserKeymapFile()
+  const initialPersistedKeymapLoad = Promise.resolve()
+    .then(() => readUserKeymapFile(fileOperations()))
     .then((keymap) => {
       if (persistedKeymapRevision === 0) {
         persistedKeymap.value = keymap
@@ -358,7 +361,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       const normalizedKeymap = normalizePersistedKeymap(keymap)
       persistedKeymapRevision += 1
       persistedKeymap.value = normalizedKeymap
-      await writeUserKeymapFile(normalizedKeymap)
+      await writeUserKeymapFile(fileOperations(), normalizedKeymap)
     },
     addUserBinding: async (binding) => {
       await serviceImpl.savePersistedKeymap({

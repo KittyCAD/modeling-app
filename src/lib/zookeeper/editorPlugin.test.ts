@@ -1,16 +1,27 @@
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
-  type ZookeeperEditPatch,
-  applyZookeeperEditPatch,
+  applyZookeeperEditPatch as applyZookeeperEditPatchWithFileOperations,
   mergeZookeeperEditPatches,
+  type ZookeeperEditPatch,
 } from '@src/lib/zookeeper/editorPlugin'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
 import { createTwoFilesPatch } from 'diff'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
   reportSystemIOError: vi.fn(),
 }))
+
+const applyZookeeperEditPatch = (
+  args: Omit<
+    Parameters<typeof applyZookeeperEditPatchWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  applyZookeeperEditPatchWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
 
 vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
@@ -635,14 +646,20 @@ describe('Zookeeper history patch replay', () => {
           },
           direction: 'redo',
         })
-      ).rejects.toThrow('disk write failed')
+      ).rejects.toMatchObject({
+        _tag: 'FileIoFailure',
+        cause: writeError,
+      })
 
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
       await expect(fsZds.readFile(modifiedPath, 'utf8')).resolves.toBe(
         'length = 10\n'
       )
       expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith({
-        error: writeError,
+        error: expect.objectContaining({
+          _tag: 'FileIoFailure',
+          cause: writeError,
+        }),
         operation: 'zookeeper_history_replay',
         risk: 'destructive',
         source: 'ZookeeperEditor',

@@ -5,6 +5,7 @@ import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
 import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
  * A non-KCL text file (e.g. Markdown or plain text) opened for editing in the
@@ -40,7 +41,7 @@ export type ActiveTextFile =
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
-const encoder = new TextEncoder()
+const decoder = new TextDecoder()
 
 /** Debounce for writing edits to disk, mirroring `KclManager.writeToFile`. */
 const WRITE_DEBOUNCE_MS = 1000
@@ -56,7 +57,11 @@ let latestOpenRequestId = 0
  * The most recent unsaved edit, carrying its own path so a flush always writes
  * to the correct file even if the active file changes before the timer fires.
  */
-let pendingWrite: { path: string; text: string } | null = null
+let pendingWrite: {
+  fileOperations: FileOperationsRegistryService
+  path: string
+  text: string
+} | null = null
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
 
 /** Whether a file at `path` can be opened + edited as plain text in the code pane. */
@@ -65,9 +70,13 @@ export function isEditableTextFile(path: string): boolean {
   return EDITABLE_TEXT_FILE_EXTENSIONS.some((ext) => lower.endsWith(ext))
 }
 
-async function performWrite(path: string, text: string): Promise<void> {
+async function performWrite(
+  fileOperations: FileOperationsRegistryService,
+  path: string,
+  text: string
+): Promise<void> {
   try {
-    await fsZds.writeFile(path, encoder.encode(text))
+    await fileOperations.writeFile(path, text)
   } catch (error) {
     // The file may have been deleted/moved out from under us (e.g. via the
     // file tree). Don't recreate it or surface a scary error in that case.
@@ -103,7 +112,7 @@ export async function flushActiveTextFileWrite(): Promise<void> {
   const write = pendingWrite
   pendingWrite = null
   if (write) {
-    await performWrite(write.path, write.text)
+    await performWrite(write.fileOperations, write.path, write.text)
   }
 }
 
@@ -112,12 +121,16 @@ export async function flushActiveTextFileWrite(): Promise<void> {
  * by the editor on every document change. Ignores writes whose path is no
  * longer the active file.
  */
-export function scheduleActiveTextFileWrite(path: string, text: string): void {
+export function scheduleActiveTextFileWrite(
+  fileOperations: FileOperationsRegistryService,
+  path: string,
+  text: string
+): void {
   // `peek()` avoids creating a signal subscription from a non-reactive context.
   if (activeTextFileSignal.peek()?.path !== path) {
     return
   }
-  pendingWrite = { path, text }
+  pendingWrite = { fileOperations, path, text }
   if (pendingWriteTimeout !== undefined) {
     clearTimeout(pendingWriteTimeout)
   }
@@ -126,7 +139,7 @@ export function scheduleActiveTextFileWrite(path: string, text: string): void {
     const write = pendingWrite
     pendingWrite = null
     if (write) {
-      void performWrite(write.path, write.text)
+      void performWrite(write.fileOperations, write.path, write.text)
     }
   }, WRITE_DEBOUNCE_MS)
 }
@@ -143,7 +156,10 @@ export function clearActiveTextFile(): void {
  * Open a text file for editing in the code pane. Persists any pending edits to
  * the previously-open file first, then reads the requested file from disk.
  */
-export async function openActiveTextFile(path: string): Promise<void> {
+export async function openActiveTextFile(
+  fileOperations: FileOperationsRegistryService,
+  path: string
+): Promise<void> {
   // Persist edits to the outgoing file before switching.
   await flushActiveTextFileWrite()
 
@@ -158,7 +174,7 @@ export async function openActiveTextFile(path: string): Promise<void> {
   }
 
   try {
-    const text = await fsZds.readFile(path, { encoding: 'utf-8' })
+    const text = decoder.decode(await fileOperations.readFile(path))
     if (requestId !== latestOpenRequestId) {
       return
     }
