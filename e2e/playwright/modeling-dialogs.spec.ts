@@ -51,6 +51,76 @@ test.describe('Modeling dialogs', { tag: '@desktop' }, () => {
     await editor.expectEditor.not.toContain('extrude(')
   })
 
+  test('Keeps expanded dialog controls inside the modeling viewport', async ({
+    page,
+    toolbar,
+  }) => {
+    await toolbar.extrudeButton.click()
+    const dialog = page.getByTestId('modeling-dialog')
+    const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
+
+    await expect
+      .poll(async () => {
+        const dialogBounds = await dialog.boundingBox()
+        const toolbarBounds = await page.getByTestId('toolbar').boundingBox()
+        return dialogBounds && toolbarBounds
+          ? Math.round(dialogBounds.y - toolbarBounds.y - toolbarBounds.height)
+          : 0
+      })
+      .toBe(8)
+
+    await dialog.getByText('More options', { exact: true }).click()
+    for (const height of [800, 600]) {
+      await page.setBodyDimensions({ width: 1200, height })
+      await expect
+        .poll(async () => {
+          const submitBounds = await submit.boundingBox()
+          const sceneBounds = await page
+            .locator('#modeling-area-container')
+            .boundingBox()
+          return submitBounds && sceneBounds
+            ? submitBounds.y +
+                submitBounds.height -
+                (sceneBounds.y + sceneBounds.height)
+            : 1
+        })
+        .toBeLessThanOrEqual(0)
+      await expect(submit).toBeInViewport()
+    }
+
+    const initialBounds = await dialog.evaluate((element) => {
+      const bounds = element.getBoundingClientRect()
+      return { height: bounds.height, centerX: bounds.x + bounds.width / 2 }
+    })
+    const sceneBottom = await page
+      .locator('#modeling-area-container')
+      .evaluate((element) => element.getBoundingClientRect().bottom)
+    await dialog.getByText('Extrude', { exact: true }).hover()
+    await page.mouse.down()
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await page.mouse.move(initialBounds.centerX, sceneBottom - 1 - attempt)
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+      )
+      await expect
+        .poll(async () => {
+          const height = await dialog.evaluate(
+            (element) => element.getBoundingClientRect().height
+          )
+          return Math.abs(height - initialBounds.height)
+        })
+        .toBeLessThanOrEqual(1)
+    }
+    await page.mouse.up()
+    await expect
+      .poll(() =>
+        submit.evaluate((element) => element.getBoundingClientRect().bottom)
+      )
+      .toBeLessThanOrEqual(sceneBottom)
+    await expect(submit).toBeInViewport()
+  })
+
   test('Creates and edits an extrude with selection removal and extent changes', async ({
     page,
     toolbar,

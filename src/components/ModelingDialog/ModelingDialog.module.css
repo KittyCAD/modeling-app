@@ -1,5 +1,5 @@
 .kclEditor {
-  @apply min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight dark:border-chalkboard-70;
+  @apply min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs leading-tight dark:border-chalkboard-70;
 }
 
 .kclEditorDisabled {
@@ -23,7 +23,8 @@
 }
 
 .kclEditor :global(.cm-scroller) {
-  font-family: inherit;
+  font-family:
+    "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
   line-height: inherit;
   overflow: hidden;
 }

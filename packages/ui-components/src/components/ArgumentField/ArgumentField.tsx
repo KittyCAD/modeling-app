@@ -110,7 +110,7 @@ export function ArgumentField<Item extends SelectionListItem>({
 }: ArgumentFieldProps<Item>) {
   const fieldClassName = 'flex flex-col gap-1'
   const inputClassName =
-    'min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed disabled:bg-chalkboard-10 disabled:text-chalkboard-60 dark:border-chalkboard-70 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50'
+    'min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs leading-tight focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-0 focus-visible:outline-appForeground disabled:cursor-not-allowed disabled:bg-chalkboard-10 disabled:text-chalkboard-60 dark:border-chalkboard-70 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50'
 
   if (inputType === 'options') {
     const selectedIndex = options.findIndex((option) =>
@@ -268,14 +268,14 @@ export function ArgumentField<Item extends SelectionListItem>({
               }
             />
             {!compactSelection && !disabled && !isSelecting && (
-              <p className="mt-1.5 mb-0 border-chalkboard-20 border-t pt-1.5 text-[10px] leading-tight text-chalkboard-60 dark:border-chalkboard-70 dark:text-chalkboard-40">
+              <p className="mt-1.5 mb-0 border-chalkboard-20 border-t pt-1.5 text-[11px] leading-snug text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-40">
                 Click to {selectionItems.length > 0 ? 'change' : 'pick'} the
                 selection in the scene
               </p>
             )}
             {isSelecting && (
               <p
-                className="mt-1.5 mb-0 border-primary/20 border-t pt-1.5 text-[10px] leading-tight text-primary dark:border-primary/25 dark:text-primary"
+                className="mt-1.5 mb-0 border-primary/20 border-t pt-1.5 text-[11px] leading-snug text-chalkboard-70 dark:border-primary/25 dark:text-chalkboard-30"
                 aria-live="polite"
               >
                 {currentSelectionLabel ? (

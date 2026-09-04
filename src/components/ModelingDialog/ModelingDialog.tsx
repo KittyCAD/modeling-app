@@ -9,6 +9,7 @@ import {
 } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CodemodReviewDiff } from '@src/components/CommandBar/CodemodReviewDiff'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import {
   getActiveSelectionFieldName,
@@ -529,9 +530,8 @@ export function ModelingDialog() {
     Record<string, ModelingDialogKclValidationState>
   >({})
   const dialogPositioningRef = useRef<HTMLDivElement>(null)
-  const [dialogTopOffset, setDialogTopOffset] = useState(() =>
-    getToolbarBottomOffset(null)
-  )
+  const [dialogTopOffset, setDialogTopOffset] = useState(0)
+  const [dialogMaxHeight, setDialogMaxHeight] = useState<number>()
   const modelingAreaContainerRef = useRef<HTMLElement | null>(
     typeof window === 'undefined'
       ? null
@@ -746,28 +746,58 @@ export function ModelingDialog() {
   }, [])
 
   useLayoutEffect(() => {
-    const updateDialogTopOffset = () => {
-      setDialogTopOffset(getToolbarBottomOffset(dialogPositioningRef.current))
-    }
-
-    updateDialogTopOffset()
-
+    const wrapper = dialogPositioningRef.current
+    const dialog = wrapper?.querySelector<HTMLElement>(
+      '[data-testid="modeling-dialog"]'
+    )
+    const container = modelingAreaContainerRef.current
     const toolbar = window.document.querySelector<HTMLElement>(
       '[data-testid="toolbar"]'
     )
-    if (!toolbar) {
+    if (!wrapper || !dialog) {
       return
     }
 
-    const observer = new ResizeObserver(updateDialogTopOffset)
-    observer.observe(toolbar)
-    window.addEventListener('resize', updateDialogTopOffset)
+    const updateDialogBounds = () => {
+      setDialogTopOffset(getToolbarBottomOffset(wrapper))
+      const bottom = Math.min(
+        window.innerHeight,
+        container?.getBoundingClientRect().bottom ?? window.innerHeight
+      )
+      setDialogMaxHeight(
+        Math.max(
+          0,
+          bottom -
+            dialog.getBoundingClientRect().top -
+            MODELING_DIALOG_TOOLBAR_GAP_PX
+        )
+      )
+    }
+
+    updateDialogBounds()
+
+    const observer = new ResizeObserver(updateDialogBounds)
+    observer.observe(dialog)
+    if (toolbar) {
+      observer.observe(toolbar)
+    }
+    if (container) {
+      observer.observe(container)
+    }
+    // Dragging changes the inline top without resizing the dialog.
+    const positionObserver = new MutationObserver(updateDialogBounds)
+    positionObserver.observe(dialog, {
+      attributes: true,
+      attributeFilter: ['style'],
+    })
+    window.addEventListener('resize', updateDialogBounds)
 
     return () => {
       observer.disconnect()
-      window.removeEventListener('resize', updateDialogTopOffset)
+      positionObserver.disconnect()
+      window.removeEventListener('resize', updateDialogBounds)
     }
-  }, [])
+  }, [dialogTopOffset])
 
   useLayoutEffect(() => {
     if (!selectedCommandKey) {
@@ -1663,14 +1693,18 @@ export function ModelingDialog() {
       style={{ paddingTop: dialogTopOffset }}
     >
       <Draggable
-        className="pointer-events-auto relative ml-auto mr-2 flex !h-auto w-[calc(100%_-_1rem)] max-w-[21rem] flex-col overflow-hidden rounded-md border border-chalkboard-30 bg-chalkboard-10 text-chalkboard-100 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-100 dark:text-chalkboard-10"
+        className="pointer-events-auto relative mb-2 ml-auto mr-2 flex !h-auto w-[calc(100%_-_1rem)] max-w-[21rem] flex-col overflow-hidden rounded-md border border-chalkboard-30 bg-chalkboard-10 text-chalkboard-100 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-100 dark:text-chalkboard-10"
         containerRef={modelingAreaContainerRef}
-        startInContainer
         data-testid="modeling-dialog"
-        style={{ maxHeight: `calc(100vh - ${dialogTopOffset + 16}px)` }}
+        style={{ maxHeight: dialogMaxHeight }}
         Handle={
           <DialogHeader
             title={selectedCommand.displayName || selectedCommand.name}
+            icon={
+              selectedCommand.icon && (
+                <CustomIcon name={selectedCommand.icon} className="h-5 w-5" />
+              )
+            }
             onClose={() => commands.send({ type: 'Close' })}
           />
         }
@@ -1679,7 +1713,7 @@ export function ModelingDialog() {
           onSubmit={(event) => {
             void handleSubmit(event)
           }}
-          className="flex min-h-0 w-full flex-col px-3 pt-2 text-xs"
+          className="flex min-h-0 w-full flex-col overflow-hidden px-3 pt-2 text-xs"
         >
           {selectedCommand.description &&
             selectedCommand.dialogLayout?.showCommandDescription !== false && (

@@ -541,7 +541,7 @@ export function ModelingDialogKclInput({
         )}
       </div>
       {!isEmpty && (
-        <div className="flex min-w-0 items-center gap-1 text-[10px] leading-tight">
+        <div className="flex min-w-0 items-center gap-1 text-[11px] leading-snug">
           <span className="text-chalkboard-60 dark:text-chalkboard-40">=</span>
           <span className={summaryClassName}>
             {isExecuting || !calcResult ? (
@@ -557,13 +557,14 @@ export function ModelingDialogKclInput({
         </div>
       )}
       {arg.createVariable !== 'disallow' && createNewVariable && (
-        <div className="flex min-w-0 items-center gap-1.5 text-[10px] leading-tight">
+        <div className="flex min-w-0 items-center gap-2 text-[11px] leading-snug">
           <input
             type="text"
             id={`${inputId}-variable-name`}
             name={`${inputId}-variable-name`}
-            className="min-w-0 flex-1 border-0 border-chalkboard-50 border-b border-solid bg-transparent px-0 py-px focus:outline-none"
+            className="mono min-h-7 min-w-0 flex-1 rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs leading-tight focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-0 focus-visible:outline-appForeground disabled:cursor-not-allowed disabled:bg-chalkboard-10 disabled:text-chalkboard-60 dark:border-chalkboard-70 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50"
             placeholder="Variable name"
+            aria-label="Variable name"
             value={newVariableName}
             disabled={disabled}
             autoCapitalize="off"

@@ -41,7 +41,7 @@ function ChevronIcon({ direction }: { direction: 'up' | 'down' }) {
   )
 }
 
-function TrashIcon() {
+function RemoveIcon() {
   return (
     <svg
       viewBox="0 0 20 20"
@@ -50,10 +50,7 @@ function TrashIcon() {
       aria-hidden="true"
       className="h-4 w-4"
     >
-      <path
-        d="M8.5 6H5V8H6M8.5 6V4H11.5V6M8.5 6H11.5M11.5 6H15V8H14M6 8V15.5H8M6 8H14M14 8V15.5H12M8 15.5V10M8 15.5H10M12 15.5V10M12 15.5H10M10 15.5V12"
-        stroke="currentColor"
-      />
+      <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" />
     </svg>
   )
 }
@@ -79,11 +76,11 @@ export function SelectionList<Item extends SelectionListItem>({
     <div className="flex flex-col gap-1">
       {!compact && (
         <div className="flex min-w-0 items-center justify-between gap-2">
-          <span className="flex min-w-0 items-center gap-1.5 text-[10px] uppercase leading-tight text-chalkboard-60 dark:text-chalkboard-40">
+          <span className="flex min-w-0 items-center gap-1.5 text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-30">
             <span className="truncate">{heading}</span>
             <span
               className={[
-                'rounded-sm px-1 py-px text-[9px] leading-none',
+                'rounded-sm px-1 py-0.5 text-[10px] tabular-nums leading-none',
                 isActive
                   ? 'bg-primary/15 text-primary dark:bg-primary/20 dark:text-primary'
                   : 'bg-chalkboard-20 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30',
@@ -96,7 +93,7 @@ export function SelectionList<Item extends SelectionListItem>({
             {items.length > 0 && onClear && (
               <button
                 type="button"
-                className="pointer-events-auto m-0 min-h-6 rounded-sm border-none bg-transparent px-1.5 py-1 text-[10px] leading-tight text-chalkboard-60 hover:bg-chalkboard-20 hover:text-destroy-80 focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-destroy-40"
+                className="pointer-events-auto m-0 min-h-6 rounded-sm border-none bg-transparent px-1.5 py-1 text-xs leading-tight text-chalkboard-70 hover:bg-chalkboard-20 hover:text-destroy-80 focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground dark:text-chalkboard-30 dark:hover:bg-chalkboard-80 dark:hover:text-destroy-40"
                 onClick={(event) => {
                   event.stopPropagation()
                   onClear()
@@ -110,7 +107,7 @@ export function SelectionList<Item extends SelectionListItem>({
         </div>
       )}
       {hint && (!compact || items.length === 0) && (
-        <p className="my-0 text-[10px] leading-tight text-chalkboard-60 dark:text-chalkboard-40">
+        <p className="my-0 text-[11px] leading-snug text-chalkboard-70 dark:text-chalkboard-40">
           {hint}
         </p>
       )}
@@ -134,7 +131,7 @@ export function SelectionList<Item extends SelectionListItem>({
                 {ordered &&
                   items.length > 1 &&
                   (index === 0 || index === items.length - 1) && (
-                    <span className="shrink-0 rounded-sm bg-chalkboard-20 px-1 py-px text-[9px] leading-none text-chalkboard-60 dark:bg-chalkboard-80 dark:text-chalkboard-40">
+                    <span className="shrink-0 rounded-sm bg-chalkboard-20 px-1 py-0.5 text-[10px] leading-none text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30">
                       {index === 0 ? 'Start' : 'End'}
                     </span>
                   )}
@@ -184,7 +181,7 @@ export function SelectionList<Item extends SelectionListItem>({
                     aria-label={`Remove selection ${index + 1}`}
                     title="Remove selection"
                   >
-                    <TrashIcon />
+                    <RemoveIcon />
                   </button>
                 )}
               </span>

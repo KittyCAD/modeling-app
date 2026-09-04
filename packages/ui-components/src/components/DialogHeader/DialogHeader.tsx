@@ -1,5 +1,8 @@
+import type { ReactNode } from 'react'
+
 export type DialogHeaderProps = {
   title: string
+  icon?: ReactNode
   onClose: () => void
   closeLabel?: string
 }
@@ -36,13 +39,16 @@ function CloseIcon() {
 
 export function DialogHeader({
   title,
+  icon,
   onClose,
   closeLabel = 'Cancel',
 }: DialogHeaderProps) {
   return (
-    <>
-      <div className="flex min-h-8 cursor-move select-none items-center gap-1.5 border-chalkboard-30 border-b bg-chalkboard-10 px-2 py-1 pr-20 text-chalkboard-60 dark:border-chalkboard-80 dark:bg-chalkboard-100 dark:text-chalkboard-40">
-        <DragHandleIcon />
+    <div className="flex min-h-8 shrink-0 cursor-move select-none items-center justify-between gap-2 border-chalkboard-30 border-b bg-chalkboard-10 px-2 py-1 dark:border-chalkboard-80 dark:bg-chalkboard-100">
+      <div className="flex min-w-0 items-center gap-1.5">
+        <span className="flex shrink-0 items-center text-chalkboard-70 dark:text-chalkboard-40">
+          {icon ?? <DragHandleIcon />}
+        </span>
         <span className="min-w-0 truncate text-xs font-medium text-chalkboard-90 dark:text-chalkboard-10">
           {title}
         </span>
@@ -51,7 +57,7 @@ export function DialogHeader({
         data-testid="command-bar-close-button"
         onClick={onClose}
         onMouseDown={(event) => event.stopPropagation()}
-        className="!absolute top-0.5 right-1 m-0 flex h-7 items-center gap-1 rounded-sm border-none bg-transparent px-2 py-1 text-xs text-chalkboard-80 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90"
+        className="m-0 flex h-6 shrink-0 items-center gap-1 rounded-sm border-none bg-transparent px-1.5 py-1 text-xs text-chalkboard-80 hover:bg-chalkboard-20 focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground dark:text-chalkboard-20 dark:hover:bg-chalkboard-90"
         type="button"
         aria-label={closeLabel}
         title={`${closeLabel} esc`}
@@ -59,6 +65,6 @@ export function DialogHeader({
         <CloseIcon />
         <span>{closeLabel}</span>
       </button>
-    </>
+    </div>
   )
 }

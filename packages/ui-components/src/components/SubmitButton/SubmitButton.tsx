@@ -57,14 +57,18 @@ export function SubmitButton({
   checkingLabel = 'Submitting...',
 }: SubmitButtonProps) {
   const resolvedDisabled = disabled || isChecking
-  const bgClassName = resolvedDisabled ? '!bg-3' : '!bg-primary'
-  const iconClassName = resolvedDisabled ? '!text-3' : '!text-chalkboard-10'
+  const bgClassName = resolvedDisabled
+    ? 'bg-chalkboard-20/50 dark:bg-chalkboard-90'
+    : '!bg-primary'
+  const iconClassName = resolvedDisabled
+    ? 'text-chalkboard-60 dark:text-chalkboard-40'
+    : '!text-chalkboard-10'
 
   return (
     <button
       type="submit"
       tabIndex={0}
-      className={`action-button group m-0 flex w-fit items-center gap-2 rounded-sm border border-solid border-chalkboard-30 p-0 text-xs leading-none text-chalkboard-100 hover:border-chalkboard-40 hover:brightness-110 hover:shadow focus:outline-current dark:border-chalkboard-70 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 ${bgClassName}`}
+      className={`action-button group m-0 flex w-fit shrink-0 items-center gap-2 rounded-sm border border-solid border-chalkboard-30 p-0 text-xs leading-none text-chalkboard-100 enabled:hover:border-chalkboard-40 enabled:hover:brightness-110 enabled:hover:shadow focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-appForeground disabled:cursor-not-allowed disabled:border-chalkboard-20 dark:border-chalkboard-70 dark:text-chalkboard-10 dark:enabled:hover:border-chalkboard-60 dark:disabled:border-chalkboard-70 ${bgClassName}`}
       disabled={resolvedDisabled}
       aria-busy={isChecking}
     >
