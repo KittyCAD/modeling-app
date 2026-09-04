@@ -1797,6 +1797,14 @@ export class KclManager extends File {
   )
 
   /**
+   * Finish the latest direct editor execution before a workflow consumes the
+   * current AST or Rust scene graph.
+   */
+  async flushPendingEditorExecution(): Promise<void> {
+    await this.deferredExecution.flush()
+  }
+
+  /**
    * `EditorView.setState` bypasses the usual editor update effects. After
    * restoring a captured state for Zookeeper history, manually resync the
    * manager state, recovery snapshot, Rust file contents, and deferred
