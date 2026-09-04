@@ -1390,7 +1390,7 @@ export default {
     "returnType": null,
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
