@@ -118,8 +118,60 @@ function appendExpectedRevisionParam(pathname: string, revision?: Revision) {
   return `${url.pathname}${url.search}`
 }
 
-export async function listRemoteProjects(config: CloudSyncConfig) {
-  return cloudJson<RemoteProjectSummary[]>(config, '/user/projects')
+function isRemoteProjectSummary(value: unknown): value is RemoteProjectSummary {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    typeof value.id === 'string' &&
+    value.id.trim().length > 0
+  )
+}
+
+export async function listRemoteProjects(
+  config: CloudSyncConfig,
+  beforeRequest: () => Promise<void> = async () => undefined
+): Promise<RemoteProjectSummary[]> {
+  const projects = new Map<string, RemoteProjectSummary>()
+  const seenCursors = new Set<string>()
+  let targetPath = '/user/projects'
+
+  while (true) {
+    await beforeRequest()
+    const response = await cloudJson<unknown>(config, targetPath)
+    const legacy = isArray(response)
+    const page =
+      !legacy && response && typeof response === 'object'
+        ? (response as { items?: unknown; next_page?: unknown })
+        : undefined
+    const items = legacy ? response : page?.items
+    if (!isArray(items) || !items.every(isRemoteProjectSummary)) {
+      return Promise.reject(new Error('Invalid remote project list.'))
+    }
+
+    // An array is a complete legacy inventory, including during API rollback.
+    if (legacy) {
+      projects.clear()
+    }
+    for (const item of items) {
+      projects.set(item.id, item)
+    }
+    if (legacy || page?.next_page === null) {
+      return [...projects.values()]
+    }
+    const cursor = page?.next_page
+    if (
+      typeof cursor !== 'string' ||
+      !cursor.trim() ||
+      seenCursors.has(cursor)
+    ) {
+      return Promise.reject(
+        new Error('Invalid remote project pagination cursor.')
+      )
+    }
+    seenCursors.add(cursor)
+    targetPath = `/user/projects?${new URLSearchParams({ page_token: cursor })}`
+  }
 }
 
 export async function getRemoteProject(

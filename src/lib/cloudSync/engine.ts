@@ -3136,10 +3136,18 @@ async function syncRemoteIndex(
     await localFs.mkdir(projectDirectory, { recursive: true })
   }
 
-  const remoteProjects = await runCloudSyncProjectApiRequest(
-    throttleProjectApiRequest,
-    () => listRemoteProjects(config)
-  )
+  const indexConfig = config
+  const remoteProjects = await listRemoteProjects(indexConfig, async () => {
+    await throttleProjectApiRequest()
+    if (config !== indexConfig) {
+      return Promise.reject(
+        new Error('Cloud sync configuration changed during project refresh.')
+      )
+    }
+  })
+  if (config !== indexConfig) {
+    return
+  }
   cloudSyncRemoteProjects.value = remoteProjects
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
@@ -3197,6 +3205,30 @@ async function syncRemoteIndex(
     }
 
     try {
+      // Listing pages is not a snapshot. Only a confirmed 404 may remove or
+      // detach a local project that was absent from the completed inventory.
+      try {
+        const remoteProjectId = localMetadata.remoteProjectId
+        const existing = await runCloudSyncProjectApiRequest(
+          throttleProjectApiRequest,
+          () => getRemoteProject(indexConfig, remoteProjectId)
+        )
+        if (config !== indexConfig) {
+          return
+        }
+        remoteProjects.push(existing)
+        remoteProjectIds.add(remoteProjectId)
+        cloudSyncRemoteProjects.value = [...remoteProjects]
+        continue
+      } catch (error) {
+        if (config !== indexConfig) {
+          return
+        }
+        if (!(error instanceof CloudApiError && error.status === 404)) {
+          // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+          throw error
+        }
+      }
       const nextMetadata = await reconcileMissingRemoteProject(localMetadata, {
         hasPendingLocalChanges: pendingProjectPaths.has(
           normalizePathForSync(localMetadata.localProjectPath)
@@ -3482,6 +3514,7 @@ async function runCloudSync() {
     return
   }
 
+  const syncConfig = config
   syncInProgress = true
   pendingStatusSyncedAt = undefined
   updateStatus({ enabled: true })
@@ -3518,6 +3551,9 @@ async function runCloudSync() {
         }),
       })
       await syncRemoteIndex(throttleProjectApiRequest).catch((error) => {
+        if (config !== syncConfig) {
+          return
+        }
         remoteIndexFailed = true
         remoteIndexFailureMessage = errorMessage(error)
         remoteIndexFailure = error
@@ -3529,6 +3565,9 @@ async function runCloudSync() {
         })
       })
 
+      if (config !== syncConfig) {
+        return
+      }
       entries = await getAllOutboxEntries()
       syncScopePlan = getCloudSyncScopePlanForScope(entries, scopedScope)
     }
