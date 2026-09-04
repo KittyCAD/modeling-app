@@ -91,7 +91,7 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 vi.mock('@src/lib/projectIdentity', () => projectIdentityMocks)
 
 vi.mock('@src/lib/zookeeper/zookeeperConversationStore', () => ({
-  zookeeperConversationStore: conversationStoreMocks,
+  makeZookeeperConversationStore: vi.fn(() => conversationStoreMocks),
 }))
 
 const fsZdsMocks = vi.hoisted(() => {
@@ -654,7 +654,7 @@ describe('home project actions', () => {
       mode: fsZdsConstants.S_IFDIR,
       mtimeMs: 100,
     })
-    desktopMocks.getProjectInfo.mockImplementation(async (projectPath) => {
+    desktopMocks.getProjectInfo.mockImplementation(async (_, projectPath) => {
       const project = projects.find((entry) => entry.path === projectPath)
       if (!project) {
         throw new Error(`Unexpected project path: ${String(projectPath)}`)
@@ -664,6 +664,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
@@ -720,6 +721,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
@@ -775,6 +777,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
