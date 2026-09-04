@@ -5,6 +5,9 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -12,11 +15,18 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  getBodyIndex,
+  getNodeFromPath,
   getVariableExprsFromSelection,
   stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  ExpressionStatement,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -31,6 +41,123 @@ type BooleanSelectionGroup = {
   selections: Selections
   exprs: Expr[]
   pathIfPipe?: PathToNode
+}
+
+type BooleanSelectionRecord = {
+  exprs: Expr[]
+  pathIfPipe?: PathToNode
+  pipeBodyIndex?: number
+}
+
+function resolveBooleanSelectionGroups({
+  selectionGroups,
+  artifactGraph,
+  ast,
+  wasmInstance,
+}: {
+  selectionGroups: Array<{
+    selections: Selections
+    requiresExplicitExpr?: boolean
+  }>
+  artifactGraph: ArtifactGraph
+  ast: Node<Program>
+  wasmInstance: ModuleType
+}): Error | BooleanSelectionGroup[] {
+  const recordsByGroup: BooleanSelectionRecord[][] = []
+  const pipeBodyIndexes = new Set<number>()
+  let mustMaterializePipes = false
+
+  for (const { selections, requiresExplicitExpr } of selectionGroups) {
+    const records: BooleanSelectionRecord[] = []
+    for (const selection of selections.graphSelections) {
+      const vars = getVariableExprsFromSelection(
+        {
+          graphSelections: [selection],
+          otherSelections: [],
+        },
+        artifactGraph,
+        ast,
+        wasmInstance,
+        undefined,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
+      if (err(vars)) {
+        return vars
+      }
+
+      let pipeBodyIndex: number | undefined
+      if (vars.pathIfPipe) {
+        const expression = getNodeFromPath<ExpressionStatement>(
+          ast,
+          vars.pathIfPipe,
+          wasmInstance,
+          'ExpressionStatement'
+        )
+        if (
+          !err(expression) &&
+          expression.node.type === 'ExpressionStatement'
+        ) {
+          const bodyIndex = getBodyIndex(expression.shallowPath)
+          if (err(bodyIndex)) {
+            return bodyIndex
+          }
+          pipeBodyIndex = bodyIndex
+          pipeBodyIndexes.add(bodyIndex)
+          if (requiresExplicitExpr) {
+            mustMaterializePipes = true
+          }
+        }
+      }
+
+      records.push({ ...vars, pipeBodyIndex })
+    }
+    recordsByGroup.push(records)
+  }
+
+  mustMaterializePipes ||= pipeBodyIndexes.size > 1
+  if (!mustMaterializePipes) {
+    return recordsByGroup.map((records, index) => ({
+      selections: selectionGroups[index].selections,
+      exprs: records.flatMap(({ exprs }) => exprs),
+      pathIfPipe: records.find(({ pathIfPipe }) => pathIfPipe)?.pathIfPipe,
+    }))
+  }
+
+  const variableByBodyIndex = new Map<number, string>()
+  for (const bodyIndex of pipeBodyIndexes) {
+    const statement = ast.body[bodyIndex]
+    if (statement.type !== 'ExpressionStatement') {
+      return new Error('Expected a variable-less Boolean source pipe')
+    }
+    const variableName = findUniqueName(
+      ast,
+      KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
+    )
+    const declaration = createVariableDeclaration(
+      variableName,
+      statement.expression
+    )
+    declaration.preComments = statement.preComments
+    ast.body[bodyIndex] = declaration
+    variableByBodyIndex.set(bodyIndex, variableName)
+  }
+
+  return recordsByGroup.map((records, index) => ({
+    selections: selectionGroups[index].selections,
+    exprs: records.flatMap(({ exprs, pathIfPipe, pipeBodyIndex }) => {
+      if (!pathIfPipe) {
+        return exprs
+      }
+      if (pipeBodyIndex === undefined) {
+        return []
+      }
+      const variableName = variableByBodyIndex.get(pipeBodyIndex)
+      return variableName ? [createLocalName(variableName)] : []
+    }),
+  }))
 }
 
 function booleanInputKey(expr: Expr, pathIfPipe?: PathToNode): string {
@@ -97,25 +224,19 @@ export function addUnion({
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
   if (!mNodeToEdit) {
-    const selectionVars = getVariableExprsFromSelection(
-      solids,
+    const selectionGroups = resolveBooleanSelectionGroups({
+      selectionGroups: [{ selections: solids }],
       artifactGraph,
-      modifiedAst,
+      ast: modifiedAst,
       wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(selectionVars)) {
-      return selectionVars
+    })
+    if (err(selectionGroups)) {
+      return selectionGroups
     }
+    const [selectionVars] = selectionGroups
     vars = selectionVars
 
-    const selectionError = validateBooleanSelections([
-      { selections: solids, ...vars },
-    ])
+    const selectionError = validateBooleanSelections(selectionGroups)
     if (selectionError) {
       return selectionError
     }
@@ -173,25 +294,19 @@ export function addIntersect({
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
   if (!mNodeToEdit) {
-    const selectionVars = getVariableExprsFromSelection(
-      solids,
+    const selectionGroups = resolveBooleanSelectionGroups({
+      selectionGroups: [{ selections: solids }],
       artifactGraph,
-      modifiedAst,
+      ast: modifiedAst,
       wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(selectionVars)) {
-      return selectionVars
+    })
+    if (err(selectionGroups)) {
+      return selectionGroups
     }
+    const [selectionVars] = selectionGroups
     vars = selectionVars
 
-    const selectionError = validateBooleanSelections([
-      { selections: solids, ...vars },
-    ])
+    const selectionError = validateBooleanSelections(selectionGroups)
     if (selectionError) {
       return selectionError
     }
@@ -252,42 +367,23 @@ export function addSubtract({
   let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
   let toolVars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
   if (!mNodeToEdit) {
-    const selectionVars = getVariableExprsFromSelection(
-      solids,
+    const selectionGroups = resolveBooleanSelectionGroups({
+      selectionGroups: [
+        { selections: solids },
+        { selections: tools, requiresExplicitExpr: true },
+      ],
       artifactGraph,
-      modifiedAst,
+      ast: modifiedAst,
       wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(selectionVars)) {
-      return selectionVars
+    })
+    if (err(selectionGroups)) {
+      return selectionGroups
     }
+    const [selectionVars, selectionToolVars] = selectionGroups
     vars = selectionVars
-
-    const selectionToolVars = getVariableExprsFromSelection(
-      tools,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(selectionToolVars)) {
-      return selectionToolVars
-    }
     toolVars = selectionToolVars
 
-    const selectionError = validateBooleanSelections([
-      { selections: solids, ...vars },
-      { selections: tools, ...toolVars },
-    ])
+    const selectionError = validateBooleanSelections(selectionGroups)
     if (selectionError) {
       return selectionError
     }
@@ -365,64 +461,42 @@ export function addSplit({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
-  if (!mNodeToEdit) {
-    const selectionVars = getVariableExprsFromSelection(
-      targets,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(selectionVars)) {
-      return selectionVars
-    }
-    vars = selectionVars
-  }
-
   const hasTools = Boolean(
     !mNodeToEdit &&
       tools &&
       (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
   )
-  const selectionGroups: BooleanSelectionGroup[] = [
-    { selections: targets, ...vars },
-  ]
+  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  let toolVars: { exprs: Expr[]; pathIfPipe?: PathToNode } | undefined
   if (!mNodeToEdit) {
-    const targetSelectionError = validateBooleanSelections(selectionGroups)
-    if (targetSelectionError) {
-      return targetSelectionError
+    const selectionGroups = resolveBooleanSelectionGroups({
+      selectionGroups: [
+        { selections: targets },
+        ...(hasTools && tools
+          ? [{ selections: tools, requiresExplicitExpr: true }]
+          : []),
+      ],
+      artifactGraph,
+      ast: modifiedAst,
+      wasmInstance,
+    })
+    if (err(selectionGroups)) {
+      return selectionGroups
+    }
+    const [selectionVars, selectionToolVars] = selectionGroups
+    vars = selectionVars
+    toolVars = selectionToolVars
+
+    const selectionError = validateBooleanSelections(selectionGroups)
+    if (selectionError) {
+      return selectionError
     }
   }
 
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
   let pathIfNewPipe = vars.pathIfPipe
 
-  if (hasTools && tools) {
-    const toolVars = getVariableExprsFromSelection(
-      tools,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(toolVars)) {
-      return toolVars
-    }
-    selectionGroups.push({ selections: tools, ...toolVars })
-    const selectionError = validateBooleanSelections(selectionGroups)
-    if (selectionError) {
-      return selectionError
-    }
-
+  if (hasTools && toolVars) {
     const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
     if (toolsExpr === null) {
       return new Error('No tools provided for split operation')
