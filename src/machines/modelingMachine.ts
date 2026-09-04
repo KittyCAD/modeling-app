@@ -7468,7 +7468,11 @@ export const modelingMachine = setup({
           }
           fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
           fileName = sanitizeProjectName(fileName, 'output') // remove slash, backslash
-          fileName += `.${event.data.type}` // add file extension
+          const extension =
+            event.data.type === 'gltf' && event.data.storage === 'binary'
+              ? 'glb'
+              : event.data.type
+          fileName += `.${extension}` // add file extension
 
           return {
             data: event.data,
