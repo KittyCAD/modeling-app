@@ -1,5 +1,6 @@
 import { tmpdir } from 'node:os'
 import {
+  copy,
   FileNotFound,
   fileSystemLayer,
   makeFileSystem,
@@ -12,7 +13,7 @@ import {
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
-import { Effect } from 'effect'
+import * as Effect from 'effect/Effect'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('Effect filesystem capability', () => {
@@ -138,6 +139,22 @@ describe('Effect filesystem capability', () => {
 
     expect(writtenContents).toEqual(new Uint8Array([1, 2, 3]))
     expect(writtenContents).not.toBe(contents)
+  })
+
+  it('forwards explicit copy collision policy to the backing', async () => {
+    const backingCopy = vi.fn<IZooDesignStudioFS['cp']>()
+    const program = copy('/source', '/destination', false).pipe(
+      Effect.provide(
+        fileSystemLayer({ ...nodeFileSystem.impl, cp: backingCopy })
+      )
+    )
+
+    await Effect.runPromise(program)
+
+    expect(backingCopy).toHaveBeenCalledWith('/source', '/destination', {
+      recursive: true,
+      force: false,
+    })
   })
 
   it('returns typed missing-file failures', async () => {
