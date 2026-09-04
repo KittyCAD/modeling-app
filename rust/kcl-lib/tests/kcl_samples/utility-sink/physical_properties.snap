@@ -24,6 +24,6 @@ description: Physical properties utility-sink.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 34383.194221199985
+    "value": 34383.10704067585
   }
 }
