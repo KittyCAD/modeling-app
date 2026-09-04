@@ -8,6 +8,7 @@ import {
   getProjectLibrarySummaryTooltip,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -44,6 +45,7 @@ interface ProjectLibraryPreviewRowProps {
   query: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
@@ -81,6 +83,7 @@ export function ProjectLibraryPreviewRow({
   query,
   projectStatuses,
   projectActions,
+  fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
@@ -161,6 +164,7 @@ export function ProjectLibraryPreviewRow({
           projects={previewProjects}
           projectStatuses={projectStatuses}
           projectActions={projectActions}
+          fileOperations={fileOperations}
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={false}
           onMoveToLibrary={onMoveToLibrary}
@@ -184,6 +188,7 @@ interface ProjectCardListProps {
   projects: HomeProjectEntry[]
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
@@ -197,6 +202,7 @@ export function ProjectCardList({
   projects,
   projectStatuses,
   projectActions,
+  fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
@@ -216,6 +222,7 @@ export function ProjectCardList({
             key={project.id}
             project={project}
             projectActions={projectActions}
+            fileOperations={fileOperations}
             projectStatus={
               project.remoteProjectId
                 ? projectStatuses.get(project.remoteProjectId)
