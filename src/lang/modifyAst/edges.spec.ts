@@ -706,13 +706,48 @@ extrude002 = extrude([region002, region003], length = -2)`
         expect(result.pathToNode).toHaveLength(1)
         const newCode = recast(result.modifiedAst, instanceInThisFile)
         if (err(newCode)) throw newCode
-        expect(newCode).toContain('edge001 = edgeId(extrude001, index = 0)')
-        if (capKind === 'created') {
-          expect(newCode).toContain('extrude002[0].faces.capEnd002')
-          expect(newCode).toContain('extrude002[1].faces.capEnd002')
-        } else {
-          expect(newCode).toContain('extrude001.faces.capEnd001')
-        }
+        // Negative extrusion puts the new pocket bottoms on the start caps.
+        const createsCaps = capKind === 'created'
+        const expectedCode = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 30mm, var 0mm])
+  line2 = line(start = [var 30mm, var 0mm], end = [var 30mm, var 20mm])
+  line3 = line(start = [var 30mm, var 20mm], end = [var 0mm, var 20mm])
+  line4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+}
+region001 = region(point = [15mm, 10mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
+
+sketch002 = sketch(on = faceOf(extrude001, face = END)) {
+  circle1 = circle(start = [var 8mm, var 10mm], center = [var 5mm, var 10mm])
+  circle2 = circle(start = [var 23mm, var 10mm], center = [var 20mm, var 10mm])
+}
+region002 = region(point = [5mm, 10mm], sketch = sketch002)
+region003 = region(point = [20mm, 10mm], sketch = sketch002)
+extrude002 = extrude([region002, region003], length = -2${createsCaps ? ', tagStart = $capStart001' : ''})
+edge001 = edgeId(extrude001, index = 0)
+${name}001 = ${name}(
+  extrude001,
+  tags = [
+    getCommonEdge(faces = [
+      region002.tags.circle1,
+      ${createsCaps ? 'extrude002[0].faces.capStart001' : 'extrude001.faces.capEnd001'}
+    ]),
+    getCommonEdge(faces = [
+      region003.tags.circle2,
+      ${createsCaps ? 'extrude002[1].faces.capStart001' : 'extrude001.faces.capEnd001'}
+    ]),
+    edge001
+  ],
+  ${name === 'fillet' ? 'radius' : 'length'} = 0.23,
+)`
+        expect(newCode).toEqual(
+          recast(
+            assertParse(expectedCode, instanceInThisFile),
+            instanceInThisFile
+          )
+        )
         await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
         expect(kclManagerInThisFile.errors).toEqual([])
       }
