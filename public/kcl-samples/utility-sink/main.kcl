@@ -48,7 +48,10 @@ legProfile = sketch(on = XY) {
 }
 
 legProfiles = patternLinear2d(
-  legProfile,
+  region(segments = [
+    legProfile.leftEdge,
+    legProfile.topEdge
+  ]),
   instances = legCount,
   distance = blockWidth,
   axis = [1, 0],
@@ -94,7 +97,10 @@ lowerBeltXProfile = sketch(on = lowerBeltPlane) {
 }
 
 lowerBeltXProfiles = patternLinear2d(
-  lowerBeltXProfile,
+  region(segments = [
+    lowerBeltXProfile.leftEdge,
+    lowerBeltXProfile.topEdge
+  ]),
   instances = blockCount,
   distance = blockWidth,
   axis = [1, 0],
@@ -136,7 +142,10 @@ lowerBeltYProfile = sketch(on = lowerBeltPlane) {
 }
 
 lowerBeltYProfileArray = patternLinear2d(
-  lowerBeltYProfile,
+  region(segments = [
+    lowerBeltYProfile.leftEdge,
+    lowerBeltYProfile.topEdge
+  ]),
   instances = 2,
   distance = tableWidth - profileThickness,
   axis = [1, 0],
@@ -220,7 +229,10 @@ upperBeltXProfile = sketch(on = upperBeltPlane) {
 }
 
 upperBeltXProfileArray = patternLinear2d(
-  upperBeltXProfile,
+  region(segments = [
+    upperBeltXProfile.leftEdge,
+    upperBeltXProfile.topEdge
+  ]),
   instances = 2,
   distance = blockDepth,
   axis = [0, 1],
@@ -256,7 +268,10 @@ upperBeltYProfile = sketch(on = upperBeltPlane) {
 }
 
 upperBeltYProfileArray = patternLinear2d(
-  upperBeltYProfile,
+  region(segments = [
+    upperBeltYProfile.leftEdge,
+    upperBeltYProfile.topEdge
+  ]),
   instances = 2,
   distance = tableWidth - profileThickness,
   axis = [1, 0],
