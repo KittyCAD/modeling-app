@@ -149,7 +149,11 @@ export async function listRemoteProjects(
       return Promise.reject(new Error('Invalid remote project list.'))
     }
 
-    // An array is a complete legacy inventory, including during API rollback.
+    // Accept legacy arrays so this app can ship before API pagination and survive
+    // API rollback. An array replaces any pages already collected because it is
+    // the complete inventory. Once all supported API deployments use pagination
+    // and the rollback window closes, remove the legacy parsing/branches above
+    // and below, plus the legacy-response tests; keep the pagination safeguards.
     if (legacy) {
       projects.clear()
     }
