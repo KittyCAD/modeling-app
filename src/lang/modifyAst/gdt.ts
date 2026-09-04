@@ -16,8 +16,7 @@ import {
 } from '@src/lang/modifyAst'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { traverse } from '@src/lang/queryAst'
-import { valueOrVariable } from '@src/lang/queryAst'
+import { traverse, valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -1454,7 +1453,7 @@ export function addPerpendicularityGdt({
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (datums && 'variableName' in datums && datums.variableName) {
-    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
@@ -1640,7 +1639,7 @@ export function addAngularityGdt({
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (datums && 'variableName' in datums && datums.variableName) {
-    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
@@ -2372,7 +2371,7 @@ export function addParallelismGdt({
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (datums && 'variableName' in datums && datums.variableName) {
-    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
