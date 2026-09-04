@@ -120,8 +120,9 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await page.keyboard.press('Escape')
     await expect(cmdSearchBar).not.toBeVisible()
 
-    // Now try the same, but with the keyboard shortcut, check focus
-    await page.keyboard.press('ControlOrMeta+K')
+    // Reopen through the in-app control. The dedicated test below owns the
+    // Mod+K coverage and starts from an explicitly focused editor.
+    await commandBarButton.click()
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
