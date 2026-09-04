@@ -1953,7 +1953,9 @@ function getBestCandidates(
 
     // Other valid artifact types
     if (
-      ['plane', 'cap', 'wall', 'sweep', 'pattern'].includes(entry.artifact.type)
+      ['plane', 'cap', 'wall', 'sweep', 'pattern', 'importedGeometry'].includes(
+        entry.artifact.type
+      )
     ) {
       return [entry]
     }

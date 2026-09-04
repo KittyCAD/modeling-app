@@ -117,6 +117,12 @@ export type CommandReviewValidationError = Error & {
   reviewDetails?: CommandReviewValidationDetails
 }
 
+export type CommandReviewValidationResult =
+  | CommandReviewValidationError
+  | {
+      reviewDetails: CommandReviewValidationDetails
+    }
+
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
@@ -133,7 +139,7 @@ export type Command<
   reviewValidation?: (
     context: CommandBarContext,
     machineActor?: ActorRefFrom<T>
-  ) => Promise<undefined | CommandReviewValidationError>
+  ) => Promise<undefined | CommandReviewValidationResult>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void

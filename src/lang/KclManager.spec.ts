@@ -171,6 +171,27 @@ describe('KclManager live operation updates', () => {
   })
 })
 
+describe('KclManager mock execution', () => {
+  it('can execute a complete AST without reusing program memory', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const executeMockSpy = vi
+      .spyOn(kclManager.rustContext, 'executeMock')
+      .mockResolvedValue(kclManager.execState)
+
+    await kclManager.executeAstMock(createEmptyAst(), {
+      usePrevMemory: false,
+    })
+
+    expect(executeMockSpy).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Object),
+      kclManager.path,
+      false,
+      undefined
+    )
+  })
+})
+
 describe('KclManager diagnostics', () => {
   it('filters out duplicated diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness()
