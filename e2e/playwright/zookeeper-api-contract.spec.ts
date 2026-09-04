@@ -88,6 +88,12 @@ test.describe(
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
 
+      const onboardingInvite = page.getByTestId('onboarding-toast')
+      if (await onboardingInvite.isVisible()) {
+        await page.getByTestId('onboarding-not-right-now').click()
+        await expect(onboardingInvite).not.toBeVisible()
+      }
+
       const prompt = 'Complete my final credited Zookeeper prompt.'
       await copilot.conversationInput.fill(prompt)
       await copilot.submitButton.click()
