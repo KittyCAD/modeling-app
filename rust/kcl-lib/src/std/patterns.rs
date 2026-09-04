@@ -3,6 +3,7 @@
 use std::cmp::Ordering;
 
 use anyhow::Result;
+use kcl_error::CompilationIssue;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
@@ -746,6 +747,40 @@ patterned = patternTransform(cube, instances = 3, transform = shift)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn mock_pattern_circular_2d_warns_that_cardinality_is_geometry_dependent() {
+        let code = r#"
+@settings(kclVersion = 2.0)
+
+profile = sketch(on = XY) {
+  line1 = line(start = [var 10, var 0], end = [var 11, var 0])
+}
+
+patterned = patternCircular2d(
+  profile,
+  instances = 3,
+  center = [0, 0],
+  arcDegrees = 360deg,
+  rotateDuplicates = true,
+)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let outcome = ctx
+            .run_mock(&program, &crate::execution::MockConfig::default())
+            .await
+            .unwrap();
+        ctx.close().await;
+
+        assert!(
+            outcome.issues.iter().any(|issue| issue
+                .message
+                .contains("Mock execution cannot determine whether `patternCircular2d` repetitions")),
+            "expected mock cardinality warning, got: {:#?}",
+            outcome.issues
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new(&ctx);
@@ -1214,6 +1249,14 @@ async fn inner_pattern_circular_2d(
     let starting_sketches = sketch_set;
 
     if args.ctx.context_type == crate::execution::ContextType::Mock {
+        exec_state.warn(
+            CompilationIssue::err(
+                args.source_range,
+                "Mock execution cannot determine whether `patternCircular2d` repetitions form one connected sketch or multiple sketches. The returned mock sketch is a placeholder; use real execution before relying on result cardinality or indexing it."
+                    .to_owned(),
+            ),
+            annotations::WARN_MOCK_GEOMETRY_CARDINALITY,
+        );
         return Ok(starting_sketches);
     }
     let center = center.unwrap_or(POINT_ZERO_ZERO);
