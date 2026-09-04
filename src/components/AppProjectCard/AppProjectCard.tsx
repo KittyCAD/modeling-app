@@ -12,7 +12,6 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import { useApp } from '@src/lib/boot'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
@@ -21,6 +20,7 @@ import {
 import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -34,6 +34,7 @@ import { Link, useNavigate } from 'react-router-dom'
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
   projectActions: HomeProjectActionsService
+  fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
   projectStatus?: ProjectStatus
   density?: 'default' | 'compact'
   showCloudSyncUi?: boolean
@@ -74,8 +75,10 @@ function getDisplayedTime(dateTimeMs: number) {
     : date.toLocaleTimeString()
 }
 
-function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
-  const { fileOperations } = useApp()
+function useProjectThumbnailUrl(
+  thumbnail: HomeProjectThumbnail | undefined,
+  fileOperations: Pick<FileOperationsRegistryService, 'stat' | 'readFile'>
+) {
   const [imageUrl, setImageUrl] = useState('')
   const thumbnailType = thumbnail?.type
   const localThumbnailPath =
@@ -143,6 +146,7 @@ function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
 function AppProjectCard({
   project,
   projectActions,
+  fileOperations,
   projectStatus,
   density = 'default',
   showCloudSyncUi = true,
@@ -166,7 +170,7 @@ function AppProjectCard({
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
   const hasCloudSyncFailure = Boolean(showCloudSyncUi && project.syncFailure)
-  const imageUrl = useProjectThumbnailUrl(project.thumbnail)
+  const imageUrl = useProjectThumbnailUrl(project.thumbnail, fileOperations)
   /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
     projectId: string
