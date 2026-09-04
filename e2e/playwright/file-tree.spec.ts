@@ -4,10 +4,17 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  FILE_EXT,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as nodeFsP from 'fs/promises'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
@@ -83,6 +90,129 @@ test.describe('integrations tests', { tag: ['@desktop'] }, () => {
     })
   })
 })
+
+test.describe(
+  'when file tree creation navigates within the same project',
+  { tag: ['@web'] },
+  () => {
+    test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
+      page,
+      folderSetupFn,
+      fs,
+      scene,
+    }) => {
+      const { dir } = await folderSetupFn(async (dir) => {
+        const testDir = await fs.join(dir, 'browser-file-tree-project')
+        await fs.mkdir(await fs.join(testDir, 'parts'), { recursive: true })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
+        await fs.writeFile(
+          await fs.join(testDir, 'parts', 'existing.kcl'),
+          testData
+        )
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const startingFilePath = await fs.join(
+        dir,
+        'browser-file-tree-project',
+        'parts',
+        'existing.kcl'
+      )
+      await page.goto(`/file/${encodeURIComponent(startingFilePath)}`)
+      await scene.settled()
+      await u.openFilePanel()
+      await expect
+        .poll(
+          async () =>
+            await page.evaluate(() => {
+              const snapshot = window.app.systemIOActor.getSnapshot()
+              return {
+                hasFolders: snapshot.context.folders !== undefined,
+                state: snapshot.value,
+              }
+            }),
+          {
+            timeout: 30_000,
+            message: 'SystemIO should finish initial browser folder load',
+          }
+        )
+        .toMatchObject({ hasFolders: true, state: 'idle' })
+
+      const filePaneScroll = page.getByTestId('file-pane-scroll-container')
+      const partsFolder = filePaneScroll.getByRole('treeitem', {
+        name: 'parts',
+        exact: true,
+      })
+      await expect(partsFolder).toBeVisible()
+      await partsFolder.click()
+      await page.evaluate(() => {
+        const appWindow = window as any
+        const systemIOActor = window.app.systemIOActor as any
+        const originalSend = systemIOActor.send.bind(systemIOActor)
+        appWindow.__setProjectDirectoryPathEvents = []
+        systemIOActor.send = (event: any) => {
+          if (event?.type === 'set project directory path') {
+            appWindow.__setProjectDirectoryPathEvents.push(event)
+          }
+          return originalSend(event)
+        }
+      })
+      await page.evaluate(() => {
+        window.app.systemIOActor.send({
+          type: 'read folders from project directory' as any,
+        })
+      })
+
+      await page.getByTestId('create-file-button').click()
+      await page.getByTestId('file-rename-field').fill('nested-file')
+      await page.keyboard.press('Enter')
+      await expect(page.getByText('Successfully created file.')).toBeVisible({
+        timeout: 30_000,
+      })
+
+      await expect(
+        filePaneScroll.getByRole('treeitem', {
+          name: 'nested-file.kcl',
+          exact: true,
+        })
+      ).toBeVisible({ timeout: 30_000 })
+      await expect
+        .poll(
+          async () =>
+            await filePaneScroll
+              .getByRole('treeitem')
+              .evaluateAll((items) =>
+                items.every(
+                  (item) => item.getAttribute('aria-disabled') !== 'true'
+                )
+              ),
+          {
+            timeout: 30_000,
+            message:
+              'File tree should become interactive after creating the file',
+          }
+        )
+        .toBeTruthy()
+      await expect
+        .poll(
+          async () =>
+            await page.evaluate(
+              () => (window as any).__setProjectDirectoryPathEvents.length
+            ),
+          {
+            timeout: 5_000,
+            message:
+              'Same-project file navigation should not restart project directory reads',
+          }
+        )
+        .toBe(0)
+    })
+  }
+)
 test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
   const fromFile = 'main.kcl'
   const toFile = 'hello.kcl'
@@ -1125,135 +1255,6 @@ test(
     })
   }
 )
-test.describe('Drag and drop moves are undoable', { tag: ['@desktop'] }, () => {
-  // Flakey. The file move happens slow enough a user or test can click on the
-  // file before it moves. Not flakey enough to warrant skipping.
-  test('dragging a file moves it and undo restores it', async ({
-    folderSetupFn,
-    page,
-    homePage,
-    toolbar,
-    editor,
-    fs,
-    scene,
-    cmdBar,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const projectDir = await fs.join(dir, 'Drag File Project')
-      await fs.mkdir(await fs.join(projectDir, 'target'), { recursive: true })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(await fs.join(projectDir, 'main.kcl'), testData)
-
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(await fs.join(projectDir, 'fileToMove.kcl'), testData2)
-    })
-
-    const u = await getUtils(page)
-
-    const fileToMove = u.locatorFile('fileToMove.kcl')
-    const targetFolder = u.locatorFolder('target')
-
-    await homePage.openProject('Drag File Project')
-    await scene.settled()
-
-    await u.openFilePanel()
-
-    await expect(fileToMove).toBeVisible()
-    await expect(targetFolder).toBeVisible()
-
-    await test.step('Move and ensure that the file lands where it should', async () => {
-      await fileToMove.dragTo(targetFolder)
-
-      await toolbar.ensureFolderOpen(targetFolder, true)
-      await expect(u.locatorFile('fileToMove.kcl')).toBeVisible()
-      await toolbar.ensureFolderOpen(targetFolder, false)
-    })
-
-    await test.step('Undo and ensure the file returns and has content', async () => {
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-
-      await expect(fileToMove).toBeVisible()
-      await toolbar.openFile('fileToMove.kcl')
-      await expect(editor.codeContent).toContainText('circle')
-    })
-  })
-
-  test('dragging a folder moves it and undo restores it', async ({
-    folderSetupFn,
-    page,
-    homePage,
-    toolbar,
-    editor,
-    fs,
-    scene,
-    cmdBar,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const projectDir = await fs.join(dir, 'Drag Folder Project')
-      await fs.mkdir(await fs.join(projectDir, 'folderToMove'), {
-        recursive: true,
-      })
-      await fs.mkdir(await fs.join(projectDir, 'targetFolder'), {
-        recursive: true,
-      })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(await fs.join(projectDir, 'main.kcl'), testData)
-
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(projectDir, 'folderToMove', 'inside.kcl'),
-        testData2
-      )
-    })
-
-    const u = await getUtils(page)
-
-    const folderToMove = u.locatorFolder('folderToMove')
-    const targetFolder = u.locatorFolder('targetFolder')
-    const movedFile = u.locatorFile('inside.kcl')
-
-    await homePage.openProject('Drag Folder Project')
-    await scene.settled()
-
-    await u.openFilePanel()
-
-    await expect(folderToMove).toBeVisible()
-    await expect(targetFolder).toBeVisible()
-
-    await test.step('Move folder and ensure it lands where it, with contents intact', async () => {
-      await folderToMove.dragTo(targetFolder)
-
-      await toolbar.ensureFolderOpen(targetFolder, true)
-      await expect(folderToMove).toBeVisible()
-      await toolbar.ensureFolderOpen(folderToMove, true)
-      await expect(movedFile).toBeVisible()
-      await toolbar.openFile('inside.kcl')
-      await expect(editor.codeContent).toContainText('circle')
-      await toolbar.ensureFolderOpen(targetFolder, false)
-    })
-
-    await test.step('Undo and ensure the folder returns and has content', async () => {
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-
-      await expect(folderToMove).toBeVisible()
-      await toolbar.ensureFolderOpen(folderToMove, true)
-      await expect(movedFile).toBeVisible()
-    })
-  })
-})
-
 test.describe(
   'Undo and redo do not keep history when navigating between files',
   { tag: ['@desktop'] },

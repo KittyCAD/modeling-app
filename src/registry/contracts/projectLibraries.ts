@@ -237,6 +237,16 @@ export interface ProjectLibrarySettingsDetailsProps {
   }) => Promise<string | undefined>
 }
 
+/**
+ * Home-page library summary renderers let a project-library type attach compact
+ * type-specific state to both the library overview row and the library detail
+ * header without coupling Home to a plugin implementation.
+ */
+export interface ProjectLibraryHomeSummaryProps {
+  library: ProjectLibrary
+  projects: readonly HomeProjectEntry[]
+}
+
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
@@ -248,6 +258,8 @@ export interface ProjectLibraryTypeContribution {
   newLibrarySetting?: ProjectLibrarySetting
   /** Optional detail cell rendered in the project libraries settings row. */
   settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
+  /** Optional compact status/action component for Home library surfaces. */
+  homeSummary?: ComponentType<ProjectLibraryHomeSummaryProps>
   /** Hide this type from creation/editing UI while keeping runtime support. */
   hideInSettingsOnPlatform?: HideOnPlatformValue
   operations?: ProjectLibraryTypeOperations

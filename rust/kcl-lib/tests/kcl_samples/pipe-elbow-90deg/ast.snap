@@ -6516,7 +6516,7 @@ description: Result of parsing pipe-elbow-90deg.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Manufacturing, Construction",
+            "value": "Categories: Architecture & Construction; Mechanical Components",
             "style": "line"
           }
         },

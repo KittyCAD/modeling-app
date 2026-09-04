@@ -57,10 +57,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 504,
-            "end": 509,
+            "commentStart": 538,
+            "end": 543,
             "moduleId": 0,
-            "start": 504,
+            "start": 538,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -71,10 +71,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 591,
-            "end": 596,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 591,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -85,10 +85,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 679,
-            "end": 684,
+            "commentStart": 713,
+            "end": 718,
             "moduleId": 0,
-            "start": 679,
+            "start": 713,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -99,10 +99,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 768,
-            "end": 773,
+            "commentStart": 802,
+            "end": 807,
             "moduleId": 0,
-            "start": 768,
+            "start": 802,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -113,10 +113,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1405,
-            "end": 1417,
+            "commentStart": 1439,
+            "end": 1451,
             "moduleId": 0,
-            "start": 1405,
+            "start": 1439,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -127,10 +127,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1380,
-            "end": 1390,
+            "commentStart": 1414,
+            "end": 1424,
             "moduleId": 0,
-            "start": 1380,
+            "start": 1414,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -162,10 +162,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               49.61
             ],
             "tag": {
-              "commentStart": 504,
-              "end": 509,
+              "commentStart": 538,
+              "end": 543,
               "moduleId": 0,
-              "start": 504,
+              "start": 538,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -186,10 +186,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               49.61
             ],
             "tag": {
-              "commentStart": 591,
-              "end": 596,
+              "commentStart": 625,
+              "end": 630,
               "moduleId": 0,
-              "start": 591,
+              "start": 625,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -210,10 +210,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               -50.39
             ],
             "tag": {
-              "commentStart": 679,
-              "end": 684,
+              "commentStart": 713,
+              "end": 718,
               "moduleId": 0,
-              "start": 679,
+              "start": 713,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -234,10 +234,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               -50.39
             ],
             "tag": {
-              "commentStart": 768,
-              "end": 773,
+              "commentStart": 802,
+              "end": 807,
               "moduleId": 0,
-              "start": 768,
+              "start": 802,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -349,10 +349,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 504,
-            "end": 509,
+            "commentStart": 538,
+            "end": 543,
             "moduleId": 0,
-            "start": 504,
+            "start": 538,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -373,10 +373,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 591,
-            "end": 596,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 591,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -397,10 +397,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 679,
-            "end": 684,
+            "commentStart": 713,
+            "end": 718,
             "moduleId": 0,
-            "start": 679,
+            "start": 713,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -421,10 +421,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 768,
-            "end": 773,
+            "commentStart": 802,
+            "end": 807,
             "moduleId": 0,
-            "start": 768,
+            "start": 802,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -543,10 +543,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 504,
-            "end": 509,
+            "commentStart": 538,
+            "end": 543,
             "moduleId": 0,
-            "start": 504,
+            "start": 538,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -567,10 +567,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 591,
-            "end": 596,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 591,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -591,10 +591,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 679,
-            "end": 684,
+            "commentStart": 713,
+            "end": 718,
             "moduleId": 0,
-            "start": 679,
+            "start": 713,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -615,10 +615,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 768,
-            "end": 773,
+            "commentStart": 802,
+            "end": 807,
             "moduleId": 0,
-            "start": 768,
+            "start": 802,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1211,10 +1211,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     49.61
                   ],
                   "tag": {
-                    "commentStart": 504,
-                    "end": 509,
+                    "commentStart": 538,
+                    "end": 543,
                     "moduleId": 0,
-                    "start": 504,
+                    "start": 538,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1235,10 +1235,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     49.61
                   ],
                   "tag": {
-                    "commentStart": 591,
-                    "end": 596,
+                    "commentStart": 625,
+                    "end": 630,
                     "moduleId": 0,
-                    "start": 591,
+                    "start": 625,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1259,10 +1259,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     -50.39
                   ],
                   "tag": {
-                    "commentStart": 679,
-                    "end": 684,
+                    "commentStart": 713,
+                    "end": 718,
                     "moduleId": 0,
-                    "start": 679,
+                    "start": 713,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1283,10 +1283,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     -50.39
                   ],
                   "tag": {
-                    "commentStart": 768,
-                    "end": 773,
+                    "commentStart": 802,
+                    "end": 807,
                     "moduleId": 0,
-                    "start": 768,
+                    "start": 802,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },

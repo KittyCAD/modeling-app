@@ -1,7 +1,7 @@
 //! Rust support for KCL (aka the KittyCAD Language).
 //!
 //! KCL is written in Rust. This crate contains the compiler tooling (e.g. parser, lexer, code generation),
-//! the standard library implementation, a LSP implementation, generator for the docs, and more.
+//! the standard library implementation, generator for the docs, and more.
 #![recursion_limit = "1024"]
 #![allow(clippy::boxed_local)]
 
@@ -65,9 +65,10 @@ mod fmt;
 mod frontend;
 mod fs;
 pub(crate) mod id;
+mod import_format;
 pub mod lint;
 mod log;
-mod lsp;
+mod lsp_types;
 mod modules;
 mod parsing;
 mod project;
@@ -90,6 +91,76 @@ pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
+/// Internal compiler APIs consumed by the standalone language-server crate.
+#[doc(hidden)]
+pub mod lsp_support {
+    pub mod docs {
+        pub mod kcl_doc {
+            pub use crate::docs::kcl_doc::ArgData;
+            pub use crate::docs::kcl_doc::DocData;
+            pub use crate::docs::kcl_doc::ModData;
+            pub use crate::docs::kcl_doc::walk_stdlib;
+        }
+    }
+
+    pub mod engine {
+        #[cfg(not(target_arch = "wasm32"))]
+        pub use crate::engine::new_zoo_client;
+    }
+
+    pub mod errors {
+        pub use crate::errors::Severity;
+        pub use crate::errors::Suggestion;
+    }
+
+    pub mod execution {
+        pub use crate::execution::ExecutorContext;
+        pub use crate::execution::MockConfig;
+
+        pub mod cache {
+            pub use crate::execution::cache::read_old_memory_var;
+        }
+
+        pub mod typed_path {
+            pub use crate::execution::typed_path::TypedPath;
+        }
+    }
+
+    pub mod fs {
+        pub use crate::fs::FileManager;
+        pub use crate::fs::FileSystemHandle;
+        pub use crate::fs::new_file_system_handle;
+
+        #[cfg(all(target_arch = "wasm32", not(test)))]
+        pub mod wasm {
+            pub use crate::fs::wasm::FileSystemManager;
+        }
+    }
+
+    pub mod parsing {
+        pub use crate::parsing::PIPE_OPERATOR;
+        pub use crate::parsing::parse_str;
+        pub use crate::parsing::parse_tokens;
+
+        pub mod ast {
+            pub mod types {
+                pub use crate::parsing::ast::types::*;
+            }
+        }
+
+        pub mod token {
+            pub use crate::parsing::token::LexerMode;
+            pub use crate::parsing::token::RESERVED_WORDS;
+            pub use crate::parsing::token::TokenStream;
+            pub use crate::parsing::token::lex;
+
+            pub mod adapter {
+                pub use crate::parsing::token::adapter::lex_with_diagnostics;
+            }
+        }
+    }
+}
+
 pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
 pub use engine::EngineStats;
@@ -107,6 +178,7 @@ pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
 pub use execution::EdgeRefactorMeta;
+pub use execution::EnvironmentRef;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
@@ -125,11 +197,6 @@ pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
-pub use execution::pre_execute_transpile;
-pub use execution::transpile_all_old_sketches_to_new;
-pub use execution::transpile_old_sketch_to_new;
-pub use execution::transpile_old_sketch_to_new_ast;
-pub use execution::transpile_old_sketch_to_new_with_execution;
 pub use execution::typed_path::TypedPath;
 pub use fs::FileSystem;
 pub use fs::FileSystemHandle;
@@ -137,10 +204,9 @@ pub use fs::in_memory::InMemoryFiles;
 pub use fs::new_file_system_handle;
 pub use kcl_error;
 pub use kcl_error::SourceRange;
-pub use lsp::ToLspRange;
-pub use lsp::copilot::Backend as CopilotLspBackend;
-pub use lsp::kcl::Backend as KclLspBackend;
-pub use lsp::kcl::Server as KclLspServerSubCommand;
+pub use lsp_types::IntoDiagnostic;
+pub use lsp_types::LspSuggestion;
+pub use lsp_types::ToLspRange;
 pub use modules::ModuleId;
 pub use parsing::ast::types::FormatOptions;
 pub use parsing::ast::types::NodePath;
@@ -240,15 +306,13 @@ pub mod front {
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
             TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, execute_trim_loop_with_context,
-            get_next_trim_spawn, get_position_coords_for_line, get_position_coords_from_arc,
-            get_trim_spawn_terminations, is_point_on_line_segment, line_segment_intersection,
-            perpendicular_distance_to_segment, project_point_onto_arc, project_point_onto_segment,
+            get_next_trim_spawn, get_position_coords_for_line, get_position_coords_from_arc, is_point_on_line_segment,
+            line_segment_intersection, perpendicular_distance_to_segment, project_point_onto_arc,
+            project_point_onto_segment,
         },
     };
 }
 
-#[cfg(feature = "cli")]
-use clap::ValueEnum;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -261,17 +325,10 @@ use crate::log::logln;
 lazy_static::lazy_static! {
 
     pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
-        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
-        #[cfg(feature = "cli")]
-        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+        import_format::IMPORT_FILE_EXTENSION_FORMATS
             .iter()
-            .map(|x| format!("{x}"))
-            .collect::<Vec<String>>();
-        #[cfg(not(feature = "cli"))]
-        let named_extensions = vec![]; // We don't really need this outside of the CLI.
-        // Add all the default import formats.
-        import_file_extensions.extend_from_slice(&named_extensions);
-        import_file_extensions
+            .map(|(extension, _)| (*extension).to_owned())
+            .collect()
     };
 
     pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
@@ -292,11 +349,6 @@ pub struct Program {
     #[serde(skip)]
     pub original_file_contents: String,
 }
-
-#[cfg(any(test, feature = "lsp-test-util"))]
-pub use lsp::test_util::copilot_lsp_server;
-#[cfg(any(test, feature = "lsp-test-util"))]
-pub use lsp::test_util::kcl_lsp_server;
 
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationIssue>), KclError> {
@@ -438,6 +490,13 @@ pub fn version() -> &'static str {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn proprietary_file_extensions_use_real_suffixes() {
+        for extension in ["sat", "sab", "catpart", "prt", "ipt", "x_t", "x_b", "sldprt"] {
+            assert!(IMPORT_FILE_EXTENSIONS.iter().any(|candidate| candidate == extension));
+        }
+    }
 
     #[test]
     fn convert_int() {

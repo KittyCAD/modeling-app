@@ -21,6 +21,7 @@ import {
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import {
+  getEdgeBodyKey,
   modifyAstWithTagsForSelection,
   mutateAstWithTagForSketchSegment,
   resolveEdgeSelectionContext,
@@ -2655,38 +2656,41 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   // Step 2. Create an array of variable references to bodies
   const updatedBodies = new Map(bodies)
   let insertIndex = modifiedAst.body.length
-  for (const [bodyKey, primitiveData] of primitiveSelectionsByBody.entries()) {
-    let bodyData = updatedBodies.get(bodyKey)
-    let tagsExprs: Expr[] = []
-    let solidsExpr: Expr | null = null
-    let pathIfPipe: PathToNode | undefined
-
-    if (bodyData) {
-      tagsExprs =
-        bodyData.tagsExpr.type === 'ArrayExpression'
-          ? [...bodyData.tagsExpr.elements]
-          : [bodyData.tagsExpr]
-      solidsExpr = bodyData.solidsExpr
-      pathIfPipe = bodyData.pathIfPipe
-    } else {
-      const vars = getVariableExprsFromSelection(
-        {
-          graphSelections: [primitiveData.bodySelection],
-          otherSelections: [],
-        },
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        nodeToEdit,
-        {
-          lastChildLookup: true,
-          artifactTypeFilter: ['compositeSolid', 'sweep'],
-        }
+  for (const primitiveData of primitiveSelectionsByBody.values()) {
+    const vars = getVariableExprsFromSelection(
+      {
+        graphSelections: [primitiveData.bodySelection],
+        otherSelections: [],
+      },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(vars)) return vars
+    const resolvedSolidsExpr = createVariableExpressionsArray(vars.exprs)
+    if (!resolvedSolidsExpr) {
+      return new Error(
+        'Could not resolve selected primitive edge bodies in code.'
       )
-      if (err(vars)) return vars
-      solidsExpr = createVariableExpressionsArray(vars.exprs)
-      pathIfPipe = vars.pathIfPipe
     }
+
+    // Graph-backed and engine-primitive edges arrive through separate
+    // selection collections. Resolve both to the same body identity before
+    // adding edgeId references so one body produces one edge treatment call.
+    const resolvedBodyKey = getEdgeBodyKey(resolvedSolidsExpr, vars.pathIfPipe)
+    const bodyData = updatedBodies.get(resolvedBodyKey)
+    const tagsExprs: Expr[] = bodyData
+      ? bodyData.tagsExpr.type === 'ArrayExpression'
+        ? [...bodyData.tagsExpr.elements]
+        : [bodyData.tagsExpr]
+      : []
+    const solidsExpr = bodyData?.solidsExpr ?? resolvedSolidsExpr
+    const pathIfPipe = bodyData?.pathIfPipe ?? vars.pathIfPipe
 
     if (!solidsExpr) {
       return new Error(
@@ -2730,12 +2734,12 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       return new Error('No edges found in the selection')
     }
 
-    bodyData = {
+    const updatedBodyData = {
       solidsExpr,
       tagsExpr,
       pathIfPipe,
     }
-    updatedBodies.set(bodyKey, bodyData)
+    updatedBodies.set(resolvedBodyKey, updatedBodyData)
   }
 
   return { bodies: updatedBodies }

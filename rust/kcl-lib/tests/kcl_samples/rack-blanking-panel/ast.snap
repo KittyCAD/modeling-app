@@ -12106,7 +12106,7 @@ description: Result of parsing rack-blanking-panel.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Computer Hardware",
+            "value": "Categories: Electronics & Computing",
             "style": "line"
           }
         },

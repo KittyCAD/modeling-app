@@ -205,6 +205,7 @@ export function modifyAstWithTagsForSelection(
 export type EdgeSelectionContext = {
   selectedSweep: Extract<Artifact, { type: 'sweep' }>
   sourceSweep: Extract<Artifact, { type: 'sweep' }>
+  selectedBody: Extract<Artifact, { type: 'compositeSolid' | 'sweep' }>
   selectedBodyExpr: Expr
   bodyKey: string
   pathIfPipe?: PathToNode
@@ -217,7 +218,10 @@ export type ModifyAstWithTagsOptions = {
   nodeToEdit?: PathToNode
 }
 
-function getEdgeBodyKey(selectedBodyExpr: Expr, pathIfPipe?: PathToNode) {
+export function getEdgeBodyKey(
+  selectedBodyExpr: Expr,
+  pathIfPipe?: PathToNode
+) {
   return JSON.stringify([selectedBodyExpr, pathIfPipe])
 }
 
@@ -291,6 +295,7 @@ function resolveSweepSelectionContext(
   return {
     selectedSweep,
     sourceSweep,
+    selectedBody,
     selectedBodyExpr: body.exprs[0],
     bodyKey: getEdgeBodyKey(body.exprs[0], body.pathIfPipe),
     pathIfPipe: body.pathIfPipe,
@@ -571,7 +576,12 @@ function modifyAstWithTagsForEdgeSelection(
       const { modifiedAst, expr } = result
       astClone = modifiedAst
 
-      if (selectedFace.type === 'cap') {
+      if (
+        selectedFace.type === 'cap' &&
+        edgeContext.selectedBody.type === 'compositeSolid'
+      ) {
+        exprs.push(expr)
+      } else if (selectedFace.type === 'cap') {
         const tagName = getExprName(expr)
         if (!tagName) {
           return new Error(

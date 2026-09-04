@@ -44,6 +44,7 @@ import {
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+  validateStreamDimensions,
 } from '@src/lib/engineConnection/utils'
 import {
   isExportResponse,
@@ -55,6 +56,7 @@ import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   darkModeMatcher,
+  edgeColor,
   getOppositeTheme,
   getThemeColorForEngine,
   type Themes,
@@ -196,8 +198,6 @@ export class ConnectionManager extends EventTarget {
         )
       )
     }
-    this.started = true
-    this.rejectAllPendingCommands()
 
     if (this.connection) {
       return Promise.reject(
@@ -205,13 +205,13 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    if (width <= 0) {
-      return Promise.reject(new Error(`width is <=0, ${width}`))
+    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    if (invalidStreamDimensions) {
+      return Promise.reject(invalidStreamDimensions)
     }
 
-    if (height <= 0) {
-      return Promise.reject(new Error(`height is <=0, ${height}`))
-    }
+    this.started = true
+    this.rejectAllPendingCommands()
 
     this.streamDimensions = {
       width,
@@ -449,6 +449,7 @@ export class ConnectionManager extends EventTarget {
       color: defaultSystemColor,
       highlight_color: SYSTEM_HIGHLIGHT_COLOR,
       selection_color: SYSTEM_SELECTION_COLOR,
+      edge_3d_color: edgeColor(),
     } as const
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -1013,6 +1014,11 @@ export class ConnectionManager extends EventTarget {
     if (!this.connection) {
       console.warn('unable to resize, connection is not found')
       return
+    }
+
+    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    if (invalidStreamDimensions) {
+      return Promise.reject(invalidStreamDimensions)
     }
 
     // Make sure the connection is ready otherwise you are sending the events too early.

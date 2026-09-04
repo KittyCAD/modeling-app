@@ -1,5 +1,6 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { getEXTNoPeriod } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
 import {
@@ -63,6 +64,23 @@ function getRelativePathIfContained(
     return undefined
   }
   return relativePath
+}
+
+export function normalizeFilesystemPathForComparison(path: string): string {
+  const hasWindowsSeparator = path.includes('\\')
+  const normalizedPath = path.replace(/\\/g, '/').replace(/\/+$/g, '')
+  const hasWindowsDrive = /^[a-zA-Z]:\//.test(normalizedPath)
+
+  return hasWindowsSeparator || hasWindowsDrive
+    ? normalizedPath.toLowerCase()
+    : normalizedPath
+}
+
+function areFilesystemPathsEqual(left: string, right: string): boolean {
+  return (
+    normalizeFilesystemPathForComparison(left) ===
+    normalizeFilesystemPathForComparison(right)
+  )
 }
 
 export const PATHS = {
@@ -135,31 +153,56 @@ export async function getProjectMetaByRouteId(
 
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string
+  id: string,
+  {
+    activeProjectPath,
+    candidateProjectDirectories = [],
+  }: {
+    activeProjectPath?: string
+    candidateProjectDirectories?: readonly string[]
+  } = {}
 ): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
-  const projectDirectory = getProjectDirectorySetting(configuration)
-  const relativeToRoot = projectDirectory
-    ? getRelativePathIfContained(projectDirectory, id)
+  const relativeToActiveProject = activeProjectPath
+    ? getRelativePathIfContained(activeProjectPath, id)
     : undefined
-  if (projectDirectory && relativeToRoot !== undefined) {
-    projectName = relativeToRoot.split(fsZds.sep)[0]
-    projectPath = projectName
-      ? fsZds.join(projectDirectory, projectName)
-      : projectDirectory
-    projectName = projectName === '' ? null : projectName
+  if (activeProjectPath && relativeToActiveProject !== undefined) {
+    projectName = fsZds.basename(activeProjectPath)
+    projectPath = activeProjectPath
   } else {
-    projectPath = id
-    if (fsZds.extname(id) === '.kcl') {
-      projectPath = fsZds.dirname(id)
+    const configuredProjectDirectory = getProjectDirectorySetting(configuration)
+    const projectDirectory = [
+      ...candidateProjectDirectories,
+      configuredProjectDirectory,
+    ]
+      .filter((directory): directory is string => Boolean(directory))
+      .filter(
+        (directory) => getRelativePathIfContained(directory, id) !== undefined
+      )
+      .toSorted((left, right) => right.length - left.length)
+      .at(0)
+    const relativeToRoot = projectDirectory
+      ? getRelativePathIfContained(projectDirectory, id)
+      : undefined
+    if (projectDirectory && relativeToRoot !== undefined) {
+      projectName = relativeToRoot.split(fsZds.sep)[0]
+      projectPath = projectName
+        ? fsZds.join(projectDirectory, projectName)
+        : projectDirectory
+      projectName = projectName === '' ? null : projectName
+    } else {
+      projectPath = id
+      if (fsZds.extname(id) === '.kcl') {
+        projectPath = fsZds.dirname(id)
+      }
+      projectName = fsZds.basename(projectPath)
     }
-    projectName = fsZds.basename(projectPath)
   }
 
-  if (projectPath !== id) {
+  if (!areFilesystemPathsEqual(projectPath, id)) {
     currentFileName = fsZds.basename(id)
     currentFilePath = id
   }
@@ -310,10 +353,7 @@ export function desktopSafePathJoin(paths: string[]): string {
   return paths.join(fsZds.sep)
 }
 
-export const getEXTNoPeriod = (filePath: string) => {
-  const extension = filePath.split('.').pop() || null
-  return extension
-}
+export { getEXTNoPeriod }
 
 /**
  * Whether a file name includes a user-typed extension: a `.` that is neither the
@@ -333,6 +373,32 @@ export const getEXTWithPeriod = (filePath: string) => {
   return extension
 }
 
+export const getVersionedCreoExtensionWithPeriod = (filePath: string) => {
+  const lastSeparatorIndex = Math.max(
+    filePath.lastIndexOf('/'),
+    filePath.lastIndexOf('\\')
+  )
+  const fileName = filePath.slice(lastSeparatorIndex + 1)
+  const normalizedFileName = fileName.toLowerCase()
+  const marker = '.prt.'
+  const markerIndex = normalizedFileName.lastIndexOf(marker)
+  if (markerIndex <= 0) {
+    return null
+  }
+
+  const version = normalizedFileName.slice(markerIndex + marker.length)
+  if (version.length === 0 || version[0] < '1' || version[0] > '9') {
+    return null
+  }
+  for (const digit of version) {
+    if (digit < '0' || digit > '9') {
+      return null
+    }
+  }
+
+  return fileName.slice(markerIndex)
+}
+
 export const getParentAbsolutePath = (absolutePath: string) => {
   const split = desktopSafePathSplit(absolutePath)
   split.pop()
@@ -341,20 +407,41 @@ export const getParentAbsolutePath = (absolutePath: string) => {
 }
 
 /**
- * Helper function to detect if an extension is an import extension
+ * Match a raw extension or complete file path against supported extensions.
  */
+const isExtensionOrPathInList = (
+  extensionOrPath: string,
+  extensions: string[]
+) => {
+  const normalized = extensionOrPath.toLowerCase()
+  if (extensions.includes(normalized)) {
+    return true
+  }
+
+  const extension = getEXTNoPeriod(normalized)
+  if (extension && extensions.includes(extension)) {
+    return true
+  }
+
+  if (!extensions.includes('prt')) {
+    return false
+  }
+
+  return getVersionedCreoExtensionWithPeriod(normalized) !== null
+}
+
 export const isExtensionAnImportExtension = (
   extension: string,
   importExtensions: string[]
 ) => {
-  return importExtensions.includes(extension.toLowerCase())
+  return isExtensionOrPathInList(extension, importExtensions)
 }
 
 export const isExtensionARelevantExtension = (
   extension: string,
   relevantExtensions: string[]
 ) => {
-  return relevantExtensions.includes(extension.toLowerCase())
+  return isExtensionOrPathInList(extension, relevantExtensions)
 }
 
 /**

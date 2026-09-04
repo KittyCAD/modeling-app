@@ -1,5 +1,7 @@
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
+use schemars::JsonSchema;
+use serde::Deserialize;
 use serde::Serialize;
 
 use super::ArtifactId;
@@ -12,7 +14,7 @@ use crate::front::ObjectId;
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Deserialize)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum Operation {
@@ -88,7 +90,7 @@ impl Operation {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 #[cfg_attr(not(target_arch = "wasm32"), expect(clippy::large_enum_variant))]
@@ -117,7 +119,7 @@ pub enum Group {
 }
 
 /// An argument to a CAD modeling operation.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
@@ -141,7 +143,7 @@ fn is_false(b: &bool) -> bool {
 
 /// A KCL value used in Operations.  `ArtifactId`s are used to refer to the
 /// actual scene objects.  Any data not needed in the UI may be omitted.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
 pub enum OpKclValue {
@@ -219,7 +221,7 @@ pub enum OpKclValue {
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, Deserialize, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
@@ -232,7 +234,7 @@ impl OpSketch {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSolid {
@@ -245,7 +247,7 @@ impl OpSolid {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpHelix {

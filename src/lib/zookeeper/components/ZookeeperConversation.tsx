@@ -1,4 +1,6 @@
 import { Popover } from '@headlessui/react'
+import type { MlCopilotAccessDeniedCode } from '@kittycad/lib'
+import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -13,11 +15,12 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
-import type {
-  Conversation,
-  Exchange,
-  MlCopilotModeId,
-  MlCopilotModeOption,
+import {
+  type Conversation,
+  type Exchange,
+  isResponseComplete,
+  type MlCopilotModeId,
+  type MlCopilotModeOption,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -53,7 +56,13 @@ export interface ZookeeperConversationProps {
   onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
+  onCheckBilling?: () => void
+  onOpenBilling?: () => void
+  interruptedTurnAwaitingResume?: boolean
+  isResumingInterruptedTurn?: boolean
+  onResumeInterruptedTurn?: () => void
   connectionError?: string
+  accessDeniedCode?: MlCopilotAccessDeniedCode
   connectionFailed?: boolean
   showManualConnect?: boolean
   canClearChat?: boolean
@@ -64,7 +73,6 @@ export interface ZookeeperConversationProps {
   hasPromptCompleted: boolean
   userAvatarSrc?: string
   showMakeathonAnnouncement?: boolean
-  blockedReason?: string
   defaultPrompt?: string
   initialMlCopilotMode?: MlCopilotModeId // resolved from settings/server metadata
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
@@ -632,28 +640,6 @@ export const ZookeeperConversationInput = (
   )
 }
 
-const StarterCard = ({ text }: { text: string }) => {
-  const [, setTrigger] = useState<number>(0)
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTrigger((t) => t + 1)
-    }, 500)
-    return () => {
-      clearInterval(i)
-    }
-  }, [])
-
-  return (
-    <ExchangeCard
-      onClickClearChat={() => {}}
-      isLastResponse={false}
-      responses={[]}
-      deltasAggregated={text}
-    />
-  )
-}
-
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
@@ -661,9 +647,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const lastExchange = exchangesLength
     ? props.conversation?.exchanges[exchangesLength - 1]
     : undefined
-  const isEndOfStream = lastExchange?.responses.some(
-    (ex) => 'end_of_stream' in ex || 'error' in ex || 'info' in ex
-  )
+  const isEndOfStream =
+    lastExchange?.responses.some(isResponseComplete) ?? false
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
@@ -724,13 +709,14 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               ) : props.needsReconnect && props.connectionFailed ? (
                 <ZookeeperConnectionErrorBanner
                   connectionError={props.connectionError}
+                  accessDeniedCode={props.accessDeniedCode}
                   canClearChat={props.canClearChat}
                   isClearingChat={props.isClearingChat}
                   onReconnect={props.onReconnect}
+                  onCheckBilling={props.onCheckBilling}
+                  onOpenBilling={props.onOpenBilling}
                   onClickClearChat={props.onClickClearChat}
                 />
-              ) : props.blockedReason ? (
-                <StarterCard text={props.blockedReason} />
               ) : props.isLoading === false ? (
                 <>
                   {shouldShowWelcomeMessage && (
@@ -748,9 +734,40 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   {hasMessages ? (
                     <>
                       {exchangeCards}
-                      {lastExchange && !isEndOfStream && (
+                      {lastExchange &&
+                      !isEndOfStream &&
+                      props.interruptedTurnAwaitingResume ? (
+                        <div
+                          className="m-4 flex flex-col gap-2 rounded-md border border-ml-green bg-ml-green/10 p-4 text-left dark:border-ml-green dark:bg-ml-green/10"
+                          role="status"
+                        >
+                          <p className="font-semibold">
+                            Zookeeper stopped before finishing this request.
+                          </p>
+                          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                            Review the current project, then resume when you're
+                            ready.
+                          </p>
+                          <ActionButton
+                            Element="button"
+                            type="button"
+                            aria-label="Resume interrupted request"
+                            className="h-7 w-fit focus-visible:outline-appForeground"
+                            iconStart={{ icon: 'arrowRight' }}
+                            onClick={props.onResumeInterruptedTurn}
+                            disabled={props.isResumingInterruptedTurn}
+                            tabIndex={0}
+                          >
+                            {props.isResumingInterruptedTurn
+                              ? 'Resuming...'
+                              : 'Resume interrupted request'}
+                          </ActionButton>
+                        </div>
+                      ) : lastExchange &&
+                        !isEndOfStream &&
+                        props.isProcessing ? (
                         <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
-                      )}
+                      ) : null}
                     </>
                   ) : null}
                 </>
@@ -819,11 +836,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <ZookeeperConversationInput
-              disabled={
-                Boolean(props.blockedReason) ||
-                props.disabled ||
-                props.isLoading
-              }
+              disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}

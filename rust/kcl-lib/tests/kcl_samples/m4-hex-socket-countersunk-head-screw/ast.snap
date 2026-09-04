@@ -7658,7 +7658,7 @@ description: Result of parsing m4-hex-socket-countersunk-head-screw.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Fasteners",
+            "value": "Categories: Mechanical Components",
             "style": "line"
           }
         },

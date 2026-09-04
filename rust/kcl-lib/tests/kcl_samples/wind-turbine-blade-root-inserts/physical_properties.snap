@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties wind-turbine-blade-root-inserts.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 25486.9753480228,
+      "y": 452.33237504404497,
+      "z": 1092.832579209236
+    },
+    "dimensions": {
+      "x": 53026.0493039544,
+      "y": 4987.785765826251,
+      "z": 5154.9850886389095
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 30199487.028964937
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2166515.544830773
+  }
+}

@@ -75,6 +75,8 @@ export fn datum(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
@@ -162,6 +164,8 @@ export fn flatness(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how straight a feature must be.
@@ -269,6 +273,8 @@ export fn straightness(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how circular (round) a feature must be.
@@ -344,6 +350,8 @@ export fn circularity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying how closely a feature must conform to a perfect cylinder.
@@ -420,6 +428,8 @@ export fn cylindricity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T concentricity annotation specifying how closely a feature's median axis must align with datum references.
@@ -509,6 +519,8 @@ export fn concentricity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T symmetry annotation specifying how closely a feature's median plane must align with datum references.
@@ -632,6 +644,8 @@ export fn symmetry(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation specifying circular runout relative to a datum axis.
@@ -726,6 +740,8 @@ export fn runout(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T angularity annotation specifying how much faces or edges may deviate from an orientation at a basic angle relative to datum references.
@@ -867,6 +883,8 @@ export fn angularity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references.
@@ -937,6 +955,8 @@ export fn perpendicularity(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T parallelism annotation specifying how much faces or edges may deviate from parallel orientation relative to datum references.
@@ -1007,6 +1027,8 @@ export fn parallelism(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T position annotation specifying how much faces or edges may deviate from their ideal location.
@@ -1077,6 +1099,8 @@ export fn position(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation for attaching manufacturing text to faces or edges.
@@ -1140,6 +1164,8 @@ export fn annotation(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T note for adding free-floating manufacturing text that is not attached to a face or edge.
@@ -1208,6 +1234,8 @@ export fn note(
   /// The model-space height to use for the note text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): GdtAnnotation {}
 
 /// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
@@ -1215,6 +1243,7 @@ export fn note(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
+/// @settings(kclVersion = 2.0)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1230,6 +1259,7 @@ export fn note(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1250,11 +1280,45 @@ export fn note(
 /// lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// // Example of a distance annotation with no tolerance.
+///
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -6.19mm, var 4.16mm], end = [var 7.91mm, var 4.16mm])
+///   line2 = line(start = [var 7.91mm, var 4.16mm], end = [var 7.91mm, var -3.35mm])
+///   line3 = line(start = [var 7.91mm, var -3.35mm], end = [var -6.19mm, var -3.35mm])
+///   line4 = line(start = [var -6.19mm, var -3.35mm], end = [var -6.19mm, var 4.16mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+/// hidden001 = hide(sketch001)
+/// region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+/// extrude001 = extrude(region001, length = 1, tagEnd = $capEnd001)
+/// gdt::distance(
+///   edges = [
+///     getCommonEdge(faces = [
+///       region001.tags.line1,
+///       extrude001.faces.capEnd001
+///     ])
+///   ],
+///   framePosition = [5, 5],
+///   fontSize = 0.5276mm,
+/// )
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn distance(
   /// The acceptable distance tolerance.
+  /// If not given, or 0, tolerance will not be shown.
   @(includeInSnippet = true)
-  tolerance: number(Length),
+  tolerance?: number(Length) = 0mm,
   /// The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   from?: Face | TaggedFace | Edge | any,
   /// The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
@@ -1276,6 +1340,8 @@ export fn distance(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile annotation specifying how much edges or faces may deviate from their ideal shape.
@@ -1348,6 +1414,8 @@ export fn profile(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile-of-a-line annotation specifying how much edges may deviate from their ideal shape.
@@ -1424,6 +1492,8 @@ export fn profileLine(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile-of-a-surface annotation specifying how much faces may deviate from their ideal shape.
@@ -1466,4 +1536,6 @@ export fn profileSurface(
   /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
+  /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
+  annotationName?: string,
 ): [GdtAnnotation; 1+] {}

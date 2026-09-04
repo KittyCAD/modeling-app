@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties import_whole_transitive_import.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 127.0,
+      "y": 127.0,
+      "z": 127.0
+    },
+    "dimensions": {
+      "x": 609.6,
+      "y": 609.6,
+      "z": 254.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 810528.5104234099
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 51460.81226958425
+  }
+}

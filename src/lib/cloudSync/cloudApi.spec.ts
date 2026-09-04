@@ -24,6 +24,16 @@ function projectFile(relativePath: string, contents = ''): ProjectArchiveFile {
   }
 }
 
+function projectFiles() {
+  return [
+    projectFile('main.kcl'),
+    projectFile(
+      'project.toml',
+      'title = "bracket"\ndefault_file = "main.kcl"\n'
+    ),
+  ]
+}
+
 async function uploadBodyFromRequest(init?: RequestInit) {
   expect(init?.body).toBeInstanceOf(FormData)
   const bodyPart = (init?.body as FormData).get('body')
@@ -61,7 +71,7 @@ describe('remote project uploads', () => {
         baseUrl: 'https://api.dev.zoo.dev',
       },
       '/projects/bracket',
-      [projectFile('main.kcl')]
+      projectFiles()
     )
 
     expect(uploadedBody).toEqual({
@@ -92,7 +102,7 @@ describe('remote project uploads', () => {
         description: 'Existing Aquarium description.',
         category_ids: ['category-a', 'category-b'],
       },
-      files: [projectFile('main.kcl')],
+      files: projectFiles(),
       expectedRevision: 'rev-1',
     })
 
@@ -111,6 +121,61 @@ describe('remote project uploads', () => {
       project_toml_path: 'project.toml',
       expected_revision: 'rev-1',
     })
+  })
+
+  test('omits deletion intent when no deleted paths are provided', async () => {
+    let uploadedBody: Record<string, unknown> | undefined
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>(async (_input, init) => {
+        uploadedBody = await uploadBodyFromRequest(init)
+        return projectResponse('project-existing', 'rev-2')
+      })
+    )
+
+    await updateRemoteProject({
+      config: { enabled: true, baseUrl: 'https://api.dev.zoo.dev' },
+      projectPath: '/projects/bracket',
+      project: {
+        id: 'project-existing',
+        description: '',
+        category_ids: [],
+      },
+      files: projectFiles(),
+      expectedRevision: 'rev-1',
+      deletedPaths: [],
+    })
+
+    expect(uploadedBody).not.toHaveProperty('deleted_paths')
+  })
+
+  test('declares explicit deletion intent when replacing a cloud project', async () => {
+    let uploadedBody: Record<string, unknown> | undefined
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>(async (_input, init) => {
+        uploadedBody = await uploadBodyFromRequest(init)
+        return projectResponse('project-existing', 'rev-2')
+      })
+    )
+
+    await updateRemoteProject({
+      config: { enabled: true, baseUrl: 'https://api.dev.zoo.dev' },
+      projectPath: '/projects/bracket',
+      project: {
+        id: 'project-existing',
+        description: '',
+        category_ids: [],
+      },
+      files: projectFiles(),
+      expectedRevision: 'rev-1',
+      deletedPaths: ['old/part.kcl', 'obsolete.kcl', 'obsolete.kcl'],
+    })
+
+    expect(uploadedBody?.deleted_paths).toEqual([
+      'obsolete.kcl',
+      'old/part.kcl',
+    ])
   })
 })
 

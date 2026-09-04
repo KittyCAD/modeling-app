@@ -1,0 +1,26 @@
+// Walkie Talkie Frequency Knob
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import knobDiameter, knobHeight, knobFilletRadius from "parameters.kcl"
+
+knobSketch = sketch(on = XY) {
+  knobCircle = circle(start = [var 0.25in, var 0in], center = [var 0in, var 0in])
+  coincident([knobCircle.center, ORIGIN])
+  diameter(knobCircle) == knobDiameter
+}
+knobRegion = region(segments = [knobSketch.knobCircle])
+knobBlank = extrude(knobRegion, length = knobHeight, tagEnd = $knobEnd)
+knob = fillet(
+  knobBlank,
+  radius = knobFilletRadius,
+  edges = [
+    {
+      sideFaces = [knobRegion.tags.knobCircle, knobEnd]
+    }
+  ],
+)
+  |> appearance(color = "#afbf36")
+hide(knobSketch)
+
+knob

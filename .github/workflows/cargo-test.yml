@@ -20,7 +20,8 @@ concurrency:
 jobs:
   build-test-artifacts:
     name: Build test artifacts
-    runs-on: namespace-profile-ubuntu-8-cores
+    # Keep host-user Cargo outputs separate from the root-run MUSL build.
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
       - uses: runs-on/action@v2.3.0
       - uses: actions/create-github-app-token@v3.2.0
@@ -58,14 +59,15 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - name: Install just
         uses: taiki-e/install-action@just
-      - name: Install cargo-insta
-        shell: bash
-        run: |
-          cargo install cargo-insta
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
+      - name: Rust cache on the Namespace volume
+        uses: namespacelabs/nscloud-cache-action@v1
         with:
-          workspaces: rust
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
+      - name: Verify Rust cache is writable
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
       - name: Fetch the base branch
         if: ${{ github.event_name == 'pull_request' }}
         env:
@@ -110,6 +112,13 @@ jobs:
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
+      - name: Install cargo-insta
+        # Only the "Commit differences" step below runs cargo insta, through
+        # `just overwrite-sim-test`, and that step runs only when the
+        # kcl-samples tests fail. This step carries the same condition so the
+        # tool is installed on the runs that use it.
+        if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
+        uses: taiki-e/install-action@cargo-insta
       - name: Commit differences
         if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
@@ -164,7 +173,7 @@ jobs:
           path: rust/nextest-archive.tar.zst
   run-test-artifacts:
     name: cargo test (${{ matrix.executor }}, shard ${{ matrix.partitionIndex}})
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     needs: build-test-artifacts
     strategy:
       fail-fast: false

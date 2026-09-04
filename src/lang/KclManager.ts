@@ -404,10 +404,7 @@ export class ZDSProject {
     this.#executingPath.value = foundPathSignal[0]
   }
   findEditor(path: string) {
-    return this.editors
-      .entries()
-      .toArray()
-      .find(([p]) => p.value === path)
+    return Array.from(this.editors.entries()).find(([p]) => p.value === path)
   }
 
   // Saving some keystrokes
@@ -532,10 +529,9 @@ export class ZDSProject {
 
   /** Handle updates from the disk representation of the project */
   private onUpdateFromDisk = (eventType: string, path: string) => {
-    const foundEditorKey = this.editors
-      .keys()
-      .toArray()
-      .find((pathSignal) => pathSignal.value === path)
+    const foundEditorKey = Array.from(this.editors.keys()).find(
+      (pathSignal) => pathSignal.value === path
+    )
 
     // We ignore all currently-opened editors. The project watcher is meant
     // only to notify about the rest of the project's updates, and pass them
@@ -1054,6 +1050,16 @@ export class KclManager extends File {
           return
         }
 
+        // Zookeeper history needs to record the active-file edit against the
+        // editor's pre-write text, so don't let the watcher preemptively reload
+        // it or report its intermediate editor state as an unsaved local edit.
+        if (
+          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperHistoryRecordingInProgress
+        ) {
+          return
+        }
+
         if (this.hasUnsavedLocalChanges()) {
           console.warn(
             'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
@@ -1061,15 +1067,6 @@ export class KclManager extends File {
           toast.error(
             'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
           )
-          return
-        }
-
-        // Zookeeper history needs to record the active-file edit against the
-        // editor's pre-write text, so don't let the watcher preemptively reload it.
-        if (
-          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
-          this.zookeeperHistoryRecordingInProgress
-        ) {
           return
         }
 
@@ -1108,7 +1105,7 @@ export class KclManager extends File {
   private _cancelTokens: Map<number, boolean> = new Map()
   private _executeIsStale: ExecuteArgs | null = null
   private _isExecuting = signal(false)
-  private _executionElapsedMs = signal(0)
+  private _executionElapsedMs = signal<number | null>(null)
   private executionStartedAtMs: number | null = null
   private executionTimerIntervalId: ReturnType<typeof setInterval> | undefined =
     undefined

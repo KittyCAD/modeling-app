@@ -2956,6 +2956,36 @@ impl SketchOrSegment {
     }
 }
 
+const REGION_DOCS_URL: &str = "https://zoo.dev/docs/kcl-std/functions/std-sketch-region";
+
+/// Guidance appended to engine rejections of `region(point = ...)`. The engine
+/// reports only that it could not build the region, so the error has to say what
+/// to change on its own: a human or an AI agent reading it should learn the next
+/// step and where to read more without any other context.
+const REGION_FROM_POINT_ENGINE_HELP: &str = "The engine found no closed boundary containing that point. Check that the point lies inside a fully closed boundary of the sketch, and that `sketch` names the sketch the point belongs to. Prefer `segments = [...]`, which traces the boundary from sketch segments instead of a point.";
+
+/// Guidance appended to engine rejections of `region(segments = [...])`.
+const REGION_FROM_SEGMENTS_ENGINE_HELP: &str = "The engine could not trace a closed boundary from those segments. Check that the segments belong to the same solved sketch and enclose an area. Use `intersectionIndex` and `direction` to choose between boundaries when more than one is possible.";
+
+/// Append region guidance to an engine rejection of a region command.
+///
+/// Only `KclError::Engine` is enriched. Hangups and internal engine failures are
+/// transport problems that get retried and have nothing to do with the region
+/// arguments, so guidance there would send the reader after the wrong fix.
+fn with_region_help(mut error: KclError, help: &str) -> KclError {
+    if !matches!(error, KclError::Engine { .. }) {
+        return error;
+    }
+    let details = error.details_mut();
+    let separator = if details.message.ends_with(['.', '!', '?']) {
+        ""
+    } else {
+        "."
+    };
+    details.message = format!("{}{separator} {help} See {REGION_DOCS_URL}", details.message);
+    error
+}
+
 async fn inner_region(
     point: Option<KclValue>,
     segments: Option<Vec<KclValue>>,
@@ -2989,7 +3019,8 @@ async fn inner_region(
                             .build(),
                     ),
                 )
-                .await?;
+                .await
+                .map_err(|error| with_region_help(error, REGION_FROM_POINT_ENGINE_HELP))?;
 
             let region_mapping = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
                 modeling_response: kcmc::ok_response::OkModelingCmdResponse::CreateRegionFromQueryPoint(data),
@@ -3055,7 +3086,8 @@ async fn inner_region(
                             .build(),
                     ),
                 )
-                .await?;
+                .await
+                .map_err(|error| with_region_help(error, REGION_FROM_SEGMENTS_ENGINE_HELP))?;
 
             let region_mapping = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
                 modeling_response: kcmc::ok_response::OkModelingCmdResponse::CreateRegion(data),
@@ -3338,9 +3370,69 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
+    use crate::errors::KclError;
+    use crate::errors::KclErrorDetails;
     use crate::execution::TagIdentifier;
     use crate::std::sketch::PlaneData;
+    use crate::std::sketch::REGION_DOCS_URL;
+    use crate::std::sketch::REGION_FROM_POINT_ENGINE_HELP;
+    use crate::std::sketch::REGION_FROM_SEGMENTS_ENGINE_HELP;
+    use crate::std::sketch::with_region_help;
     use crate::std::utils::calculate_circle_center;
+
+    fn engine_error_details(message: &str) -> KclErrorDetails {
+        KclErrorDetails::new(message.to_owned(), Vec::new())
+    }
+
+    #[test]
+    fn region_help_is_appended_to_an_engine_rejection() {
+        let engine_message = "Unable to create a region that contains the requested query point";
+        let error = with_region_help(
+            KclError::Engine {
+                details: engine_error_details(engine_message),
+            },
+            REGION_FROM_POINT_ENGINE_HELP,
+        );
+
+        assert_eq!(
+            error.message(),
+            format!("{engine_message}. {REGION_FROM_POINT_ENGINE_HELP} See {REGION_DOCS_URL}")
+        );
+    }
+
+    #[test]
+    fn region_help_does_not_double_up_sentence_punctuation() {
+        let engine_message = "Unable create a region from the given segments.";
+        let error = with_region_help(
+            KclError::Engine {
+                details: engine_error_details(engine_message),
+            },
+            REGION_FROM_SEGMENTS_ENGINE_HELP,
+        );
+
+        assert_eq!(
+            error.message(),
+            format!("{engine_message} {REGION_FROM_SEGMENTS_ENGINE_HELP} See {REGION_DOCS_URL}")
+        );
+    }
+
+    #[test]
+    fn region_help_is_not_appended_to_transport_or_internal_failures() {
+        let hangup = KclError::EngineHangup {
+            details: engine_error_details("connection closed"),
+            api_call_id: None,
+        };
+        let internal = KclError::EngineInternal {
+            details: engine_error_details("internal error"),
+        };
+        let semantic = KclError::new_semantic(engine_error_details("Sketch parameter must not be provided"));
+
+        for error in [hangup, internal, semantic] {
+            let message = error.message().to_owned();
+            let enriched = with_region_help(error, REGION_FROM_POINT_ENGINE_HELP);
+            assert_eq!(enriched.message(), message);
+        }
+    }
 
     #[test]
     fn test_deserialize_plane_data() {
