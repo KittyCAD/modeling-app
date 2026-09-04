@@ -25,15 +25,59 @@ export type DuplicateProjectResult = {
   title: string
 }
 
+function getProjectRelativeCurrentFilePath({
+  sourcePath,
+  currentFilePath,
+}: {
+  sourcePath: string
+  currentFilePath?: string | null
+}) {
+  if (!currentFilePath) {
+    return undefined
+  }
+
+  const relativeCurrentFilePath = fsZds.relative(sourcePath, currentFilePath)
+  const isContainedFile =
+    relativeCurrentFilePath &&
+    relativeCurrentFilePath !== '..' &&
+    !relativeCurrentFilePath.startsWith(`..${fsZds.sep}`) &&
+    !relativeCurrentFilePath.startsWith('/') &&
+    !relativeCurrentFilePath.startsWith('\\') &&
+    !/^[a-zA-Z]:/.test(relativeCurrentFilePath)
+
+  if (
+    !isContainedFile ||
+    relativeCurrentFilePath === PROJECT_SETTINGS_FILE_NAME
+  ) {
+    return undefined
+  }
+
+  return relativeCurrentFilePath
+}
+
+async function writeProjectRelativeFile(
+  projectPath: string,
+  relativePath: string,
+  contents: string
+) {
+  const filePath = fsZds.join(projectPath, relativePath)
+  await fsZds.mkdir(fsZds.dirname(filePath), { recursive: true })
+  await fsZds.writeFile(filePath, new TextEncoder().encode(contents))
+}
+
 export async function duplicateProjectInDirectory({
   source,
   projectDirectoryPath,
   requestedProjectTitle,
+  currentFilePath,
+  currentFileContents,
   wasmInstance,
 }: {
   source: DuplicateProjectSource
   projectDirectoryPath: string
   requestedProjectTitle: string
+  currentFilePath?: string | null
+  currentFileContents?: string
   wasmInstance: ModuleType
 }): Promise<DuplicateProjectResult> {
   const projectTitle = requestedProjectTitle.trim() || source.displayName
@@ -71,7 +115,19 @@ export async function duplicateProjectInDirectory({
     `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${uuid.v4()}`
   )
   const targetPath = fsZds.join(projectDirectoryPath, name)
+  const relativeCurrentFilePath = getProjectRelativeCurrentFilePath({
+    sourcePath: source.path,
+    currentFilePath,
+  })
   try {
+    if (relativeCurrentFilePath && currentFileContents !== undefined) {
+      await writeProjectRelativeFile(
+        source.path,
+        relativeCurrentFilePath,
+        currentFileContents
+      )
+    }
+
     await fsZds.mkdir(temporaryPath)
     await fsZds.cp(source.path, temporaryPath, { recursive: true })
     await fsZds.writeFile(

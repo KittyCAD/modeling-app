@@ -269,6 +269,13 @@ function ProjectMenuPopover({
     [commandList]
   )
   const machineCount = machineManager.machines.length
+  const getCurrentFileForDuplicate = useCallback(
+    () => ({
+      currentFilePath: app?.project?.executingPath,
+      currentFileContents: app?.project?.executingEditor.value?.code,
+    }),
+    [app]
+  )
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
@@ -320,6 +327,7 @@ function ProjectMenuPopover({
                     projectName: project.name,
                     projectPath: project.path,
                     requestedProjectName: getProjectDisplayName(project),
+                    ...getCurrentFileForDuplicate(),
                   },
                 })
               },
@@ -527,6 +535,7 @@ function ProjectMenuPopover({
       homeNavigationEnabled,
       projectPath,
       project,
+      getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
       app.systemIOActor,
