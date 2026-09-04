@@ -12,6 +12,8 @@ export interface FileOperationsRegistryService {
   readonly pending: () => Promise<number>
   /** Observe one path while coordinated mutations of it are excluded. */
   readonly stat: (path: string) => Promise<FileStat>
+  /** Check whether the current platform grant allows reading and writing. */
+  readonly canReadWrite: (path: string) => Promise<boolean>
   /**
    * Observe whether one path currently exists. Use strict or unique creation
    * instead when the result would be used to select a name.
