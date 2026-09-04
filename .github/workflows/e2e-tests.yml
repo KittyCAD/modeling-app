@@ -37,6 +37,16 @@ jobs:
           CI_SUITE: e2e:snapshots
           CI_STEP: setup
 
+      - name: Track setup (WebKit snapshots)
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:snapshots-webkit
+          CI_STEP: setup
+
       - name: Track setup (web)
         run: .github/ci-cd-scripts/track-step.sh
         env:
@@ -196,6 +206,111 @@ jobs:
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:snapshots
+          CI_STEP: teardown
+
+  snapshots-webkit:
+    needs: [build-wasm]
+    name: e2e:snapshots (macos-webkit)
+    runs-on: namespace-profile-macos-8-cores
+    if: github.repository == 'kittycad/modeling-app'
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
+      - name: Copy prepared Wasm
+        run: |
+          ls -R prepared-wasm
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download browser cache
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: ${{ runner.os }}-playwright-webkit-${{ hashFiles('package-lock.json') }}
+
+      - name: Install WebKit
+        run: npm run playwright -- install --with-deps webkit
+
+      - name: Run WebKit snapshots
+        id: webkit-snapshots
+        continue-on-error: true
+        run: npm run test:snapshots:webkit
+        env:
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:snapshots-webkit
+          TARGET: web
+
+      - name: Report experimental snapshot differences
+        if: steps.webkit-snapshots.outcome == 'failure'
+        run: echo "::warning::WebKit snapshot differences are experimental; inspect the uploaded Playwright report."
+
+      - name: Upload WebKit Playwright report
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-snapshot-webkit-${{ github.sha }}
+          path: playwright-report/
+          include-hidden-files: true
+          retention-days: 30
+          overwrite: true
+
+      - name: Upload WebKit snapshot results
+        uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: test-results-snapshot-webkit-${{ github.sha }}
+          path: test-results/
+          include-hidden-files: true
+          retention-days: 30
+          overwrite: true
+
+      - name: Track teardown (WebKit snapshots)
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:snapshots-webkit
           CI_STEP: teardown
 
   web:
