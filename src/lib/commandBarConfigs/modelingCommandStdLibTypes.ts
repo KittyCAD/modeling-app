@@ -57,14 +57,6 @@ type GdtObjectsCommandArgs<Name extends StdLibCommandName> = GdtObjectsArgs<
 >
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
-export type ExtrudeExtentType = 'distance' | 'toFace'
-export type ExtrudeDirectionMode = 'oneSide' | 'symmetric' | 'twoSides'
-export type SweepProfilePosition = 'original' | 'path'
-export type SweepProfileOrientation = 'original' | 'perpendicular'
-export type RevolveExtentType = 'full' | 'angle'
-export type RevolveDirectionMode = 'oneSide' | 'symmetric' | 'twoSides'
-export type RevolveAxisMode = 'Axis' | 'Edge'
-export type ChamferType = 'equalDistance' | 'twoDistances' | 'distanceAndAngle'
 
 export type ExtrudeCommandArgs = Override<
   StdLibCommandArgs<'extrude'>,
@@ -72,8 +64,6 @@ export type ExtrudeCommandArgs = Override<
     direction?: Selections
     method?: KclPreludeExtrudeMethod
     bodyType?: KclPreludeBodyType
-    extentType?: ExtrudeExtentType
-    directionMode?: ExtrudeDirectionMode
   }
 >
 
@@ -81,8 +71,6 @@ export type SweepCommandArgs = Override<
   StdLibCommandArgs<'sweep'>,
   {
     relativeTo?: SweepRelativeTo
-    profilePosition?: SweepProfilePosition
-    profileOrientation?: SweepProfileOrientation
     bodyType?: KclPreludeBodyType
   }
 >
@@ -97,11 +85,9 @@ export type LoftCommandArgs = Override<
 export type RevolveCommandArgs = Override<
   Omit<StdLibCommandArgs<'revolve'>, 'axis'>,
   {
-    axisOrEdge: RevolveAxisMode
+    axisOrEdge: 'Axis' | 'Edge'
     axis: string | undefined
     edge: Selections | undefined
-    extentType?: RevolveExtentType
-    directionMode?: RevolveDirectionMode
     bodyType?: KclPreludeBodyType
   }
 >
@@ -141,7 +127,6 @@ export type ChamferCommandArgs = Override<
   {
     selection: Selections
     length: KclCommandValue
-    chamferType?: ChamferType
     secondLength?: KclCommandValue
     angle?: KclCommandValue
     tag?: string

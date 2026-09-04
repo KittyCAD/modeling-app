@@ -1702,16 +1702,14 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
   const { axisOrEdge, axis, edge } = axisEdgeSelection
 
-  // angle kcl arg
-  // Default to '360' if not present
-  const angle = await stringToKclExpression(
-    'angle' in operation.labeledArgs && operation.labeledArgs.angle
-      ? code.slice(...operation.labeledArgs.angle.sourceRange.map(boundToUtf16))
-      : '360deg',
+  const angle = await extractOptionalKclArgument(
+    code,
+    operation,
+    'angle',
     rustContext
   )
-  if (err(angle) || 'errors' in angle) {
-    return { reason: 'Error in angle argument retrieval' }
+  if (angle && 'error' in angle) {
+    return { reason: angle.error }
   }
 
   const toleranceResult = await extractOptionalKclArgument(
@@ -1784,16 +1782,6 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axisOrEdge,
     axis,
     edge,
-    extentType:
-      'angle' in operation.labeledArgs && operation.labeledArgs.angle
-        ? 'angle'
-        : 'full',
-    directionMode:
-      symmetric === true
-        ? 'symmetric'
-        : bidirectionalAngle
-          ? 'twoSides'
-          : 'oneSide',
     angle,
     tolerance,
     symmetric,

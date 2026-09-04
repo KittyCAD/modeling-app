@@ -35,9 +35,21 @@ import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  CODE_EDITOR_FOCUSED_COMMAND_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE,
+  commandScopeService,
+} from '@src/registry/contracts/commands'
 import { useSelector } from '@xstate/react'
 import type { ReactNode } from 'react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  use,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import styles from './ModelingDialog.module.css'
 
@@ -85,7 +97,7 @@ export function ModelingDialogKclInput({
   onValidationChange: (state: ModelingDialogKclValidationState) => void
 }) {
   useSignals()
-  const { settings, wasmPromise } = useApp()
+  const { settings, wasmPromise, registry } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(wasmPromise)
   const settingsValues = settings.useSettings()
@@ -310,11 +322,12 @@ export function ModelingDialogKclInput({
     valueCalculated: calcResult,
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!editorWrapperRef.current) {
       return
     }
 
+    const commandScopes = registry.optional(commandScopeService)
     const initialDisabled = initialEditorDisabledRef.current
     const compartments = compartmentsRef.current
     const editor = new EditorView({
@@ -379,10 +392,16 @@ export function ModelingDialogKclInput({
     }
 
     return () => {
+      // Check focus before React removes this editor. Otherwise opening the
+      // command palette can capture its stale editor scope after dismissal.
+      if (editor.dom.contains(document.activeElement)) {
+        commandScopes?.removeScope(CODE_EDITOR_FOCUSED_COMMAND_SCOPE)
+        commandScopes?.applyScope(CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE)
+      }
       editor.destroy()
       editorRef.current = null
     }
-  }, [])
+  }, [registry])
 
   useEffect(() => {
     if (!editorRef.current) {

@@ -27,7 +27,7 @@ region001 = region(segments = [sketch001.circle1])`
     await editor.selectText('region(')
     await toolbar.extrudeButton.click()
     const dialog = page.getByTestId('modeling-dialog')
-    await dialog.getByRole('textbox', { name: 'Distance' }).fill('12')
+    await dialog.getByRole('textbox', { name: /^Distance/ }).fill('12')
     await dialog.getByRole('button', { name: 'Surface', exact: true }).click()
     await dialog.getByRole('button', { name: 'Submit', exact: true }).click()
 

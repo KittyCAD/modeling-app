@@ -1,7 +1,6 @@
 import type { ModelingCommandArgOverrides } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { RevolveCommandArgs } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import {
-  activeInModelingDialog,
   bodyTypeResultArg,
   compactSelectionDialog,
   isEditingNode,
@@ -13,8 +12,6 @@ import {
 } from '@src/lib/commandBarConfigs/modelingDialogShared'
 import {
   getRevolveAxisMode,
-  getRevolveDirectionMode,
-  getRevolveExtentType,
   normalizeRevolveDialogArguments,
 } from '@src/lib/commandBarConfigs/revolveDialog'
 import { KCL_DEFAULT_DEGREE } from '@src/lib/constants'
@@ -121,82 +118,29 @@ export const revolveDialogOverrides = {
       }),
     },
   },
-  extentType: {
-    inputType: 'options',
-    required: isUsingModelingDialog,
-    skip: true,
-    defaultValue: ({
-      argumentsToSubmit,
-    }: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => getRevolveExtentType(argumentsToSubmit),
-    hidden: (context) => !isUsingModelingDialog(context),
-    options: [
-      { name: 'Full', value: 'full' },
-      { name: 'Angle', value: 'angle' },
-    ],
-    dialog: {
-      displayName: 'Type',
-      group: 'extent',
-      order: -20,
-      controlStyle: 'segmented',
-    },
-  },
-  directionMode: {
-    inputType: 'options',
-    required: (context) =>
-      isUsingModelingDialog(context) &&
-      getRevolveExtentType(context.argumentsToSubmit) === 'angle',
-    skip: true,
-    defaultValue: ({
-      argumentsToSubmit,
-    }: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => getRevolveDirectionMode(argumentsToSubmit),
-    hidden: (context) =>
-      !isUsingModelingDialog(context) ||
-      getRevolveExtentType(context.argumentsToSubmit) === 'full',
-    options: [
-      { name: 'One side', value: 'oneSide' },
-      { name: 'Symmetric', value: 'symmetric' },
-      { name: 'Two sides', value: 'twoSides' },
-    ],
-    dialog: {
-      displayName: 'Direction',
-      group: 'extent',
-      order: -10,
-      controlStyle: 'segmented',
-    },
-  },
   angle: {
-    ...activeInModelingDialog(
-      (argumentsToSubmit) =>
-        getRevolveExtentType(argumentsToSubmit) === 'angle',
-      { requiredOutsideDialog: true }
-    ),
-    defaultValue: KCL_DEFAULT_DEGREE,
+    required: (context) => !isUsingModelingDialog(context),
+    defaultValue: (context: ModelingDialogContext) =>
+      isUsingModelingDialog(context) ? '' : KCL_DEFAULT_DEGREE,
     dialog: {
+      displayName: 'Angle',
       group: 'extent',
       order: 0,
-      prepopulate: true,
     },
   },
   symmetric: {
-    hidden: (context) => isUsingModelingDialog(context),
     dialog: {
+      displayName: 'Symmetric',
       group: 'extent',
+      order: 10,
+      controlStyle: 'segmented',
     },
   },
   bidirectionalAngle: {
-    ...activeInModelingDialog(
-      (argumentsToSubmit) =>
-        getRevolveExtentType(argumentsToSubmit) === 'angle' &&
-        getRevolveDirectionMode(argumentsToSubmit) === 'twoSides'
-    ),
     dialog: {
       displayName: 'Second angle',
       group: 'extent',
-      order: 10,
+      order: 20,
     },
   },
   tolerance: {

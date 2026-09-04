@@ -65,6 +65,7 @@ export type CommandDialogGroup = {
 export type CommandDialogLayout = {
   groups: CommandDialogGroup[]
   showCommandDescription?: boolean
+  /** Resolve existing composite inputs such as Hole constructors and axis/edge selection. */
   normalizeArguments?: (
     argumentsToSubmit: Record<string, unknown>
   ) => Record<string, unknown>

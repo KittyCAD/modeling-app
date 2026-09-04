@@ -5,8 +5,8 @@ import {
 } from '@src/lib/commandBarConfigs/holeDialog'
 import { describe, expect, it } from 'vitest'
 
-describe('Hole dialog modes', () => {
-  it('infers missing modes from their dependent dimensions', () => {
+describe('Hole dialog arguments', () => {
+  it('infers missing hole and bottom types from their dimensions', () => {
     expect(getHoleType({})).toBe('simple')
     expect(getHoleType({ counterboreDepth: '1' })).toBe('counterbore')
     expect(getHoleType({ countersinkAngle: '90deg' })).toBe('countersink')
@@ -41,7 +41,7 @@ describe('Hole dialog modes', () => {
     expect(source.counterboreDepth).toBe('1')
   })
 
-  it('keeps only counterbore and drill dimensions when those modes are active', () => {
+  it('keeps only counterbore and drill dimensions when selected', () => {
     expect(
       normalizeHoleDialogArguments({
         holeType: 'counterbore',

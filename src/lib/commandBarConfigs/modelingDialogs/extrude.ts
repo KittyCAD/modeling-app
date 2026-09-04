@@ -1,12 +1,6 @@
-import {
-  getExtrudeDirectionMode,
-  getExtrudeExtentType,
-  normalizeExtrudeDialogArguments,
-} from '@src/lib/commandBarConfigs/extrudeDialog'
 import type { ModelingCommandArgOverrides } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { ExtrudeCommandArgs } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import {
-  activeInModelingDialog,
   bodyTypeResultArg,
   compactSelectionDialog,
   hasModelingDialogValue,
@@ -114,23 +108,20 @@ export function extrudeSelectionSupportsMethod(
   )
 }
 
-export const extrudeDialogLayout = modelingDialogLayout(
-  [
-    {
-      id: 'selection',
-      title: 'Profile',
-    },
-    {
-      id: 'extent',
-      title: 'Extent',
-    },
-    {
-      id: 'result',
-      title: 'Result',
-    },
-  ],
-  normalizeExtrudeDialogArguments
-)
+export const extrudeDialogLayout = modelingDialogLayout([
+  {
+    id: 'selection',
+    title: 'Profile',
+  },
+  {
+    id: 'extent',
+    title: 'Extent',
+  },
+  {
+    id: 'result',
+    title: 'Result',
+  },
+])
 
 export const extrudeDialogOverrides = {
   sketches: {
@@ -151,74 +142,28 @@ export const extrudeDialogOverrides = {
     multiple: true,
     hidden: isEditingNodeSelection,
   },
-  extentType: {
-    inputType: 'options',
-    required: isUsingModelingDialog,
-    skip: true,
-    defaultValue: ({
-      argumentsToSubmit,
-    }: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => getExtrudeExtentType(argumentsToSubmit),
-    hidden: (context) => !isUsingModelingDialog(context),
-    options: [
-      { name: 'Distance', value: 'distance' },
-      { name: 'To face', value: 'toFace' },
-    ],
-    dialog: {
-      displayName: 'Type',
-      group: 'extent',
-      order: -20,
-      controlStyle: 'segmented',
-    },
-  },
-  directionMode: {
-    inputType: 'options',
-    required: isUsingModelingDialog,
-    skip: true,
-    defaultValue: ({
-      argumentsToSubmit,
-    }: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => getExtrudeDirectionMode(argumentsToSubmit),
-    hidden: (context) =>
-      !isUsingModelingDialog(context) ||
-      getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
-    options: [
-      { name: 'One side', value: 'oneSide' },
-      { name: 'Symmetric', value: 'symmetric' },
-      { name: 'Two sides', value: 'twoSides' },
-    ],
-    dialog: {
-      displayName: 'Direction',
-      group: 'extent',
-      order: -10,
-      controlStyle: 'segmented',
-    },
-  },
   length: {
-    ...activeInModelingDialog(
-      (argumentsToSubmit) =>
-        getExtrudeExtentType(argumentsToSubmit) === 'distance'
-    ),
+    required: (context) =>
+      isUsingModelingDialog(context) &&
+      !hasModelingDialogValue(context.argumentsToSubmit.to),
     dialog: {
       displayName: 'Distance',
       group: 'extent',
       order: 0,
     },
-    defaultValue: KCL_DEFAULT_LENGTH,
+    defaultValue: (context: ModelingDialogContext) =>
+      isUsingModelingDialog(context) &&
+      hasModelingDialogValue(context.argumentsToSubmit.to)
+        ? ''
+        : KCL_DEFAULT_LENGTH,
     prepopulate: true,
   },
   to: {
-    ...activeInModelingDialog(
-      (argumentsToSubmit) =>
-        getExtrudeExtentType(argumentsToSubmit) === 'toFace'
-    ),
     inputType: 'selection',
     dialog: {
       displayName: 'To face',
       ...compactSelectionDialog('extent', 'Select a terminating face', {
-        order: 0,
+        order: 10,
       }),
     },
     // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
@@ -228,21 +173,18 @@ export const extrudeDialogOverrides = {
     description: 'Parallel faces only.',
   },
   symmetric: {
-    hidden: (context) => isUsingModelingDialog(context),
     dialog: {
+      displayName: 'Symmetric',
       group: 'extent',
+      order: 20,
+      controlStyle: 'segmented',
     },
   },
   bidirectionalLength: {
-    ...activeInModelingDialog(
-      (argumentsToSubmit) =>
-        getExtrudeExtentType(argumentsToSubmit) === 'distance' &&
-        getExtrudeDirectionMode(argumentsToSubmit) === 'twoSides'
-    ),
     dialog: {
       displayName: 'Second distance',
       group: 'extent',
-      order: 10,
+      order: 30,
     },
   },
   tagStart: {
@@ -261,9 +203,6 @@ export const extrudeDialogOverrides = {
     },
   },
   draftAngle: {
-    hidden: (context) =>
-      isUsingModelingDialog(context) &&
-      getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
     dialog: {
       displayName: 'Draft angle',
       group: 'advanced',
@@ -271,9 +210,6 @@ export const extrudeDialogOverrides = {
     },
   },
   twistAngle: {
-    hidden: (context) =>
-      isUsingModelingDialog(context) &&
-      getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
     dialog: {
       displayName: 'Twist angle',
       group: 'advanced',
@@ -281,10 +217,6 @@ export const extrudeDialogOverrides = {
     },
   },
   twistAngleStep: {
-    hidden: (context) =>
-      isUsingModelingDialog(context) &&
-      (getExtrudeExtentType(context.argumentsToSubmit) === 'toFace' ||
-        !hasModelingDialogValue(context.argumentsToSubmit.twistAngle)),
     dialog: {
       displayName: 'Twist step',
       group: 'advanced',
@@ -292,10 +224,6 @@ export const extrudeDialogOverrides = {
     },
   },
   twistCenter: {
-    hidden: (context) =>
-      isUsingModelingDialog(context) &&
-      (getExtrudeExtentType(context.argumentsToSubmit) === 'toFace' ||
-        !hasModelingDialogValue(context.argumentsToSubmit.twistAngle)),
     dialog: {
       displayName: 'Twist center',
       group: 'advanced',
@@ -305,9 +233,6 @@ export const extrudeDialogOverrides = {
   },
   direction: {
     inputType: 'selection',
-    hidden: (context) =>
-      isUsingModelingDialog(context) &&
-      getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
     dialog: {
       displayName: 'Direction reference',
       group: 'advanced',

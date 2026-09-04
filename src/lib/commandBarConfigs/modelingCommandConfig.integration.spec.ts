@@ -297,60 +297,21 @@ describe('Extrude surface arguments', () => {
     })
   })
 
-  it('shows only fields associated with the selected extent and direction', () => {
-    const distance = {
-      extentType: 'distance',
-      directionMode: 'oneSide',
+  it('requires a distance only when no terminating face is selected', () => {
+    expect(evaluateRequired('length', {})).toBe(true)
+    expect(evaluateRequired('length', { to: selectionsForArtifact() })).toBe(
+      false
+    )
+    for (const argName of ['to', 'symmetric', 'bidirectionalLength'] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
     }
-    expect(evaluateHidden('length', distance)).toBe(false)
-    expect(evaluateRequired('length', distance)).toBe(true)
-    expect(evaluateHidden('to', distance)).toBe(true)
-    expect(evaluateHidden('bidirectionalLength', distance)).toBe(true)
-
-    const twoSides = { ...distance, directionMode: 'twoSides' }
-    expect(evaluateHidden('bidirectionalLength', twoSides)).toBe(false)
-    expect(evaluateRequired('bidirectionalLength', twoSides)).toBe(true)
-
-    const toFace = { extentType: 'toFace', directionMode: 'twoSides' }
-    expect(evaluateHidden('length', toFace)).toBe(true)
-    expect(evaluateHidden('to', toFace)).toBe(false)
-    expect(evaluateRequired('to', toFace)).toBe(true)
-    expect(evaluateHidden('directionMode', toFace)).toBe(true)
-  })
-
-  it('hydrates dialog modes from an existing Extrude call', () => {
-    const extentType = extrudeConfig().args?.extentType
-    const directionMode = extrudeConfig().args?.directionMode
-    if (
-      extentType?.inputType !== 'options' ||
-      typeof extentType.defaultValue !== 'function' ||
-      directionMode?.inputType !== 'options' ||
-      typeof directionMode.defaultValue !== 'function'
-    ) {
-      throw new Error('Extrude dialog modes should have derived defaults')
-    }
-
-    expect(
-      extentType.defaultValue({
-        argumentsToSubmit: { to: selectionsForArtifact() },
-      } as never)
-    ).toBe('toFace')
-    expect(
-      directionMode.defaultValue({
-        argumentsToSubmit: { symmetric: true },
-      } as never)
-    ).toBe('symmetric')
-    expect(
-      directionMode.defaultValue({
-        argumentsToSubmit: { bidirectionalLength: parsedLength() },
-      } as never)
-    ).toBe('twoSides')
   })
 
   it('keeps surface output available for open profiles without a distance value', () => {
-    for (const extentType of ['distance', 'toFace']) {
+    for (const to of [undefined, selectionsForArtifact()]) {
       const argumentsToSubmit = {
-        extentType,
+        to,
         sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
       }
       expect(evaluateHidden('bodyType', argumentsToSubmit)).toBe(false)
@@ -360,7 +321,6 @@ describe('Extrude surface arguments', () => {
 
   it('shows body-edge operation before a distance value is parsed', () => {
     const argumentsToSubmit = {
-      extentType: 'distance',
       sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
       length: '5',
     }
@@ -368,14 +328,15 @@ describe('Extrude surface arguments', () => {
     expect(evaluateRequired('method', argumentsToSubmit)).toBe(true)
   })
 
-  it('keeps dependent twist controls hidden until twist is enabled', () => {
-    const defaultArgs = { extentType: 'distance' }
-    expect(evaluateHidden('twistAngleStep', defaultArgs)).toBe(true)
-    expect(evaluateHidden('twistCenter', defaultArgs)).toBe(true)
-
-    const twistedArgs = { ...defaultArgs, twistAngle: parsedLength('30deg') }
-    expect(evaluateHidden('twistAngleStep', twistedArgs)).toBe(false)
-    expect(evaluateHidden('twistCenter', twistedArgs)).toBe(false)
+  it('keeps native twist controls accessible as optional arguments', () => {
+    for (const argName of [
+      'twistAngle',
+      'twistAngleStep',
+      'twistCenter',
+    ] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
+    }
   })
 
   it('uses compact profile collection and puts operation in Result', () => {
@@ -592,81 +553,22 @@ describe('Revolve dialog arguments', () => {
     })
   })
 
-  it('shows only fields for the selected axis and extent modes', () => {
-    const fullAxis = {
-      axisOrEdge: 'Axis',
-      extentType: 'full',
-      directionMode: 'twoSides',
+  it('keeps the existing axis selector and exposes native angle controls', () => {
+    expect(evaluateHidden('axis', { axisOrEdge: 'Axis' })).toBe(false)
+    expect(evaluateRequired('axis', { axisOrEdge: 'Axis' })).toBe(true)
+    expect(evaluateHidden('edge', { axisOrEdge: 'Axis' })).toBe(true)
+    expect(evaluateHidden('axis', { axisOrEdge: 'Edge' })).toBe(true)
+    expect(evaluateHidden('edge', { axisOrEdge: 'Edge' })).toBe(false)
+    expect(evaluateRequired('edge', { axisOrEdge: 'Edge' })).toBe(true)
+
+    for (const argName of [
+      'angle',
+      'symmetric',
+      'bidirectionalAngle',
+    ] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
     }
-    expect(evaluateHidden('axis', fullAxis)).toBe(false)
-    expect(evaluateRequired('axis', fullAxis)).toBe(true)
-    expect(evaluateHidden('edge', fullAxis)).toBe(true)
-    expect(evaluateHidden('angle', fullAxis)).toBe(true)
-    expect(evaluateRequired('angle', fullAxis)).toBe(false)
-    expect(evaluateHidden('directionMode', fullAxis)).toBe(true)
-
-    const angleEdge = {
-      axisOrEdge: 'Edge',
-      extentType: 'angle',
-      directionMode: 'oneSide',
-    }
-    expect(evaluateHidden('axis', angleEdge)).toBe(true)
-    expect(evaluateHidden('edge', angleEdge)).toBe(false)
-    expect(evaluateRequired('edge', angleEdge)).toBe(true)
-    expect(evaluateHidden('angle', angleEdge)).toBe(false)
-    expect(evaluateRequired('angle', angleEdge)).toBe(true)
-    expect(evaluateHidden('directionMode', angleEdge)).toBe(false)
-    expect(evaluateHidden('bidirectionalAngle', angleEdge)).toBe(true)
-
-    const twoSides = { ...angleEdge, directionMode: 'twoSides' }
-    expect(evaluateHidden('bidirectionalAngle', twoSides)).toBe(false)
-    expect(evaluateRequired('bidirectionalAngle', twoSides)).toBe(true)
-  })
-
-  it('hydrates UI modes from existing Revolve arguments', () => {
-    const axisOrEdge = revolveConfig().args?.axisOrEdge
-    const extentType = revolveConfig().args?.extentType
-    const directionMode = revolveConfig().args?.directionMode
-    if (
-      axisOrEdge?.inputType !== 'options' ||
-      typeof axisOrEdge.defaultValue !== 'function' ||
-      extentType?.inputType !== 'options' ||
-      typeof extentType.defaultValue !== 'function' ||
-      directionMode?.inputType !== 'options' ||
-      typeof directionMode.defaultValue !== 'function'
-    ) {
-      throw new Error('Revolve dialog modes should have derived defaults')
-    }
-
-    expect(
-      axisOrEdge.defaultValue({
-        argumentsToSubmit: { edge: selectionsForArtifact() },
-        selectedCommand: { useModelingDialog: true },
-      } as never)
-    ).toBe('Edge')
-    expect(extentType.defaultValue({ argumentsToSubmit: {} } as never)).toBe(
-      'full'
-    )
-    expect(
-      extentType.defaultValue({
-        argumentsToSubmit: { angle: parsedLength('90deg') },
-      } as never)
-    ).toBe('angle')
-    expect(
-      directionMode.defaultValue({
-        argumentsToSubmit: { symmetric: true },
-      } as never)
-    ).toBe('symmetric')
-    expect(
-      directionMode.defaultValue({
-        argumentsToSubmit: { bidirectionalAngle: parsedLength('30deg') },
-      } as never)
-    ).toBe('twoSides')
-  })
-
-  it('keeps UI-only modes out of the legacy command bar', () => {
-    expect(evaluateHidden('extentType', {}, false)).toBe(true)
-    expect(evaluateHidden('directionMode', {}, false)).toBe(true)
     expect(evaluateRequired('angle', {}, false)).toBe(true)
   })
 
@@ -693,15 +595,17 @@ describe('Revolve dialog arguments', () => {
     )
   })
 
-  it('preserves legacy reference options and the unseeded optional axis', () => {
-    const { axisOrEdge, axis } = revolveConfig().args ?? {}
+  it('preserves legacy reference options and angle defaults', () => {
+    const { axisOrEdge, axis, angle } = revolveConfig().args ?? {}
     if (
       axisOrEdge?.inputType !== 'options' ||
       axis?.inputType !== 'options' ||
+      angle?.inputType !== 'kcl' ||
       typeof axisOrEdge.options !== 'function' ||
       typeof axis.options !== 'function' ||
       typeof axisOrEdge.defaultValue !== 'function' ||
-      typeof axis.defaultValue !== 'function'
+      typeof axis.defaultValue !== 'function' ||
+      typeof angle.defaultValue !== 'function'
     ) {
       throw new Error('Revolve reference controls should depend on the surface')
     }
@@ -713,6 +617,7 @@ describe('Revolve dialog arguments', () => {
       }
       expect(axisOrEdge.defaultValue(context as never)).toBe('Axis')
       expect(axis.defaultValue(context as never)).toBeUndefined()
+      expect(angle.defaultValue(context as never)).toBe('360deg')
       expect(axisOrEdge.options(context)).toEqual([
         { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
         { name: 'Edge', isCurrent: false, value: 'Edge' },
@@ -728,6 +633,7 @@ describe('Revolve dialog arguments', () => {
       selectedCommand: { useModelingDialog: true },
     }
     expect(axis.defaultValue(dialogContext as never)).toBe('X')
+    expect(angle.defaultValue(dialogContext as never)).toBe('')
     expect(
       axisOrEdge.options(dialogContext).map((option) => option.name)
     ).toEqual(['Sketch axis', 'Selected edge'])
@@ -1049,53 +955,32 @@ describe('Sweep dialog arguments', () => {
       compactSelection: true,
       hideLabel: true,
     })
-    expect(sweepConfig().args?.profilePosition?.dialog).toMatchObject({
-      group: 'alignment',
-      controlStyle: 'segmented',
-    })
+    for (const argName of [
+      'translateProfileToPath',
+      'orientProfilePerpendicular',
+    ] as const) {
+      expect(sweepConfig().args?.[argName]).toMatchObject({
+        inputType: 'boolean',
+        required: false,
+        dialog: { group: 'alignment' },
+      })
+    }
     expect(sweepConfig().args?.sectional?.dialog).toMatchObject({
       group: 'advanced',
       controlStyle: 'segmented',
     })
   })
 
-  it('derives independent position and orientation modes', () => {
-    const position = sweepConfig().args?.profilePosition
-    const orientation = sweepConfig().args?.profileOrientation
-    if (
-      position?.inputType !== 'options' ||
-      typeof position.defaultValue !== 'function' ||
-      orientation?.inputType !== 'options' ||
-      typeof orientation.defaultValue !== 'function'
-    ) {
-      throw new Error('Sweep alignment modes should have derived defaults')
-    }
-
-    expect(
-      position.defaultValue({
-        argumentsToSubmit: { translateProfileToPath: true },
-      } as never)
-    ).toBe('path')
-    expect(
-      orientation.defaultValue({
-        argumentsToSubmit: { orientProfilePerpendicular: true },
-      } as never)
-    ).toBe('perpendicular')
-    expect(
-      position.defaultValue({ argumentsToSubmit: { nodeToEdit: [] } } as never)
-    ).toBeUndefined()
-  })
-
   it('shows legacy alignment by itself when editing an old sweep', () => {
     const legacy = { nodeToEdit: [], relativeTo: 'TRAJECTORY' }
     expect(evaluateHidden('relativeTo', legacy)).toBe(false)
-    expect(evaluateHidden('profilePosition', legacy)).toBe(true)
-    expect(evaluateHidden('profileOrientation', legacy)).toBe(true)
+    expect(evaluateHidden('translateProfileToPath', legacy)).toBe(true)
+    expect(evaluateHidden('orientProfilePerpendicular', legacy)).toBe(true)
 
     expect(evaluateHidden('relativeTo', {})).toBe(true)
-    expect(evaluateHidden('translateProfileToPath', {})).toBe(true)
-    expect(evaluateHidden('orientProfilePerpendicular', {})).toBe(true)
-    expect(evaluateHidden('profilePosition', {}, false)).toBe(true)
+    expect(evaluateHidden('translateProfileToPath', {})).toBe(false)
+    expect(evaluateHidden('orientProfilePerpendicular', {})).toBe(false)
+    expect(evaluateHidden('translateProfileToPath', legacy, false)).toBe(false)
   })
 })
 
@@ -1180,7 +1065,7 @@ describe('Chamfer dialog arguments', () => {
       : Boolean(required)
   }
 
-  it('uses compact edges, explicit size modes, and More options', () => {
+  it('uses compact edges, native dimensions, and More options', () => {
     expect(
       chamferConfig().dialogLayout?.groups.map((group) => group.id)
     ).toEqual(['selection', 'size', 'advanced'])
@@ -1189,72 +1074,27 @@ describe('Chamfer dialog arguments', () => {
       compactSelection: true,
       hideLabel: true,
     })
-    expect(chamferConfig().args?.chamferType?.dialog).toMatchObject({
-      group: 'size',
-      controlStyle: 'select',
-    })
+    expect(chamferConfig().args?.length?.dialog?.group).toBe('size')
     expect(chamferConfig().args?.version?.dialog?.group).toBe('advanced')
   })
 
-  it('shows only dimensions for the selected chamfer type', () => {
-    const equal = { chamferType: 'equalDistance' }
-    expect(evaluateHidden('secondLength', equal)).toBe(true)
-    expect(evaluateHidden('angle', equal)).toBe(true)
-
-    const twoDistances = { chamferType: 'twoDistances' }
-    expect(evaluateHidden('secondLength', twoDistances)).toBe(false)
-    expect(evaluateRequired('secondLength', twoDistances)).toBe(true)
-    expect(evaluateHidden('angle', twoDistances)).toBe(true)
-
-    const distanceAndAngle = { chamferType: 'distanceAndAngle' }
-    expect(evaluateHidden('secondLength', distanceAndAngle)).toBe(true)
-    expect(evaluateHidden('angle', distanceAndAngle)).toBe(false)
-    expect(evaluateRequired('angle', distanceAndAngle)).toBe(true)
-    expect(chamferConfig().args?.secondLength?.dialog?.prepopulate).toBe(true)
-    expect(chamferConfig().args?.angle?.dialog?.prepopulate).toBe(true)
+  it('leaves optional native dimensions visible without prepopulating them', () => {
+    for (const argName of ['secondLength', 'angle'] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
+      expect(chamferConfig().args?.[argName]?.dialog?.prepopulate).not.toBe(
+        true
+      )
+    }
   })
 
-  it('hydrates authored dimensions and uses a valid angle default', () => {
-    const chamferType = chamferConfig().args?.chamferType
-    if (
-      chamferType?.inputType !== 'options' ||
-      typeof chamferType.defaultValue !== 'function'
-    ) {
-      throw new Error('Chamfer type should have a derived default')
-    }
-
-    expect(
-      chamferType.defaultValue({
-        argumentsToSubmit: { secondLength: parsedLength('3') },
-      } as never)
-    ).toBe('twoDistances')
-    expect(
-      chamferType.defaultValue({
-        argumentsToSubmit: { angle: parsedLength('45deg') },
-      } as never)
-    ).toBe('distanceAndAngle')
+  it('preserves the legacy Chamfer dimension and algorithm defaults with dialogs off', () => {
+    const secondLength = chamferConfig().args?.secondLength
     const angle = chamferConfig().args?.angle
     const version = chamferConfig().args?.version
     if (
-      angle?.inputType !== 'kcl' ||
-      typeof angle.defaultValue !== 'function' ||
-      version?.inputType !== 'kcl' ||
-      typeof version.defaultValue !== 'function'
-    ) {
-      throw new Error('Chamfer defaults should depend on the UI surface')
-    }
-    const dialogContext = {
-      argumentsToSubmit: {},
-      selectedCommand: { useModelingDialog: true },
-    } as never
-    expect(angle.defaultValue(dialogContext)).toBe('45deg')
-    expect(version.defaultValue(dialogContext)).toBe('')
-  })
-
-  it('preserves the legacy Chamfer angle and algorithm defaults with dialogs off', () => {
-    const angle = chamferConfig().args?.angle
-    const version = chamferConfig().args?.version
-    if (
+      secondLength?.inputType !== 'kcl' ||
+      typeof secondLength.defaultValue !== 'function' ||
       angle?.inputType !== 'kcl' ||
       typeof angle.defaultValue !== 'function' ||
       version?.inputType !== 'kcl' ||
@@ -1264,15 +1104,10 @@ describe('Chamfer dialog arguments', () => {
     }
     for (const selectedCommand of [undefined, { useModelingDialog: false }]) {
       const context = { argumentsToSubmit: {}, selectedCommand } as never
+      expect(secondLength.defaultValue(context)).toBe('5')
       expect(angle.defaultValue(context)).toBe('360deg')
       expect(version.defaultValue(context)).toBe('1')
     }
-  })
-
-  it('keeps UI-only size modes out of the legacy command bar', () => {
-    expect(evaluateHidden('chamferType', {}, false)).toBe(true)
-    expect(evaluateRequired('secondLength', {}, false)).toBe(false)
-    expect(evaluateRequired('angle', {}, false)).toBe(false)
   })
 })
 

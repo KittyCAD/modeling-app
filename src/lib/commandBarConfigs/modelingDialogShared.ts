@@ -18,8 +18,6 @@ export type ModelingDialogPredicate = (
   context: ModelingDialogContext
 ) => boolean
 
-type DialogArguments = Readonly<Record<string, unknown>>
-
 const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
@@ -76,20 +74,6 @@ export const isEditingNodeSelection = (context: ModelingDialogContext) =>
 
 export const isUsingModelingDialog = (context: ModelingDialogContext) =>
   context.selectedCommand?.useModelingDialog === true
-
-export function activeInModelingDialog(
-  active: (argumentsToSubmit: DialogArguments) => boolean,
-  options: { requiredOutsideDialog?: boolean } = {}
-) {
-  return {
-    required: (context: ModelingDialogContext) =>
-      isUsingModelingDialog(context)
-        ? active(context.argumentsToSubmit)
-        : (options.requiredOutsideDialog ?? false),
-    hidden: (context: ModelingDialogContext) =>
-      isUsingModelingDialog(context) && !active(context.argumentsToSubmit),
-  }
-}
 
 export function profileSelectionRequiresBodyType({
   argumentsToSubmit,

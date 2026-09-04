@@ -139,7 +139,6 @@ export function reconcileDialogOptions(
   values: Record<string, unknown>,
   machineContext?: MachineContext
 ): Record<string, unknown> {
-  const normalize = context.selectedCommand?.dialogLayout?.normalizeArguments
   const argumentsToSubmit = { ...values }
   for (const [argName, arg] of Object.entries(
     context.selectedCommand?.args ?? {}
@@ -150,8 +149,7 @@ export function reconcileDialogOptions(
     if (typeof value === 'function') continue
     const currentContext = {
       ...context,
-      argumentsToSubmit:
-        normalize?.({ ...argumentsToSubmit }) ?? argumentsToSubmit,
+      argumentsToSubmit,
     }
     const options = getOptions(arg, currentContext, machineContext)
     if (options.some((option) => isOptionValueEqual(option.value, value))) {
@@ -183,7 +181,7 @@ export function reconcileDialogOptions(
   return argumentsToSubmit
 }
 
-/** Normalize only the presented/submitted values; retain inactive fields in the draft. */
+/** Adapt legacy composite inputs while keeping their inactive values in the draft. */
 export function reconcileDialogArguments(
   context: CommandBarContext,
   values: Record<string, unknown>,
@@ -300,7 +298,6 @@ export async function resolveDialogArguments({
   })
 
   for (const [argName, arg] of Object.entries(selectedCommand.args)) {
-    argumentsToSubmit = normalizeArguments(argumentsToSubmit)
     const currentContext: CommandBarContext = {
       ...context,
       argumentsToSubmit,

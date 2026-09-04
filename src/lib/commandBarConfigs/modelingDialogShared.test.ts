@@ -1,5 +1,4 @@
 import {
-  activeInModelingDialog,
   compactSelectionDialog,
   hasModelingDialogValue,
   modelingDialogLayout,
@@ -51,32 +50,5 @@ describe('modeling dialog config helpers', () => {
       { id: 'profile', title: 'Profile' },
       { id: 'advanced', title: 'More options', collapsible: true },
     ])
-  })
-
-  it('pairs required and hidden state only on the modeling-dialog surface', () => {
-    const state = activeInModelingDialog(
-      (argumentsToSubmit) => argumentsToSubmit.mode === 'active',
-      { requiredOutsideDialog: true }
-    )
-
-    const active = {
-      argumentsToSubmit: { mode: 'active' },
-      selectedCommand: { useModelingDialog: true },
-    }
-    const inactive = {
-      argumentsToSubmit: { mode: 'inactive' },
-      selectedCommand: { useModelingDialog: true },
-    }
-    const legacy = {
-      argumentsToSubmit: { mode: 'inactive' },
-      selectedCommand: { useModelingDialog: false },
-    }
-
-    expect(state.required(active)).toBe(true)
-    expect(state.hidden(active)).toBe(false)
-    expect(state.required(inactive)).toBe(false)
-    expect(state.hidden(inactive)).toBe(true)
-    expect(state.required(legacy)).toBe(true)
-    expect(state.hidden(legacy)).toBe(false)
   })
 })

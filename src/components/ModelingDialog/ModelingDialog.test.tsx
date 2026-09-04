@@ -91,7 +91,6 @@ vi.mock('@src/lib/selections', () => ({
 vi.mock('@src/lib/kclHelpers', () => ({ stringToKclExpression: vi.fn() }))
 
 import { ModelingDialog } from '@src/components/ModelingDialog/ModelingDialog'
-import { normalizeExtrudeDialogArguments } from '@src/lib/commandBarConfigs/extrudeDialog'
 import { ModelingDialogViewExtension } from '@src/registry/extensions/engineScene/ModelingDialogViewExtension'
 
 function command(name = 'extrude'): Command {
@@ -301,48 +300,6 @@ describe('modeling dialog submission lifetime', () => {
       )
     }
   )
-
-  it('preserves an inactive KCL draft when changing Extrude extent', async () => {
-    mocks.state.context.selectedCommand = {
-      ...command('Extrude'),
-      dialogLayout: {
-        groups: [],
-        normalizeArguments: normalizeExtrudeDialogArguments,
-      },
-      args: {
-        extentType: {
-          inputType: 'options',
-          required: true,
-          defaultValue: 'distance',
-          options: [
-            { name: 'Distance', value: 'distance' },
-            { name: 'To face', value: 'toFace' },
-          ],
-          dialog: { controlStyle: 'segmented' },
-        },
-        length: {
-          inputType: 'kcl',
-          required: ({ argumentsToSubmit }) =>
-            argumentsToSubmit.extentType === 'distance',
-          hidden: ({ argumentsToSubmit }) =>
-            argumentsToSubmit.extentType === 'toFace',
-          defaultValue: '10',
-        },
-      },
-    }
-    render(<ModelingDialog />)
-    await act(async () => resolveWasm({}))
-    fireEvent.change(screen.getByRole('textbox', { name: 'length' }), {
-      target: { value: '27mm' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'To face' }))
-    expect(
-      screen.queryByRole('textbox', { name: 'length' })
-    ).not.toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Distance' }))
-
-    expect(screen.getByRole('textbox', { name: 'length' })).toHaveValue('27mm')
-  })
 
   it('repairs dependent export options and removes unsupported hidden values', async () => {
     mocks.state.context.selectedCommand = {

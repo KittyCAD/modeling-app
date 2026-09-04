@@ -41,7 +41,7 @@ test.describe('Modeling dialog edit sessions', { tag: '@desktop' }, () => {
     await toolbar.openFeatureTreePane()
 
     const dialog = page.getByTestId('modeling-dialog')
-    const distance = dialog.getByRole('textbox', { name: 'Distance' })
+    const distance = dialog.getByRole('textbox', { name: /^Distance/ })
     const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
 
     await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()

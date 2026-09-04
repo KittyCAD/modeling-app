@@ -8,36 +8,35 @@ import {
   isUsingModelingDialog,
   modelingDialogLayout,
   profileSelectionRequiresBodyType,
+  type ModelingDialogContext,
 } from '@src/lib/commandBarConfigs/modelingDialogShared'
-import {
-  getSweepProfileOrientation,
-  getSweepProfilePosition,
-  hasLegacySweepAlignment,
-  normalizeSweepDialogArguments,
-} from '@src/lib/commandBarConfigs/sweepDialog'
 
-export const sweepDialogLayout = modelingDialogLayout(
-  [
-    {
-      id: 'profile',
-      title: 'Profile',
-    },
-    {
-      id: 'path',
-      title: 'Path',
-    },
-    {
-      id: 'alignment',
-      title: 'Alignment',
-      description: 'Position and orient the profile at the start of the path.',
-    },
-    {
-      id: 'result',
-      title: 'Result',
-    },
-  ],
-  normalizeSweepDialogArguments
-)
+function hasLegacySweepAlignment({ argumentsToSubmit }: ModelingDialogContext) {
+  return (
+    argumentsToSubmit.relativeTo === 'SKETCH_PLANE' ||
+    argumentsToSubmit.relativeTo === 'TRAJECTORY'
+  )
+}
+
+export const sweepDialogLayout = modelingDialogLayout([
+  {
+    id: 'profile',
+    title: 'Profile',
+  },
+  {
+    id: 'path',
+    title: 'Path',
+  },
+  {
+    id: 'alignment',
+    title: 'Alignment',
+    description: 'Position and orient the profile at the start of the path.',
+  },
+  {
+    id: 'result',
+    title: 'Result',
+  },
+])
 
 export const sweepDialogOverrides = {
   sketches: {
@@ -70,7 +69,7 @@ export const sweepDialogOverrides = {
     inputType: 'options',
     hidden: (context) =>
       isUsingModelingDialog(context)
-        ? !hasLegacySweepAlignment(context.argumentsToSubmit)
+        ? !hasLegacySweepAlignment(context)
         : !isEditingNode(context) ||
           context.argumentsToSubmit.relativeTo === undefined,
     options: [
@@ -84,71 +83,24 @@ export const sweepDialogOverrides = {
       controlStyle: 'segmented',
     },
   },
-  profilePosition: {
-    inputType: 'options',
-    required: (context) =>
-      isUsingModelingDialog(context) &&
-      !hasLegacySweepAlignment(context.argumentsToSubmit) &&
-      (!isEditingNode(context) ||
-        typeof context.argumentsToSubmit.translateProfileToPath === 'boolean'),
-    skip: true,
-    defaultValue: ({
-      argumentsToSubmit,
-    }: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => getSweepProfilePosition(argumentsToSubmit),
+  translateProfileToPath: {
     hidden: (context) =>
-      !isUsingModelingDialog(context) ||
-      hasLegacySweepAlignment(context.argumentsToSubmit),
-    options: [
-      { name: 'Original', value: 'original' },
-      { name: 'Move to path', value: 'path' },
-    ],
+      isUsingModelingDialog(context) && hasLegacySweepAlignment(context),
     dialog: {
-      displayName: 'Position',
-      group: 'alignment',
-      order: -10,
-      controlStyle: 'segmented',
-    },
-  },
-  profileOrientation: {
-    inputType: 'options',
-    required: (context) =>
-      isUsingModelingDialog(context) &&
-      !hasLegacySweepAlignment(context.argumentsToSubmit) &&
-      (!isEditingNode(context) ||
-        typeof context.argumentsToSubmit.orientProfilePerpendicular ===
-          'boolean'),
-    skip: true,
-    defaultValue: ({
-      argumentsToSubmit,
-    }: {
-      argumentsToSubmit: Record<string, unknown>
-    }) => getSweepProfileOrientation(argumentsToSubmit),
-    hidden: (context) =>
-      !isUsingModelingDialog(context) ||
-      hasLegacySweepAlignment(context.argumentsToSubmit),
-    options: [
-      { name: 'Original', value: 'original' },
-      { name: 'Perpendicular', value: 'perpendicular' },
-    ],
-    dialog: {
-      displayName: 'Orientation',
+      displayName: 'Move profile to path',
       group: 'alignment',
       order: 0,
       controlStyle: 'segmented',
     },
   },
-  translateProfileToPath: {
-    hidden: (context) => isUsingModelingDialog(context),
-    dialog: {
-      group: 'alignment',
-    },
-  },
   orientProfilePerpendicular: {
-    hidden: (context) => isUsingModelingDialog(context),
+    hidden: (context) =>
+      isUsingModelingDialog(context) && hasLegacySweepAlignment(context),
     dialog: {
+      displayName: 'Orient profile perpendicular',
       group: 'alignment',
+      order: 10,
+      controlStyle: 'segmented',
     },
   },
   sectional: {

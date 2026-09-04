@@ -301,29 +301,12 @@ export const modelingCommandStdLibDriftConfig = {
   Extrude: {
     stdLibName: 'extrude',
     editFlow: true,
-    flowArgOrder: [
-      'sketches',
-      'extentType',
-      'directionMode',
-      'length',
-      'to',
-      'bidirectionalLength',
-      'bodyType',
-      'method',
-    ],
-    uiOnlyArgs: ['extentType', 'directionMode'],
+    flowArgOrder: ['sketches', 'length', 'bodyType', 'method'],
   },
   Sweep: {
     stdLibName: 'sweep',
     editFlow: true,
-    flowArgOrder: [
-      'sketches',
-      'path',
-      'profilePosition',
-      'profileOrientation',
-      'bodyType',
-    ],
-    uiOnlyArgs: ['profilePosition', 'profileOrientation'],
+    flowArgOrder: ['sketches', 'path', 'bodyType'],
     deprecatedStdLibArgs: ['relativeTo'],
   },
   Loft: {
@@ -339,13 +322,10 @@ export const modelingCommandStdLibDriftConfig = {
       'axisOrEdge',
       'axis',
       'edge',
-      'extentType',
-      'directionMode',
       'angle',
-      'bidirectionalAngle',
       'bodyType',
     ],
-    uiOnlyArgs: ['axisOrEdge', 'edge', 'extentType', 'directionMode'],
+    uiOnlyArgs: ['axisOrEdge', 'edge'],
   },
   Shell: {
     stdLibName: 'shell',
@@ -394,14 +374,7 @@ export const modelingCommandStdLibDriftConfig = {
   Chamfer: {
     stdLibName: 'chamfer',
     editFlow: true,
-    flowArgOrder: [
-      'selection',
-      'chamferType',
-      'length',
-      'secondLength',
-      'angle',
-    ],
-    uiOnlyArgs: ['chamferType'],
+    flowArgOrder: ['selection', 'length'],
     omittedStdLibArgs: ['solid', 'edges'],
     argAliases: {
       tags: 'selection',
