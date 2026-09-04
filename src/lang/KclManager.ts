@@ -3777,6 +3777,34 @@ export class KclManager extends File {
   }
 
   /**
+   * Persist the current KCL buffer without waiting for the normal debounce.
+   * Used before navigation/actions that are about to read this file from disk.
+   */
+  async flushWriteToFile(
+    newCode = this.codeSignal.value,
+    requestedDocumentVersion = this._documentVersion,
+    options: { suppressConflictToast?: boolean } = {}
+  ) {
+    if (this.path === '') {
+      return
+    }
+
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+
+    return this.performDelayedWriteToFile({
+      newCode,
+      requestedDocumentVersion,
+      options,
+    }).catch((err: unknown) => {
+      if (isPathNotFoundError(err)) {
+        return
+      }
+      return err
+    })
+  }
+
+  /**
    * Performs the debounced disk-sync work after `writeToFile()` schedules it.
    * This keeps the timeout callback synchronous while preserving the existing
    * version checks, conflict detection, and watcher re-arm behavior.

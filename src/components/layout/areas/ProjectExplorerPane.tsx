@@ -148,6 +148,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             },
           })
         }
+        const navigateAfterFlush = () => {
+          void kclManager
+            .flushWriteToFile(kclManager.code, undefined, {
+              suppressConflictToast: true,
+            })
+            .catch(reportRejection)
+            .finally(navigateHelper)
+        }
 
         if (modelingMachineState.matches('Sketch')) {
           modelingSend({ type: 'Cancel' })
@@ -160,11 +168,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             })
           })
           waitForIdlePromise.catch(reportRejection).finally(() => {
-            navigateHelper()
+            navigateAfterFlush()
           })
         } else {
           // immediately navigate
-          navigateHelper()
+          navigateAfterFlush()
         }
       } else if (
         projectRef.current?.value.name &&
@@ -202,6 +210,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       commands,
+      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,

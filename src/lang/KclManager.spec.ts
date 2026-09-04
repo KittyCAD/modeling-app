@@ -585,6 +585,42 @@ describe('KclManager diagnostics', () => {
     expect(writeSpy).toHaveBeenCalledWith('second')
   })
 
+  it('flushes the latest buffer immediately and cancels stale queued writes', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('start')
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('start')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
+
+    kclManager.updateCodeEditor('sketch only', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await vi.advanceTimersByTimeAsync(500)
+
+    kclManager.updateCodeEditor('full generated extrusion', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await kclManager.flushWriteToFile('full generated extrusion', undefined, {
+      suppressConflictToast: true,
+    })
+
+    expect(writeSpy).toHaveBeenCalledTimes(1)
+    expect(writeSpy).toHaveBeenCalledWith('full generated extrusion')
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(writeSpy).toHaveBeenCalledTimes(1)
+  })
+
   it('reloads clean editor state from disk watcher updates', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
 
