@@ -12,7 +12,7 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import fsZds from '@src/lib/fs-zds'
+import { useApp } from '@src/lib/boot'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
@@ -75,6 +75,7 @@ function getDisplayedTime(dateTimeMs: number) {
 }
 
 function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
+  const { fileOperations } = useApp()
   const [imageUrl, setImageUrl] = useState('')
   const thumbnailType = thumbnail?.type
   const localThumbnailPath =
@@ -104,8 +105,8 @@ function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
 
     async function setupImageUrl() {
       try {
-        await fsZds.stat(thumbnailPath)
-        const imageData = await fsZds.readFile(thumbnailPath)
+        await fileOperations.stat(thumbnailPath)
+        const imageData = await fileOperations.readFile(thumbnailPath)
         const blob = new Blob([new Uint8Array(imageData)], {
           type: 'image/png',
         })
@@ -134,7 +135,7 @@ function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
         URL.revokeObjectURL(createdImageUrl)
       }
     }
-  }, [localThumbnailPath, remoteThumbnailUrl, thumbnailType])
+  }, [fileOperations, localThumbnailPath, remoteThumbnailUrl, thumbnailType])
 
   return imageUrl
 }

@@ -11,6 +11,7 @@ import { getProjectTomlContents } from '@src/lib/projectToml'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import * as uuid from 'uuid'
 
 type DuplicateProjectSource = {
@@ -56,16 +57,17 @@ function getProjectRelativeCurrentFilePath({
 }
 
 async function writeProjectRelativeFile(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   relativePath: string,
   contents: string
 ) {
   const filePath = fsZds.join(projectPath, relativePath)
-  await fsZds.mkdir(fsZds.dirname(filePath), { recursive: true })
-  await fsZds.writeFile(filePath, new TextEncoder().encode(contents))
+  await fileOperations.writeFile(filePath, contents)
 }
 
 export async function duplicateProjectInDirectory({
+  fileOperations,
   source,
   projectDirectoryPath,
   requestedProjectTitle,
@@ -73,6 +75,7 @@ export async function duplicateProjectInDirectory({
   currentFileContents,
   wasmInstance,
 }: {
+  fileOperations: FileOperationsRegistryService
   source: DuplicateProjectSource
   projectDirectoryPath: string
   requestedProjectTitle: string
@@ -88,11 +91,14 @@ export async function duplicateProjectInDirectory({
   )
   const name = getUniqueProjectNameFromExistingNames(
     requestedCopyName,
-    await fsZds.readdir(projectDirectoryPath)
+    (await fileOperations.readDirectory(projectDirectoryPath)).map(
+      ({ name }) => name
+    )
   )
   const title = `${requestedCopyTitle}${name.slice(requestedCopyName.length)}`
 
   const projectToml = await getProjectTomlContents({
+    fileOperations,
     projectPath: source.path,
     wasmInstance,
   })
@@ -120,25 +126,26 @@ export async function duplicateProjectInDirectory({
     currentFilePath,
   })
   try {
-    await fsZds.mkdir(temporaryPath)
-    await fsZds.cp(source.path, temporaryPath, { recursive: true })
+    await fileOperations.createDirectory(temporaryPath)
+    await fileOperations.copy(source.path, temporaryPath)
     // Overlay the editor snapshot on the copy without bypassing source-file
     // conflict detection or racing its pending autosave.
     if (relativeCurrentFilePath && currentFileContents !== undefined) {
       await writeProjectRelativeFile(
+        fileOperations,
         temporaryPath,
         relativeCurrentFilePath,
         currentFileContents
       )
     }
 
-    await fsZds.writeFile(
+    await fileOperations.writeFile(
       fsZds.join(temporaryPath, PROJECT_SETTINGS_FILE_NAME),
-      new TextEncoder().encode(duplicatedProjectToml)
+      duplicatedProjectToml
     )
-    await fsZds.rename(temporaryPath, targetPath)
+    await fileOperations.rename(temporaryPath, targetPath)
   } catch (error) {
-    await fsZds.rm(temporaryPath, { recursive: true }).catch(() => undefined)
+    await fileOperations.remove(temporaryPath).catch(() => undefined)
     return Promise.reject(error)
   }
 

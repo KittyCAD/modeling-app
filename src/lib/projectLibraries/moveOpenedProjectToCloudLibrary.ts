@@ -50,7 +50,11 @@ export async function moveOpenedProjectToCloudLibrary({
     // Persist through the project metadata API after closing the editor. The
     // destination library uses this title for the final directory name, while
     // the closed project cannot mistake the relocation for an external reload.
-    await writeProjectTitleToProjectToml(project.path, title)
+    await writeProjectTitleToProjectToml(
+      app.fileOperations,
+      project.path,
+      title
+    )
     const moved = await actions.moveToLibrary(
       homeProject,
       cloudLibraryTarget.library.id

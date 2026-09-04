@@ -17,12 +17,13 @@ import {
   mkdirOrNOOP,
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import type { FileStat } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
 
@@ -45,31 +46,30 @@ function projectDirectoryEntryNamesToProjects(
   }))
 }
 
-function sameFilesystemEntry(
-  left: Awaited<ReturnType<typeof fsZds.stat>>,
-  right: Awaited<ReturnType<typeof fsZds.stat>>
-) {
+function sameFilesystemEntry(left: FileStat, right: FileStat) {
   if (
-    (left.dev === 0 && left.ino === 0) ||
-    (right.dev === 0 && right.ino === 0)
+    (left.device === 0 && left.inode === 0) ||
+    (right.device === 0 && right.inode === 0)
   ) {
     return false
   }
 
-  return left.dev === right.dev && left.ino === right.ino
+  return left.device === right.device && left.inode === right.inode
 }
 
 async function canRenameProjectDirectoryTo({
+  fileOperations,
   projectPath,
   targetPath,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectPath: string
   targetPath: string
 }) {
-  const projectStat = await fsZds.stat(projectPath)
+  const projectStat = await fileOperations.stat(projectPath)
 
   try {
-    const targetStat = await fsZds.stat(targetPath)
+    const targetStat = await fileOperations.stat(targetPath)
     return sameFilesystemEntry(projectStat, targetStat)
   } catch (error) {
     if (isPathNotFoundError(error)) {
@@ -80,9 +80,11 @@ async function canRenameProjectDirectoryTo({
 }
 
 export async function syncProjectDirectoryNameFromTitle({
+  fileOperations,
   project,
   projectDirectoryEntryNames,
 }: {
+  fileOperations: FileOperationsRegistryService
   project: Project
   projectDirectoryEntryNames: Iterable<string>
 }) {
@@ -113,6 +115,7 @@ export async function syncProjectDirectoryNameFromTitle({
   )
   if (
     !(await canRenameProjectDirectoryTo({
+      fileOperations,
       projectPath: project.path,
       targetPath,
     }))
@@ -120,7 +123,7 @@ export async function syncProjectDirectoryNameFromTitle({
     return undefined
   }
 
-  await fsZds.rename(project.path, targetPath)
+  await fileOperations.rename(project.path, targetPath)
   return targetProjectDirectoryName
 }
 
@@ -138,9 +141,11 @@ function projectsByDirectory(projects: readonly Project[]) {
 }
 
 export function scheduleProjectDirectoryNameSyncFromTitles({
+  fileOperations,
   projects,
   onProjectDirectoriesRenamed,
 }: {
+  fileOperations: FileOperationsRegistryService
   projects: readonly Project[]
   onProjectDirectoriesRenamed?: () => void
 }) {
@@ -165,7 +170,9 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
       let renamed = false
       for (const [projectDirectoryPath, directoryProjects] of syncGroups) {
         const currentProjectDirectoryEntryNames = new Set(
-          await fsZds.readdir(projectDirectoryPath)
+          (await fileOperations.readDirectory(projectDirectoryPath)).map(
+            ({ name }) => name
+          )
         )
 
         for (const project of directoryProjects) {
@@ -173,6 +180,7 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
           try {
             targetProjectDirectoryName =
               await syncProjectDirectoryNameFromTitle({
+                fileOperations,
                 project,
                 projectDirectoryEntryNames: currentProjectDirectoryEntryNames,
               })
@@ -221,9 +229,12 @@ function normalizeProjectPathForCloudMetadata(projectPath: string) {
  * reports drop to zero, confirming generated conflict-copy projects have aged
  * out of active clients.
  */
-async function deleteLegacyCloudConflictCopyProject(projectPath: string) {
+async function deleteLegacyCloudConflictCopyProject(
+  fileOperations: FileOperationsRegistryService,
+  projectPath: string
+) {
   try {
-    await fsZds.rm(projectPath, { recursive: true })
+    await fileOperations.remove(projectPath)
   } catch (error) {
     if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
@@ -248,6 +259,7 @@ export function shouldSendProjectFolderReadProgress(
  * hints; duplicate detection and cleanup policy are handled after discovery.
  */
 export async function readProjectsFromProjectDirectory({
+  fileOperations,
   projectDirectoryPath,
   wasmInstancePromise,
   previousProjects,
@@ -255,6 +267,7 @@ export async function readProjectsFromProjectDirectory({
   onProgress,
   onProjectStatFailures,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectDirectoryPath: string
   wasmInstancePromise: Promise<ModuleType>
   previousProjects?: Project[]
@@ -272,7 +285,7 @@ export async function readProjectsFromProjectDirectory({
     onProgress?.(folders)
   }
 
-  await mkdirOrNOOP(projectDirectoryPath)
+  await mkdirOrNOOP(fileOperations, projectDirectoryPath)
   const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
     ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
     : new Map()
@@ -282,7 +295,9 @@ export async function readProjectsFromProjectDirectory({
 
   // Gotcha: readdir will list folders even without read/write access to the
   // parent directory path. Each candidate still needs to be stat/read checked.
-  for (const entry of await fsZds.readdir(projectDirectoryPath)) {
+  for (const { name: entry, kind } of await fileOperations.readDirectory(
+    projectDirectoryPath
+  )) {
     if (signal?.aborted) {
       return projects
     }
@@ -291,9 +306,9 @@ export async function readProjectsFromProjectDirectory({
     }
 
     const projectPath = fsZds.join(projectDirectoryPath, entry)
-    let stat: Awaited<ReturnType<typeof fsZds.stat>>
+    let stat: FileStat
     try {
-      stat = await fsZds.stat(projectPath)
+      stat = await fileOperations.stat(projectPath)
     } catch (error) {
       if (!isPathNotFoundError(error)) {
         if (projectStatFailureCount === 0) {
@@ -303,7 +318,7 @@ export async function readProjectsFromProjectDirectory({
       }
       continue
     }
-    if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
+    if (kind !== 'directory' || stat.kind !== 'directory') {
       continue
     }
 
@@ -315,8 +330,8 @@ export async function readProjectsFromProjectDirectory({
           cloudProjectMetadataByPath.get(
             normalizeProjectPathForCloudMetadata(projectPath)
           ),
-          stat.mtimeMs
-        ) ?? stat.mtimeMs,
+          stat.modifiedAt
+        ) ?? stat.modifiedAt,
     })
   }
 
@@ -327,8 +342,10 @@ export async function readProjectsFromProjectDirectory({
     })
   }
 
-  const { value: canReadWriteProjectDirectory } =
-    await canReadWriteDirectory(projectDirectoryPath)
+  const { value: canReadWriteProjectDirectory } = await canReadWriteDirectory(
+    fileOperations,
+    projectDirectoryPath
+  )
   const wasmInstance = await wasmInstancePromise
 
   for (const entry of sortProjectDirectoryEntriesByModifiedDesc(entries)) {
@@ -340,13 +357,18 @@ export async function readProjectsFromProjectDirectory({
       normalizeProjectPathForCloudMetadata(entry.path)
     )
     if (cloudMetadata?.syncExcluded?.reason === 'conflict-copy') {
-      await deleteLegacyCloudConflictCopyProject(entry.path).catch(
-        reportRejection
-      )
+      await deleteLegacyCloudConflictCopyProject(
+        fileOperations,
+        entry.path
+      ).catch(reportRejection)
       continue
     }
 
-    const project = await getProjectInfo(entry.path, wasmInstance)
+    const project = await getProjectInfo(
+      fileOperations,
+      entry.path,
+      wasmInstance
+    )
     project.cloudProjectId ??= cloudMetadata?.remoteProjectId
     project.cloudConflict = cloudMetadata?.conflict
     if (project.metadata) {

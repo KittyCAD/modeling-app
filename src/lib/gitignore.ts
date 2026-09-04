@@ -1,6 +1,8 @@
-import ignore, { type Ignore } from 'ignore'
+import fsZds from '@src/lib/fs-zds'
 
 import { webSafePathSplit } from '@src/lib/pathUtils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import ignore, { type Ignore } from 'ignore'
 
 export type GitignoreStackEntry = {
   /** Relative path from project root to the directory containing this .gitignore */
@@ -17,6 +19,18 @@ export type GitignoreFs = {
 export type GitignoreFileEntry = {
   relativePath: string
   contents: string
+}
+
+/** Adapts coordinated file operations to the narrow gitignore reader API. */
+export function fileOperationsGitignoreFs(
+  fileOperations: FileOperationsRegistryService
+): GitignoreFs {
+  return {
+    join: fsZds.join,
+    relative: fsZds.relative,
+    readFile: async (path) =>
+      new TextDecoder().decode(await fileOperations.readFile(path)),
+  }
 }
 
 function toPosixPath(path: string): string {
@@ -79,11 +93,6 @@ export function isPathIgnoredByGitignore(
   return false
 }
 
-async function getDefaultFsZds() {
-  const { default: fsZds } = await import('@src/lib/fs-zds')
-  return fsZds
-}
-
 export function createGitignoreStackFromFiles(
   files: GitignoreFileEntry[]
 ): GitignoreStackEntry[] {
@@ -128,17 +137,6 @@ export async function readGitignoreStackEntryWithFs(
   }
 }
 
-export async function readGitignoreStackEntry(
-  directoryPath: string,
-  projectRoot: string
-): Promise<GitignoreStackEntry | null> {
-  return readGitignoreStackEntryWithFs(
-    await getDefaultFsZds(),
-    directoryPath,
-    projectRoot
-  )
-}
-
 export async function createInitialGitignoreStackWithFs(
   fs: GitignoreFs,
   projectRoot: string
@@ -149,12 +147,6 @@ export async function createInitialGitignoreStackWithFs(
     projectRoot
   )
   return entry ? [entry] : []
-}
-
-export async function createInitialGitignoreStack(
-  projectRoot: string
-): Promise<GitignoreStackEntry[]> {
-  return createInitialGitignoreStackWithFs(await getDefaultFsZds(), projectRoot)
 }
 
 export async function appendGitignoreForDirectoryWithFs(
@@ -169,17 +161,4 @@ export async function appendGitignoreForDirectoryWithFs(
     projectRoot
   )
   return entry ? [...stack, entry] : stack
-}
-
-export async function appendGitignoreForDirectory(
-  stack: GitignoreStackEntry[],
-  directoryPath: string,
-  projectRoot: string
-): Promise<GitignoreStackEntry[]> {
-  return appendGitignoreForDirectoryWithFs(
-    await getDefaultFsZds(),
-    stack,
-    directoryPath,
-    projectRoot
-  )
 }

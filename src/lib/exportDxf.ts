@@ -1,21 +1,22 @@
 import type { WebSocketResponse } from '@kittycad/lib'
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { KclManager } from '@src/lang/KclManager'
 import {
-  type StdLibCallOp,
   findOperationPlaneLikeArtifact,
+  type StdLibCallOp,
 } from '@src/lang/queryAst'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactFromRange,
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
-import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import fsZds from '@src/lib/fs-zds'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { getOperationVariableName } from '@src/lib/operations'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { ToastOptions } from 'react-hot-toast'
 
 type GroupBeginOperation = Extract<Operation, { type: 'GroupBegin' }>
@@ -122,6 +123,7 @@ export async function exportSketchToDxf(
   dependencies: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
+    fileOperations: FileOperationsRegistryService
     toast: {
       error: (message: string, options?: ToastOptions) => void
       loading: (message: string) => string
@@ -143,6 +145,7 @@ export async function exportSketchToDxf(
   const {
     engineCommandManager,
     kclManager,
+    fileOperations,
     toast,
     uuidv4,
     base64Decode,
@@ -305,10 +308,11 @@ export async function exportSketchToDxf(
           testSettingsPath,
           'downloads-during-playwright'
         )
-        await fsZds.mkdir(downloadDir, { recursive: true })
-
         try {
-          await fsZds.writeFile(fsZds.join(downloadDir, fileName), decodedData)
+          await fileOperations.writeFile(
+            fsZds.join(downloadDir, fileName),
+            decodedData
+          )
         } catch (e: unknown) {
           console.error('Write file failed:', e)
           toast.error('Failed to save file.', { id: toastId })
@@ -336,7 +340,7 @@ export async function exportSketchToDxf(
       }
 
       try {
-        await fsZds.writeFile(filePathMeta.filePath, decodedData)
+        await fileOperations.writeFile(filePathMeta.filePath, decodedData)
       } catch (e: unknown) {
         console.error('Write file failed:', e)
         toast.error('Failed to save file.', { id: toastId })

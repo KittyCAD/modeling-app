@@ -21,7 +21,7 @@ import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { makeZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   mergeZookeeperEditPatches,
   normalizeZookeeperPatchPath,
@@ -41,9 +41,16 @@ import {
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
-import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 
 function getZookeeperPatchPreviousCode(
   patch: ZookeeperEditPatch,
@@ -112,6 +119,10 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
   const { auth, billing, settings, project, systemIOActor } = app
+  const zookeeperConversationStore = useMemo(
+    () => makeZookeeperConversationStore(app.fileOperations),
+    [app.fileOperations]
+  )
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
@@ -166,6 +177,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
     completePendingZookeeperHistoryWrite,
     reservePendingZookeeperHistoryWrite,
   } = useZookeeperEditPatchHistory({
+    fileOperations: app.fileOperations,
     kclManager,
     zookeeperManagerActor,
   })
@@ -454,9 +466,11 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
 }
 
 function useZookeeperEditPatchHistory({
+  fileOperations,
   kclManager,
   zookeeperManagerActor,
 }: {
+  fileOperations: FileOperationsRegistryService
   kclManager: KclManager
   zookeeperManagerActor: ZookeeperManagerActor
 }) {
@@ -622,6 +636,7 @@ function useZookeeperEditPatchHistory({
       kclManager.zookeeperHistoryRecordingInProgress = true
       try {
         await captureZookeeperSnapshotPreviousContents({
+          fileOperations,
           kclManager,
           patch,
           pending,
@@ -632,7 +647,7 @@ function useZookeeperEditPatchHistory({
         pending.snapshotFilesByRelativePath.clear()
       }
     },
-    [kclManager]
+    [fileOperations, kclManager]
   )
 
   const cancelPendingZookeeperHistoryWrite = useCallback(
@@ -691,6 +706,7 @@ function useZookeeperEditPatchHistory({
         : patch
       try {
         await captureZookeeperSnapshotNextContents({
+          fileOperations,
           patch,
           pending,
           projectPath,
@@ -703,7 +719,7 @@ function useZookeeperEditPatchHistory({
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
       tryFlushPendingZookeeperHistory(exchangeId)
     },
-    [tryFlushPendingZookeeperHistory]
+    [fileOperations, tryFlushPendingZookeeperHistory]
   )
 
   useFlushZookeeperHistoryOnResponseEnd(
@@ -776,11 +792,13 @@ function getZookeeperSnapshotPreviousCode(
 }
 
 async function captureZookeeperSnapshotPreviousContents({
+  fileOperations,
   kclManager,
   patch,
   pending,
   projectPath,
 }: {
+  fileOperations: FileOperationsRegistryService
   kclManager: KclManager
   patch: ZookeeperEditPatch
   pending: PendingZookeeperHistory
@@ -798,7 +816,10 @@ async function captureZookeeperSnapshotPreviousContents({
     const previousContent =
       snapshotPath.absolutePath === kclManager.path
         ? kclManager.code
-        : await readZookeeperSnapshotFileIfExists(snapshotPath.absolutePath)
+        : await readZookeeperSnapshotFileIfExists(
+            fileOperations,
+            snapshotPath.absolutePath
+          )
     pending.snapshotFilesByRelativePath.set(snapshotPath.relativePath, {
       ...snapshotPath,
       previousContent,
@@ -807,10 +828,12 @@ async function captureZookeeperSnapshotPreviousContents({
 }
 
 async function captureZookeeperSnapshotNextContents({
+  fileOperations,
   patch,
   pending,
   projectPath,
 }: {
+  fileOperations: FileOperationsRegistryService
   patch: ZookeeperEditPatch
   pending: PendingZookeeperHistory
   projectPath: string
@@ -828,6 +851,7 @@ async function captureZookeeperSnapshotNextContents({
     }
 
     snapshotFile.nextContent = await readZookeeperSnapshotFileIfExists(
+      fileOperations,
       snapshotPath.absolutePath
     )
     pending.snapshotFilesByRelativePath.set(
@@ -883,9 +907,12 @@ function getZookeeperSnapshotPath(projectPath: string, relativePath: string) {
   }
 }
 
-async function readZookeeperSnapshotFileIfExists(path: string) {
+async function readZookeeperSnapshotFileIfExists(
+  fileOperations: FileOperationsRegistryService,
+  path: string
+) {
   try {
-    return await fsZds.readFile(path, 'utf8')
+    return new TextDecoder().decode(await fileOperations.readFile(path))
   } catch (error: unknown) {
     if (isPathNotFoundError(error)) {
       return null

@@ -1,3 +1,4 @@
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -30,6 +31,18 @@ vi.mock('@src/machines/systemIO/errorReporting', () => ({
 
 const importModule = () => import('@src/lib/activeTextFile')
 let mod: Awaited<ReturnType<typeof importModule>>
+
+const fileOperations = {
+  readFile: async (path: string) =>
+    new TextEncoder().encode(await mocks.readFile(path, undefined)),
+  writeFile: (path: string, contents: string | Uint8Array) =>
+    mocks.writeFile(
+      path,
+      typeof contents === 'string'
+        ? new TextEncoder().encode(contents)
+        : contents
+    ),
+} as unknown as FileOperationsRegistryService
 
 /** Flush the microtask queue (works under both real and fake timers). */
 function flushMicrotasks() {
@@ -73,7 +86,7 @@ describe('openActiveTextFile', () => {
       })
     )
 
-    const promise = mod.openActiveTextFile('/proj/readme.md')
+    const promise = mod.openActiveTextFile(fileOperations, '/proj/readme.md')
     await flushMicrotasks()
 
     expect(mod.activeTextFileSignal.value).toEqual({
@@ -97,7 +110,7 @@ describe('openActiveTextFile', () => {
   it('transitions to error when the read fails', async () => {
     mocks.readFile.mockRejectedValueOnce(new Error('boom'))
 
-    await mod.openActiveTextFile('/proj/readme.md')
+    await mod.openActiveTextFile(fileOperations, '/proj/readme.md')
 
     expect(mod.activeTextFileSignal.value).toEqual({
       path: '/proj/readme.md',
@@ -123,9 +136,9 @@ describe('openActiveTextFile', () => {
         })
       )
 
-    const promiseA = mod.openActiveTextFile('/proj/a.md')
+    const promiseA = mod.openActiveTextFile(fileOperations, '/proj/a.md')
     await flushMicrotasks()
-    const promiseB = mod.openActiveTextFile('/proj/b.md')
+    const promiseB = mod.openActiveTextFile(fileOperations, '/proj/b.md')
     await flushMicrotasks()
 
     resolveB('B contents')
@@ -150,16 +163,16 @@ describe('openActiveTextFile', () => {
 describe('scheduleActiveTextFileWrite', () => {
   async function openReady(path: string, contents = 'initial') {
     mocks.readFile.mockResolvedValueOnce(contents)
-    await mod.openActiveTextFile(path)
+    await mod.openActiveTextFile(fileOperations, path)
   }
 
   it('debounces rapid edits into a single write of the latest text', async () => {
     vi.useFakeTimers()
     await openReady('/proj/readme.md')
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'a')
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'ab')
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'abc')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'a')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'ab')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'abc')
     expect(mocks.writeFile).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1000)
@@ -174,7 +187,7 @@ describe('scheduleActiveTextFileWrite', () => {
     vi.useFakeTimers()
     await openReady('/proj/readme.md')
 
-    mod.scheduleActiveTextFileWrite('/proj/other.md', 'nope')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/other.md', 'nope')
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(mocks.writeFile).not.toHaveBeenCalled()
@@ -185,7 +198,7 @@ describe('scheduleActiveTextFileWrite', () => {
     await openReady('/proj/readme.md')
     mocks.writeFile.mockRejectedValueOnce({ code: 'ENOENT' })
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'edited')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', 'edited')
     // Must not throw / reject even though the write fails with ENOENT.
     await vi.advanceTimersByTimeAsync(1000)
 
@@ -199,7 +212,11 @@ describe('scheduleActiveTextFileWrite', () => {
     const error = new Error('permission denied')
     mocks.writeFile.mockRejectedValueOnce(error)
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'private contents')
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/readme.md',
+      'private contents'
+    )
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(mocks.reportSystemIOError).toHaveBeenCalledWith({
@@ -225,9 +242,13 @@ describe('flushActiveTextFileWrite', () => {
   it('writes the pending edit immediately and cancels the timer', async () => {
     vi.useFakeTimers()
     mocks.readFile.mockResolvedValueOnce('initial')
-    await mod.openActiveTextFile('/proj/readme.md')
+    await mod.openActiveTextFile(fileOperations, '/proj/readme.md')
 
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'flushed')
+    mod.scheduleActiveTextFileWrite(
+      fileOperations,
+      '/proj/readme.md',
+      'flushed'
+    )
     await mod.flushActiveTextFileWrite()
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
@@ -242,12 +263,12 @@ describe('flushActiveTextFileWrite', () => {
 describe('switching files', () => {
   it('persists pending edits to the outgoing file before opening a new one', async () => {
     mocks.readFile.mockResolvedValueOnce('A')
-    await mod.openActiveTextFile('/proj/a.md')
-    mod.scheduleActiveTextFileWrite('/proj/a.md', 'A edited')
+    await mod.openActiveTextFile(fileOperations, '/proj/a.md')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/a.md', 'A edited')
 
     // Opening B must flush A's edit to A's own path first.
     mocks.readFile.mockResolvedValueOnce('B')
-    await mod.openActiveTextFile('/proj/b.md')
+    await mod.openActiveTextFile(fileOperations, '/proj/b.md')
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
     expect(mocks.writeFile.mock.calls[0][0]).toBe('/proj/a.md')
@@ -261,8 +282,8 @@ describe('switching files', () => {
 
   it('clearActiveTextFile persists pending edits and clears the signal', async () => {
     mocks.readFile.mockResolvedValueOnce('A')
-    await mod.openActiveTextFile('/proj/a.md')
-    mod.scheduleActiveTextFileWrite('/proj/a.md', 'A edited')
+    await mod.openActiveTextFile(fileOperations, '/proj/a.md')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/a.md', 'A edited')
 
     mod.clearActiveTextFile()
     await flushMicrotasks()

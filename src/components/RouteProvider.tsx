@@ -4,8 +4,7 @@ import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
-import fsZds from '@src/lib/fs-zds'
-import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
+import { getStringAfterLastSeparator, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { trap } from '@src/lib/trap'
 import type { ReactNode } from 'react'
@@ -16,7 +15,7 @@ export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
-  const { settings, project } = useApp()
+  const { fileOperations, settings, project } = useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useAuthNavigation()
@@ -119,7 +118,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // wish to change the behavior in case anything else uses it.
       // Go home.
       if (loadedProject?.path) {
-        if (!(await fsZds.stat(loadedProject.path))) {
+        if (!(await fileOperations.exists(loadedProject.path))) {
           void navigate(PATHS.HOME)
           return
         }
