@@ -13,7 +13,8 @@ export interface ExecutingEditorService {
   readonly code: ReadonlySignal<string>
   readonly hasEditsSinceLastExecution: ReadonlySignal<boolean>
   readonly isExecuting: ReadonlySignal<boolean>
-  readonly executionElapsedMs: ReadonlySignal<number>
+  /** Null before the first execution; retains the final duration afterward. */
+  readonly executionElapsedMs: ReadonlySignal<number | null>
   readonly selectionStatusLabel: ReadonlySignal<string>
   readonly showExperimentalFeaturesStatusBarItem: ReadonlySignal<boolean>
   getPendingCommandCount(): number
