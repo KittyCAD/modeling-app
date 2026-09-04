@@ -337,9 +337,14 @@ function AppProjectCard({
         >
           Shared history
           <span className="sr-only">
-            . Project copies share Zookeeper history.
+            . Project copies share Zookeeper history. Separate them by
+            right-clicking and selecting "Separate project copies".
           </span>
-          <Tooltip>Project copies share Zookeeper history.</Tooltip>
+          <Tooltip>
+            Project copies share Zookeeper history. <br />
+            Separate them by right-clicking and selecting "Separate project
+            copies".
+          </Tooltip>
         </span>
       )}
     </>
