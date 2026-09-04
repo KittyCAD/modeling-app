@@ -884,18 +884,28 @@ const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1), seg01])
 `
 
-/** Mixed: one adjacent-edge helper + one edgeId closestTo helper. */
-const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `base = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(endAbsolute = [10, 0], tag = $e1)
-  |> line(endAbsolute = [10, 10])
-  |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [0, 0])
-  |> close()
-  |> extrude(length = 5)
-edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])
-body = base
-  |> fillet(radius = 1, tags = [getOppositeEdge(e1), edgeFromPoint])
+/** Mixed: one adjacent-edge helper + one edgeId closestTo helper in KCL 2. */
+const KCL_MIXED_DEPRECATED_AND_EDGE_ID_CLOSEST_TO = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  e1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  e2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  e3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  e4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+
+  coincident([e1.end, e2.start])
+  coincident([e2.end, e3.start])
+  coincident([e3.end, e4.start])
+  coincident([e4.end, e1.start])
+}
+baseRegion = region(point = [5mm, 5mm], sketch = baseSketch)
+base = extrude(baseRegion, length = 5mm)
+edgeFromPoint = edgeId(base, closestTo = [5mm, 0mm, 0mm])
+body = fillet(
+  base,
+  radius = 1mm,
+  tags = [getOppositeEdge(baseRegion.tags.e1), edgeFromPoint],
+)
 `
 
 const KCL_SHADOWED_EDGE_HELPER_VARIABLE = `globalBody = startSketchOn(XY)
@@ -2565,14 +2575,14 @@ surface001 = extrude(
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
-        expect(n).toContain('sideFaces = [e1, capStart001]')
+        expect(n).toContain('sideFaces = [baseRegion.tags.e1, capEnd001]')
+        expect(n).toContain('sideFaces = [baseRegion.tags.e1, capStart001]')
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
         expect(sideFaceCount).toBe(2)
         expect(n).not.toContain('tags = [')
         expect(n).toContain(
-          'edgeFromPoint = edgeId(base, closestTo = [5, 0, 0])'
+          'edgeFromPoint = edgeId(base, closestTo = [5mm, 0mm, 0mm])'
         )
       }
     )
