@@ -523,13 +523,13 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      void navigate(PATHS.HOME + PATHS.SETTINGS)
+      app.openSettings()
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      app.openSettings({ tab: 'keybindings' })
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      app.openSettings({ tab: 'user', anchor: 'defaultUnit' })
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#libraries`)
+      app.openSettings({ tab: 'user', anchor: 'libraries' })
     } else if (data.menuLabel === 'File.Sign out') {
       auth.send({ type: 'Log out' })
     } else if (

@@ -64,7 +64,7 @@ export async function moveOpenedProjectToCloudLibrary({
 
     const projectPath =
       moved.localProjectPath ?? fsZds.dirname(moved.defaultFile)
-    await navigate(`${PATHS.FILE}/${encodeURIComponent(moved.defaultFile)}`)
+    await app.openFile({ id: moved.defaultFile })
     return {
       defaultFile: moved.defaultFile,
       projectPath,
