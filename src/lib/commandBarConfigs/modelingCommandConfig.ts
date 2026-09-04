@@ -1169,10 +1169,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         cylinder: {
           ...objectsTypesAndFilters,
-          selectionTypes: [
-            ...objectsTypesAndFilters.selectionTypes,
-            'pathRegion',
-          ],
           inputType: 'selection',
           multiple: false,
           required: (context) =>

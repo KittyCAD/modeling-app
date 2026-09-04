@@ -57,6 +57,7 @@ import {
   getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getEngineEntityIdForSweep,
   getOriginalSegmentArtifact,
   getPatternArtifactForCopyId,
   getSketchBlockForArtifact,
@@ -64,6 +65,7 @@ import {
   getSweepArtifactFromSelection,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
+  resolveEngineSelectionArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
 import {
@@ -415,15 +417,19 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     }
   }
 
-  if (parentArtifact.type === 'path' && parentArtifact.sweepId) {
-    const parentSweep = getArtifactOfTypes(
-      { key: parentArtifact.sweepId, types: ['sweep'] },
+  if (parentArtifact.type === 'path') {
+    const semanticArtifact = resolveEngineSelectionArtifact(
+      parentArtifact,
       artifactGraph
     )
-    if (!err(parentSweep)) {
+    if (
+      semanticArtifact.type === 'sweep' &&
+      bodyArtifactTypes.includes(semanticArtifact.type)
+    ) {
       return {
-        artifact: parentSweep as Artifact,
-        codeRef: parentSweep.codeRef,
+        artifact: semanticArtifact,
+        codeRef: semanticArtifact.codeRef,
+        engineEntityId: parentEntityId,
       }
     }
   }
@@ -674,10 +680,7 @@ function createDirectTaggedFaceReferenceExpr(
   if (err(sourceSurfaceArtifact)) {
     return null
   }
-  const sourceSurface = sourceSurfaceArtifact as Extract<
-    Artifact,
-    { type: 'sweep' }
-  >
+  const sourceSurface = sourceSurfaceArtifact
 
   return getDirectTagExprFromSourceSurface({
     sourceSurfaceArtifact: sourceSurface,
@@ -716,10 +719,7 @@ function createDirectTaggedEdgeReferenceExpr(
   if (err(sourceSurfaceArtifact)) {
     return null
   }
-  const sourceSurface = sourceSurfaceArtifact as Extract<
-    Artifact,
-    { type: 'sweep' }
-  >
+  const sourceSurface = sourceSurfaceArtifact
 
   const tagExpr = getDirectTagExprFromSourceSurface({
     sourceSurfaceArtifact: sourceSurface,
@@ -1291,6 +1291,7 @@ export async function getEventForSelectWithPoint(
       data: { selectionType: 'singleCodeCursor' },
     }
   }
+  _artifact = resolveEngineSelectionArtifact(_artifact, artifactGraph)
   const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
   if (_artifact && codeRefs) {
     return {
@@ -1408,7 +1409,7 @@ export function handleSelectionBatch({
   const selectionToEngine: SelectionToEngine[] = []
 
   selections.graphSelections.forEach((selection) => {
-    const engineIds = getEngineEntityIdsForSelection(selection)
+    const engineIds = getEngineEntityIdsForSelection(selection, artifactGraph)
     engineIds.forEach((id) => {
       const range =
         getCodeRefsByArtifactId(
@@ -1476,7 +1477,10 @@ export function handleSelectionBatch({
 }
 
 type SelectionToEngine = {
+  /** Scene object id sent to the engine. */
   id?: string
+  /** Semantic artifact id used to reconstruct the graph selection. */
+  artifactId?: ArtifactId
   range: SourceRange
 }
 
@@ -1545,7 +1549,8 @@ export function processCodeMirrorRanges({
     artifactIndex
   )
   const selections: Selection[] = []
-  for (const { id, range } of idBasedSelections) {
+  const seenGraphSelections = new Set<string>()
+  for (const { id, artifactId, range } of idBasedSelections) {
     if (!id) {
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const invalidPathToNode =
@@ -1564,10 +1569,20 @@ export function processCodeMirrorRanges({
       })
       continue
     }
-    const artifact = artifactGraph.get(id)
-    const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
+    const artifact = artifactGraph.get(artifactId ?? id)
+    const codeRefs = getCodeRefsByArtifactId(artifactId ?? id, artifactGraph)
     if (artifact && codeRefs) {
-      selections.push({ artifact, codeRef: codeRefs[0] })
+      const selectionKey = `${artifact.id}:${range.join(':')}`
+      if (seenGraphSelections.has(selectionKey)) {
+        continue
+      }
+      seenGraphSelections.add(selectionKey)
+      selections.push({
+        artifact,
+        codeRef: codeRefs[0],
+        engineEntityId:
+          artifact.type !== 'pattern' && artifact.id !== id ? id : undefined,
+      })
     } else if (codeRefs) {
       selections.push({ codeRef: codeRefs[0] })
     }
@@ -1967,11 +1982,15 @@ function createSelectionToEngine(
 ): SelectionToEngine {
   return {
     ...(candidateId && { id: candidateId }),
+    ...(selection.artifact?.id && { artifactId: selection.artifact.id }),
     range: selection.codeRef.range,
   }
 }
 
-function getEngineEntityIdsForSelection(selection: Selection): ArtifactId[] {
+function getEngineEntityIdsForSelection(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): ArtifactId[] {
   if (selection.engineEntityId) {
     return [selection.engineEntityId]
   }
@@ -1979,6 +1998,10 @@ function getEngineEntityIdsForSelection(selection: Selection): ArtifactId[] {
   const artifact = selection.artifact
   if (!artifact?.id) {
     return []
+  }
+
+  if (artifact.type === 'sweep') {
+    return [getEngineEntityIdForSweep(artifact, artifactGraph)]
   }
 
   if (artifact.type !== 'pattern') {
@@ -2017,7 +2040,10 @@ export function codeToIdSelections(
 
       // Direct artifact case
       if (selection.artifact?.id) {
-        const engineIds = getEngineEntityIdsForSelection(selection)
+        const engineIds = getEngineEntityIdsForSelection(
+          selection,
+          artifactGraph
+        )
         return engineIds.length
           ? engineIds.map((id) => createSelectionToEngine(selection, id))
           : [createSelectionToEngine(selection)]
@@ -2034,13 +2060,19 @@ export function codeToIdSelections(
       )
       if (bestCandidates.length) {
         return bestCandidates.flatMap((entry) => {
-          const engineIds = getEngineEntityIdsForSelection({
+          const candidateSelection = {
             ...selection,
             artifact: entry.artifact,
-          })
+          }
+          const engineIds = getEngineEntityIdsForSelection(
+            candidateSelection,
+            artifactGraph
+          )
           return engineIds.length
-            ? engineIds.map((id) => createSelectionToEngine(selection, id))
-            : [createSelectionToEngine(selection, entry.id)]
+            ? engineIds.map((id) =>
+                createSelectionToEngine(candidateSelection, id)
+              )
+            : [createSelectionToEngine(candidateSelection, entry.id)]
         })
       }
 
@@ -2123,6 +2155,14 @@ export function updateSelections(
           range: topLevelRange(node.start, node.end),
           pathToNode: pathToNode,
         },
+        ...(artifact.type === 'sweep'
+          ? {
+              engineEntityId: getEngineEntityIdForSweep(
+                artifact,
+                artifactGraph
+              ),
+            }
+          : {}),
       }
     })
     .filter((x?: Selection) => x !== undefined)
@@ -2644,7 +2684,7 @@ export async function selectionBodyFace(
   }
 
   const children = findAllChildrenAndOrderByPlaceInCode(
-    { type: 'sweep', ...extrusion },
+    extrusion,
     artifactGraph
   )
   const lastChildVariable = getLastVariable(

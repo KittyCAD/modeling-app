@@ -11,6 +11,7 @@ import {
   type Artifact,
   getBodiesFromArtifactGraph,
   getCodeRefsByArtifactId,
+  getEngineEntityIdForSweep,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -56,7 +57,12 @@ export function BodiesPane(props: AreaTypeComponentProps) {
         artifactGraph,
         label: `Body ${i + 1}`,
         hideOperation,
-        engineEntityId: artifact.type === 'pattern' ? id : undefined,
+        engineEntityId:
+          artifact.type === 'pattern'
+            ? id
+            : artifact.type === 'sweep'
+              ? getEngineEntityIdForSweep(artifact, artifactGraph)
+              : undefined,
         patternIndex,
       })
       i++

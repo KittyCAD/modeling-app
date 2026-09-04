@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, expect, test, vi } from 'vitest'
 
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
 const getEventForSelectWithPoint = vi.hoisted(() => vi.fn())
@@ -101,5 +102,92 @@ test('stores a post-selected primitive before starting a sketch', async () => {
     selectSketchPlane.mock.invocationCallOrder[0]
   )
 
+  unmount()
+})
+
+test('highlights the semantic sweep when hovering a region-backed body', () => {
+  const pathCodeRef = {
+    range: [0, 10, 0] as [number, number, number],
+    pathToNode: [],
+    nodePath: { steps: [] },
+  }
+  const sweepCodeRef = {
+    range: [11, 20, 0] as [number, number, number],
+    pathToNode: [],
+    nodePath: { steps: [] },
+  }
+  const path: Artifact = {
+    type: 'path',
+    subType: 'region',
+    id: 'path-1',
+    codeRef: pathCodeRef,
+    planeId: 'plane-1',
+    segIds: [],
+    sweepId: 'sweep-1',
+    trajectorySweepId: null,
+    consumed: true,
+  }
+  const sweep: Artifact = {
+    type: 'sweep',
+    id: 'sweep-1',
+    codeRef: sweepCodeRef,
+    pathId: path.id,
+    subType: 'extrusion',
+    surfaceIds: [],
+    edgeIds: [],
+    method: 'merge',
+    trajectoryId: null,
+    consumed: false,
+  }
+  const artifactGraph = new Map<string, Artifact>([
+    [path.id, path],
+    [sweep.id, sweep],
+  ])
+  const unsubscribe = vi.fn()
+  let hoverCallback:
+    | ((event: { data: { entity_id?: string } }) => void)
+    | undefined
+  const engineCommandManager = {
+    subscribeTo: vi.fn(() => unsubscribe),
+    subscribeToUnreliable: vi.fn(
+      (subscription: {
+        event: string
+        callback: (event: { data: { entity_id?: string } }) => void
+      }) => {
+        if (subscription.event === 'highlight_set_entity') {
+          hoverCallback = subscription.callback
+        }
+        return unsubscribe
+      }
+    ),
+  }
+  const setHighlightRange = vi.fn()
+
+  useModelingContext.mockReturnValue({
+    send: vi.fn(),
+    state: { matches: () => false },
+    context: {
+      engineCommandManager,
+      kclManager: {
+        artifactGraph,
+        highlightRange: null,
+        setHighlightRange,
+      },
+      rustContext: {
+        planesCreated: { add: vi.fn(() => unsubscribe) },
+      },
+      wasmInstance: {},
+      store: {},
+    },
+  })
+
+  const { unmount } = renderHook(() => useEngineConnectionSubscriptions())
+  expect(hoverCallback).toBeDefined()
+
+  act(() => {
+    hoverCallback?.({ data: { entity_id: path.id } })
+  })
+
+  expect(setHighlightRange).toHaveBeenCalledWith([sweepCodeRef.range])
   unmount()
 })

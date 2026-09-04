@@ -1848,7 +1848,7 @@ box = extrude(profile, length = 30)`
 
       // When translate opens with a segment selected, it should coerce to the parent body
       // The segment belongs to the 'profile' path, which is extruded into 'box'
-      // So the selection should coerce from segment to path (body)
+      // So the selection should coerce from segment to its parent sweep
       await cmdBar.expectState({
         commandName: 'Translate',
         currentArgKey: 'objects',
@@ -1861,8 +1861,8 @@ box = extrude(profile, length = 30)`
         stage: 'arguments',
       })
 
-      await expect(page.getByText('1 path selected')).toBeVisible()
-      await expect(toolbar.selectionStatus).toContainText('1 path')
+      await expect(page.getByText('1 sweep selected')).toBeVisible()
+      await expect(toolbar.selectionStatus).toContainText('1 sweep')
     })
 
     await test.step('Complete command flow', async () => {
@@ -1873,7 +1873,7 @@ box = extrude(profile, length = 30)`
           currentArgKey: 'x',
           currentArgValue: '5',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             X: '5',
           },
           highlightedHeaderArg: 'x',
@@ -1886,7 +1886,7 @@ box = extrude(profile, length = 30)`
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
           },
           commandName: 'Translate',
           reviewValidationError:
@@ -1932,7 +1932,7 @@ box = extrude(profile, length = 30)`
           currentArgKey: 'x',
           currentArgValue: '5',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -1946,7 +1946,7 @@ box = extrude(profile, length = 30)`
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             X: '50',
           },
           commandName: 'Translate',

@@ -326,7 +326,7 @@ describe('Extrude surface arguments', () => {
 })
 
 describe('Helix cylinder selection', () => {
-  it('accepts a region-backed cylinder', () => {
+  it('accepts a semantic sweep instead of its backing region', () => {
     const commandConfig = modelingMachineCommandConfig.Helix
     if (!commandConfig || isArray(commandConfig)) {
       throw new Error('Helix should have a single command config')
@@ -339,7 +339,7 @@ describe('Helix cylinder selection', () => {
 
     expect(
       canSubmitSelectionArg(
-        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
+        new Map<ResolvedSelectionType, number>([['sweep', 1]]),
         {
           inputType: 'selection',
           selectionTypes: cylinderArg.selectionTypes,
@@ -348,6 +348,18 @@ describe('Helix cylinder selection', () => {
         }
       )
     ).toBe(true)
+
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
+        {
+          inputType: 'selection',
+          selectionTypes: cylinderArg.selectionTypes,
+          multiple: cylinderArg.multiple,
+          required: true,
+        }
+      )
+    ).toBe(false)
   })
 })
 

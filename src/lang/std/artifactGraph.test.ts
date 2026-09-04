@@ -3,9 +3,11 @@ import {
   coerceSelectionsToBody,
   getBodiesFromArtifactGraph,
   getCommonFacesForEdge,
+  getEngineEntityIdForSweep,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   isFaceFromLegacySketch,
+  resolveEngineSelectionArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -15,6 +17,76 @@ const codeRef = {
   range: [0, 0, 0] as [number, number, number],
   pathToNode: [],
   nodePath: { steps: [] },
+}
+
+function pathArtifact({
+  id,
+  sweepId,
+}: {
+  id: string
+  sweepId: string
+}): Extract<Artifact, { type: 'path' }> {
+  return {
+    type: 'path',
+    subType: 'region',
+    id,
+    codeRef,
+    planeId: 'plane-1',
+    segIds: [],
+    sweepId,
+    trajectorySweepId: null,
+    consumed: true,
+  }
+}
+
+function sweepArtifact({
+  id,
+  pathId,
+  subType = 'extrusion',
+  surfaceIds = [],
+}: {
+  id: string
+  pathId: string
+  subType?: Extract<Artifact, { type: 'sweep' }>['subType']
+  surfaceIds?: string[]
+}): Extract<Artifact, { type: 'sweep' }> {
+  return {
+    type: 'sweep',
+    id,
+    codeRef,
+    pathId,
+    subType,
+    surfaceIds,
+    edgeIds: [],
+    method: 'merge',
+    trajectoryId: null,
+    consumed: false,
+  }
+}
+
+function wallArtifact({
+  id,
+  sweepId,
+}: {
+  id: string
+  sweepId: string
+}): Extract<Artifact, { type: 'wall' }> {
+  return {
+    type: 'wall',
+    id,
+    cmdId: `${id}-command`,
+    segId: `${id}-segment`,
+    edgeCutEdgeIds: [],
+    pathIds: [],
+    sweepId,
+    faceCodeRef: codeRef,
+  }
+}
+
+function makeArtifactGraph(...artifacts: Artifact[]): ArtifactGraph {
+  return new Map(
+    artifacts.map((artifact): [string, Artifact] => [artifact.id, artifact])
+  )
 }
 
 function createSourceSegmentGraph(suffix = ''): {
@@ -480,7 +552,7 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
-  it('should coerce edgeCut selection to parent path', () => {
+  it('should coerce edgeCut selection to its semantic parent sweep', () => {
     const artifactGraph: ArtifactGraph = new Map()
 
     const path: Artifact = {
@@ -550,9 +622,140 @@ describe('coerceSelectionsToBody', () => {
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
       expect(result.graphSelections).toHaveLength(1)
-      expect(result.graphSelections[0].artifact?.type).toBe('path')
-      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
+      expect(result.graphSelections[0]).toMatchObject({
+        artifact: { type: 'sweep', id: 'sweep-1' },
+        codeRef: sweep.codeRef,
+        engineEntityId: 'path-1',
+      })
     }
+  })
+
+  it('should keep source and mirrored sweeps distinct when they share a path', () => {
+    const path = pathArtifact({ id: 'path-1', sweepId: 'source-sweep' })
+    const sourceSweep = sweepArtifact({
+      id: 'source-sweep',
+      pathId: path.id,
+      surfaceIds: ['source-wall'],
+    })
+    const mirroredSweep = {
+      ...sourceSweep,
+      id: 'mirrored-sweep',
+      surfaceIds: ['mirrored-wall'],
+    }
+    const sourceWall = wallArtifact({
+      id: 'source-wall',
+      sweepId: sourceSweep.id,
+    })
+    const mirroredWall = wallArtifact({
+      id: 'mirrored-wall',
+      sweepId: mirroredSweep.id,
+    })
+    const graph = makeArtifactGraph(
+      path,
+      sourceSweep,
+      mirroredSweep,
+      sourceWall,
+      mirroredWall
+    )
+
+    const result = coerceSelectionsToBody(
+      {
+        graphSelections: [sourceWall, mirroredWall].map((artifact) => ({
+          artifact,
+          codeRef,
+        })),
+        otherSelections: [],
+      },
+      graph
+    )
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(
+        result.graphSelections.map((selection) => ({
+          artifactId: selection.artifact?.id,
+          engineEntityId: selection.engineEntityId,
+        }))
+      ).toEqual([
+        { artifactId: 'source-sweep', engineEntityId: 'path-1' },
+        {
+          artifactId: 'mirrored-sweep',
+          engineEntityId: 'mirrored-sweep',
+        },
+      ])
+    }
+  })
+
+  it('should deduplicate multiple faces from the same sweep', () => {
+    const path = pathArtifact({ id: 'path-1', sweepId: 'sweep-1' })
+    const sweep = sweepArtifact({ id: 'sweep-1', pathId: path.id })
+    const firstWall = wallArtifact({ id: 'wall-1', sweepId: sweep.id })
+    const secondWall = wallArtifact({ id: 'wall-2', sweepId: sweep.id })
+    const graph = makeArtifactGraph(path, sweep, firstWall, secondWall)
+
+    const result = coerceSelectionsToBody(
+      {
+        graphSelections: [firstWall, secondWall].map((artifact) => ({
+          artifact,
+          codeRef,
+        })),
+        otherSelections: [],
+      },
+      graph
+    )
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelections).toMatchObject([
+        {
+          artifact: { type: 'sweep', id: sweep.id },
+          engineEntityId: path.id,
+        },
+      ])
+    }
+  })
+})
+
+describe('sweep engine identity', () => {
+  it('resolves a consumed path to its semantic sweep', () => {
+    const path = pathArtifact({ id: 'path-1', sweepId: 'sweep-1' })
+    const sweep = sweepArtifact({
+      id: 'sweep-1',
+      pathId: path.id,
+    })
+    const graph = makeArtifactGraph(path, sweep)
+
+    expect(resolveEngineSelectionArtifact(path, graph)).toBe(sweep)
+    expect(getEngineEntityIdForSweep(sweep, graph)).toBe(path.id)
+  })
+
+  it('does not treat an inner region path as the swept body', () => {
+    const outerPath = pathArtifact({ id: 'outer-path', sweepId: 'sweep-1' })
+    const innerPath = pathArtifact({ id: 'inner-path', sweepId: 'sweep-1' })
+    const sweep = sweepArtifact({
+      id: 'sweep-1',
+      pathId: outerPath.id,
+    })
+    const graph = makeArtifactGraph(outerPath, innerPath, sweep)
+
+    expect(resolveEngineSelectionArtifact(outerPath, graph)).toBe(sweep)
+    expect(resolveEngineSelectionArtifact(innerPath, graph)).toBe(innerPath)
+  })
+
+  it('keeps loft section paths separate from the loft body', () => {
+    const sectionPath = pathArtifact({
+      id: 'section-path',
+      sweepId: 'loft-1',
+    })
+    const loft = sweepArtifact({
+      id: 'loft-1',
+      pathId: sectionPath.id,
+      subType: 'loft',
+    })
+    const graph = makeArtifactGraph(sectionPath, loft)
+
+    expect(getEngineEntityIdForSweep(loft, graph)).toBe(loft.id)
+    expect(resolveEngineSelectionArtifact(sectionPath, graph)).toBe(sectionPath)
   })
 })
 

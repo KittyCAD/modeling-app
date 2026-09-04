@@ -1,3 +1,4 @@
+import { EditorSelection } from '@codemirror/state'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
@@ -11,14 +12,17 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getEventForSelectWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
   getUnresolvedEnginePrimitiveSelections,
   handleSelectionBatch,
+  processCodeMirrorRanges,
   removeEnginePrimitiveSelectionFromSelections,
   removeReferenceFromSelections,
   selectSketchPlane,
+  updateSelections,
 } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import type {
@@ -1375,12 +1379,18 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       if (!artifactSelection.id) {
         throw new Error('id is falsy')
       }
-      const artifact = ___artifactGraph.get(artifactSelection.id)
+      const artifact = ___artifactGraph.get(
+        artifactSelection.artifactId ?? artifactSelection.id
+      )
       expect(artifact).toBeTruthy()
       if (!artifact) {
         throw new Error('artifact is falsy')
       }
       expect(artifact.type).toBe(artifactDetails.type)
+      if (artifact.type === 'sweep') {
+        expect(artifactSelection.artifactId).toBe(artifact.id)
+        expect(artifactSelection.id).toBe(artifact.pathId)
+      }
       if ('subType' in artifactDetails) {
         expect((artifact as any).subType).toBe(artifactDetails.subType)
       }
@@ -1392,6 +1402,90 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       }
     }
   )
+
+  test('keeps sweep artifact and engine identities separate for editor selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const snippet = 'extrude001 = extrude(profile001, length = 500)'
+    const cursor = MY_CODE.indexOf(snippet) + snippet.length
+    const sweep = ___artifactGraph.get('0bfb95e2-1eae-560f-96e1-354e1ece4ac2')
+    if (sweep?.type !== 'sweep') {
+      throw new Error('Expected the extrusion sweep fixture')
+    }
+
+    const result = processCodeMirrorRanges({
+      codeMirrorRanges: [EditorSelection.cursor(cursor)],
+      selectionRanges: { graphSelections: [], otherSelections: [] },
+      isShiftDown: false,
+      ast,
+      artifactGraph: ___artifactGraph,
+      artifactIndex,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: instance,
+      },
+    })
+    if (
+      result?.modelingEvent.type !== 'Set selection' ||
+      result.modelingEvent.data.selectionType !== 'mirrorCodeMirrorSelections'
+    ) {
+      throw new Error('Expected mirrored CodeMirror selections')
+    }
+
+    expect(result.modelingEvent.data.selection.graphSelections).toMatchObject([
+      {
+        artifact: { type: 'sweep', id: sweep.id },
+        engineEntityId: sweep.pathId,
+      },
+    ])
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([sweep.pathId])
+  })
+
+  test('keeps a sweep engine identity when selections are rebuilt', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const sweep = ___artifactGraph.get('0bfb95e2-1eae-560f-96e1-354e1ece4ac2')
+    if (sweep?.type !== 'sweep') {
+      throw new Error('Expected the extrusion sweep fixture')
+    }
+
+    const result = updateSelections(
+      { 0: sweep.codeRef.pathToNode },
+      {
+        graphSelections: [
+          {
+            artifact: sweep,
+            codeRef: sweep.codeRef,
+            engineEntityId: sweep.pathId,
+          },
+        ],
+        otherSelections: [],
+      },
+      ast,
+      ___artifactGraph,
+      instance
+    )
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) return
+    expect(result.graphSelections).toMatchObject([
+      {
+        artifact: { type: 'sweep', id: sweep.id },
+        engineEntityId: sweep.pathId,
+      },
+    ])
+  })
 
   test('prefers adjacent/opposite edge references over primitive index references', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
@@ -1707,6 +1801,93 @@ cube = extrude(cubeRegion, length = 10)
   })
 })
 
+describe('getEventForSelectWithPoint', () => {
+  test('selects a region-backed engine body as its semantic sweep', async () => {
+    const pathCodeRef = {
+      range: [0, 10, 0] as SourceRange,
+      pathToNode: [],
+      nodePath: { steps: [] },
+    }
+    const sweepCodeRef = {
+      range: [11, 20, 0] as SourceRange,
+      pathToNode: [],
+      nodePath: { steps: [] },
+    }
+    const path: Artifact = {
+      type: 'path',
+      subType: 'region',
+      id: 'path-1',
+      codeRef: pathCodeRef,
+      planeId: 'plane-1',
+      segIds: [],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    }
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: sweepCodeRef,
+      pathId: path.id,
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+      [path.id, path],
+      [sweep.id, sweep],
+    ])
+    const sendSceneCommand = vi.fn()
+    const dependencies = {
+      engineCommandManager: { sendSceneCommand },
+      kclManager: { ast: {}, artifactGraph },
+      rustContext: { defaultPlanes: null },
+      wasmInstance: {},
+      useSegmentsBasedRegions: false,
+    } as unknown as Parameters<typeof getEventForSelectWithPoint>[1]
+
+    const event = await getEventForSelectWithPoint(
+      {
+        type: 'select_with_point',
+        data: { entity_id: path.id },
+      },
+      dependencies
+    )
+
+    expect(event).toMatchObject({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          artifact: { type: 'sweep', id: sweep.id },
+          codeRef: sweepCodeRef,
+          engineEntityId: path.id,
+        },
+      },
+    })
+    if (
+      event?.type !== 'Set selection' ||
+      event.data.selectionType !== 'singleCodeCursor' ||
+      !event.data.selection
+    ) {
+      throw new Error('Expected a graph selection event')
+    }
+    expect(
+      getSelectionTypeDisplayText(
+        {} as Parameters<typeof getSelectionTypeDisplayText>[0],
+        {
+          graphSelections: [event.data.selection],
+          otherSelections: [],
+        }
+      )
+    ).toBe('1 sweep')
+    expect(sendSceneCommand).not.toHaveBeenCalled()
+  })
+})
+
 describe('findLastRangeStartingBefore', () => {
   test('finds last range starting before target even if no overlap', () => {
     const mockIndex = [
@@ -1788,7 +1969,7 @@ describe('findLastRangeStartingBefore', () => {
   })
 })
 
-describe('pattern copy selection highlighting', () => {
+describe('selection highlighting uses engine identity', () => {
   const selectionCodeRef = {
     range: [10, 20, 0] as SourceRange,
     pathToNode: [],
@@ -1855,6 +2036,72 @@ describe('pattern copy selection highlighting', () => {
     expect(selectAdd.cmd.type).toBe('select_add')
     if (selectAdd.cmd.type !== 'select_add') return
     expect(selectAdd.cmd.entities).toEqual(['copy-face-id'])
+  })
+
+  test('maps a region-backed sweep to its engine path id', () => {
+    const path: Artifact = {
+      type: 'path',
+      subType: 'region',
+      id: 'path-id',
+      codeRef: {
+        ...selectionCodeRef,
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-id',
+      segIds: [],
+      sweepId: 'sweep-id',
+      trajectorySweepId: null,
+      consumed: true,
+    }
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-id',
+      codeRef: {
+        ...selectionCodeRef,
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-id',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            artifact: sweep,
+            codeRef: selectionCodeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map<string, Artifact>([
+        [path.id, path],
+        [sweep.id, sweep],
+      ]),
+      code: 'body = extrude(profile, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual(['path-id'])
   })
 })
 
