@@ -68,7 +68,7 @@ startSketchOn(XZ)
 // Example: a gear that uses an involute circular profile for the teeth.
 @settings(defaultLengthUnit = mm)
 
-/// // Define gear parameters
+// Define gear parameters
 nTeeth = 21
 module = 1.5
 pressureAngle = 14deg

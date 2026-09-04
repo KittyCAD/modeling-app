@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties multi_body_multi_tool_subtract.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -79.4004,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 158.8008,
+      "y": 63.5,
+      "z": 63.5
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 74083.34751863776
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 365.9834686186395
+  }
+}

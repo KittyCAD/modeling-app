@@ -97,6 +97,10 @@ fn gdt_dimension_leader_scale(leader_scale: Option<&TyF64>, args: &Args) -> Resu
     gdt_user_leader_scale(leader_scale, DEFAULT_GDT_DIMENSION_LEADER_SCALE, args)
 }
 
+fn gdt_annotation_name(exec_state: &mut ExecState, args: &Args) -> Result<Option<String>, KclError> {
+    args.get_kw_arg_opt("annotationName", &RuntimeType::string(), exec_state)
+}
+
 #[derive(Debug, Clone)]
 enum DistanceEntity {
     Face(Box<Face>),
@@ -398,12 +402,17 @@ async fn inner_datum(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(gdt_dot_leader_scale(leader_scale.as_ref(), font_size.as_ref(), args)?)
         .build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(
                 mcmd::NewAnnotation::builder()
-                    .options(AnnotationOptions::builder().feature_control(feature_control).build())
+                    .options(options)
                     .clobber(false)
                     .annotation_type(AnnotationType::T3D)
                     .build(),
@@ -476,12 +485,17 @@ async fn inner_note(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(1.0)
         .build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_tag(feature_tag)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(
                 mcmd::NewAnnotation::builder()
-                    .options(AnnotationOptions::builder().feature_tag(feature_tag).build())
+                    .options(options)
                     .clobber(false)
                     .annotation_type(AnnotationType::T3D)
                     .build(),
@@ -933,7 +947,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let from = parse_distance_entity_arg("from", exec_state, &args).await?;
     let to = parse_distance_entity_arg("to", exec_state, &args).await?;
     let edges = parse_gdt_edges_arg(exec_state, &args).await?;
-    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let tolerance = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
@@ -963,7 +977,7 @@ async fn inner_distance(
     from: Option<DistanceEntity>,
     to: Option<DistanceEntity>,
     edges: Vec<GdtEdgeReference>,
-    tolerance: TyF64,
+    tolerance: Option<TyF64>,
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
@@ -1065,7 +1079,7 @@ async fn inner_distance(
 async fn create_basic_distance_annotation(
     from: DistanceEndpoint,
     to: DistanceEndpoint,
-    tolerance: &TyF64,
+    tolerance: &Option<TyF64>,
     precision: u32,
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
@@ -1087,7 +1101,12 @@ async fn create_basic_distance_annotation(
         .to_entity_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
-                .tolerance(tolerance.to_length_units(display_units))
+                .tolerance(
+                    tolerance
+                        .as_ref()
+                        .map(|tol| tol.to_length_units(display_units))
+                        .unwrap_or_default(),
+                )
                 .build(),
         )
         .plane_id(frame_plane_id)
@@ -1104,9 +1123,11 @@ async fn create_basic_distance_annotation(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .arrow_scale(gdt_dimension_leader_scale(leader_scale, args)?)
         .build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
     let options = AnnotationOptions::builder()
         .dimension(dimension)
         .units(display_units.to_kcmc())
+        .maybe_name(annotation_name)
         .build();
     let annotation_cmd = ModelingCmd::from(
         mcmd::NewAnnotation::builder()
@@ -1555,7 +1576,11 @@ async fn create_feature_control_annotation(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(gdt_dot_leader_scale(leader_scale, font_size, args)?)
         .build();
-    let options = AnnotationOptions::builder().feature_control(feature_control).build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
@@ -1648,7 +1673,11 @@ async fn create_annotation(
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(gdt_dot_leader_scale(leader_scale, font_size, args)?)
         .build();
-    let options = AnnotationOptions::builder().feature_control(feature_control).build();
+    let annotation_name = gdt_annotation_name(exec_state, args)?;
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .maybe_name(annotation_name)
+        .build();
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
@@ -1893,6 +1922,33 @@ gdt::flatness(
                     vec![SourceRange::default()],
                 ))
             })
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_annotation_name_comes_from_explicit_argument() -> Result<(), KclError> {
+        let unbound_code = gdt_flatness_kcl("mm", "0.01mm", "[10, -10]");
+        let unbound_commands = gdt_commands(&unbound_code).await;
+        let unbound_index = new_annotation_command_index(&unbound_commands)?;
+        assert_eq!(annotation_options(&unbound_commands[unbound_index])?.name, None);
+
+        let assigned_code = unbound_code.replacen("gdt::flatness(", "topFlatness = gdt::flatness(", 1);
+        let assigned_commands = gdt_commands(&assigned_code).await;
+        let assigned_index = new_annotation_command_index(&assigned_commands)?;
+        assert_eq!(annotation_options(&assigned_commands[assigned_index])?.name, None);
+
+        let named_code = unbound_code.replacen(
+            "gdt::flatness(\n",
+            "gdt::flatness(\n  annotationName = \"topFlatness\",\n",
+            1,
+        );
+        let named_commands = gdt_commands(&named_code).await;
+        let named_index = new_annotation_command_index(&named_commands)?;
+        assert_eq!(
+            annotation_options(&named_commands[named_index])?.name.as_deref(),
+            Some("topFlatness")
+        );
+
+        Ok(())
     }
 
     #[test]

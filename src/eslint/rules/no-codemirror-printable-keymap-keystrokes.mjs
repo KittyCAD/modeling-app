@@ -1,5 +1,5 @@
 const CODEMIRROR_PRINTABLE_KEYSTROKES_MESSAGE =
-  'Keymap items active while the code editor is focused must not start with a text-producing chord. Use the code-editor-not-focused scope for text-producing shortcuts that should only run outside the editor.'
+  'Keymap items active while the code editor is focused must not start with a text-producing chord. Use code-editor-not-focused in the keybinding when condition for text-producing shortcuts that should only run outside the editor.'
 
 const NON_TEXT_MODIFIERS = new Set([
   'cmd',
@@ -52,20 +52,32 @@ const getObjectProperty = (node, name) =>
       getPropertyName(property) === name
   )
 
-const isEditorActiveScope = (node) =>
+const isEditorActiveContext = (node) =>
   node.type === 'Literal' &&
   (node.value === 'base' || node.value === 'code-editor-focused')
 
 const isEditorActiveKeymap = (node) => {
-  const scopes = getObjectProperty(node, 'scopes')
-  if (!scopes) {
+  const condition =
+    getObjectProperty(node, 'when') ?? getObjectProperty(node, 'scopes')
+  if (!condition) {
     return true
   }
 
-  if (scopes.value.type === 'ArrayExpression') {
-    return scopes.value.elements.some(
-      (element) => element && isEditorActiveScope(element)
-    )
+  if (condition.value.type === 'ArrayExpression') {
+    const contexts = []
+    for (const element of condition.value.elements) {
+      if (!element) {
+        continue
+      }
+      if (element.type !== 'Literal' || typeof element.value !== 'string') {
+        return false
+      }
+      if (element.value.trim()) {
+        contexts.push(element)
+      }
+    }
+
+    return contexts.length === 0 || contexts.some(isEditorActiveContext)
   }
 
   return false

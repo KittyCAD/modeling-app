@@ -5,12 +5,14 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { effect } from '@preact/signals-core'
+import { effect, untracked } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import {
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   type CommandSystemService,
   commandKey,
+  commandScopeService,
   commandSystemService,
   commandsValueSpec,
 } from '@src/registry/contracts/commands'
@@ -25,6 +27,7 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
   const commandsSignal = ctx.valueSpecs.signal(commandsValueSpec)
 
   let commandBarActor: CommandSystemService['actor'] | undefined
+  let stopCommandPaletteScopeSync: (() => void) | undefined
   let stopCommandsEffect: (() => void) | undefined
   let registeredCommands: readonly Command[] = []
 
@@ -45,6 +48,26 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
         machineManager,
       },
     }).start()
+
+    const syncCommandPaletteScope = () => {
+      const commandScopes = ctx.services.optional(commandScopeService)
+      if (!commandScopes || !commandBarActor) {
+        return
+      }
+
+      if (commandBarActor.getSnapshot().matches('Closed')) {
+        commandScopes.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+      } else {
+        commandScopes.applyScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+      }
+    }
+
+    syncCommandPaletteScope()
+    const commandPaletteScopeSubscription = commandBarActor.subscribe(() =>
+      untracked(syncCommandPaletteScope)
+    )
+    stopCommandPaletteScopeSync = () =>
+      commandPaletteScopeSubscription.unsubscribe()
 
     stopCommandsEffect = effect(() => {
       const nextCommands = commandsSignal.value
@@ -83,6 +106,10 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
       id: 'commands-extension',
       providesServices: [provideService(commandSystemService, serviceImpl)],
       dispose: () => {
+        stopCommandPaletteScopeSync?.()
+        ctx.services
+          .optional(commandScopeService)
+          ?.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
         stopCommandsEffect?.()
         commandBarActor?.stop()
       },
