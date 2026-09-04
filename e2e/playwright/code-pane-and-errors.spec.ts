@@ -189,7 +189,7 @@ middle()`)
     // The original error message is preserved, and import frames are
     // labeled as imports (no call parens), innermost first.
     await expect(
-      page.getByText(`\`missingName\` is not defined
+      page.getByLabel('Diagnostics').getByText(`\`missingName\` is not defined
 
 Backtrace:
 import broken.kcl
