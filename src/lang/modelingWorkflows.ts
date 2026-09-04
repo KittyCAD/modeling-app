@@ -37,8 +37,8 @@ export async function mockExecAstAndReportErrors(
  * Steps:
  * 1. Updates the AST and internal state
  * 2. Updates the code editor and writes to file
- * 3. Sets focus in the editor if needed
- * 4. Attempts to execute the model in the 3D engine
+ * 3. Attempts to execute the model in the 3D engine
+ * 4. Sets focus in the editor using the updated artifact graph
  *
  * This function follows common CAD application patterns where:
  *
@@ -90,12 +90,7 @@ export async function updateModelingState(
     allowProgrammaticDocumentChanges: true,
   })
 
-  // Step 3: Set focus on the newly added code if needed
-  if (updatedAst.selections) {
-    kclManager.selectRange(updatedAst.selections)
-  }
-
-  // Step 4: Try to execute the new code
+  // Step 3: Try to execute the new code
   // and continue regardless of errors
   try {
     if (executionType === EXECUTION_TYPE_REAL) {
@@ -110,5 +105,12 @@ export async function updateModelingState(
     }
   } catch (e) {
     console.error('KCL execution error (UI is still updated):', e)
+  }
+
+  // Step 4: Set focus only after execution refreshes the artifact graph.
+  // CodeMirror selection mirroring can then resolve an artifact-backed
+  // selection instead of retaining a code-only graph selection.
+  if (updatedAst.selections) {
+    kclManager.selectRange(updatedAst.selections)
   }
 }
