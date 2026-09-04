@@ -942,7 +942,7 @@ impl ExecutorContext {
                         exec_state.warn(
                             CompilationIssue::err(
                                 annotation.as_source_range(),
-                                "Prefer to use explicit units for angles",
+                                "The `defaultAngleUnit` setting is deprecated; use explicit units for angles",
                             ),
                             annotations::WARN_ANGLE_UNITS,
                         );
