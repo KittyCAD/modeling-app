@@ -994,6 +994,9 @@ export async function setup(
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
     }) => {
+      if (window.location.protocol === 'about:') {
+        return
+      }
       localStorage.clear()
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem(settingsKey, settings)

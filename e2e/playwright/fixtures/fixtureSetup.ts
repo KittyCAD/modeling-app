@@ -66,6 +66,9 @@ export class AuthenticatedApp {
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
+      if (window.location.protocol === 'about:') {
+        return
+      }
       localStorage.setItem('persistCode', code)
       ;(window as any).playwrightSkipFilePicker = true
     }, code)
