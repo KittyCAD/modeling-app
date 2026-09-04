@@ -181,9 +181,16 @@ impl ImportedGeometry {
             return Ok(());
         }
 
-        ctx.engine
-            .ensure_async_command_completed(self.id, self.meta.first().map(|m| m.source_range))
-            .await?;
+        // Incremental execution can reuse an imported geometry after the
+        // original execution has already awaited its import and consumed the
+        // engine response while building the artifact graph. The cached value
+        // does not serialize `completed`, so only wait when this execution
+        // actually has a pending import command for the geometry.
+        if ctx.engine.has_pending_async_command(self.id).await {
+            ctx.engine
+                .ensure_async_command_completed(self.id, self.meta.first().map(|m| m.source_range))
+                .await?;
+        }
 
         self.completed = true;
 
@@ -196,6 +203,31 @@ impl ImportedGeometry {
         }
 
         Ok(self.id)
+    }
+}
+
+#[cfg(test)]
+mod imported_geometry_tests {
+    use std::sync::Arc;
+    use std::time::Duration;
+
+    use super::*;
+    use crate::engine::engine_manager::EngineManager;
+    use crate::execution::ExecutorSettings;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_import_without_a_pending_command_is_already_complete() {
+        let id = uuid::Uuid::new_v4();
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), ExecutorSettings::default());
+        let mut geometry = ImportedGeometry::new(id, Vec::new(), Vec::new());
+
+        let resolved_id = tokio::time::timeout(Duration::from_secs(1), geometry.id(&ctx))
+            .await
+            .expect("cached imported geometry should not wait for a consumed response")
+            .expect("cached imported geometry should resolve its id");
+
+        assert_eq!(resolved_id, id);
+        ctx.close().await;
     }
 }
 

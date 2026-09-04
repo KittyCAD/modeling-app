@@ -668,102 +668,126 @@ test.describe(
       )
     })
 
-    test(`Set appearance and toggle visibility on foreign part from feature tree`, async ({
-      folderSetupFn,
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-      fs,
-    }) => {
-      const projectName = 'foreign-part-appearance'
-      const { dir } = await folderSetupFn(async (dir) => {
-        const projectDir = await fs.join(dir, projectName)
-        await fs.mkdir(projectDir, { recursive: true })
-        const cubeData = await fsp.readFile(testsInputPath('cube.step'))
-        await Promise.all([
-          fs.writeFile(
-            await fs.join(projectDir, 'cube.step'),
-            Uint8Array.from(cubeData)
-          ),
-          fs.writeFile(
-            await fs.join(projectDir, 'main.kcl'),
-            new TextEncoder().encode(`@settings(kclVersion = 2.0)
+    test(
+      `Set appearance and toggle visibility on foreign part from feature tree`,
+      { tag: '@web' },
+      async ({
+        folderSetupFn,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        fs,
+      }) => {
+        const waitForExecution = () =>
+          expect
+            .poll(
+              () =>
+                page.evaluate(
+                  () => window.app.singletons.kclManager.isExecuting
+                ),
+              { timeout: 60_000 }
+            )
+            .toBe(false)
+        const projectName = 'foreign-part-appearance'
+        const { dir } = await folderSetupFn(async (dir) => {
+          const projectDir = await fs.join(dir, projectName)
+          await fs.mkdir(projectDir, { recursive: true })
+          const cubeData = await fsp.readFile(testsInputPath('cube.step'))
+          await Promise.all([
+            fs.writeFile(
+              await fs.join(projectDir, 'cube.step'),
+              Uint8Array.from(cubeData)
+            ),
+            fs.writeFile(
+              await fs.join(projectDir, 'main.kcl'),
+              new TextEncoder().encode(`@settings(kclVersion = 2.0)
 
 @(targetRepresentation = mesh)
 import "cube.step" as cube`)
-          ),
-        ])
-      })
-      if (process.env.TARGET === 'web') {
-        const mainFilePath = await fs.join(dir, projectName, 'main.kcl')
-        await page.goto(`/file/${encodeURIComponent(mainFilePath)}`)
-      } else {
-        await homePage.openProject(projectName)
-      }
-      await scene.settled()
+            ),
+          ])
+        })
+        if (process.env.TARGET === 'web') {
+          const mainFilePath = await fs.join(dir, projectName, 'main.kcl')
+          await page.goto(`/file/${encodeURIComponent(mainFilePath)}`)
+        } else {
+          await homePage.openProject(projectName)
+        }
+        await scene.connectionEstablished()
+        await editor.expectEditor.toContain('import "cube.step" as cube')
 
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const op = await toolbar.getFeatureTreeOperation('cube', 0)
-      await op.click({ button: 'right' })
-      await page.getByTestId('context-menu-set-appearance').click()
-      await cmdBar.progressCmdBar()
-      await cmdBar.currentArgumentInput.fill('#ff0000')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Appearance',
-        headerArguments: {
-          Objects: '1 importedGeometry',
-          Color: '#ff0000',
-        },
-        stage: 'review',
-      })
-      const codeChanges = page.getByRole('button', { name: 'Code changes' })
-      await expect(codeChanges).toBeVisible()
-      await expect(codeChanges).toHaveAttribute('aria-expanded', 'false')
-      await codeChanges.click()
-      await expect(codeChanges).toHaveAttribute('aria-expanded', 'true')
-      await expect(page.getByTestId('cmd-bar-codemod-diff')).toBeVisible()
-      await expect(
-        page.getByRole('textbox', { name: 'Proposed file' })
-      ).toContainText('appearance(cube, color = "#ff0000")')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const op = await toolbar.getFeatureTreeOperation('cube', 0)
+        await expect(op).toBeVisible({ timeout: 60_000 })
+        await waitForExecution()
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-appearance').click()
+        await cmdBar.progressCmdBar()
+        await cmdBar.currentArgumentInput.fill('#ff0000')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Appearance',
+          headerArguments: {
+            Objects: '1 importedGeometry',
+            Color: '#ff0000',
+          },
+          stage: 'review',
+        })
+        const codeChanges = page.getByRole('button', { name: 'Code changes' })
+        await expect(codeChanges).toBeVisible()
+        await expect(codeChanges).toHaveAttribute('aria-expanded', 'false')
+        await codeChanges.click()
+        await expect(codeChanges).toHaveAttribute('aria-expanded', 'true')
+        await expect(page.getByTestId('cmd-bar-codemod-diff')).toBeVisible()
+        await expect(
+          page.getByRole('textbox', { name: 'Proposed file' })
+        ).toContainText('appearance(cube, color = "#ff0000")')
 
-      await cmdBar.submit()
-      if (process.env.TARGET === 'web') {
+        await cmdBar.submit()
         await editor.expectEditor.toContain(
           'appearance(cube, color = "#ff0000")'
         )
-        return
+        await waitForExecution()
+        if (process.env.TARGET === 'web') {
+          return
+        }
+
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const visibleOp = await toolbar.getFeatureTreeOperation('cube', 0)
+        const visibleRow = visibleOp.locator('..')
+        await visibleRow.hover()
+        const visibleToggle = visibleRow.getByTestId(
+          'feature-tree-visibility-toggle'
+        )
+        await expect(
+          visibleToggle.locator('svg[aria-label="eye open"]')
+        ).toBeVisible()
+        await visibleToggle.click()
+        await editor.expectEditor.toContain(/hide\(\s*cube\s*\)/)
+        await waitForExecution()
+
+        const hiddenOp = await toolbar.getFeatureTreeOperation('cube', 0)
+        const hiddenToggle = hiddenOp
+          .locator('..')
+          .getByTestId('feature-tree-visibility-toggle')
+        await expect(
+          hiddenToggle.locator('svg[aria-label="eye crossed out"]')
+        ).toBeVisible()
+        await hiddenToggle.click()
+        await editor.expectEditor.not.toContain(/hide\(\s*cube\s*\)/)
+        await waitForExecution()
+        const shownOp = await toolbar.getFeatureTreeOperation('cube', 0)
+        await expect(
+          shownOp
+            .locator('..')
+            .getByTestId('feature-tree-visibility-toggle')
+            .locator('svg[aria-label="eye open"]')
+        ).toBeVisible()
       }
-      await scene.settled()
-      await editor.expectEditor.toContain('appearance(cube, color = "#ff0000")')
-
-      const visibleOp = await toolbar.getFeatureTreeOperation('cube', 0)
-      const visibleRow = visibleOp.locator('..')
-      await visibleRow.hover()
-      const visibleToggle = visibleRow.getByTestId(
-        'feature-tree-visibility-toggle'
-      )
-      await expect(
-        visibleToggle.locator('svg[aria-label="eye open"]')
-      ).toBeVisible()
-      await visibleToggle.click()
-      await scene.settled()
-      await editor.expectEditor.toContain(/hide\(\s*cube\s*\)/)
-
-      const hiddenOp = await toolbar.getFeatureTreeOperation('cube', 0)
-      const hiddenToggle = hiddenOp
-        .locator('..')
-        .getByTestId('feature-tree-visibility-toggle')
-      await expect(
-        hiddenToggle.locator('svg[aria-label="eye crossed out"]')
-      ).toBeVisible()
-      await hiddenToggle.click()
-      await scene.settled()
-      await editor.expectEditor.not.toContain(/hide\(\s*cube\s*\)/)
-    })
+    )
 
     test(`Insert foreign parts into assembly and delete them`, async ({
       folderSetupFn,
