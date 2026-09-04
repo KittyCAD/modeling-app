@@ -79,17 +79,17 @@ description: Variables in memory after executing rect_helper.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -127,7 +127,8 @@ description: Variables in memory after executing rect_helper.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   }
 }

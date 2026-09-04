@@ -23,9 +23,10 @@ function getLatestModifiedTime(entry: FileEntry): number | undefined {
 }
 
 /**
- * Converts one concrete project folder into a local realization. Cloud project
- * IDs are copied as observations only; identity resolution and duplicate
- * policy are owned by cloudSync.
+ * Converts one concrete project folder into a local realization. Local project
+ * IDs are copied for collision detection, while cloud project IDs remain
+ * observations whose identity resolution and duplicate policy are owned by
+ * cloudSync.
  */
 export function projectLibraryRealizationFromProject(
   project: Project,
@@ -37,6 +38,7 @@ export function projectLibraryRealizationFromProject(
     ...(library ? { library } : {}),
     name: project.name,
     title: getProjectDisplayName(project),
+    projectId: project.projectId,
     localProjectPath: project.path,
     localProjectName: project.name,
     cloudProjectId: project.cloudProjectId,
