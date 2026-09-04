@@ -3434,17 +3434,58 @@ impl Node<MemberExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Evaluate each child with its own source range so that diagnostics
-        // raised while evaluating a child (module errors, missing-return
-        // warnings) point at that child instead of the whole member
-        // expression.
-        //
-        // TODO: The order of execution is wrong. We should execute the object
-        // *before* the property.
+        if exec_state.entry_point_version_is_v3_or_higher() {
+            // KCL 3.0: evaluate in source order, the object before the
+            // property.
+            let object = control_continue!(self.eval_object(exec_state, ctx).await?);
+            let property = match self.eval_property(exec_state, ctx).await {
+                Ok(property) => property,
+                // The property expression exited, e.g. by calling exit().
+                // Propagate the exit so that it terminates the enclosing module.
+                Err(EarlyReturn::Value(cf)) => return Ok(cf),
+                Err(EarlyReturn::Error(err)) => return Err(err),
+            };
+            return self.apply_member(object, property, exec_state, ctx).await;
+        }
+
+        // Pre-KCL-3.0: the property is evaluated before the object. This is
+        // backwards with respect to the source text, but it is preserved
+        // because ids and engine commands are order-dependent.
+        let property = match self.eval_property(exec_state, ctx).await {
+            Ok(property) => property,
+            // The property expression exited, e.g. by calling exit().
+            // Propagate the exit so that it terminates the enclosing module.
+            Err(EarlyReturn::Value(cf)) => return Ok(cf),
+            Err(EarlyReturn::Error(err)) => return Err(err),
+        };
+        let object = control_continue!(self.eval_object(exec_state, ctx).await?);
+        self.apply_member(object, property, exec_state, ctx).await
+    }
+
+    /// Evaluate the object half of the member expression. It gets its own
+    /// source range so that diagnostics raised while evaluating it (module
+    /// errors, missing-return warnings) point at the object instead of the
+    /// whole member expression.
+    async fn eval_object(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        let object_meta = Metadata {
+            source_range: SourceRange::from(&self.object),
+        };
+        ctx.execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
+            .await
+    }
+
+    /// Evaluate the property half of the member expression: a computed index
+    /// is executed, while `obj.name` just reads the identifier. Likewise
+    /// gets its own source range.
+    async fn eval_property(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<Property, EarlyReturn> {
         let property_meta = Metadata {
             source_range: SourceRange::from(&self.property),
         };
-        let property_result = Property::try_from(
+        Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
@@ -3454,22 +3495,7 @@ impl Node<MemberExpression> {
             &[],
             StatementKind::Expression,
         )
-        .await;
-        let property = match property_result {
-            Ok(property) => property,
-            // The property expression exited, e.g. by calling exit().
-            // Propagate the exit so that it terminates the enclosing module.
-            Err(EarlyReturn::Value(cf)) => return Ok(cf),
-            Err(EarlyReturn::Error(err)) => return Err(err),
-        };
-        let object_meta = Metadata {
-            source_range: SourceRange::from(&self.object),
-        };
-        let object_cf = ctx
-            .execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
-            .await?;
-        let object = control_continue!(object_cf);
-        self.apply_member(object, property, exec_state, ctx).await
+        .await
     }
 
     /// Apply property access or indexing to an already-evaluated object: the
@@ -6914,18 +6940,8 @@ impl Property {
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
     ) -> Result<Self, EarlyReturn> {
-        let property_sr = vec![sr];
         if !computed {
-            let Expr::Name(identifier) = value else {
-                // Should actually be impossible because the parser would reject it.
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
-                        .to_owned(),
-                    property_sr,
-                ))
-                .into());
-            };
-            return Ok(Property::String(identifier.to_string()));
+            return Ok(Self::from_static_name(&value, sr)?);
         }
 
         let prop_value = ctx
@@ -6935,6 +6951,20 @@ impl Property {
         // the exit so that it terminates the enclosing module.
         let prop_value = early_return!(prop_value);
         Ok(Self::from_value(prop_value, sr)?)
+    }
+
+    /// Convert a non-computed property (the identifier in `obj.property`)
+    /// into a Property. Nothing is evaluated. Shared by both executors.
+    pub(super) fn from_static_name(property: &Expr, sr: SourceRange) -> Result<Self, KclError> {
+        let Expr::Name(identifier) = property else {
+            // Should actually be impossible because the parser would reject it.
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
+                    .to_owned(),
+                vec![sr],
+            )));
+        };
+        Ok(Property::String(identifier.to_string()))
     }
 
     /// Convert an already-evaluated computed-property value (the expression

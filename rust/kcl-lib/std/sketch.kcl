@@ -1840,8 +1840,11 @@ export fn sweep(
   /// If true, before the sweep starts, the profile will be re-oriented
   /// so that it is perpendicular to the path being swept along.
   /// If false, the profile is left in its current orientation.
-  /// Defaults to false.
-  orientProfilePerpendicular?: bool = false,
+  /// On KCL 2.0 and earlier, defaults to false.
+  /// On KCL 3.0 and later, defaults to the value of `translateProfileToPath`,
+  /// so a profile that is moved to the path is also oriented perpendicular to
+  /// it unless you say otherwise.
+  orientProfilePerpendicular?: bool,
   /// A named tag for the face at the start of the sweep, i.e. the original sketch.
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.
@@ -1849,8 +1852,14 @@ export fn sweep(
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
-  /// What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).
-  version?: number(Count) = 0,
+  /// What version of the sweeping algorithm to use.
+  /// 0 means "let the Zoo engine choose whichever version is best",
+  /// 1 is the original Zoo sweep algorithm,
+  /// 2 is the newer algorithm.
+  /// On KCL 2.0 and earlier, the default is 0.
+  /// KCL 3.0 and later always use the newest algorithm.
+  @(removed_since = "3.0")
+  version?: number(Count),
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
@@ -2069,32 +2078,55 @@ export fn loft(
 /// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 /// of distance between each repetition, some specified number of times.
 ///
-/// ```kcl,legacySketch
-/// /// Pattern using a named axis.
+/// Currently, KCL's type system limitations make the type signature here misleading.
+/// This function works with Regions from the new sketch blocks (that use constraint solvers),
+/// or the old, deprecated, imperative sketch/profile syntax from older versions of KCL.
+/// It does _not_ work as expected with sketch blocks, only with the regions that can be
+/// created from sketch blocks. In the following examples, a region is passed into the pattern
+/// function, which creates new regions in a pattern. You should _not_ pass a sketch block in.
 ///
-/// exampleSketch = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 1)
+/// ```kcl
+/// // Example of pattern using a named axis.
+///
+/// @settings(kclVersion = 2.0)
+///
+/// exampleSketch = sketch(on = XZ) {
+///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+///   fixed([circle1.center, ORIGIN])
+///   radius(circle1) == 1mm
+/// }
+///
+/// exampleProfiles = region(segments = [exampleSketch.circle1])
 ///   |> patternLinear2d(
 ///        axis = X,
 ///        instances = 7,
-///        distance = 4
+///        distance = 4mm
 ///      )
 ///
-/// example = extrude(exampleSketch, length = 1)
+/// example = extrude(exampleProfiles, length = 1mm)
+/// hide(exampleSketch)
 /// ```
 ///
-/// ```kcl,legacySketch
-/// /// Pattern using a raw axis.
+/// ```kcl
+/// // Example of pattern using a raw axis.
 ///
-/// exampleSketch = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 1)
+/// @settings(kclVersion = 2.0)
+///
+/// exampleSketch = sketch(on = XZ) {
+///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+///   fixed([circle1.center, ORIGIN])
+///   radius(circle1) == 1mm
+/// }
+///
+/// exampleProfiles = region(segments = [exampleSketch.circle1])
 ///   |> patternLinear2d(
 ///        axis = [1, 0],
 ///        instances = 7,
-///        distance = 4
+///        distance = 4mm
 ///      )
 ///
-/// example = extrude(exampleSketch, length = 1)
+/// example = extrude(exampleProfiles, length = 1mm)
+/// hide(exampleSketch)
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn patternLinear2d(
@@ -2515,7 +2547,7 @@ export fn profileStartY(
 /// // Example: a gear that uses an involute circular profile for the teeth.
 /// @settings(defaultLengthUnit = mm)
 ///
-/// /// // Define gear parameters
+/// // Define gear parameters
 /// nTeeth = 21
 /// module = 1.5
 /// pressureAngle = 14deg

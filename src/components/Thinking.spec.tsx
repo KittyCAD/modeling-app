@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import type { MlCopilotFile } from '@kittycad/lib'
-import { FilesSnapshot } from '@src/components/Thinking'
+import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
+import { FilesSnapshot, Thinking } from '@src/components/Thinking'
 
 // Mock a small valid PNG image (1x1 transparent pixel)
 const MOCK_PNG_DATA = [
@@ -215,5 +215,45 @@ describe('FilesSnapshot', () => {
     const fileButton = screen.getByTitle('Click to download clickable-doc.pdf')
     expect(fileButton).toBeInTheDocument()
     expect(fileButton.tagName).toBe('BUTTON')
+  })
+})
+
+describe('Thinking', () => {
+  test('shows thinking after a tool status when markdown reasoning arrives', () => {
+    const thoughts: MlCopilotServerMessage[] = [
+      {
+        reasoning: {
+          type: 'text',
+          content: 'Checking Constraints',
+        },
+      },
+    ]
+    const view = () => (
+      <Thinking
+        thoughts={thoughts}
+        isDone={false}
+        onlyShowImmediateThought={true}
+      />
+    )
+    const { rerender } = render(view())
+
+    expect(screen.getByTestId('thinking-immediate')).toHaveTextContent(
+      'Checking Constraints'
+    )
+    expect(screen.queryByLabelText('brain')).not.toBeInTheDocument()
+
+    thoughts.push({
+      reasoning: {
+        type: 'markdown',
+        content: 'Inspecting the constraint relationships.',
+      },
+    })
+    rerender(view())
+
+    expect(screen.getByTestId('thinking-immediate')).toHaveTextContent(
+      'Thinking'
+    )
+    expect(screen.getByLabelText('brain')).toBeInTheDocument()
+    expect(screen.queryByText('Checking Constraints')).not.toBeInTheDocument()
   })
 })

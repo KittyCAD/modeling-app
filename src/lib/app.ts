@@ -453,7 +453,11 @@ export class App implements AppSubsystems {
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
-  dispose() {
+  private hasStoppedSubsystems = false
+
+  private stopSubsystems() {
+    if (this.hasStoppedSubsystems) return
+    this.hasStoppedSubsystems = true
     this.closeProject()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
@@ -463,7 +467,17 @@ export class App implements AppSubsystems {
     this.auth.actor.stop()
     this.billing.actor.stop()
     this.userFeatures.actor.stop()
+  }
+
+  dispose() {
+    this.stopSubsystems()
     this.registry[Symbol.dispose]()
+  }
+
+  /** Stop the app and await registry-owned runtime resources. */
+  async disposeAsync() {
+    this.stopSubsystems()
+    await this.registry.disposeAsync()
   }
 
   closeProject() {
@@ -721,11 +735,11 @@ export class App implements AppSubsystems {
       }
 
       if (desiredActive) {
-        toggle.enable()
+        void toggle.enable().catch(reportRejection)
         continue
       }
 
-      toggle.disable()
+      void toggle.disable().catch(reportRejection)
     }
 
     const syncActivePlugins =
