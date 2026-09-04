@@ -458,7 +458,8 @@ description: Operations executed get_common_edge_of_segment_edge_tag.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     }
   ],
   "std::math": [

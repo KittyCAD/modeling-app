@@ -769,7 +769,8 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1578,7 +1579,8 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -2431,7 +2433,8 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

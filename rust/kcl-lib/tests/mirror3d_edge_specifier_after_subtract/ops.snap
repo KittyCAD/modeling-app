@@ -396,7 +396,8 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -817,7 +818,8 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

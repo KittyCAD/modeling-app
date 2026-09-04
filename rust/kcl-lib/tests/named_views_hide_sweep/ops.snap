@@ -185,7 +185,8 @@ description: Operations executed named_views_hide_sweep.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupBegin",
@@ -980,7 +981,8 @@ description: Operations executed named_views_hide_sweep.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

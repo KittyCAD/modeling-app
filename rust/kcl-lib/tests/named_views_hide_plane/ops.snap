@@ -717,7 +717,8 @@ description: Operations executed named_views_hide_plane.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

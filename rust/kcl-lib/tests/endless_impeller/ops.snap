@@ -595,7 +595,8 @@ description: Operations executed endless_impeller.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupEnd"
@@ -1204,7 +1205,8 @@ description: Operations executed endless_impeller.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupEnd"
@@ -1813,7 +1815,8 @@ description: Operations executed endless_impeller.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupEnd"
@@ -2422,7 +2425,8 @@ description: Operations executed endless_impeller.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupEnd"
@@ -3031,7 +3035,8 @@ description: Operations executed endless_impeller.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupEnd"
@@ -3640,7 +3645,8 @@ description: Operations executed endless_impeller.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupEnd"
@@ -4249,7 +4255,8 @@ description: Operations executed endless_impeller.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupEnd"

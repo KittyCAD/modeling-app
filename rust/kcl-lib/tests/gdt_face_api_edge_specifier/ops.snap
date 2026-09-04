@@ -802,7 +802,8 @@ description: Operations executed gdt_face_api_edge_specifier.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

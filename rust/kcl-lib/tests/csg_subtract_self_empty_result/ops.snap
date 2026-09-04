@@ -637,7 +637,8 @@ description: Operations executed csg_subtract_self_empty_result.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

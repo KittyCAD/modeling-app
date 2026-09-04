@@ -634,7 +634,8 @@ description: Operations executed mirror3d_edge_specifier.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

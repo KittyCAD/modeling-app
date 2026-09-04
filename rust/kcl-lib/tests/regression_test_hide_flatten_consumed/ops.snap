@@ -831,7 +831,8 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1085,7 +1086,8 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

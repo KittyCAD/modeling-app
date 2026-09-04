@@ -467,6 +467,7 @@ impl FunctionSource {
                     source_range: callsite,
                     stdlib_entry_source_range: exec_state.mod_local.stdlib_entry_source_range,
                     is_error: false,
+                    result_artifact_id: None,
                 })
             } else {
                 // Otherwise, you're calling a user-defined function, track that call as an operation.
@@ -618,6 +619,13 @@ impl FunctionSource {
         if should_track_operation {
             if let Some(mut op) = op {
                 op.set_std_lib_call_is_error(result.is_err());
+                if matches!(&op, Operation::StdLibCall { name, .. } if name == "region")
+                    && let Ok(Some(value)) = &result
+                    && !value.is_some_return()
+                    && let KclValue::Sketch { value } = value.clone().into_value()
+                {
+                    op.set_std_lib_call_result_artifact_id(value.artifact_id);
+                }
                 // Track call operation.  We do this after the call
                 // since things like patternTransform may call user code
                 // before running, and we will likely want to use the
@@ -2054,6 +2062,25 @@ body = extrude(region1, length = 5mm)
 "#;
 
         let result = parse_execute(program).await.unwrap();
+        let KclValue::Sketch { value: region } = get_var(&result, "region1") else {
+            panic!("expected `region1` to be a region");
+        };
+        let region_result_artifact_id = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .operations
+            .iter()
+            .find_map(|operation| match operation {
+                Operation::StdLibCall {
+                    name,
+                    result_artifact_id,
+                    ..
+                } if name == "region" => *result_artifact_id,
+                _ => None,
+            });
+        assert_eq!(region_result_artifact_id, Some(region.artifact_id));
+
         let body = get_var(&result, "body");
         let KclValue::Solid { value: body } = body else {
             panic!("expected `body` to be a solid");
