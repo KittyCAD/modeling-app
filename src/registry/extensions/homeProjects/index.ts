@@ -17,7 +17,7 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { makeZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
@@ -665,9 +665,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       })
       try {
         if (!keepProjectPath) {
-          await zookeeperConversationStore.deleteProjectConversationId(
-            sharedProjectId
-          )
+          await makeZookeeperConversationStore(
+            ctx.services.get(fileOperationsService)
+          ).deleteProjectConversationId(sharedProjectId)
         }
       } finally {
         // The project files have already been updated, so refresh Home even if
