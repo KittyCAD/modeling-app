@@ -845,7 +845,8 @@ export function addRevolve({
     edge,
     modifiedAst,
     wasmInstance,
-    artifactGraph
+    artifactGraph,
+    mNodeToEdit
   )
   if (err(getAxisResult)) {
     return new Error('Generated axis selection is missing.')

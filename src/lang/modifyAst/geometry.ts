@@ -98,7 +98,8 @@ export function addHelix({
       edge,
       modifiedAst,
       wasmInstance,
-      artifactGraph
+      artifactGraph,
+      mNodeToEdit
     )
     if (err(result)) {
       return result
