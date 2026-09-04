@@ -17,7 +17,6 @@ const createMessageHandler = (cloudProjectId?: string) =>
     setPong: vi.fn(),
     dispatchEvent: vi.fn(() => true),
     ping: vi.fn(),
-    setPing: vi.fn(),
     createPeerConnection: vi.fn(),
     send: vi.fn(),
     setSdpAnswer: vi.fn(),

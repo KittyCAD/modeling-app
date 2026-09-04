@@ -1073,6 +1073,10 @@ export class ConnectionManager extends EventTarget {
           detail: { code: options.code },
         })
       )
+    } else if (options?.pingPongTimeout) {
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionManagerEvents.pingPongTimeout, {})
+      )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})

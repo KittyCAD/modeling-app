@@ -1,4 +1,5 @@
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -23,6 +24,23 @@ function startConnectionManager(
 }
 
 describe('ConnectionManager', () => {
+  it('reports a pong timeout separately from a WebSocket close', () => {
+    const manager = createConnectionManager()
+    const onPingPongTimeout = vi.fn()
+    manager.started = true
+    manager.connection = {
+      disconnectAll: vi.fn(),
+    } as unknown as NonNullable<ConnectionManager['connection']>
+    manager.addEventListener(
+      EngineConnectionManagerEvents.pingPongTimeout,
+      onPingPongTimeout
+    )
+
+    manager.tearDown({ pingPongTimeout: true })
+
+    expect(onPingPongTimeout).toHaveBeenCalledOnce()
+  })
+
   it.each([
     [{ width: 240, height: 256 }, 'width must be between 256 and 2160, 240'],
     [{ width: 256, height: 240 }, 'height must be between 256 and 2160, 240'],
