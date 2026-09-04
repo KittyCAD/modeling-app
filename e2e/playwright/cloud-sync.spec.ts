@@ -102,7 +102,9 @@ test(
       brokenArchiveProjectIds: ['remote-empty-broken'],
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
     await expect(
@@ -242,7 +244,9 @@ test(
       createProject: () => personalCloudProject,
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
     await page.getByTestId('continue-to-web-app-button').click()
@@ -392,7 +396,9 @@ test(
       )
 
     await mockClientErrorReports(context)
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
 

@@ -14,6 +14,7 @@ use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::units::UnitMass;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use serde::Serialize;
 use uuid::Uuid;
 
 use crate::ExecOutcome;
@@ -22,11 +23,16 @@ use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
 use crate::errors::Tag;
+use crate::execution::AbstractSegment;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactGraphMermaidExt;
+use crate::execution::CameraView;
 use crate::execution::EnvironmentRef;
+use crate::execution::KclValue;
 use crate::execution::KclValueView;
 use crate::execution::ModuleArtifactState;
+use crate::execution::NamedViewValue;
+use crate::execution::SketchConstraint;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
@@ -37,6 +43,74 @@ use crate::walk::walk;
 
 mod kcl_samples;
 mod region_liveness_engine_contract;
+
+/// Preserve the concrete runtime types used by opaque debug-only API values in
+/// program-memory snapshots. Insta distinguishes structs from maps when sorting
+/// fields; serializing these values through `serde_json::Value` would turn every
+/// nested struct into a map and reorder its fields alphabetically.
+#[derive(Serialize)]
+#[serde(untagged)]
+enum ProgramMemoryValueSnapshot {
+    Runtime(RuntimeProgramMemoryValueSnapshot),
+    View(KclValueView),
+}
+
+#[derive(Serialize)]
+#[serde(tag = "type")]
+enum RuntimeProgramMemoryValueSnapshot {
+    SketchConstraint {
+        value: Box<SketchConstraint>,
+    },
+    CameraView {
+        value: Box<CameraView>,
+    },
+    NamedView {
+        value: Box<NamedViewValue>,
+    },
+    Segment {
+        value: Box<AbstractSegment>,
+    },
+    Tuple {
+        value: Vec<ProgramMemoryValueSnapshot>,
+    },
+    HomArray {
+        value: Vec<ProgramMemoryValueSnapshot>,
+    },
+    Object {
+        value: Box<IndexMap<String, ProgramMemoryValueSnapshot>>,
+        constrainable: bool,
+    },
+}
+
+impl From<KclValue> for ProgramMemoryValueSnapshot {
+    fn from(value: KclValue) -> Self {
+        let runtime = match value {
+            KclValue::SketchConstraint { value } => RuntimeProgramMemoryValueSnapshot::SketchConstraint { value },
+            KclValue::CameraView { value } => RuntimeProgramMemoryValueSnapshot::CameraView { value },
+            KclValue::NamedView { value } => RuntimeProgramMemoryValueSnapshot::NamedView { value },
+            KclValue::Segment { value } => RuntimeProgramMemoryValueSnapshot::Segment { value },
+            KclValue::Tuple { value, .. } => RuntimeProgramMemoryValueSnapshot::Tuple {
+                value: value.into_iter().map(Self::from).collect(),
+            },
+            KclValue::HomArray { value, .. } => RuntimeProgramMemoryValueSnapshot::HomArray {
+                value: value.into_iter().map(Self::from).collect(),
+            },
+            KclValue::Object {
+                value, constrainable, ..
+            } => RuntimeProgramMemoryValueSnapshot::Object {
+                value: Box::new(
+                    value
+                        .into_iter()
+                        .map(|(name, value)| (name, Self::from(value)))
+                        .collect(),
+                ),
+                constrainable,
+            },
+            value => return Self::View(KclValueView::from(value)),
+        };
+        Self::Runtime(runtime)
+    }
+}
 
 /// A simulation test.
 #[derive(Debug, Clone)]
@@ -100,9 +174,16 @@ impl ExecState {
         project_directory: &Path,
     ) -> (
         ExecOutcome,
+        IndexMap<String, ProgramMemoryValueSnapshot>,
         IndexMap<String, ModuleArtifactState>,
         Option<IndexMap<Uuid, WebSocketResponse>>,
     ) {
+        let program_memory = self
+            .program_memory_for_tests(main_ref)
+            .expect("simulation test execution outcome should collect variables")
+            .into_iter()
+            .map(|(name, value)| (name, ProgramMemoryValueSnapshot::from(value)))
+            .collect();
         let module_state = self.to_module_state(project_directory);
         #[cfg(feature = "snapshot-engine-responses")]
         let (outcome, responses) = {
@@ -123,7 +204,7 @@ impl ExecState {
                 .expect("simulation test execution outcome should collect variables");
             (outcome, responses)
         };
-        (outcome, module_state, responses)
+        (outcome, program_memory, module_state, responses)
     }
 
     /// The keys of the map are the module paths.  Can't use `ModulePath` since
@@ -498,7 +579,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             // Filter out Z0005 (old sketch syntax) from test snapshots.
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
-            let (outcome, module_state, responses) =
+            let (outcome, program_memory, module_state, responses) =
                 exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
             let physical_properties = if test.snapshot_physical_properties {
                 physical_properties(&ctx).await
@@ -507,7 +588,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             };
             ctx.close().await;
 
-            let mut snapshot_results = common_snapshots(test, outcome.variables, responses);
+            let mut snapshot_results = common_snapshots(test, program_memory, responses);
             if let Some(physical_properties) = physical_properties {
                 snapshot_results.push(catch_unwind(AssertUnwindSafe(|| {
                     assert_snapshot(test, "Physical properties", || {
@@ -525,7 +606,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     );
                 }
             }
-
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
 
             let lint_snap_path = test.output_dir.join("lints.snap");
@@ -585,7 +665,12 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         #[cfg(not(feature = "snapshot-engine-responses"))]
                         None
                     };
-                    let snapshot_results = common_snapshots(test, error.variables, responses);
+                    let program_memory = error
+                        .variables
+                        .into_iter()
+                        .map(|(name, value)| (name, ProgramMemoryValueSnapshot::View(value)))
+                        .collect();
+                    let snapshot_results = common_snapshots(test, program_memory, responses);
 
                     {
                         let module_state = e
@@ -618,7 +703,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 #[must_use]
 fn common_snapshots(
     test: &Test,
-    variables: IndexMap<String, KclValueView>,
+    variables: IndexMap<String, ProgramMemoryValueSnapshot>,
     #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
         IndexMap<Uuid, WebSocketResponse>,
     >,
@@ -7854,6 +7939,69 @@ mod clone_a_blend {
 }
 mod chamfer_multiple_tags_v3 {
     const TEST_NAME: &str = "chamfer_multiple_tags_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_on_chamfer_two_times_v3 {
+    const TEST_NAME: &str = "sketch_on_chamfer_two_times_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_on_chamfer_two_times_different_order_v3 {
+    const TEST_NAME: &str = "sketch_on_chamfer_two_times_different_order_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod get_opposite_edge_after_fillet_v3 {
+    const TEST_NAME: &str = "get_opposite_edge_after_fillet_v3";
 
     /// Test parsing KCL.
     #[test]
