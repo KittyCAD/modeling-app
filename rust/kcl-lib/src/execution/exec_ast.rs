@@ -4796,6 +4796,7 @@ impl Node<BinaryExpression> {
                                 | NumericType::Known(crate::exec::UnitType::GenericLength)
                                 | NumericType::Known(crate::exec::UnitType::GenericAngle)
                                 | NumericType::Known(crate::exec::UnitType::Length(_))
+                                | NumericType::Known(crate::exec::UnitType::Dimensional { .. })
                                 | NumericType::Unknown
                                 | NumericType::Any => {
                                     let message = format!("Expected angle but found {:?}", n);
@@ -6339,11 +6340,25 @@ impl Node<BinaryExpression> {
                 self.warn_on_unknown(&ty, "Modulo of", exec_state);
                 KclValue::Number { value: l % r, meta, ty }
             }
-            BinaryOperator::Pow => KclValue::Number {
-                value: libm::pow(left.n, right.n),
-                meta,
-                ty: exec_state.current_default_units(),
-            },
+            BinaryOperator::Pow => {
+                if !matches!(
+                    right.ty,
+                    NumericType::Known(crate::exec::UnitType::Count) | NumericType::Default { .. }
+                ) {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("Exponent must be unitless, but found `{:?}`", right.ty),
+                        vec![self.as_source_range()],
+                    )));
+                }
+                let ty = left.ty.pow_type(right.n).map_err(|message| {
+                    KclError::new_semantic(KclErrorDetails::new(message, vec![self.as_source_range()]))
+                })?;
+                KclValue::Number {
+                    value: libm::pow(left.n, right.n),
+                    meta,
+                    ty,
+                }
+            }
             BinaryOperator::Neq => {
                 let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);

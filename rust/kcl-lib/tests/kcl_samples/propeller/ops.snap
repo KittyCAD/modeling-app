@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 532
 description: Operations executed propeller.kcl
 ---
 {
@@ -1120,7 +1121,7 @@ description: Operations executed propeller.kcl
               "value": [
                 {
                   "type": "Number",
-                  "value": -2.5361507101204093,
+                  "value": -2.5361507101204097,
                   "ty": {
                     "type": "Default",
                     "len": "in",
@@ -1129,7 +1130,7 @@ description: Operations executed propeller.kcl
                 },
                 {
                   "type": "Number",
-                  "value": -0.8240453183331939,
+                  "value": -0.8240453183331927,
                   "ty": {
                     "type": "Default",
                     "len": "in",

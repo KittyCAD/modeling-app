@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 549
 description: Artifact commands involute_circular_units.kcl
 ---
 {
@@ -176,8 +177,8 @@ description: Artifact commands involute_circular_units.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 47.14209749659843,
-            "y": 14.541411272450478,
+            "x": 47.142097496598424,
+            "y": 14.54141127245048,
             "z": 0.0
           },
           "relative": false

@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 549
 description: Artifact commands herringbone-gear.kcl
 ---
 {
@@ -122,7 +123,7 @@ description: Artifact commands herringbone-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.504830584785392,
+            "x": -1.504830584785395,
             "y": 13.41586690866805,
             "z": 0.0
           },

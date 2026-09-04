@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 490
 description: Variables in memory after executing camshaft.kcl
 ---
 {
@@ -2889,8 +2890,8 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "tag": null,
             "to": [
-              -0.2359960268820109,
-              1.252968824550677
+              -0.23599602688201116,
+              1.2529688245506767
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2901,13 +2902,13 @@ description: Variables in memory after executing camshaft.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2359960268820109,
-              1.252968824550677
+              -0.23599602688201116,
+              1.2529688245506767
             ],
             "tag": null,
             "to": [
-              -0.26577161363830926,
-              1.0175722358854016
+              -0.2657716136383095,
+              1.0175722358854014
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2918,13 +2919,13 @@ description: Variables in memory after executing camshaft.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26577161363830926,
-              1.0175722358854016
+              -0.2657716136383095,
+              1.0175722358854014
             ],
             "tag": null,
             "to": [
-              -0.4299833498642564,
-              0.9657584159616426
+              -0.42998334986425657,
+              0.9657584159616425
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2935,8 +2936,8 @@ description: Variables in memory after executing camshaft.kcl
               "sourceRange": []
             },
             "from": [
-              -0.4299833498642564,
-              0.9657584159616426
+              -0.42998334986425657,
+              0.9657584159616425
             ],
             "tag": null,
             "to": [
@@ -3093,8 +3094,8 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "tag": null,
             "to": [
-              -0.2359960268820109,
-              1.252968824550677
+              -0.23599602688201116,
+              1.2529688245506767
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3105,13 +3106,13 @@ description: Variables in memory after executing camshaft.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2359960268820109,
-              1.252968824550677
+              -0.23599602688201116,
+              1.2529688245506767
             ],
             "tag": null,
             "to": [
-              -0.26577161363830926,
-              1.0175722358854016
+              -0.2657716136383095,
+              1.0175722358854014
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3122,13 +3123,13 @@ description: Variables in memory after executing camshaft.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26577161363830926,
-              1.0175722358854016
+              -0.2657716136383095,
+              1.0175722358854014
             ],
             "tag": null,
             "to": [
-              -0.4299833498642564,
-              0.9657584159616426
+              -0.42998334986425657,
+              0.9657584159616425
             ],
             "type": "ToPoint",
             "units": "in"
@@ -3139,8 +3140,8 @@ description: Variables in memory after executing camshaft.kcl
               "sourceRange": []
             },
             "from": [
-              -0.4299833498642564,
-              0.9657584159616426
+              -0.42998334986425657,
+              0.9657584159616425
             ],
             "tag": null,
             "to": [

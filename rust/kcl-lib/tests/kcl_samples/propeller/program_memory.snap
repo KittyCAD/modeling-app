@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 490
 description: Variables in memory after executing propeller.kcl
 ---
 {
@@ -6945,11 +6946,11 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": true,
             "center": [
-              -2.5361507101204093,
-              -0.8240453183331939
+              -2.5361507101204097,
+              -0.8240453183331927
             ],
             "from": [
-              -2.411150718335414,
+              -2.4111507183354144,
               -0.8240000000029785
             ],
             "radius": 0.1249999999999998,
@@ -6962,7 +6963,7 @@ description: Variables in memory after executing propeller.kcl
               "value": "hole3"
             },
             "to": [
-              -2.411150718335414,
+              -2.4111507183354144,
               -0.8240000000029785
             ],
             "type": "Circle",
@@ -7623,11 +7624,11 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": true,
             "center": [
-              -2.5361507101204093,
-              -0.8240453183331939
+              -2.5361507101204097,
+              -0.8240453183331927
             ],
             "from": [
-              -2.411150718335414,
+              -2.4111507183354144,
               -0.8240000000029785
             ],
             "radius": 0.1249999999999998,
@@ -7640,7 +7641,7 @@ description: Variables in memory after executing propeller.kcl
               "value": "hole3"
             },
             "to": [
-              -2.411150718335414,
+              -2.4111507183354144,
               -0.8240000000029785
             ],
             "type": "Circle",
@@ -8537,11 +8538,11 @@ description: Variables in memory after executing propeller.kcl
           },
           "ccw": true,
           "center": [
-            -2.5361507101204093,
-            -0.8240453183331939
+            -2.5361507101204097,
+            -0.8240453183331927
           ],
           "from": [
-            -2.411150718335414,
+            -2.4111507183354144,
             -0.8240000000029785
           ],
           "radius": 0.1249999999999998,
@@ -8554,7 +8555,7 @@ description: Variables in memory after executing propeller.kcl
             "value": "hole3"
           },
           "to": [
-            -2.411150718335414,
+            -2.4111507183354144,
             -0.8240000000029785
           ],
           "type": "Circle",
@@ -9180,11 +9181,11 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": true,
             "center": [
-              -2.5361507101204093,
-              -0.8240453183331939
+              -2.5361507101204097,
+              -0.8240453183331927
             ],
             "from": [
-              -2.411150718335414,
+              -2.4111507183354144,
               -0.8240000000029785
             ],
             "radius": 0.1249999999999998,
@@ -9197,7 +9198,7 @@ description: Variables in memory after executing propeller.kcl
               "value": "hole3"
             },
             "to": [
-              -2.411150718335414,
+              -2.4111507183354144,
               -0.8240000000029785
             ],
             "type": "Circle",
@@ -9901,7 +9902,7 @@ description: Variables in memory after executing propeller.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": -2.411150718335414,
+                        "n": -2.4111507183354144,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9919,7 +9920,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "center": [
                       {
-                        "n": -2.5361507101204093,
+                        "n": -2.5361507101204097,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9927,7 +9928,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": -0.8240453183331939,
+                        "n": -0.8240453183331927,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10920,7 +10921,7 @@ description: Variables in memory after executing propeller.kcl
                   ],
                   "tag": null,
                   "to": [
-                    -2.411150718335414,
+                    -2.4111507183354144,
                     -0.8240000000029785
                   ],
                   "type": "ToPoint",
@@ -10933,11 +10934,11 @@ description: Variables in memory after executing propeller.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -2.5361507101204093,
-                    -0.8240453183331939
+                    -2.5361507101204097,
+                    -0.8240453183331927
                   ],
                   "from": [
-                    -2.411150718335414,
+                    -2.4111507183354144,
                     -0.8240000000029785
                   ],
                   "radius": 0.1249999999999998,
@@ -10950,7 +10951,7 @@ description: Variables in memory after executing propeller.kcl
                     "value": "hole3"
                   },
                   "to": [
-                    -2.411150718335414,
+                    -2.4111507183354144,
                     -0.8240000000029785
                   ],
                   "type": "Circle",
@@ -10962,7 +10963,7 @@ description: Variables in memory after executing propeller.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.411150718335414,
+                    -2.4111507183354144,
                     -0.8240000000029785
                   ],
                   "tag": null,

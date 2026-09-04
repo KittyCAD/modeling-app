@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 490
 description: Variables in memory after executing herringbone-gear.kcl
 ---
 {
@@ -473,7 +474,7 @@ description: Variables in memory after executing herringbone-gear.kcl
             ],
             "tag": null,
             "to": [
-              -1.504830584785392,
+              -1.504830584785395,
               13.41586690866805
             ],
             "type": "ToPoint",
@@ -485,12 +486,12 @@ description: Variables in memory after executing herringbone-gear.kcl
               "sourceRange": []
             },
             "from": [
-              -1.504830584785392,
+              -1.504830584785395,
               13.41586690866805
             ],
             "tag": null,
             "to": [
-              -1.775799467596628,
+              -1.775799467596631,
               12.00236942607373
             ],
             "type": "ToPoint",
@@ -502,7 +503,7 @@ description: Variables in memory after executing herringbone-gear.kcl
               "sourceRange": []
             },
             "from": [
-              -1.775799467596628,
+              -1.775799467596631,
               12.00236942607373
             ],
             "tag": null,
@@ -686,7 +687,7 @@ description: Variables in memory after executing herringbone-gear.kcl
             ],
             "tag": null,
             "to": [
-              -1.504830584785392,
+              -1.504830584785395,
               13.41586690866805
             ],
             "type": "ToPoint",
@@ -698,12 +699,12 @@ description: Variables in memory after executing herringbone-gear.kcl
               "sourceRange": []
             },
             "from": [
-              -1.504830584785392,
+              -1.504830584785395,
               13.41586690866805
             ],
             "tag": null,
             "to": [
-              -1.775799467596628,
+              -1.775799467596631,
               12.00236942607373
             ],
             "type": "ToPoint",
@@ -715,7 +716,7 @@ description: Variables in memory after executing herringbone-gear.kcl
               "sourceRange": []
             },
             "from": [
-              -1.775799467596628,
+              -1.775799467596631,
               12.00236942607373
             ],
             "tag": null,
