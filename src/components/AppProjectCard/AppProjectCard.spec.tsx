@@ -63,6 +63,10 @@ function createProjectActions({
     canMoveToLibrary: () => true,
     canReviewDuplicateRealizations: (project) =>
       Boolean(project.duplicateRealizations?.length),
+    canSeparateProjectCopies: (project) =>
+      Boolean(
+        project.localProjectPath && project.duplicateProjectIdPaths?.length
+      ),
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
@@ -72,6 +76,7 @@ function createProjectActions({
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn().mockResolvedValue(undefined),
     deleteDuplicateRealizations: vi.fn().mockResolvedValue(undefined),
+    separateProjectCopies: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -331,8 +336,10 @@ describe('ProjectCard', () => {
     )
   })
 
-  test('warns when another local project folder has the same project id', () => {
+  test('offers to separate local project folders with the same project id', async () => {
+    const projectActions = createProjectActions()
     renderProjectCard({
+      projectActions,
       showCloudSyncUi: false,
       project: {
         ...cloudProject,
@@ -344,26 +351,35 @@ describe('ProjectCard', () => {
 
     const badge = screen.getByTestId('project-duplicate-id-badge')
     const tooltip = screen.getByRole('tooltip', { hidden: true })
-    expect(badge).toHaveTextContent('Project copy detected')
+    expect(badge).toHaveTextContent('Shared history')
     expect(badge).toHaveClass('pointer-events-auto')
-    expect(tooltip).toHaveTextContent(
-      'These folders may share Zookeeper conversation history'
-    )
-    expect(tooltip).toHaveTextContent('/projects/copied-project')
-    expect(tooltip.firstElementChild).toHaveClass(
-      '!max-w-72',
-      '!whitespace-normal',
-      'break-all'
-    )
+    expect(tooltip).toHaveTextContent('Project copies share Zookeeper history.')
     const showTooltip = vi.fn()
     Object.defineProperty(tooltip, 'showPopover', { value: showTooltip })
     fireEvent.mouseEnter(badge)
     expect(showTooltip).toHaveBeenCalledOnce()
     expect(screen.getByTestId('project-link')).toHaveAccessibleName(
-      /These folders may share Zookeeper conversation history/
+      /Project copies share Zookeeper history/
     )
-    expect(screen.getByTestId('project-copy-warning')).toHaveTextContent(
-      'Copied folders may share Zookeeper history. Use Duplicate project to make copies.'
+    expect(screen.queryByTestId('project-copy-warning')).not.toBeInTheDocument()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(
+      screen.getByTestId('project-card-context-separate-project-copies')
+    )
+    expect(screen.getByText('Separate Project Copies')).toBeInTheDocument()
+    expect(screen.getByLabelText('/projects/old-cloud-title')).toBeChecked()
+
+    fireEvent.click(screen.getByLabelText('/projects/copied-project'))
+    fireEvent.click(screen.getByTestId('separate-project-copies-confirmation'))
+
+    await waitFor(() =>
+      expect(projectActions.separateProjectCopies).toHaveBeenCalledWith(
+        expect.objectContaining({
+          localProjectPath: '/projects/old-cloud-title',
+        }),
+        '/projects/copied-project'
+      )
     )
   })
 

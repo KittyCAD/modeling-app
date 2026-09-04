@@ -67,6 +67,14 @@ const clientErrorMocks = vi.hoisted(() => ({
   reportClientError: vi.fn(),
 }))
 
+const projectIdentityMocks = vi.hoisted(() => ({
+  separateProjectsSharingProjectId: vi.fn(),
+}))
+
+const conversationStoreMocks = vi.hoisted(() => ({
+  deleteProjectConversationId: vi.fn(),
+}))
+
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   const original = await importOriginal<typeof ClientErrors>()
   return {
@@ -74,6 +82,12 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
     reportClientError: clientErrorMocks.reportClientError,
   }
 })
+
+vi.mock('@src/lib/projectIdentity', () => projectIdentityMocks)
+
+vi.mock('@src/lib/zookeeper/zookeeperConversationStore', () => ({
+  zookeeperConversationStore: conversationStoreMocks,
+}))
 
 const fsZdsMocks = vi.hoisted(() => {
   const join = (...parts: string[]) => {
@@ -482,6 +496,12 @@ describe('home project actions', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    projectIdentityMocks.separateProjectsSharingProjectId.mockResolvedValue({
+      sharedProjectId: 'shared-project-id',
+    })
+    conversationStoreMocks.deleteProjectConversationId.mockResolvedValue(
+      undefined
+    )
   })
 
   afterEach(() => {
@@ -636,6 +656,111 @@ describe('home project actions', () => {
         }),
       ])
     )
+  })
+
+  it('separates copied projects while preserving history on the selected copy', async () => {
+    const project = {
+      id: 'local:/projects/original',
+      source: 'local',
+      status: 'local',
+      libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+      name: 'original',
+      localProjectName: 'original',
+      localProjectPath: '/projects/original',
+      duplicateProjectIdPaths: ['/projects/copy'],
+      readWriteAccess: true,
+    } satisfies HomeProjectEntry
+    const settings = createMutableSettingsService({
+      libraries: getDefaultProjectLibrarySettings('/projects'),
+    })
+    const systemIO = createSystemIOService()
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [provideService(settingsService, settings.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [
+          provideService(cloudSyncService, createCloudSyncService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(Promise.resolve({} as never))],
+      }),
+      projectLibrariesExtension,
+      homeProjectsExtension,
+    ])
+
+    await registry
+      .get(homeProjectActionsService)
+      .separateProjectCopies(project, '/projects/copy')
+
+    expect(
+      projectIdentityMocks.separateProjectsSharingProjectId
+    ).toHaveBeenCalledWith({
+      projectPaths: ['/projects/original', '/projects/copy'],
+      keepProjectPath: '/projects/copy',
+    })
+    expect(
+      conversationStoreMocks.deleteProjectConversationId
+    ).not.toHaveBeenCalled()
+  })
+
+  it('clears shared history when separating every project copy', async () => {
+    const project = {
+      id: 'local:/projects/original',
+      source: 'local',
+      status: 'local',
+      libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+      name: 'original',
+      localProjectName: 'original',
+      localProjectPath: '/projects/original',
+      duplicateProjectIdPaths: ['/projects/copy'],
+      readWriteAccess: true,
+    } satisfies HomeProjectEntry
+    const settings = createMutableSettingsService({
+      libraries: getDefaultProjectLibrarySettings('/projects'),
+    })
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [provideService(settingsService, settings.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [
+          provideService(systemIOService, createSystemIOService().service),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [
+          provideService(cloudSyncService, createCloudSyncService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(Promise.resolve({} as never))],
+      }),
+      projectLibrariesExtension,
+      homeProjectsExtension,
+    ])
+
+    await registry.get(homeProjectActionsService).separateProjectCopies(project)
+
+    expect(
+      conversationStoreMocks.deleteProjectConversationId
+    ).toHaveBeenCalledWith('shared-project-id')
   })
 
   it('reports configured directory project delete failures as destructive', async () => {

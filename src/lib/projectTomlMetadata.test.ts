@@ -7,6 +7,7 @@ import {
   preserveProjectTomlMetadataInProjectSettingsContents,
   removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
+  setProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { describe, expect, it } from 'vitest'
@@ -35,6 +36,18 @@ describe('projectTomlMetadata', () => {
         'id = "root-id"\n\n[cloud."zoo.dev"]\nproject_id = "cloud-id"\n'
       )
     ).toBeUndefined()
+  })
+
+  it('updates the local project id without dropping other metadata', () => {
+    const toml = setProjectIdInProjectTomlContents(
+      'title = "Some demo"\n\n[settings.meta]\nid = "old-id"\n\n[cloud."zoo.dev"]\nproject_id = "cloud-id"\n',
+      'new-id'
+    )
+
+    expect(toml).not.toBeInstanceOf(Error)
+    expect(getProjectIdFromProjectTomlContents(String(toml))).toBe('new-id')
+    expect(String(toml)).toContain('title = "Some demo"')
+    expect(String(toml)).toContain('project_id = "cloud-id"')
   })
 
   it('reads project title from the root title field', () => {
