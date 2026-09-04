@@ -1,8 +1,8 @@
 import ReactJsonView from '@microlink/react-json-view'
 import toast from 'react-hot-toast'
 
-import type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
-import type { Path } from '@rust/kcl-lib/bindings/Path'
+import type { ExtrudeSurfaceView } from '@rust/kcl-lib/bindings/ExtrudeSurfaceView'
+import type { PathView } from '@rust/kcl-lib/bindings/PathView'
 
 import { ActionButton } from '@src/components/ActionButton'
 import Loading from '@src/components/Loading'
@@ -115,21 +115,23 @@ export const processMemory = (
 ) => {
   const processedMemory: Record<
     string,
-    string | number | boolean | object | undefined
+    string | number | boolean | object | null | undefined
   > = {}
   for (const [key, val] of Object.entries(variables)) {
     if (val === undefined) continue
     const sk = sketchFromKclValueOptional(val, key)
     if (val.type === 'Solid') {
       processedMemory[key] = val.value.value.map(
-        ({ ...rest }: ExtrudeSurface) => {
+        ({ ...rest }: ExtrudeSurfaceView) => {
           return rest
         }
       )
     } else if (!(sk instanceof Reason)) {
-      processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
-        return rest
-      })
+      processedMemory[key] = sk.paths.map(
+        ({ __geoMeta, ...rest }: PathView) => {
+          return rest
+        }
+      )
     } else if (val.type === 'Function') {
       processedMemory[key] = '__function__'
     } else if (val.type === 'Number') {
@@ -141,8 +143,10 @@ export const processMemory = (
     } else if (val.type === 'Enum') {
       // Enums are shown by nominal identity, the same way they are written.
       processedMemory[key] = `${val.enum_name}::${val.variant}`
-    } else {
+    } else if ('value' in val) {
       processedMemory[key] = val.value
+    } else {
+      processedMemory[key] = undefined
     }
   }
   return processedMemory
