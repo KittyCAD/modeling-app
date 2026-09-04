@@ -59,6 +59,7 @@ import { prepareMacUpdateInstall } from '@src/lib/macUpdateInstall'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getWindowIconPath } from '@src/lib/windowIcon'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
 import {
   type ElectronPluginContext,
@@ -325,7 +326,11 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         sandbox: false, // expose nodejs in preload
         preload: path.join(__dirname, './preload.js'),
       },
-      icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+      icon: getWindowIconPath({
+        isPackaged: app.isPackaged,
+        resourcesPath: process.resourcesPath,
+        workingDirectory: process.cwd(),
+      }),
       frame: os.platform() !== 'darwin',
       titleBarStyle: 'hiddenInset',
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
