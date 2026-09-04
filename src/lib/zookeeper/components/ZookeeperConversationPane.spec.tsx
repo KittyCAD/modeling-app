@@ -477,3 +477,4 @@ describe('ZookeeperConversationPane', () => {
     expect(latestConversationProps().initialMlCopilotMode).toBe('user-mode')
   })
 })
+
