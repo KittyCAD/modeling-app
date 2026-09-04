@@ -994,6 +994,7 @@ export async function setup(
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
     }) => {
+      // Persistent WebKit starts on about:blank, where localStorage is unavailable.
       if (window.location.protocol === 'about:') {
         return
       }
