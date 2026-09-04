@@ -67,6 +67,14 @@ const clientErrorMocks = vi.hoisted(() => ({
   reportClientError: vi.fn(),
 }))
 
+const projectIdentityMocks = vi.hoisted(() => ({
+  separateProjectsSharingProjectId: vi.fn(),
+}))
+
+const conversationStoreMocks = vi.hoisted(() => ({
+  deleteProjectConversationId: vi.fn(),
+}))
+
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   const original = await importOriginal<typeof ClientErrors>()
   return {
@@ -74,6 +82,12 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
     reportClientError: clientErrorMocks.reportClientError,
   }
 })
+
+vi.mock('@src/lib/projectIdentity', () => projectIdentityMocks)
+
+vi.mock('@src/lib/zookeeper/zookeeperConversationStore', () => ({
+  zookeeperConversationStore: conversationStoreMocks,
+}))
 
 const fsZdsMocks = vi.hoisted(() => {
   const join = (...parts: string[]) => {
@@ -320,6 +334,7 @@ describe('deriveHomeProjectEntryContributions', () => {
   it('derives one canonical relationship card with duplicate metadata attached', () => {
     const canonical = realization({
       localProjectPath: '/cloud/bracket',
+      projectId: 'local-project-123',
       cloudProjectId: 'remote-123',
       libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
       libraryRefs: [
@@ -333,6 +348,7 @@ describe('deriveHomeProjectEntryContributions', () => {
     })
     const duplicate = realization({
       localProjectPath: '/projects/bracket-copy',
+      projectId: 'local-project-123',
       cloudProjectId: 'remote-123',
     })
 
@@ -390,6 +406,7 @@ describe('deriveHomeProjectEntryContributions', () => {
             duplicateRisk: 'exact',
           }),
         ],
+        duplicateProjectIdPaths: ['/projects/bracket-copy'],
       }),
     ])
   })
@@ -420,6 +437,58 @@ describe('deriveHomeProjectEntryContributions', () => {
       }),
     ])
   })
+
+  it('marks separate local folders that share a project settings id', () => {
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [
+          realization({
+            localProjectPath: '/projects/original',
+            projectId: 'project-settings-id',
+          }),
+          realization({
+            localProjectPath: '/projects/copied-folder',
+            projectId: 'project-settings-id',
+          }),
+        ],
+        cloudRelationships: [],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        localProjectPath: '/projects/original',
+        duplicateProjectIdPaths: ['/projects/copied-folder'],
+      }),
+      expect.objectContaining({
+        localProjectPath: '/projects/copied-folder',
+        duplicateProjectIdPaths: ['/projects/original'],
+      }),
+    ])
+  })
+
+  it('does not treat unassigned project settings ids as duplicates', () => {
+    const entries = deriveHomeProjectEntryContributions({
+      realizations: [
+        realization({
+          localProjectPath: '/projects/first',
+          projectId: '00000000-0000-0000-0000-000000000000',
+        }),
+        realization({
+          localProjectPath: '/projects/second',
+          projectId: '00000000-0000-0000-0000-000000000000',
+        }),
+      ],
+      cloudRelationships: [],
+    })
+
+    expect(entries).toEqual([
+      expect.not.objectContaining({
+        duplicateProjectIdPaths: expect.anything(),
+      }),
+      expect.not.objectContaining({
+        duplicateProjectIdPaths: expect.anything(),
+      }),
+    ])
+  })
 })
 
 describe('home project actions', () => {
@@ -427,6 +496,12 @@ describe('home project actions', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    projectIdentityMocks.separateProjectsSharingProjectId.mockResolvedValue({
+      sharedProjectId: 'shared-project-id',
+    })
+    conversationStoreMocks.deleteProjectConversationId.mockResolvedValue(
+      undefined
+    )
   })
 
   afterEach(() => {
@@ -501,6 +576,191 @@ describe('home project actions', () => {
       '/projects/local-project',
       await wasmPromise
     )
+  })
+
+  it('detects duplicate project ids through configured library scanning', async () => {
+    const wasmPromise = Promise.resolve({} as never)
+    const projects = ['/projects/original', '/projects/copied'].map(
+      (projectPath) =>
+        ({
+          name: projectNameFromPath(projectPath),
+          projectId: 'shared-project-id',
+          path: projectPath,
+          default_file: `${projectPath}/main.kcl`,
+          children: [],
+          metadata: {
+            accessed: null,
+            created: null,
+            modified: 100,
+            permission: null,
+            size: 1,
+            type: 'directory',
+          },
+          kcl_file_count: 1,
+          directory_count: 0,
+          readWriteAccess: true,
+        }) satisfies Project
+    )
+    const settings = createMutableSettingsService({
+      libraries: getDefaultProjectLibrarySettings('/projects'),
+    })
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    fsZdsMocks.readdir.mockResolvedValue(['original', 'copied'])
+    fsZdsMocks.stat.mockResolvedValue({
+      mode: fsZdsConstants.S_IFDIR,
+      mtimeMs: 100,
+    })
+    desktopMocks.getProjectInfo.mockImplementation(async (projectPath) => {
+      const project = projects.find((entry) => entry.path === projectPath)
+      if (!project) {
+        throw new Error(`Unexpected project path: ${String(projectPath)}`)
+      }
+      return project
+    })
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [provideService(settingsService, settings.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(wasmPromise)],
+      }),
+      projectLibrariesExtension,
+      homeProjectsExtension,
+    ])
+
+    await waitFor(() =>
+      expect(registry?.get(homeProjectEntriesValueSpec)).toHaveLength(2)
+    )
+    expect(registry?.get(homeProjectEntriesValueSpec)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          localProjectPath: '/projects/original',
+          duplicateProjectIdPaths: ['/projects/copied'],
+        }),
+        expect.objectContaining({
+          localProjectPath: '/projects/copied',
+          duplicateProjectIdPaths: ['/projects/original'],
+        }),
+      ])
+    )
+  })
+
+  it('separates copied projects while preserving history on the selected copy', async () => {
+    const project = {
+      id: 'local:/projects/original',
+      source: 'local',
+      status: 'local',
+      libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+      name: 'original',
+      localProjectName: 'original',
+      localProjectPath: '/projects/original',
+      duplicateProjectIdPaths: ['/projects/copy'],
+      readWriteAccess: true,
+    } satisfies HomeProjectEntry
+    const settings = createMutableSettingsService({
+      libraries: getDefaultProjectLibrarySettings('/projects'),
+    })
+    const systemIO = createSystemIOService()
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [provideService(settingsService, settings.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [
+          provideService(cloudSyncService, createCloudSyncService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(Promise.resolve({} as never))],
+      }),
+      projectLibrariesExtension,
+      homeProjectsExtension,
+    ])
+
+    await registry
+      .get(homeProjectActionsService)
+      .separateProjectCopies(project, '/projects/copy')
+
+    expect(
+      projectIdentityMocks.separateProjectsSharingProjectId
+    ).toHaveBeenCalledWith({
+      projectPaths: ['/projects/original', '/projects/copy'],
+      keepProjectPath: '/projects/copy',
+    })
+    expect(
+      conversationStoreMocks.deleteProjectConversationId
+    ).not.toHaveBeenCalled()
+  })
+
+  it('clears shared history when separating every project copy', async () => {
+    const project = {
+      id: 'local:/projects/original',
+      source: 'local',
+      status: 'local',
+      libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+      name: 'original',
+      localProjectName: 'original',
+      localProjectPath: '/projects/original',
+      duplicateProjectIdPaths: ['/projects/copy'],
+      readWriteAccess: true,
+    } satisfies HomeProjectEntry
+    const settings = createMutableSettingsService({
+      libraries: getDefaultProjectLibrarySettings('/projects'),
+    })
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [provideService(settingsService, settings.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [
+          provideService(systemIOService, createSystemIOService().service),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [
+          provideService(cloudSyncService, createCloudSyncService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(Promise.resolve({} as never))],
+      }),
+      projectLibrariesExtension,
+      homeProjectsExtension,
+    ])
+
+    await registry.get(homeProjectActionsService).separateProjectCopies(project)
+
+    expect(
+      conversationStoreMocks.deleteProjectConversationId
+    ).toHaveBeenCalledWith('shared-project-id')
   })
 
   it('reports configured directory project delete failures as destructive', async () => {

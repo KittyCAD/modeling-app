@@ -624,10 +624,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19671,
-                "end": 19679,
+                "commentStart": 20009,
+                "end": 20017,
                 "moduleId": 0,
-                "start": 19671,
+                "start": 20009,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -638,10 +638,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19746,
-                "end": 19753,
+                "commentStart": 20084,
+                "end": 20091,
                 "moduleId": 0,
-                "start": 19746,
+                "start": 20084,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -652,10 +652,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19822,
-                "end": 19831,
+                "commentStart": 20160,
+                "end": 20169,
                 "moduleId": 0,
-                "start": 19822,
+                "start": 20160,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -666,10 +666,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19900,
-                "end": 19910,
+                "commentStart": 20238,
+                "end": 20248,
                 "moduleId": 0,
-                "start": 19900,
+                "start": 20238,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -691,10 +691,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19671,
-                  "end": 19679,
+                  "commentStart": 20009,
+                  "end": 20017,
                   "moduleId": 0,
-                  "start": 19671,
+                  "start": 20009,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -715,10 +715,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19746,
-                  "end": 19753,
+                  "commentStart": 20084,
+                  "end": 20091,
                   "moduleId": 0,
-                  "start": 19746,
+                  "start": 20084,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -739,10 +739,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19822,
-                  "end": 19831,
+                  "commentStart": 20160,
+                  "end": 20169,
                   "moduleId": 0,
-                  "start": 19822,
+                  "start": 20160,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -763,10 +763,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19900,
-                  "end": 19910,
+                  "commentStart": 20238,
+                  "end": 20248,
                   "moduleId": 0,
-                  "start": 19900,
+                  "start": 20238,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -866,10 +866,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19671,
-                "end": 19679,
+                "commentStart": 20009,
+                "end": 20017,
                 "moduleId": 0,
-                "start": 19671,
+                "start": 20009,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -880,10 +880,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19746,
-                "end": 19753,
+                "commentStart": 20084,
+                "end": 20091,
                 "moduleId": 0,
-                "start": 19746,
+                "start": 20084,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -894,10 +894,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19822,
-                "end": 19831,
+                "commentStart": 20160,
+                "end": 20169,
                 "moduleId": 0,
-                "start": 19822,
+                "start": 20160,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -908,10 +908,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19900,
-                "end": 19910,
+                "commentStart": 20238,
+                "end": 20248,
                 "moduleId": 0,
-                "start": 19900,
+                "start": 20238,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -933,10 +933,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19671,
-                  "end": 19679,
+                  "commentStart": 20009,
+                  "end": 20017,
                   "moduleId": 0,
-                  "start": 19671,
+                  "start": 20009,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -957,10 +957,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19746,
-                  "end": 19753,
+                  "commentStart": 20084,
+                  "end": 20091,
                   "moduleId": 0,
-                  "start": 19746,
+                  "start": 20084,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -981,10 +981,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19822,
-                  "end": 19831,
+                  "commentStart": 20160,
+                  "end": 20169,
                   "moduleId": 0,
-                  "start": 19822,
+                  "start": 20160,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -1005,10 +1005,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19900,
-                  "end": 19910,
+                  "commentStart": 20238,
+                  "end": 20248,
                   "moduleId": 0,
-                  "start": 19900,
+                  "start": 20238,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -1108,10 +1108,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19671,
-                "end": 19679,
+                "commentStart": 20009,
+                "end": 20017,
                 "moduleId": 0,
-                "start": 19671,
+                "start": 20009,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -1122,10 +1122,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19746,
-                "end": 19753,
+                "commentStart": 20084,
+                "end": 20091,
                 "moduleId": 0,
-                "start": 19746,
+                "start": 20084,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -1136,10 +1136,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19822,
-                "end": 19831,
+                "commentStart": 20160,
+                "end": 20169,
                 "moduleId": 0,
-                "start": 19822,
+                "start": 20160,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -1150,10 +1150,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19900,
-                "end": 19910,
+                "commentStart": 20238,
+                "end": 20248,
                 "moduleId": 0,
-                "start": 19900,
+                "start": 20238,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -1175,10 +1175,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19671,
-                  "end": 19679,
+                  "commentStart": 20009,
+                  "end": 20017,
                   "moduleId": 0,
-                  "start": 19671,
+                  "start": 20009,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -1199,10 +1199,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19746,
-                  "end": 19753,
+                  "commentStart": 20084,
+                  "end": 20091,
                   "moduleId": 0,
-                  "start": 19746,
+                  "start": 20084,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -1223,10 +1223,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19822,
-                  "end": 19831,
+                  "commentStart": 20160,
+                  "end": 20169,
                   "moduleId": 0,
-                  "start": 19822,
+                  "start": 20160,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -1247,10 +1247,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19900,
-                  "end": 19910,
+                  "commentStart": 20238,
+                  "end": 20248,
                   "moduleId": 0,
-                  "start": 19900,
+                  "start": 20238,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -1350,10 +1350,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19671,
-                "end": 19679,
+                "commentStart": 20009,
+                "end": 20017,
                 "moduleId": 0,
-                "start": 19671,
+                "start": 20009,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -1364,10 +1364,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19746,
-                "end": 19753,
+                "commentStart": 20084,
+                "end": 20091,
                 "moduleId": 0,
-                "start": 19746,
+                "start": 20084,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -1378,10 +1378,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19822,
-                "end": 19831,
+                "commentStart": 20160,
+                "end": 20169,
                 "moduleId": 0,
-                "start": 19822,
+                "start": 20160,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -1392,10 +1392,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19900,
-                "end": 19910,
+                "commentStart": 20238,
+                "end": 20248,
                 "moduleId": 0,
-                "start": 19900,
+                "start": 20238,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -1417,10 +1417,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19671,
-                  "end": 19679,
+                  "commentStart": 20009,
+                  "end": 20017,
                   "moduleId": 0,
-                  "start": 19671,
+                  "start": 20009,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -1441,10 +1441,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19746,
-                  "end": 19753,
+                  "commentStart": 20084,
+                  "end": 20091,
                   "moduleId": 0,
-                  "start": 19746,
+                  "start": 20084,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -1465,10 +1465,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19822,
-                  "end": 19831,
+                  "commentStart": 20160,
+                  "end": 20169,
                   "moduleId": 0,
-                  "start": 19822,
+                  "start": 20160,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -1489,10 +1489,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19900,
-                  "end": 19910,
+                  "commentStart": 20238,
+                  "end": 20248,
                   "moduleId": 0,
-                  "start": 19900,
+                  "start": 20238,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -1913,10 +1913,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 19671,
-                    "end": 19679,
+                    "commentStart": 20009,
+                    "end": 20017,
                     "moduleId": 0,
-                    "start": 19671,
+                    "start": 20009,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -1937,10 +1937,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 19746,
-                    "end": 19753,
+                    "commentStart": 20084,
+                    "end": 20091,
                     "moduleId": 0,
-                    "start": 19746,
+                    "start": 20084,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -1961,10 +1961,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 19822,
-                    "end": 19831,
+                    "commentStart": 20160,
+                    "end": 20169,
                     "moduleId": 0,
-                    "start": 19822,
+                    "start": 20160,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -1985,10 +1985,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 19900,
-                    "end": 19910,
+                    "commentStart": 20238,
+                    "end": 20248,
                     "moduleId": 0,
-                    "start": 19900,
+                    "start": 20238,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -2454,10 +2454,10 @@ description: Variables in memory after executing utility-sink.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 19671,
-            "end": 19679,
+            "commentStart": 20009,
+            "end": 20017,
             "moduleId": 0,
-            "start": 19671,
+            "start": 20009,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -2478,10 +2478,10 @@ description: Variables in memory after executing utility-sink.kcl
             13.0
           ],
           "tag": {
-            "commentStart": 19746,
-            "end": 19753,
+            "commentStart": 20084,
+            "end": 20091,
             "moduleId": 0,
-            "start": 19746,
+            "start": 20084,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -2502,10 +2502,10 @@ description: Variables in memory after executing utility-sink.kcl
             13.0
           ],
           "tag": {
-            "commentStart": 19822,
-            "end": 19831,
+            "commentStart": 20160,
+            "end": 20169,
             "moduleId": 0,
-            "start": 19822,
+            "start": 20160,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -2526,10 +2526,10 @@ description: Variables in memory after executing utility-sink.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 19900,
-            "end": 19910,
+            "commentStart": 20238,
+            "end": 20248,
             "moduleId": 0,
-            "start": 19900,
+            "start": 20238,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -2627,10 +2627,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19671,
-                "end": 19679,
+                "commentStart": 20009,
+                "end": 20017,
                 "moduleId": 0,
-                "start": 19671,
+                "start": 20009,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -2641,10 +2641,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19746,
-                "end": 19753,
+                "commentStart": 20084,
+                "end": 20091,
                 "moduleId": 0,
-                "start": 19746,
+                "start": 20084,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -2655,10 +2655,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19822,
-                "end": 19831,
+                "commentStart": 20160,
+                "end": 20169,
                 "moduleId": 0,
-                "start": 19822,
+                "start": 20160,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -2669,10 +2669,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19900,
-                "end": 19910,
+                "commentStart": 20238,
+                "end": 20248,
                 "moduleId": 0,
-                "start": 19900,
+                "start": 20238,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -2694,10 +2694,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19671,
-                  "end": 19679,
+                  "commentStart": 20009,
+                  "end": 20017,
                   "moduleId": 0,
-                  "start": 19671,
+                  "start": 20009,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -2718,10 +2718,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19746,
-                  "end": 19753,
+                  "commentStart": 20084,
+                  "end": 20091,
                   "moduleId": 0,
-                  "start": 19746,
+                  "start": 20084,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -2742,10 +2742,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19822,
-                  "end": 19831,
+                  "commentStart": 20160,
+                  "end": 20169,
                   "moduleId": 0,
-                  "start": 19822,
+                  "start": 20160,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -2766,10 +2766,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19900,
-                  "end": 19910,
+                  "commentStart": 20238,
+                  "end": 20248,
                   "moduleId": 0,
-                  "start": 19900,
+                  "start": 20238,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -2869,10 +2869,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19671,
-                "end": 19679,
+                "commentStart": 20009,
+                "end": 20017,
                 "moduleId": 0,
-                "start": 19671,
+                "start": 20009,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -2883,10 +2883,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19746,
-                "end": 19753,
+                "commentStart": 20084,
+                "end": 20091,
                 "moduleId": 0,
-                "start": 19746,
+                "start": 20084,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -2897,10 +2897,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19822,
-                "end": 19831,
+                "commentStart": 20160,
+                "end": 20169,
                 "moduleId": 0,
-                "start": 19822,
+                "start": 20160,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -2911,10 +2911,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 19900,
-                "end": 19910,
+                "commentStart": 20238,
+                "end": 20248,
                 "moduleId": 0,
-                "start": 19900,
+                "start": 20238,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -2936,10 +2936,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19671,
-                  "end": 19679,
+                  "commentStart": 20009,
+                  "end": 20017,
                   "moduleId": 0,
-                  "start": 19671,
+                  "start": 20009,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -2960,10 +2960,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19746,
-                  "end": 19753,
+                  "commentStart": 20084,
+                  "end": 20091,
                   "moduleId": 0,
-                  "start": 19746,
+                  "start": 20084,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -2984,10 +2984,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 19822,
-                  "end": 19831,
+                  "commentStart": 20160,
+                  "end": 20169,
                   "moduleId": 0,
-                  "start": 19822,
+                  "start": 20160,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -3008,10 +3008,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 19900,
-                  "end": 19910,
+                  "commentStart": 20238,
+                  "end": 20248,
                   "moduleId": 0,
-                  "start": 19900,
+                  "start": 20238,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -3113,10 +3113,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 19671,
-            "end": 19679,
+            "commentStart": 20009,
+            "end": 20017,
             "moduleId": 0,
-            "start": 19671,
+            "start": 20009,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3127,10 +3127,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 19746,
-            "end": 19753,
+            "commentStart": 20084,
+            "end": 20091,
             "moduleId": 0,
-            "start": 19746,
+            "start": 20084,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3141,10 +3141,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 19822,
-            "end": 19831,
+            "commentStart": 20160,
+            "end": 20169,
             "moduleId": 0,
-            "start": 19822,
+            "start": 20160,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3155,10 +3155,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 19900,
-            "end": 19910,
+            "commentStart": 20238,
+            "end": 20248,
             "moduleId": 0,
-            "start": 19900,
+            "start": 20238,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3180,10 +3180,10 @@ description: Variables in memory after executing utility-sink.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 19671,
-              "end": 19679,
+              "commentStart": 20009,
+              "end": 20017,
               "moduleId": 0,
-              "start": 19671,
+              "start": 20009,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -3204,10 +3204,10 @@ description: Variables in memory after executing utility-sink.kcl
               13.0
             ],
             "tag": {
-              "commentStart": 19746,
-              "end": 19753,
+              "commentStart": 20084,
+              "end": 20091,
               "moduleId": 0,
-              "start": 19746,
+              "start": 20084,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3228,10 +3228,10 @@ description: Variables in memory after executing utility-sink.kcl
               13.0
             ],
             "tag": {
-              "commentStart": 19822,
-              "end": 19831,
+              "commentStart": 20160,
+              "end": 20169,
               "moduleId": 0,
-              "start": 19822,
+              "start": 20160,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3252,10 +3252,10 @@ description: Variables in memory after executing utility-sink.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 19900,
-              "end": 19910,
+              "commentStart": 20238,
+              "end": 20248,
               "moduleId": 0,
-              "start": 19900,
+              "start": 20238,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3381,10 +3381,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 25670,
-                "end": 25683,
+                "commentStart": 26008,
+                "end": 26021,
                 "moduleId": 0,
-                "start": 25670,
+                "start": 26008,
                 "type": "TagDeclarator",
                 "value": "sectionCircle"
               },
@@ -3412,10 +3412,10 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 25670,
-                  "end": 25683,
+                  "commentStart": 26008,
+                  "end": 26021,
                   "moduleId": 0,
-                  "start": 25670,
+                  "start": 26008,
                   "type": "TagDeclarator",
                   "value": "sectionCircle"
                 },
@@ -3503,10 +3503,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 25670,
-                "end": 25683,
+                "commentStart": 26008,
+                "end": 26021,
                 "moduleId": 0,
-                "start": 25670,
+                "start": 26008,
                 "type": "TagDeclarator",
                 "value": "sectionCircle"
               },
@@ -3534,10 +3534,10 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 25670,
-                  "end": 25683,
+                  "commentStart": 26008,
+                  "end": 26021,
                   "moduleId": 0,
-                  "start": 25670,
+                  "start": 26008,
                   "type": "TagDeclarator",
                   "value": "sectionCircle"
                 },
@@ -4237,10 +4237,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 23173,
-                    "end": 23180,
+                    "commentStart": 23511,
+                    "end": 23518,
                     "moduleId": 0,
-                    "start": 23173,
+                    "start": 23511,
                     "type": "TagDeclarator",
                     "value": "leftLeg"
                   },
@@ -4267,10 +4267,10 @@ description: Variables in memory after executing utility-sink.kcl
                   ],
                   "radius": 20.0,
                   "tag": {
-                    "commentStart": 23370,
-                    "end": 23377,
+                    "commentStart": 23708,
+                    "end": 23715,
                     "moduleId": 0,
-                    "start": 23370,
+                    "start": 23708,
                     "type": "TagDeclarator",
                     "value": "leftArc"
                   },
@@ -4291,10 +4291,10 @@ description: Variables in memory after executing utility-sink.kcl
                     -40.0
                   ],
                   "tag": {
-                    "commentStart": 23490,
-                    "end": 23494,
+                    "commentStart": 23828,
+                    "end": 23832,
                     "moduleId": 0,
-                    "start": 23490,
+                    "start": 23828,
                     "type": "TagDeclarator",
                     "value": "grip"
                   },
@@ -4321,10 +4321,10 @@ description: Variables in memory after executing utility-sink.kcl
                   ],
                   "radius": 20.0,
                   "tag": {
-                    "commentStart": 23687,
-                    "end": 23695,
+                    "commentStart": 24025,
+                    "end": 24033,
                     "moduleId": 0,
-                    "start": 23687,
+                    "start": 24025,
                     "type": "TagDeclarator",
                     "value": "rightArc"
                   },
@@ -4345,10 +4345,10 @@ description: Variables in memory after executing utility-sink.kcl
                     -20.0
                   ],
                   "tag": {
-                    "commentStart": 23808,
-                    "end": 23816,
+                    "commentStart": 24146,
+                    "end": 24154,
                     "moduleId": 0,
-                    "start": 23808,
+                    "start": 24146,
                     "type": "TagDeclarator",
                     "value": "rightLeg"
                   },
@@ -5098,10 +5098,10 @@ description: Variables in memory after executing utility-sink.kcl
           ],
           "radius": 2.0,
           "tag": {
-            "commentStart": 25670,
-            "end": 25683,
+            "commentStart": 26008,
+            "end": 26021,
             "moduleId": 0,
-            "start": 25670,
+            "start": 26008,
             "type": "TagDeclarator",
             "value": "sectionCircle"
           },
@@ -5442,10 +5442,10 @@ description: Variables in memory after executing utility-sink.kcl
                   ],
                   "radius": 2.0,
                   "tag": {
-                    "commentStart": 25670,
-                    "end": 25683,
+                    "commentStart": 26008,
+                    "end": 26021,
                     "moduleId": 0,
-                    "start": 25670,
+                    "start": 26008,
                     "type": "TagDeclarator",
                     "value": "sectionCircle"
                   },
@@ -5775,10 +5775,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 25670,
-            "end": 25683,
+            "commentStart": 26008,
+            "end": 26021,
             "moduleId": 0,
-            "start": 25670,
+            "start": 26008,
             "type": "TagDeclarator",
             "value": "sectionCircle"
           },
@@ -5806,10 +5806,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 25670,
-              "end": 25683,
+              "commentStart": 26008,
+              "end": 26021,
               "moduleId": 0,
-              "start": 25670,
+              "start": 26008,
               "type": "TagDeclarator",
               "value": "sectionCircle"
             },
@@ -6145,6 +6145,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -6329,6 +6330,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -6513,6 +6515,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -6697,6 +6700,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -7564,8 +7568,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -7738,8 +7742,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -7912,8 +7916,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -8086,8 +8090,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       }
     ]
@@ -8265,8 +8269,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -8439,8 +8443,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       }
     ]
@@ -8460,10 +8464,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2159,
-                "end": 2167,
+                "commentStart": 2221,
+                "end": 2229,
                 "moduleId": 0,
-                "start": 2159,
+                "start": 2221,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -8474,10 +8478,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2234,
-                "end": 2241,
+                "commentStart": 2296,
+                "end": 2303,
                 "moduleId": 0,
-                "start": 2234,
+                "start": 2296,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -8488,10 +8492,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2311,
-                "end": 2320,
+                "commentStart": 2373,
+                "end": 2382,
                 "moduleId": 0,
-                "start": 2311,
+                "start": 2373,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -8502,10 +8506,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2391,
-                "end": 2401,
+                "commentStart": 2453,
+                "end": 2463,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2453,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -8527,10 +8531,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2159,
-                  "end": 2167,
+                  "commentStart": 2221,
+                  "end": 2229,
                   "moduleId": 0,
-                  "start": 2159,
+                  "start": 2221,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -8551,10 +8555,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 2234,
-                  "end": 2241,
+                  "commentStart": 2296,
+                  "end": 2303,
                   "moduleId": 0,
-                  "start": 2234,
+                  "start": 2296,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -8575,10 +8579,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 2311,
-                  "end": 2320,
+                  "commentStart": 2373,
+                  "end": 2382,
                   "moduleId": 0,
-                  "start": 2311,
+                  "start": 2373,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -8599,10 +8603,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2391,
-                  "end": 2401,
+                  "commentStart": 2453,
+                  "end": 2463,
                   "moduleId": 0,
-                  "start": 2391,
+                  "start": 2453,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -8681,6 +8685,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -8711,10 +8716,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2159,
-                  "end": 2167,
+                  "commentStart": 2221,
+                  "end": 2229,
                   "moduleId": 0,
-                  "start": 2159,
+                  "start": 2221,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -8735,10 +8740,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 2234,
-                  "end": 2241,
+                  "commentStart": 2296,
+                  "end": 2303,
                   "moduleId": 0,
-                  "start": 2234,
+                  "start": 2296,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -8759,10 +8764,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 2311,
-                  "end": 2320,
+                  "commentStart": 2373,
+                  "end": 2382,
                   "moduleId": 0,
-                  "start": 2311,
+                  "start": 2373,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -8783,10 +8788,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2391,
-                  "end": 2401,
+                  "commentStart": 2453,
+                  "end": 2463,
                   "moduleId": 0,
-                  "start": 2391,
+                  "start": 2453,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -8865,6 +8870,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -8890,10 +8896,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3635,
-                "end": 3643,
+                "commentStart": 3766,
+                "end": 3774,
                 "moduleId": 0,
-                "start": 3635,
+                "start": 3766,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -8904,10 +8910,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3710,
-                "end": 3717,
+                "commentStart": 3841,
+                "end": 3848,
                 "moduleId": 0,
-                "start": 3710,
+                "start": 3841,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -8918,10 +8924,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3786,
-                "end": 3795,
+                "commentStart": 3917,
+                "end": 3926,
                 "moduleId": 0,
-                "start": 3786,
+                "start": 3917,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -8932,10 +8938,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3864,
-                "end": 3874,
+                "commentStart": 3995,
+                "end": 4005,
                 "moduleId": 0,
-                "start": 3864,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -8957,10 +8963,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 3635,
-                  "end": 3643,
+                  "commentStart": 3766,
+                  "end": 3774,
                   "moduleId": 0,
-                  "start": 3635,
+                  "start": 3766,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -8981,10 +8987,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 3710,
-                  "end": 3717,
+                  "commentStart": 3841,
+                  "end": 3848,
                   "moduleId": 0,
-                  "start": 3710,
+                  "start": 3841,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -9005,10 +9011,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 3786,
-                  "end": 3795,
+                  "commentStart": 3917,
+                  "end": 3926,
                   "moduleId": 0,
-                  "start": 3786,
+                  "start": 3917,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -9029,10 +9035,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 3864,
-                  "end": 3874,
+                  "commentStart": 3995,
+                  "end": 4005,
                   "moduleId": 0,
-                  "start": 3864,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -9111,6 +9117,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -9141,10 +9148,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 3635,
-                  "end": 3643,
+                  "commentStart": 3766,
+                  "end": 3774,
                   "moduleId": 0,
-                  "start": 3635,
+                  "start": 3766,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -9165,10 +9172,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 3710,
-                  "end": 3717,
+                  "commentStart": 3841,
+                  "end": 3848,
                   "moduleId": 0,
-                  "start": 3710,
+                  "start": 3841,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -9189,10 +9196,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 3786,
-                  "end": 3795,
+                  "commentStart": 3917,
+                  "end": 3926,
                   "moduleId": 0,
-                  "start": 3786,
+                  "start": 3917,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -9213,10 +9220,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 3864,
-                  "end": 3874,
+                  "commentStart": 3995,
+                  "end": 4005,
                   "moduleId": 0,
-                  "start": 3864,
+                  "start": 3995,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -9295,6 +9302,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -9627,10 +9635,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2159,
-                    "end": 2167,
+                    "commentStart": 2221,
+                    "end": 2229,
                     "moduleId": 0,
-                    "start": 2159,
+                    "start": 2221,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -9651,10 +9659,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 2234,
-                    "end": 2241,
+                    "commentStart": 2296,
+                    "end": 2303,
                     "moduleId": 0,
-                    "start": 2234,
+                    "start": 2296,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -9675,10 +9683,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 2311,
-                    "end": 2320,
+                    "commentStart": 2373,
+                    "end": 2382,
                     "moduleId": 0,
-                    "start": 2311,
+                    "start": 2373,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -9699,10 +9707,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2391,
-                    "end": 2401,
+                    "commentStart": 2453,
+                    "end": 2463,
                     "moduleId": 0,
-                    "start": 2391,
+                    "start": 2453,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -10171,10 +10179,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 2159,
-                "end": 2167,
+                "commentStart": 2221,
+                "end": 2229,
                 "moduleId": 0,
-                "start": 2159,
+                "start": 2221,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -10195,10 +10203,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 2234,
-                "end": 2241,
+                "commentStart": 2296,
+                "end": 2303,
                 "moduleId": 0,
-                "start": 2234,
+                "start": 2296,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -10219,10 +10227,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 2311,
-                "end": 2320,
+                "commentStart": 2373,
+                "end": 2382,
                 "moduleId": 0,
-                "start": 2311,
+                "start": 2373,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -10243,10 +10251,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 2391,
-                "end": 2401,
+                "commentStart": 2453,
+                "end": 2463,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2453,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -10325,8 +10333,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -10345,10 +10353,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 2159,
-                "end": 2167,
+                "commentStart": 2221,
+                "end": 2229,
                 "moduleId": 0,
-                "start": 2159,
+                "start": 2221,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -10369,10 +10377,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 2234,
-                "end": 2241,
+                "commentStart": 2296,
+                "end": 2303,
                 "moduleId": 0,
-                "start": 2234,
+                "start": 2296,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -10393,10 +10401,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 2311,
-                "end": 2320,
+                "commentStart": 2373,
+                "end": 2382,
                 "moduleId": 0,
-                "start": 2311,
+                "start": 2373,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -10417,10 +10425,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 2391,
-                "end": 2401,
+                "commentStart": 2453,
+                "end": 2463,
                 "moduleId": 0,
-                "start": 2391,
+                "start": 2453,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -10499,8 +10507,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       }
     ]
@@ -10521,10 +10529,10 @@ description: Variables in memory after executing utility-sink.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2159,
-            "end": 2167,
+            "commentStart": 2221,
+            "end": 2229,
             "moduleId": 0,
-            "start": 2159,
+            "start": 2221,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -10545,10 +10553,10 @@ description: Variables in memory after executing utility-sink.kcl
             13.0
           ],
           "tag": {
-            "commentStart": 2234,
-            "end": 2241,
+            "commentStart": 2296,
+            "end": 2303,
             "moduleId": 0,
-            "start": 2234,
+            "start": 2296,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -10569,10 +10577,10 @@ description: Variables in memory after executing utility-sink.kcl
             13.0
           ],
           "tag": {
-            "commentStart": 2311,
-            "end": 2320,
+            "commentStart": 2373,
+            "end": 2382,
             "moduleId": 0,
-            "start": 2311,
+            "start": 2373,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -10593,10 +10601,10 @@ description: Variables in memory after executing utility-sink.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2391,
-            "end": 2401,
+            "commentStart": 2453,
+            "end": 2463,
             "moduleId": 0,
-            "start": 2391,
+            "start": 2453,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -10675,8 +10683,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm",
-      "isClosed": "implicitly"
+      "originSketchId": "[uuid]",
+      "units": "mm"
     }
   },
   "lowerBeltYProfile": {
@@ -10941,10 +10949,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 3635,
-                    "end": 3643,
+                    "commentStart": 3766,
+                    "end": 3774,
                     "moduleId": 0,
-                    "start": 3635,
+                    "start": 3766,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -10965,10 +10973,10 @@ description: Variables in memory after executing utility-sink.kcl
                     587.0
                   ],
                   "tag": {
-                    "commentStart": 3710,
-                    "end": 3717,
+                    "commentStart": 3841,
+                    "end": 3848,
                     "moduleId": 0,
-                    "start": 3710,
+                    "start": 3841,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -10989,10 +10997,10 @@ description: Variables in memory after executing utility-sink.kcl
                     587.0
                   ],
                   "tag": {
-                    "commentStart": 3786,
-                    "end": 3795,
+                    "commentStart": 3917,
+                    "end": 3926,
                     "moduleId": 0,
-                    "start": 3786,
+                    "start": 3917,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -11013,10 +11021,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 3864,
-                    "end": 3874,
+                    "commentStart": 3995,
+                    "end": 4005,
                     "moduleId": 0,
-                    "start": 3864,
+                    "start": 3995,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -11485,10 +11493,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 3635,
-                "end": 3643,
+                "commentStart": 3766,
+                "end": 3774,
                 "moduleId": 0,
-                "start": 3635,
+                "start": 3766,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -11509,10 +11517,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 3710,
-                "end": 3717,
+                "commentStart": 3841,
+                "end": 3848,
                 "moduleId": 0,
-                "start": 3710,
+                "start": 3841,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -11533,10 +11541,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 3786,
-                "end": 3795,
+                "commentStart": 3917,
+                "end": 3926,
                 "moduleId": 0,
-                "start": 3786,
+                "start": 3917,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -11557,10 +11565,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 3864,
-                "end": 3874,
+                "commentStart": 3995,
+                "end": 4005,
                 "moduleId": 0,
-                "start": 3864,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -11639,8 +11647,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -11659,10 +11667,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 3635,
-                "end": 3643,
+                "commentStart": 3766,
+                "end": 3774,
                 "moduleId": 0,
-                "start": 3635,
+                "start": 3766,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -11683,10 +11691,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 3710,
-                "end": 3717,
+                "commentStart": 3841,
+                "end": 3848,
                 "moduleId": 0,
-                "start": 3710,
+                "start": 3841,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -11707,10 +11715,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 3786,
-                "end": 3795,
+                "commentStart": 3917,
+                "end": 3926,
                 "moduleId": 0,
-                "start": 3786,
+                "start": 3917,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -11731,10 +11739,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 3864,
-                "end": 3874,
+                "commentStart": 3995,
+                "end": 4005,
                 "moduleId": 0,
-                "start": 3864,
+                "start": 3995,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -11813,8 +11821,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       }
     ]
@@ -11843,10 +11851,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21477,
-                "end": 21485,
+                "commentStart": 21815,
+                "end": 21823,
                 "moduleId": 0,
-                "start": 21477,
+                "start": 21815,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -11857,10 +11865,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21552,
-                "end": 21559,
+                "commentStart": 21890,
+                "end": 21897,
                 "moduleId": 0,
-                "start": 21552,
+                "start": 21890,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -11871,10 +11879,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21628,
-                "end": 21637,
+                "commentStart": 21966,
+                "end": 21975,
                 "moduleId": 0,
-                "start": 21628,
+                "start": 21966,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -11885,10 +11893,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21706,
-                "end": 21716,
+                "commentStart": 22044,
+                "end": 22054,
                 "moduleId": 0,
-                "start": 21706,
+                "start": 22044,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -11910,10 +11918,10 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "tag": {
-                  "commentStart": 21477,
-                  "end": 21485,
+                  "commentStart": 21815,
+                  "end": 21823,
                   "moduleId": 0,
-                  "start": 21477,
+                  "start": 21815,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -11934,10 +11942,10 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "tag": {
-                  "commentStart": 21552,
-                  "end": 21559,
+                  "commentStart": 21890,
+                  "end": 21897,
                   "moduleId": 0,
-                  "start": 21552,
+                  "start": 21890,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -11958,10 +11966,10 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "tag": {
-                  "commentStart": 21628,
-                  "end": 21637,
+                  "commentStart": 21966,
+                  "end": 21975,
                   "moduleId": 0,
-                  "start": 21628,
+                  "start": 21966,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -11982,10 +11990,10 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "tag": {
-                  "commentStart": 21706,
-                  "end": 21716,
+                  "commentStart": 22044,
+                  "end": 22054,
                   "moduleId": 0,
-                  "start": 21706,
+                  "start": 22044,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -12085,10 +12093,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21477,
-                "end": 21485,
+                "commentStart": 21815,
+                "end": 21823,
                 "moduleId": 0,
-                "start": 21477,
+                "start": 21815,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -12099,10 +12107,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21552,
-                "end": 21559,
+                "commentStart": 21890,
+                "end": 21897,
                 "moduleId": 0,
-                "start": 21552,
+                "start": 21890,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -12113,10 +12121,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21628,
-                "end": 21637,
+                "commentStart": 21966,
+                "end": 21975,
                 "moduleId": 0,
-                "start": 21628,
+                "start": 21966,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -12127,10 +12135,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 21706,
-                "end": 21716,
+                "commentStart": 22044,
+                "end": 22054,
                 "moduleId": 0,
-                "start": 21706,
+                "start": 22044,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -12152,10 +12160,10 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "tag": {
-                  "commentStart": 21477,
-                  "end": 21485,
+                  "commentStart": 21815,
+                  "end": 21823,
                   "moduleId": 0,
-                  "start": 21477,
+                  "start": 21815,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -12176,10 +12184,10 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "tag": {
-                  "commentStart": 21552,
-                  "end": 21559,
+                  "commentStart": 21890,
+                  "end": 21897,
                   "moduleId": 0,
-                  "start": 21552,
+                  "start": 21890,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -12200,10 +12208,10 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "tag": {
-                  "commentStart": 21628,
-                  "end": 21637,
+                  "commentStart": 21966,
+                  "end": 21975,
                   "moduleId": 0,
-                  "start": 21628,
+                  "start": 21966,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -12224,10 +12232,10 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "tag": {
-                  "commentStart": 21706,
-                  "end": 21716,
+                  "commentStart": 22044,
+                  "end": 22054,
                   "moduleId": 0,
-                  "start": 21706,
+                  "start": 22044,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -12588,10 +12596,10 @@ description: Variables in memory after executing utility-sink.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 21477,
-                    "end": 21485,
+                    "commentStart": 21815,
+                    "end": 21823,
                     "moduleId": 0,
-                    "start": 21477,
+                    "start": 21815,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -12612,10 +12620,10 @@ description: Variables in memory after executing utility-sink.kcl
                     585.0
                   ],
                   "tag": {
-                    "commentStart": 21552,
-                    "end": 21559,
+                    "commentStart": 21890,
+                    "end": 21897,
                     "moduleId": 0,
-                    "start": 21552,
+                    "start": 21890,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -12636,10 +12644,10 @@ description: Variables in memory after executing utility-sink.kcl
                     585.0
                   ],
                   "tag": {
-                    "commentStart": 21628,
-                    "end": 21637,
+                    "commentStart": 21966,
+                    "end": 21975,
                     "moduleId": 0,
-                    "start": 21628,
+                    "start": 21966,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -12660,10 +12668,10 @@ description: Variables in memory after executing utility-sink.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 21706,
-                    "end": 21716,
+                    "commentStart": 22044,
+                    "end": 22054,
                     "moduleId": 0,
-                    "start": 21706,
+                    "start": 22044,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -13129,10 +13137,10 @@ description: Variables in memory after executing utility-sink.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 21477,
-            "end": 21485,
+            "commentStart": 21815,
+            "end": 21823,
             "moduleId": 0,
-            "start": 21477,
+            "start": 21815,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -13153,10 +13161,10 @@ description: Variables in memory after executing utility-sink.kcl
             585.0
           ],
           "tag": {
-            "commentStart": 21552,
-            "end": 21559,
+            "commentStart": 21890,
+            "end": 21897,
             "moduleId": 0,
-            "start": 21552,
+            "start": 21890,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -13177,10 +13185,10 @@ description: Variables in memory after executing utility-sink.kcl
             585.0
           ],
           "tag": {
-            "commentStart": 21628,
-            "end": 21637,
+            "commentStart": 21966,
+            "end": 21975,
             "moduleId": 0,
-            "start": 21628,
+            "start": 21966,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -13201,10 +13209,10 @@ description: Variables in memory after executing utility-sink.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 21706,
-            "end": 21716,
+            "commentStart": 22044,
+            "end": 22054,
             "moduleId": 0,
-            "start": 21706,
+            "start": 22044,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -13299,10 +13307,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 21477,
-            "end": 21485,
+            "commentStart": 21815,
+            "end": 21823,
             "moduleId": 0,
-            "start": 21477,
+            "start": 21815,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -13313,10 +13321,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 21552,
-            "end": 21559,
+            "commentStart": 21890,
+            "end": 21897,
             "moduleId": 0,
-            "start": 21552,
+            "start": 21890,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -13327,10 +13335,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 21628,
-            "end": 21637,
+            "commentStart": 21966,
+            "end": 21975,
             "moduleId": 0,
-            "start": 21628,
+            "start": 21966,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -13341,10 +13349,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 21706,
-            "end": 21716,
+            "commentStart": 22044,
+            "end": 22054,
             "moduleId": 0,
-            "start": 21706,
+            "start": 22044,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -13366,10 +13374,10 @@ description: Variables in memory after executing utility-sink.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 21477,
-              "end": 21485,
+              "commentStart": 21815,
+              "end": 21823,
               "moduleId": 0,
-              "start": 21477,
+              "start": 21815,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -13390,10 +13398,10 @@ description: Variables in memory after executing utility-sink.kcl
               585.0
             ],
             "tag": {
-              "commentStart": 21552,
-              "end": 21559,
+              "commentStart": 21890,
+              "end": 21897,
               "moduleId": 0,
-              "start": 21552,
+              "start": 21890,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -13414,10 +13422,10 @@ description: Variables in memory after executing utility-sink.kcl
               585.0
             ],
             "tag": {
-              "commentStart": 21628,
-              "end": 21637,
+              "commentStart": 21966,
+              "end": 21975,
               "moduleId": 0,
-              "start": 21628,
+              "start": 21966,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -13438,10 +13446,10 @@ description: Variables in memory after executing utility-sink.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 21706,
-              "end": 21716,
+              "commentStart": 22044,
+              "end": 22054,
               "moduleId": 0,
-              "start": 21706,
+              "start": 22044,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -13562,10 +13570,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5174,
-                "end": 5182,
+                "commentStart": 5374,
+                "end": 5382,
                 "moduleId": 0,
-                "start": 5174,
+                "start": 5374,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -13576,10 +13584,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5251,
-                "end": 5258,
+                "commentStart": 5451,
+                "end": 5458,
                 "moduleId": 0,
-                "start": 5251,
+                "start": 5451,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -13590,10 +13598,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5328,
-                "end": 5337,
+                "commentStart": 5528,
+                "end": 5537,
                 "moduleId": 0,
-                "start": 5328,
+                "start": 5528,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -13604,10 +13612,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5406,
-                "end": 5416,
+                "commentStart": 5606,
+                "end": 5616,
                 "moduleId": 0,
-                "start": 5406,
+                "start": 5606,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -13629,10 +13637,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5174,
-                  "end": 5182,
+                  "commentStart": 5374,
+                  "end": 5382,
                   "moduleId": 0,
-                  "start": 5174,
+                  "start": 5374,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -13653,10 +13661,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5251,
-                  "end": 5258,
+                  "commentStart": 5451,
+                  "end": 5458,
                   "moduleId": 0,
-                  "start": 5251,
+                  "start": 5451,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -13677,10 +13685,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5328,
-                  "end": 5337,
+                  "commentStart": 5528,
+                  "end": 5537,
                   "moduleId": 0,
-                  "start": 5328,
+                  "start": 5528,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -13701,10 +13709,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5406,
-                  "end": 5416,
+                  "commentStart": 5606,
+                  "end": 5616,
                   "moduleId": 0,
-                  "start": 5406,
+                  "start": 5606,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -13814,10 +13822,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5174,
-                  "end": 5182,
+                  "commentStart": 5374,
+                  "end": 5382,
                   "moduleId": 0,
-                  "start": 5174,
+                  "start": 5374,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -13838,10 +13846,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5251,
-                  "end": 5258,
+                  "commentStart": 5451,
+                  "end": 5458,
                   "moduleId": 0,
-                  "start": 5251,
+                  "start": 5451,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -13862,10 +13870,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5328,
-                  "end": 5337,
+                  "commentStart": 5528,
+                  "end": 5537,
                   "moduleId": 0,
-                  "start": 5328,
+                  "start": 5528,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -13886,10 +13894,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5406,
-                  "end": 5416,
+                  "commentStart": 5606,
+                  "end": 5616,
                   "moduleId": 0,
-                  "start": 5406,
+                  "start": 5606,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -14283,10 +14291,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5174,
-                    "end": 5182,
+                    "commentStart": 5374,
+                    "end": 5382,
                     "moduleId": 0,
-                    "start": 5174,
+                    "start": 5374,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -14307,10 +14315,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 5251,
-                    "end": 5258,
+                    "commentStart": 5451,
+                    "end": 5458,
                     "moduleId": 0,
-                    "start": 5251,
+                    "start": 5451,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -14331,10 +14339,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 5328,
-                    "end": 5337,
+                    "commentStart": 5528,
+                    "end": 5537,
                     "moduleId": 0,
-                    "start": 5328,
+                    "start": 5528,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -14355,10 +14363,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5406,
-                    "end": 5416,
+                    "commentStart": 5606,
+                    "end": 5616,
                     "moduleId": 0,
-                    "start": 5406,
+                    "start": 5606,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -14827,10 +14835,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 5174,
-                "end": 5182,
+                "commentStart": 5374,
+                "end": 5382,
                 "moduleId": 0,
-                "start": 5174,
+                "start": 5374,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -14851,10 +14859,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 5251,
-                "end": 5258,
+                "commentStart": 5451,
+                "end": 5458,
                 "moduleId": 0,
-                "start": 5251,
+                "start": 5451,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -14875,10 +14883,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 5328,
-                "end": 5337,
+                "commentStart": 5528,
+                "end": 5537,
                 "moduleId": 0,
-                "start": 5328,
+                "start": 5528,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -14899,10 +14907,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 5406,
-                "end": 5416,
+                "commentStart": 5606,
+                "end": 5616,
                 "moduleId": 0,
-                "start": 5406,
+                "start": 5606,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -15001,10 +15009,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 5174,
-                "end": 5182,
+                "commentStart": 5374,
+                "end": 5382,
                 "moduleId": 0,
-                "start": 5174,
+                "start": 5374,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -15025,10 +15033,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 5251,
-                "end": 5258,
+                "commentStart": 5451,
+                "end": 5458,
                 "moduleId": 0,
-                "start": 5251,
+                "start": 5451,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -15049,10 +15057,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 5328,
-                "end": 5337,
+                "commentStart": 5528,
+                "end": 5537,
                 "moduleId": 0,
-                "start": 5328,
+                "start": 5528,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -15073,10 +15081,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 5406,
-                "end": 5416,
+                "commentStart": 5606,
+                "end": 5616,
                 "moduleId": 0,
-                "start": 5406,
+                "start": 5606,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -15176,10 +15184,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5174,
-                "end": 5182,
+                "commentStart": 5374,
+                "end": 5382,
                 "moduleId": 0,
-                "start": 5174,
+                "start": 5374,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -15190,10 +15198,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5251,
-                "end": 5258,
+                "commentStart": 5451,
+                "end": 5458,
                 "moduleId": 0,
-                "start": 5251,
+                "start": 5451,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -15204,10 +15212,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5328,
-                "end": 5337,
+                "commentStart": 5528,
+                "end": 5537,
                 "moduleId": 0,
-                "start": 5328,
+                "start": 5528,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -15218,10 +15226,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5406,
-                "end": 5416,
+                "commentStart": 5606,
+                "end": 5616,
                 "moduleId": 0,
-                "start": 5406,
+                "start": 5606,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -15243,10 +15251,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5174,
-                  "end": 5182,
+                  "commentStart": 5374,
+                  "end": 5382,
                   "moduleId": 0,
-                  "start": 5174,
+                  "start": 5374,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -15267,10 +15275,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5251,
-                  "end": 5258,
+                  "commentStart": 5451,
+                  "end": 5458,
                   "moduleId": 0,
-                  "start": 5251,
+                  "start": 5451,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -15291,10 +15299,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5328,
-                  "end": 5337,
+                  "commentStart": 5528,
+                  "end": 5537,
                   "moduleId": 0,
-                  "start": 5328,
+                  "start": 5528,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -15315,10 +15323,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5406,
-                  "end": 5416,
+                  "commentStart": 5606,
+                  "end": 5616,
                   "moduleId": 0,
-                  "start": 5406,
+                  "start": 5606,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -15428,10 +15436,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5174,
-                  "end": 5182,
+                  "commentStart": 5374,
+                  "end": 5382,
                   "moduleId": 0,
-                  "start": 5174,
+                  "start": 5374,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -15452,10 +15460,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5251,
-                  "end": 5258,
+                  "commentStart": 5451,
+                  "end": 5458,
                   "moduleId": 0,
-                  "start": 5251,
+                  "start": 5451,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -15476,10 +15484,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 5328,
-                  "end": 5337,
+                  "commentStart": 5528,
+                  "end": 5537,
                   "moduleId": 0,
-                  "start": 5328,
+                  "start": 5528,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -15500,10 +15508,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 5406,
-                  "end": 5416,
+                  "commentStart": 5606,
+                  "end": 5616,
                   "moduleId": 0,
-                  "start": 5406,
+                  "start": 5606,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -15643,10 +15651,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12212,
-            "end": 12220,
+            "commentStart": 12550,
+            "end": 12558,
             "moduleId": 0,
-            "start": 12212,
+            "start": 12550,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -15657,10 +15665,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12291,
-            "end": 12298,
+            "commentStart": 12629,
+            "end": 12636,
             "moduleId": 0,
-            "start": 12291,
+            "start": 12629,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -15671,10 +15679,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12370,
-            "end": 12379,
+            "commentStart": 12708,
+            "end": 12717,
             "moduleId": 0,
-            "start": 12370,
+            "start": 12708,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -15685,10 +15693,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12450,
-            "end": 12460,
+            "commentStart": 12788,
+            "end": 12798,
             "moduleId": 0,
-            "start": 12450,
+            "start": 12788,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -15710,10 +15718,10 @@ description: Variables in memory after executing utility-sink.kcl
               42.0
             ],
             "tag": {
-              "commentStart": 12212,
-              "end": 12220,
+              "commentStart": 12550,
+              "end": 12558,
               "moduleId": 0,
-              "start": 12212,
+              "start": 12550,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -15734,10 +15742,10 @@ description: Variables in memory after executing utility-sink.kcl
               488.0
             ],
             "tag": {
-              "commentStart": 12291,
-              "end": 12298,
+              "commentStart": 12629,
+              "end": 12636,
               "moduleId": 0,
-              "start": 12291,
+              "start": 12629,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -15758,10 +15766,10 @@ description: Variables in memory after executing utility-sink.kcl
               488.0
             ],
             "tag": {
-              "commentStart": 12370,
-              "end": 12379,
+              "commentStart": 12708,
+              "end": 12717,
               "moduleId": 0,
-              "start": 12370,
+              "start": 12708,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -15782,10 +15790,10 @@ description: Variables in memory after executing utility-sink.kcl
               42.0
             ],
             "tag": {
-              "commentStart": 12450,
-              "end": 12460,
+              "commentStart": 12788,
+              "end": 12798,
               "moduleId": 0,
-              "start": 12450,
+              "start": 12788,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -15879,10 +15887,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10617,
-            "end": 10625,
+            "commentStart": 10955,
+            "end": 10963,
             "moduleId": 0,
-            "start": 10617,
+            "start": 10955,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -15893,10 +15901,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10698,
-            "end": 10705,
+            "commentStart": 11036,
+            "end": 11043,
             "moduleId": 0,
-            "start": 10698,
+            "start": 11036,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -15907,10 +15915,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10779,
-            "end": 10788,
+            "commentStart": 11117,
+            "end": 11126,
             "moduleId": 0,
-            "start": 10779,
+            "start": 11117,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -15921,10 +15929,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10861,
-            "end": 10871,
+            "commentStart": 11199,
+            "end": 11209,
             "moduleId": 0,
-            "start": 10861,
+            "start": 11199,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -15946,10 +15954,10 @@ description: Variables in memory after executing utility-sink.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 10617,
-              "end": 10625,
+              "commentStart": 10955,
+              "end": 10963,
               "moduleId": 0,
-              "start": 10617,
+              "start": 10955,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -15970,10 +15978,10 @@ description: Variables in memory after executing utility-sink.kcl
               490.0
             ],
             "tag": {
-              "commentStart": 10698,
-              "end": 10705,
+              "commentStart": 11036,
+              "end": 11043,
               "moduleId": 0,
-              "start": 10698,
+              "start": 11036,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -15994,10 +16002,10 @@ description: Variables in memory after executing utility-sink.kcl
               490.0
             ],
             "tag": {
-              "commentStart": 10779,
-              "end": 10788,
+              "commentStart": 11117,
+              "end": 11126,
               "moduleId": 0,
-              "start": 10779,
+              "start": 11117,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -16018,10 +16026,10 @@ description: Variables in memory after executing utility-sink.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 10861,
-              "end": 10871,
+              "commentStart": 11199,
+              "end": 11209,
               "moduleId": 0,
-              "start": 10861,
+              "start": 11199,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -16486,10 +16494,10 @@ description: Variables in memory after executing utility-sink.kcl
                     42.0
                   ],
                   "tag": {
-                    "commentStart": 12212,
-                    "end": 12220,
+                    "commentStart": 12550,
+                    "end": 12558,
                     "moduleId": 0,
-                    "start": 12212,
+                    "start": 12550,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -16510,10 +16518,10 @@ description: Variables in memory after executing utility-sink.kcl
                     488.0
                   ],
                   "tag": {
-                    "commentStart": 12291,
-                    "end": 12298,
+                    "commentStart": 12629,
+                    "end": 12636,
                     "moduleId": 0,
-                    "start": 12291,
+                    "start": 12629,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -16534,10 +16542,10 @@ description: Variables in memory after executing utility-sink.kcl
                     488.0
                   ],
                   "tag": {
-                    "commentStart": 12370,
-                    "end": 12379,
+                    "commentStart": 12708,
+                    "end": 12717,
                     "moduleId": 0,
-                    "start": 12370,
+                    "start": 12708,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -16558,10 +16566,10 @@ description: Variables in memory after executing utility-sink.kcl
                     42.0
                   ],
                   "tag": {
-                    "commentStart": 12450,
-                    "end": 12460,
+                    "commentStart": 12788,
+                    "end": 12798,
                     "moduleId": 0,
-                    "start": 12450,
+                    "start": 12788,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -17003,10 +17011,10 @@ description: Variables in memory after executing utility-sink.kcl
             42.0
           ],
           "tag": {
-            "commentStart": 12212,
-            "end": 12220,
+            "commentStart": 12550,
+            "end": 12558,
             "moduleId": 0,
-            "start": 12212,
+            "start": 12550,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -17027,10 +17035,10 @@ description: Variables in memory after executing utility-sink.kcl
             488.0
           ],
           "tag": {
-            "commentStart": 12291,
-            "end": 12298,
+            "commentStart": 12629,
+            "end": 12636,
             "moduleId": 0,
-            "start": 12291,
+            "start": 12629,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -17051,10 +17059,10 @@ description: Variables in memory after executing utility-sink.kcl
             488.0
           ],
           "tag": {
-            "commentStart": 12370,
-            "end": 12379,
+            "commentStart": 12708,
+            "end": 12717,
             "moduleId": 0,
-            "start": 12370,
+            "start": 12708,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -17075,10 +17083,10 @@ description: Variables in memory after executing utility-sink.kcl
             42.0
           ],
           "tag": {
-            "commentStart": 12450,
-            "end": 12460,
+            "commentStart": 12788,
+            "end": 12798,
             "moduleId": 0,
-            "start": 12450,
+            "start": 12788,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -17547,10 +17555,10 @@ description: Variables in memory after executing utility-sink.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 10617,
-                    "end": 10625,
+                    "commentStart": 10955,
+                    "end": 10963,
                     "moduleId": 0,
-                    "start": 10617,
+                    "start": 10955,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -17571,10 +17579,10 @@ description: Variables in memory after executing utility-sink.kcl
                     490.0
                   ],
                   "tag": {
-                    "commentStart": 10698,
-                    "end": 10705,
+                    "commentStart": 11036,
+                    "end": 11043,
                     "moduleId": 0,
-                    "start": 10698,
+                    "start": 11036,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -17595,10 +17603,10 @@ description: Variables in memory after executing utility-sink.kcl
                     490.0
                   ],
                   "tag": {
-                    "commentStart": 10779,
-                    "end": 10788,
+                    "commentStart": 11117,
+                    "end": 11126,
                     "moduleId": 0,
-                    "start": 10779,
+                    "start": 11117,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -17619,10 +17627,10 @@ description: Variables in memory after executing utility-sink.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 10861,
-                    "end": 10871,
+                    "commentStart": 11199,
+                    "end": 11209,
                     "moduleId": 0,
-                    "start": 10861,
+                    "start": 11199,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -18064,10 +18072,10 @@ description: Variables in memory after executing utility-sink.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 10617,
-            "end": 10625,
+            "commentStart": 10955,
+            "end": 10963,
             "moduleId": 0,
-            "start": 10617,
+            "start": 10955,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -18088,10 +18096,10 @@ description: Variables in memory after executing utility-sink.kcl
             490.0
           ],
           "tag": {
-            "commentStart": 10698,
-            "end": 10705,
+            "commentStart": 11036,
+            "end": 11043,
             "moduleId": 0,
-            "start": 10698,
+            "start": 11036,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -18112,10 +18120,10 @@ description: Variables in memory after executing utility-sink.kcl
             490.0
           ],
           "tag": {
-            "commentStart": 10779,
-            "end": 10788,
+            "commentStart": 11117,
+            "end": 11126,
             "moduleId": 0,
-            "start": 10779,
+            "start": 11117,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -18136,10 +18144,10 @@ description: Variables in memory after executing utility-sink.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 10861,
-            "end": 10871,
+            "commentStart": 11199,
+            "end": 11209,
             "moduleId": 0,
-            "start": 10861,
+            "start": 11199,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -18318,10 +18326,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9092,
-            "end": 9100,
+            "commentStart": 9430,
+            "end": 9438,
             "moduleId": 0,
-            "start": 9092,
+            "start": 9430,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -18332,10 +18340,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9166,
-            "end": 9173,
+            "commentStart": 9504,
+            "end": 9511,
             "moduleId": 0,
-            "start": 9166,
+            "start": 9504,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -18346,10 +18354,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9244,
-            "end": 9253,
+            "commentStart": 9582,
+            "end": 9591,
             "moduleId": 0,
-            "start": 9244,
+            "start": 9582,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -18360,10 +18368,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9325,
-            "end": 9335,
+            "commentStart": 9663,
+            "end": 9673,
             "moduleId": 0,
-            "start": 9325,
+            "start": 9663,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -18385,10 +18393,10 @@ description: Variables in memory after executing utility-sink.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 9092,
-              "end": 9100,
+              "commentStart": 9430,
+              "end": 9438,
               "moduleId": 0,
-              "start": 9092,
+              "start": 9430,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -18409,10 +18417,10 @@ description: Variables in memory after executing utility-sink.kcl
               600.0
             ],
             "tag": {
-              "commentStart": 9166,
-              "end": 9173,
+              "commentStart": 9504,
+              "end": 9511,
               "moduleId": 0,
-              "start": 9166,
+              "start": 9504,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -18433,10 +18441,10 @@ description: Variables in memory after executing utility-sink.kcl
               600.0
             ],
             "tag": {
-              "commentStart": 9244,
-              "end": 9253,
+              "commentStart": 9582,
+              "end": 9591,
               "moduleId": 0,
-              "start": 9244,
+              "start": 9582,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -18457,10 +18465,10 @@ description: Variables in memory after executing utility-sink.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 9325,
-              "end": 9335,
+              "commentStart": 9663,
+              "end": 9673,
               "moduleId": 0,
-              "start": 9325,
+              "start": 9663,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -18843,10 +18851,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 9092,
-                    "end": 9100,
+                    "commentStart": 9430,
+                    "end": 9438,
                     "moduleId": 0,
-                    "start": 9092,
+                    "start": 9430,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -18867,10 +18875,10 @@ description: Variables in memory after executing utility-sink.kcl
                     600.0
                   ],
                   "tag": {
-                    "commentStart": 9166,
-                    "end": 9173,
+                    "commentStart": 9504,
+                    "end": 9511,
                     "moduleId": 0,
-                    "start": 9166,
+                    "start": 9504,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -18891,10 +18899,10 @@ description: Variables in memory after executing utility-sink.kcl
                     600.0
                   ],
                   "tag": {
-                    "commentStart": 9244,
-                    "end": 9253,
+                    "commentStart": 9582,
+                    "end": 9591,
                     "moduleId": 0,
-                    "start": 9244,
+                    "start": 9582,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -18915,10 +18923,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 9325,
-                    "end": 9335,
+                    "commentStart": 9663,
+                    "end": 9673,
                     "moduleId": 0,
-                    "start": 9325,
+                    "start": 9663,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -19263,10 +19271,10 @@ description: Variables in memory after executing utility-sink.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 9092,
-            "end": 9100,
+            "commentStart": 9430,
+            "end": 9438,
             "moduleId": 0,
-            "start": 9092,
+            "start": 9430,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -19287,10 +19295,10 @@ description: Variables in memory after executing utility-sink.kcl
             600.0
           ],
           "tag": {
-            "commentStart": 9166,
-            "end": 9173,
+            "commentStart": 9504,
+            "end": 9511,
             "moduleId": 0,
-            "start": 9166,
+            "start": 9504,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -19311,10 +19319,10 @@ description: Variables in memory after executing utility-sink.kcl
             600.0
           ],
           "tag": {
-            "commentStart": 9244,
-            "end": 9253,
+            "commentStart": 9582,
+            "end": 9591,
             "moduleId": 0,
-            "start": 9244,
+            "start": 9582,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -19335,10 +19343,10 @@ description: Variables in memory after executing utility-sink.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 9325,
-            "end": 9335,
+            "commentStart": 9663,
+            "end": 9673,
             "moduleId": 0,
-            "start": 9325,
+            "start": 9663,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -19442,10 +19450,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 17900,
-            "end": 17915,
+            "commentStart": 18238,
+            "end": 18253,
             "moduleId": 0,
-            "start": 17900,
+            "start": 18238,
             "type": "TagDeclarator",
             "value": "tapHandleCircle"
           },
@@ -19473,10 +19481,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 4.000000000999989,
             "tag": {
-              "commentStart": 17900,
-              "end": 17915,
+              "commentStart": 18238,
+              "end": 18253,
               "moduleId": 0,
-              "start": 17900,
+              "start": 18238,
               "type": "TagDeclarator",
               "value": "tapHandleCircle"
             },
@@ -19579,10 +19587,10 @@ description: Variables in memory after executing utility-sink.kcl
           ],
           "radius": 4.000000000999989,
           "tag": {
-            "commentStart": 17900,
-            "end": 17915,
+            "commentStart": 18238,
+            "end": 18253,
             "moduleId": 0,
-            "start": 17900,
+            "start": 18238,
             "type": "TagDeclarator",
             "value": "tapHandleCircle"
           },
@@ -19665,10 +19673,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 17900,
-            "end": 17915,
+            "commentStart": 18238,
+            "end": 18253,
             "moduleId": 0,
-            "start": 17900,
+            "start": 18238,
             "type": "TagDeclarator",
             "value": "tapHandleCircle"
           },
@@ -19696,10 +19704,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 4.000000000999989,
             "tag": {
-              "commentStart": 17900,
-              "end": 17915,
+              "commentStart": 18238,
+              "end": 18253,
               "moduleId": 0,
-              "start": 17900,
+              "start": 18238,
               "type": "TagDeclarator",
               "value": "tapHandleCircle"
             },
@@ -20045,10 +20053,10 @@ description: Variables in memory after executing utility-sink.kcl
                   ],
                   "radius": 4.000000000999989,
                   "tag": {
-                    "commentStart": 17900,
-                    "end": 17915,
+                    "commentStart": 18238,
+                    "end": 18253,
                     "moduleId": 0,
-                    "start": 17900,
+                    "start": 18238,
                     "type": "TagDeclarator",
                     "value": "tapHandleCircle"
                   },
@@ -20378,10 +20386,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 16566,
-            "end": 16579,
+            "commentStart": 16904,
+            "end": 16917,
             "moduleId": 0,
-            "start": 16566,
+            "start": 16904,
             "type": "TagDeclarator",
             "value": "tapNoseCircle"
           },
@@ -20409,10 +20417,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 10.00000000099999,
             "tag": {
-              "commentStart": 16566,
-              "end": 16579,
+              "commentStart": 16904,
+              "end": 16917,
               "moduleId": 0,
-              "start": 16566,
+              "start": 16904,
               "type": "TagDeclarator",
               "value": "tapNoseCircle"
             },
@@ -20515,10 +20523,10 @@ description: Variables in memory after executing utility-sink.kcl
           ],
           "radius": 10.00000000099999,
           "tag": {
-            "commentStart": 16566,
-            "end": 16579,
+            "commentStart": 16904,
+            "end": 16917,
             "moduleId": 0,
-            "start": 16566,
+            "start": 16904,
             "type": "TagDeclarator",
             "value": "tapNoseCircle"
           },
@@ -20601,10 +20609,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 16566,
-            "end": 16579,
+            "commentStart": 16904,
+            "end": 16917,
             "moduleId": 0,
-            "start": 16566,
+            "start": 16904,
             "type": "TagDeclarator",
             "value": "tapNoseCircle"
           },
@@ -20632,10 +20640,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 10.00000000099999,
             "tag": {
-              "commentStart": 16566,
-              "end": 16579,
+              "commentStart": 16904,
+              "end": 16917,
               "moduleId": 0,
-              "start": 16566,
+              "start": 16904,
               "type": "TagDeclarator",
               "value": "tapNoseCircle"
             },
@@ -20981,10 +20989,10 @@ description: Variables in memory after executing utility-sink.kcl
                   ],
                   "radius": 10.00000000099999,
                   "tag": {
-                    "commentStart": 16566,
-                    "end": 16579,
+                    "commentStart": 16904,
+                    "end": 16917,
                     "moduleId": 0,
-                    "start": 16566,
+                    "start": 16904,
                     "type": "TagDeclarator",
                     "value": "tapNoseCircle"
                   },
@@ -21314,10 +21322,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 15212,
-            "end": 15227,
+            "commentStart": 15550,
+            "end": 15565,
             "moduleId": 0,
-            "start": 15212,
+            "start": 15550,
             "type": "TagDeclarator",
             "value": "tapPillarCircle"
           },
@@ -21345,10 +21353,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 15.00000000099999,
             "tag": {
-              "commentStart": 15212,
-              "end": 15227,
+              "commentStart": 15550,
+              "end": 15565,
               "moduleId": 0,
-              "start": 15212,
+              "start": 15550,
               "type": "TagDeclarator",
               "value": "tapPillarCircle"
             },
@@ -21451,10 +21459,10 @@ description: Variables in memory after executing utility-sink.kcl
           ],
           "radius": 15.00000000099999,
           "tag": {
-            "commentStart": 15212,
-            "end": 15227,
+            "commentStart": 15550,
+            "end": 15565,
             "moduleId": 0,
-            "start": 15212,
+            "start": 15550,
             "type": "TagDeclarator",
             "value": "tapPillarCircle"
           },
@@ -21537,10 +21545,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 15212,
-            "end": 15227,
+            "commentStart": 15550,
+            "end": 15565,
             "moduleId": 0,
-            "start": 15212,
+            "start": 15550,
             "type": "TagDeclarator",
             "value": "tapPillarCircle"
           },
@@ -21568,10 +21576,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 15.00000000099999,
             "tag": {
-              "commentStart": 15212,
-              "end": 15227,
+              "commentStart": 15550,
+              "end": 15565,
               "moduleId": 0,
-              "start": 15212,
+              "start": 15550,
               "type": "TagDeclarator",
               "value": "tapPillarCircle"
             },
@@ -21917,10 +21925,10 @@ description: Variables in memory after executing utility-sink.kcl
                   ],
                   "radius": 15.00000000099999,
                   "tag": {
-                    "commentStart": 15212,
-                    "end": 15227,
+                    "commentStart": 15550,
+                    "end": 15565,
                     "moduleId": 0,
-                    "start": 15212,
+                    "start": 15550,
                     "type": "TagDeclarator",
                     "value": "tapPillarCircle"
                   },
@@ -22250,10 +22258,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13874,
-            "end": 13888,
+            "commentStart": 14212,
+            "end": 14226,
             "moduleId": 0,
-            "start": 13874,
+            "start": 14212,
             "type": "TagDeclarator",
             "value": "tapPlateCircle"
           },
@@ -22281,10 +22289,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 40.00000000099999,
             "tag": {
-              "commentStart": 13874,
-              "end": 13888,
+              "commentStart": 14212,
+              "end": 14226,
               "moduleId": 0,
-              "start": 13874,
+              "start": 14212,
               "type": "TagDeclarator",
               "value": "tapPlateCircle"
             },
@@ -22387,10 +22395,10 @@ description: Variables in memory after executing utility-sink.kcl
           ],
           "radius": 40.00000000099999,
           "tag": {
-            "commentStart": 13874,
-            "end": 13888,
+            "commentStart": 14212,
+            "end": 14226,
             "moduleId": 0,
-            "start": 13874,
+            "start": 14212,
             "type": "TagDeclarator",
             "value": "tapPlateCircle"
           },
@@ -22473,10 +22481,10 @@ description: Variables in memory after executing utility-sink.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13874,
-            "end": 13888,
+            "commentStart": 14212,
+            "end": 14226,
             "moduleId": 0,
-            "start": 13874,
+            "start": 14212,
             "type": "TagDeclarator",
             "value": "tapPlateCircle"
           },
@@ -22504,10 +22512,10 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "radius": 40.00000000099999,
             "tag": {
-              "commentStart": 13874,
-              "end": 13888,
+              "commentStart": 14212,
+              "end": 14226,
               "moduleId": 0,
-              "start": 13874,
+              "start": 14212,
               "type": "TagDeclarator",
               "value": "tapPlateCircle"
             },
@@ -22853,10 +22861,10 @@ description: Variables in memory after executing utility-sink.kcl
                   ],
                   "radius": 40.00000000099999,
                   "tag": {
-                    "commentStart": 13874,
-                    "end": 13888,
+                    "commentStart": 14212,
+                    "end": 14226,
                     "moduleId": 0,
-                    "start": 13874,
+                    "start": 14212,
                     "type": "TagDeclarator",
                     "value": "tapPlateCircle"
                   },
@@ -23194,10 +23202,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6643,
-                "end": 6651,
+                "commentStart": 6843,
+                "end": 6851,
                 "moduleId": 0,
-                "start": 6643,
+                "start": 6843,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -23208,10 +23216,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6716,
-                "end": 6723,
+                "commentStart": 6916,
+                "end": 6923,
                 "moduleId": 0,
-                "start": 6716,
+                "start": 6916,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -23222,10 +23230,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6792,
-                "end": 6801,
+                "commentStart": 6992,
+                "end": 7001,
                 "moduleId": 0,
-                "start": 6792,
+                "start": 6992,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -23236,10 +23244,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6872,
-                "end": 6882,
+                "commentStart": 7072,
+                "end": 7082,
                 "moduleId": 0,
-                "start": 6872,
+                "start": 7072,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -23261,10 +23269,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 6643,
-                  "end": 6651,
+                  "commentStart": 6843,
+                  "end": 6851,
                   "moduleId": 0,
-                  "start": 6643,
+                  "start": 6843,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -23285,10 +23293,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 6716,
-                  "end": 6723,
+                  "commentStart": 6916,
+                  "end": 6923,
                   "moduleId": 0,
-                  "start": 6716,
+                  "start": 6916,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -23309,10 +23317,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 6792,
-                  "end": 6801,
+                  "commentStart": 6992,
+                  "end": 7001,
                   "moduleId": 0,
-                  "start": 6792,
+                  "start": 6992,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -23333,10 +23341,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 6872,
-                  "end": 6882,
+                  "commentStart": 7072,
+                  "end": 7082,
                   "moduleId": 0,
-                  "start": 6872,
+                  "start": 7072,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -23415,6 +23423,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -23445,10 +23454,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 6643,
-                  "end": 6651,
+                  "commentStart": 6843,
+                  "end": 6851,
                   "moduleId": 0,
-                  "start": 6643,
+                  "start": 6843,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -23469,10 +23478,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 6716,
-                  "end": 6723,
+                  "commentStart": 6916,
+                  "end": 6923,
                   "moduleId": 0,
-                  "start": 6716,
+                  "start": 6916,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -23493,10 +23502,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 6792,
-                  "end": 6801,
+                  "commentStart": 6992,
+                  "end": 7001,
                   "moduleId": 0,
-                  "start": 6792,
+                  "start": 6992,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -23517,10 +23526,10 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 6872,
-                  "end": 6882,
+                  "commentStart": 7072,
+                  "end": 7082,
                   "moduleId": 0,
-                  "start": 6872,
+                  "start": 7072,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -23599,6 +23608,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -23624,10 +23634,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7829,
-                "end": 7837,
+                "commentStart": 8098,
+                "end": 8106,
                 "moduleId": 0,
-                "start": 7829,
+                "start": 8098,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -23638,10 +23648,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7904,
-                "end": 7911,
+                "commentStart": 8173,
+                "end": 8180,
                 "moduleId": 0,
-                "start": 7904,
+                "start": 8173,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -23652,10 +23662,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7980,
-                "end": 7989,
+                "commentStart": 8249,
+                "end": 8258,
                 "moduleId": 0,
-                "start": 7980,
+                "start": 8249,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -23666,10 +23676,10 @@ description: Variables in memory after executing utility-sink.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8058,
-                "end": 8068,
+                "commentStart": 8327,
+                "end": 8337,
                 "moduleId": 0,
-                "start": 8058,
+                "start": 8327,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -23691,10 +23701,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 7829,
-                  "end": 7837,
+                  "commentStart": 8098,
+                  "end": 8106,
                   "moduleId": 0,
-                  "start": 7829,
+                  "start": 8098,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -23715,10 +23725,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 7904,
-                  "end": 7911,
+                  "commentStart": 8173,
+                  "end": 8180,
                   "moduleId": 0,
-                  "start": 7904,
+                  "start": 8173,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -23739,10 +23749,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 7980,
-                  "end": 7989,
+                  "commentStart": 8249,
+                  "end": 8258,
                   "moduleId": 0,
-                  "start": 7980,
+                  "start": 8249,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -23763,10 +23773,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 8058,
-                  "end": 8068,
+                  "commentStart": 8327,
+                  "end": 8337,
                   "moduleId": 0,
-                  "start": 8058,
+                  "start": 8327,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -23845,6 +23855,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -23875,10 +23886,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 7829,
-                  "end": 7837,
+                  "commentStart": 8098,
+                  "end": 8106,
                   "moduleId": 0,
-                  "start": 7829,
+                  "start": 8098,
                   "type": "TagDeclarator",
                   "value": "leftEdge"
                 },
@@ -23899,10 +23910,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 7904,
-                  "end": 7911,
+                  "commentStart": 8173,
+                  "end": 8180,
                   "moduleId": 0,
-                  "start": 7904,
+                  "start": 8173,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -23923,10 +23934,10 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "tag": {
-                  "commentStart": 7980,
-                  "end": 7989,
+                  "commentStart": 8249,
+                  "end": 8258,
                   "moduleId": 0,
-                  "start": 7980,
+                  "start": 8249,
                   "type": "TagDeclarator",
                   "value": "rightEdge"
                 },
@@ -23947,10 +23958,10 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "tag": {
-                  "commentStart": 8058,
-                  "end": 8068,
+                  "commentStart": 8327,
+                  "end": 8337,
                   "moduleId": 0,
-                  "start": 8058,
+                  "start": 8327,
                   "type": "TagDeclarator",
                   "value": "bottomEdge"
                 },
@@ -24029,6 +24040,7 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -24343,10 +24355,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6643,
-                    "end": 6651,
+                    "commentStart": 6843,
+                    "end": 6851,
                     "moduleId": 0,
-                    "start": 6643,
+                    "start": 6843,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -24367,10 +24379,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 6716,
-                    "end": 6723,
+                    "commentStart": 6916,
+                    "end": 6923,
                     "moduleId": 0,
-                    "start": 6716,
+                    "start": 6916,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -24391,10 +24403,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 6792,
-                    "end": 6801,
+                    "commentStart": 6992,
+                    "end": 7001,
                     "moduleId": 0,
-                    "start": 6792,
+                    "start": 6992,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -24415,10 +24427,10 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6872,
-                    "end": 6882,
+                    "commentStart": 7072,
+                    "end": 7082,
                     "moduleId": 0,
-                    "start": 6872,
+                    "start": 7072,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -24766,10 +24778,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 6643,
-                "end": 6651,
+                "commentStart": 6843,
+                "end": 6851,
                 "moduleId": 0,
-                "start": 6643,
+                "start": 6843,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -24790,10 +24802,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 6716,
-                "end": 6723,
+                "commentStart": 6916,
+                "end": 6923,
                 "moduleId": 0,
-                "start": 6716,
+                "start": 6916,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -24814,10 +24826,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 6792,
-                "end": 6801,
+                "commentStart": 6992,
+                "end": 7001,
                 "moduleId": 0,
-                "start": 6792,
+                "start": 6992,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -24838,10 +24850,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 6872,
-                "end": 6882,
+                "commentStart": 7072,
+                "end": 7082,
                 "moduleId": 0,
-                "start": 6872,
+                "start": 7072,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -24920,8 +24932,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -24940,10 +24952,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 6643,
-                "end": 6651,
+                "commentStart": 6843,
+                "end": 6851,
                 "moduleId": 0,
-                "start": 6643,
+                "start": 6843,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -24964,10 +24976,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 6716,
-                "end": 6723,
+                "commentStart": 6916,
+                "end": 6923,
                 "moduleId": 0,
-                "start": 6716,
+                "start": 6916,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -24988,10 +25000,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 6792,
-                "end": 6801,
+                "commentStart": 6992,
+                "end": 7001,
                 "moduleId": 0,
-                "start": 6792,
+                "start": 6992,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -25012,10 +25024,10 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 6872,
-                "end": 6882,
+                "commentStart": 7072,
+                "end": 7082,
                 "moduleId": 0,
-                "start": 6872,
+                "start": 7072,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -25094,8 +25106,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       }
     ]
@@ -25362,10 +25374,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 7829,
-                    "end": 7837,
+                    "commentStart": 8098,
+                    "end": 8106,
                     "moduleId": 0,
-                    "start": 7829,
+                    "start": 8098,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -25386,10 +25398,10 @@ description: Variables in memory after executing utility-sink.kcl
                     587.0
                   ],
                   "tag": {
-                    "commentStart": 7904,
-                    "end": 7911,
+                    "commentStart": 8173,
+                    "end": 8180,
                     "moduleId": 0,
-                    "start": 7904,
+                    "start": 8173,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -25410,10 +25422,10 @@ description: Variables in memory after executing utility-sink.kcl
                     587.0
                   ],
                   "tag": {
-                    "commentStart": 7980,
-                    "end": 7989,
+                    "commentStart": 8249,
+                    "end": 8258,
                     "moduleId": 0,
-                    "start": 7980,
+                    "start": 8249,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -25434,10 +25446,10 @@ description: Variables in memory after executing utility-sink.kcl
                     13.0
                   ],
                   "tag": {
-                    "commentStart": 8058,
-                    "end": 8068,
+                    "commentStart": 8327,
+                    "end": 8337,
                     "moduleId": 0,
-                    "start": 8058,
+                    "start": 8327,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -25906,10 +25918,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 7829,
-                "end": 7837,
+                "commentStart": 8098,
+                "end": 8106,
                 "moduleId": 0,
-                "start": 7829,
+                "start": 8098,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -25930,10 +25942,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 7904,
-                "end": 7911,
+                "commentStart": 8173,
+                "end": 8180,
                 "moduleId": 0,
-                "start": 7904,
+                "start": 8173,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -25954,10 +25966,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 7980,
-                "end": 7989,
+                "commentStart": 8249,
+                "end": 8258,
                 "moduleId": 0,
-                "start": 7980,
+                "start": 8249,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -25978,10 +25990,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 8058,
-                "end": 8068,
+                "commentStart": 8327,
+                "end": 8337,
                 "moduleId": 0,
-                "start": 8058,
+                "start": 8327,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -26060,8 +26072,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       },
       {
@@ -26080,10 +26092,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 7829,
-                "end": 7837,
+                "commentStart": 8098,
+                "end": 8106,
                 "moduleId": 0,
-                "start": 7829,
+                "start": 8098,
                 "type": "TagDeclarator",
                 "value": "leftEdge"
               },
@@ -26104,10 +26116,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 7904,
-                "end": 7911,
+                "commentStart": 8173,
+                "end": 8180,
                 "moduleId": 0,
-                "start": 7904,
+                "start": 8173,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -26128,10 +26140,10 @@ description: Variables in memory after executing utility-sink.kcl
                 587.0
               ],
               "tag": {
-                "commentStart": 7980,
-                "end": 7989,
+                "commentStart": 8249,
+                "end": 8258,
                 "moduleId": 0,
-                "start": 7980,
+                "start": 8249,
                 "type": "TagDeclarator",
                 "value": "rightEdge"
               },
@@ -26152,10 +26164,10 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0
               ],
               "tag": {
-                "commentStart": 8058,
-                "end": 8068,
+                "commentStart": 8327,
+                "end": 8337,
                 "moduleId": 0,
-                "start": 8058,
+                "start": 8327,
                 "type": "TagDeclarator",
                 "value": "bottomEdge"
               },
@@ -26234,8 +26246,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": "mm",
-          "isClosed": "implicitly"
+          "originSketchId": "[uuid]",
+          "units": "mm"
         }
       }
     ]
