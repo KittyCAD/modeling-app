@@ -34,7 +34,14 @@ export function ProjectCopyDialog({
   }, [onDismiss])
 
   const cancelButton = (
-    <ActionButton key="cancel" Element="button" onClick={onDismiss}>
+    <ActionButton
+      key="cancel"
+      Element="button"
+      type="button"
+      tabIndex={0}
+      className="py-2"
+      onClick={onDismiss}
+    >
       Cancel
     </ActionButton>
   )
@@ -42,6 +49,15 @@ export function ProjectCopyDialog({
     <ActionButton
       key="confirm"
       Element="button"
+      type="button"
+      tabIndex={0}
+      iconStart={{
+        icon: 'split',
+        size: 'sm',
+        className: 'px-2',
+        bgClassName: '!bg-transparent dark:!bg-transparent',
+      }}
+      className="bg-primary py-2 !pr-3 text-white hover:bg-primary/90 dark:bg-primary dark:text-white dark:hover:bg-primary/90"
       onClick={() => onConfirm(keepProjectPath)}
       data-testid="separate-project-copies-confirmation"
     >

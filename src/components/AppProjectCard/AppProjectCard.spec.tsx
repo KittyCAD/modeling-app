@@ -369,9 +369,15 @@ describe('ProjectCard', () => {
     )
     expect(screen.getByText('Separate Project Copies')).toBeInTheDocument()
     expect(screen.getByLabelText('/projects/old-cloud-title')).toBeChecked()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveClass('py-2')
+    const separateButton = screen.getByTestId(
+      'separate-project-copies-confirmation'
+    )
+    expect(separateButton).toHaveClass('py-2', 'bg-primary')
+    expect(within(separateButton).getByLabelText('split')).toBeInTheDocument()
 
     fireEvent.click(screen.getByLabelText('/projects/copied-project'))
-    fireEvent.click(screen.getByTestId('separate-project-copies-confirmation'))
+    fireEvent.click(separateButton)
 
     await waitFor(() =>
       expect(projectActions.separateProjectCopies).toHaveBeenCalledWith(

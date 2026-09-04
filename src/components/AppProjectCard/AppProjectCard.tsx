@@ -543,7 +543,7 @@ function AppProjectCard({
               ? [
                   <ContextMenuItem
                     key="separate-project-copies"
-                    icon="clone"
+                    icon="split"
                     disabled={!canSeparateProjectCopies}
                     data-testid="project-card-context-separate-project-copies"
                     onClick={() => setIsSeparatingProjectCopies(true)}
