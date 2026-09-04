@@ -30,6 +30,7 @@ type DialogCommandName =
   | 'Revolve'
   | 'Hole'
   | 'Chamfer'
+  | 'Appearance'
   | 'Export'
 
 type DialogArgName<Name extends DialogCommandName> = Extract<
@@ -250,6 +251,18 @@ describe('Loft dialog contract', () => {
     })
   })
 })
+
+runDialogContract('Appearance', [
+  {
+    name: 'initializes the displayed white color as a real argument',
+    expectedValues: { color: '#ffffff' },
+  },
+  {
+    name: 'preserves the authored color when editing',
+    authored: { nodeToEdit: [], color: '#ff0000' },
+    expectedValues: { color: '#ff0000' },
+  },
+])
 
 runDialogContract('Revolve', [
   {

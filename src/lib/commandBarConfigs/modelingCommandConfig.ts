@@ -21,6 +21,8 @@ import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/mod
 import {
   isEditingNode,
   isEditingNodeSelection,
+  isUsingModelingDialog,
+  type ModelingDialogContext,
 } from '@src/lib/commandBarConfigs/modelingDialogShared'
 import {
   chamferDialogLayout,
@@ -1132,6 +1134,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           color: {
             inputType: 'color',
+            defaultValue: (context: ModelingDialogContext) =>
+              isUsingModelingDialog(context) ? '#ffffff' : '',
           },
         },
       }

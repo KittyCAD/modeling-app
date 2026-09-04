@@ -379,15 +379,8 @@ export async function resolveDialogArguments({
       if (value === undefined || value === '') {
         value = undefined
       } else if (typeof value === 'string') {
-        const trimmed = value.trim()
         const expression =
-          arg.inputType === 'kcl'
-            ? getKclSubmitValue(arg, value)
-            : arg.inputType === 'vector2d' || arg.inputType === 'vector3d'
-              ? trimmed.startsWith('[')
-                ? trimmed
-                : `[${trimmed}]`
-              : trimmed
+          arg.inputType === 'kcl' ? getKclSubmitValue(arg, value) : value.trim()
         const parsed = await stringToKclExpression(expression, rustContext, {
           allowArrays:
             arg.inputType === 'vector2d' ||

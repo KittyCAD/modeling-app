@@ -273,13 +273,30 @@ export function getSelectionListItems(
   }
 
   const items: CapturedSelectionListItem[] = []
+  const identityOccurrences = new Map<string, number>()
+  const itemId = (identity: unknown[]) => {
+    const key = JSON.stringify(identity)
+    const occurrence = identityOccurrences.get(key) ?? 0
+    identityOccurrences.set(key, occurrence + 1)
+    return `${key}-${occurrence}`
+  }
   const canReorder =
     selection.graphSelections.length === 0 ||
     selection.otherSelections.length === 0
 
   selection.graphSelections.forEach((graphSelection, index) => {
     items.push({
-      id: `graph-${index}`,
+      // Keep the row (and keyboard focus) with its geometry when reordered.
+      id: itemId([
+        'graph',
+        graphSelection.artifact?.id ??
+          graphSelection.engineEntityId ?? [
+            graphSelection.codeRef.range,
+            graphSelection.codeRef.pathToNode,
+          ],
+        graphSelection.engineEntityId,
+        graphSelection.patternIndex,
+      ]),
       source: 'graphSelections',
       index,
       canMoveUp: canReorder && index > 0,
@@ -293,7 +310,14 @@ export function getSelectionListItems(
 
   selection.otherSelections.forEach((otherSelection, index) => {
     items.push({
-      id: `other-${index}`,
+      id: itemId([
+        'other',
+        typeof otherSelection === 'string'
+          ? otherSelection
+          : 'entityId' in otherSelection
+            ? otherSelection.entityId
+            : otherSelection.id,
+      ]),
       source: 'otherSelections',
       index,
       canMoveUp: canReorder && index > 0,
