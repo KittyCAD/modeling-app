@@ -38,6 +38,7 @@ import { mark, markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { xstateEventError } from '@src/machines/utils'
 import { assign, fromPromise, setup } from 'xstate'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const NO_TOKEN_FOUND_MESSAGE = 'No token found'
 
@@ -391,7 +392,7 @@ function getTokenFromEnvOrCookie(): string {
   // Store the token passed to the Vercel environment
   const queryParams = new URLSearchParams(window.location?.search ?? '')
   const queryToken = queryParams.get(VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM)
-  if (queryToken) {
+  if (queryToken && IS_STAGING_OR_DEBUG) {
     window.localStorage?.setItem(TOKEN_PERSIST_KEY, queryToken)
     window.localStorage?.setItem(IS_PLAYWRIGHT_KEY, 'true')
     return queryToken
