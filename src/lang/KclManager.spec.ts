@@ -4,7 +4,15 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import {
+  artifactGraphField,
+  setArtifactGraphEffect,
+} from '@src/editor/plugins/artifacts'
 import { createEmptyAst } from '@src/editor/plugins/ast'
+import {
+  operationsStateField,
+  setOperationsEffect,
+} from '@src/editor/plugins/operations'
 import { File, KclManager } from '@src/lang/KclManager'
 import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -24,11 +32,13 @@ vi.mock('react-hot-toast', () => ({
   default: toastMocks,
 }))
 
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import {
   createKclManagerTestHarness,
   getLatestDispatchedDiagnostics,
 } from '@src/lang/testHelpers/kclManagerTestHarness'
-import { defaultNodePath } from '@src/lang/wasm'
+import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import { defaultNodePath, emptyExecState } from '@src/lang/wasm'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -88,8 +98,27 @@ function createLiveOperation(name: string, index: number): Operation {
   }
 }
 
+function createArtifactGraphWithPreviousFileEntry(): ArtifactGraph {
+  const artifactGraph = defaultArtifactGraph()
+  artifactGraph.set('previous-file-artifact', {
+    id: 'previous-file-artifact',
+    type: 'plane',
+    paths: [],
+    codeRef: {
+      range: [0, 1, 0],
+      pathToNode: defaultNodePath(),
+    },
+  } as unknown as Artifact)
+
+  return artifactGraph
+}
+
 type LiveOperationTestApi = {
   dispatchUpdateOperations(operations: Operation[]): void
+}
+
+type ExecStateTestApi = {
+  execState: ReturnType<typeof emptyExecState>
 }
 
 function liveOperationTestApi(kclManager: KclManager): LiveOperationTestApi {
@@ -168,6 +197,67 @@ describe('KclManager live operation updates', () => {
       expect.stringContaining('Live operation updates failed')
     )
     consoleErrorSpy.mockRestore()
+  })
+})
+
+describe('KclManager file switching', () => {
+  it('clears previous-file operations and artifacts while the next file executes', () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const previousOperation = createLiveOperation('previousFileOperation', 0)
+    const previousArtifactGraph = createArtifactGraphWithPreviousFileEntry()
+    const previousExecState = {
+      ...emptyExecState(),
+      artifactGraph: previousArtifactGraph,
+      operations: { map: { 0: [previousOperation] } },
+    }
+
+    ;(kclManager as unknown as ExecStateTestApi).execState = previousExecState
+    kclManager.lastSuccessfulOperations = previousExecState.operations
+    kclManager.lastSuccessfulVariables = { stale: true } as never
+    kclManager.artifactGraph = previousArtifactGraph
+    kclManager.editorView.dispatch({
+      effects: [
+        setOperationsEffect.of([previousOperation]),
+        setArtifactGraphEffect.of(previousArtifactGraph),
+      ],
+    })
+
+    expect(kclManager.operationsByModule).toStrictEqual(
+      previousExecState.operations
+    )
+    expect(
+      kclManager.editorView.state.field(operationsStateField, false)
+    ).toEqual([previousOperation])
+    expect(kclManager.artifactGraph.size).toBe(1)
+    const previousEditorArtifactGraph = kclManager.editorView.state.field(
+      artifactGraphField,
+      false
+    )
+    if (previousEditorArtifactGraph) {
+      expect(previousEditorArtifactGraph.size).toBe(1)
+    }
+
+    kclManager.switchedFiles = true
+
+    expect(kclManager.operationsByModule).toStrictEqual(
+      emptyExecState().operations
+    )
+    expect(kclManager.lastSuccessfulOperations).toStrictEqual(
+      emptyExecState().operations
+    )
+    expect(kclManager.lastSuccessfulVariables).toStrictEqual({})
+    expect(
+      kclManager.editorView.state.field(operationsStateField, false)
+    ).toEqual([])
+    expect(kclManager.artifactGraph.size).toBe(0)
+    expect(kclManager.artifactIndex).toStrictEqual([])
+    const clearedEditorArtifactGraph = kclManager.editorView.state.field(
+      artifactGraphField,
+      false
+    )
+    if (clearedEditorArtifactGraph) {
+      expect(clearedEditorArtifactGraph.size).toBe(0)
+    }
   })
 })
 
