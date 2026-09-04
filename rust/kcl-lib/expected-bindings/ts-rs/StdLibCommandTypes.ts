@@ -4,6 +4,4 @@ export type StdLibCommandArgShape = { name: string, ty: string | null, docs: str
 
 export type StdLibCommandShape = { name: string, preferredName: string, qualName: string, moduleName: string, returnType: string | null, summary?: string, deprecated: boolean, deprecatedSince: string | null, experimental: boolean, docHidden: boolean, args: Array<StdLibCommandArgShape>, };
 
-export type StdLibConstantShape = { name: string, preferredName: string, qualName: string, moduleName: string, ty: string | null, value?: StdLibLiteralValueShape, summary?: string, deprecated: boolean, deprecatedSince: string | null, experimental: boolean, docHidden: boolean, };
-
 export type StdLibLiteralValueShape = { source: string, };

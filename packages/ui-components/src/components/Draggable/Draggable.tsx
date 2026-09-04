@@ -11,8 +11,6 @@ export interface DraggableProps extends HTMLProps<HTMLDivElement> {
   containerRef?: RefObject<HTMLElement | null>
   Handle?: ReactNode
   side?: DraggableSide
-  /** If true, pin the element into container bounds immediately on mount. */
-  startInContainer?: boolean
 }
 
 export type DraggableSide = 'top' | 'right' | 'bottom' | 'left'
@@ -32,7 +30,6 @@ export function Draggable({
   containerRef,
   Handle,
   side: providedSide,
-  startInContainer = false,
   style: providedStyle,
   children,
   ...props
@@ -66,38 +63,6 @@ export function Draggable({
     }
   }, [])
 
-  const pinIntoContainer = useCallback(() => {
-    if (!startInContainer || !targetRef.current || !containerRef?.current) {
-      return
-    }
-
-    const computedStyles = getComputedStyle(targetRef.current)
-    if (computedStyles.position === 'fixed') {
-      return
-    }
-
-    const targetRect = targetRef.current.getBoundingClientRect()
-    const containerRect = containerRef.current.getBoundingClientRect()
-    const margin = parseMargins(computedStyles)
-
-    const top = clamp(
-      targetRect.top,
-      containerRect.top - margin.blockStart,
-      containerRect.bottom - targetRect.height - margin.blockEnd
-    )
-    const left = clamp(
-      targetRect.left,
-      containerRect.left - margin.inlineStart,
-      containerRect.right - targetRect.width - margin.inlineEnd
-    )
-
-    targetRef.current.style.position = 'fixed'
-    targetRef.current.style.top = `${top}px`
-    targetRef.current.style.left = `${left}px`
-    targetRef.current.style.width = `${targetRect.width}px`
-    targetRef.current.style.height = `${targetRect.height}px`
-  }, [containerRef, parseMargins, startInContainer])
-
   const onContainerResize = useCallback((entries: ResizeObserverEntry[]) => {
     if (!targetRef.current || !offsetRef.current || entries.length !== 1) {
       return
@@ -111,7 +76,8 @@ export function Draggable({
     }
 
     const targetRect = targetRef.current.getBoundingClientRect()
-    const containerRect = entries[0].contentRect
+    // Fixed positioning needs viewport coordinates, unlike contentRect.
+    const containerRect = entries[0].target.getBoundingClientRect()
 
     const top = clamp(
       targetRect.top,
@@ -139,32 +105,6 @@ export function Draggable({
 
     return () => observer.unobserve(container)
   }, [containerRef, onContainerResize])
-
-  useEffect(() => {
-    if (!startInContainer) {
-      return
-    }
-
-    if (containerRef?.current) {
-      pinIntoContainer()
-      return
-    }
-
-    let attempts = 0
-    let rafId = 0
-    const maxAttempts = 8
-
-    const tryPin = () => {
-      pinIntoContainer()
-      if (!containerRef?.current && attempts < maxAttempts) {
-        attempts += 1
-        rafId = requestAnimationFrame(tryPin)
-      }
-    }
-
-    rafId = requestAnimationFrame(tryPin)
-    return () => cancelAnimationFrame(rafId)
-  }, [containerRef, pinIntoContainer, startInContainer])
 
   const elementDrag = useCallback(
     (offset: Offset) => (e: MouseEvent) => {

@@ -65,6 +65,7 @@ export type CommandBarInput = {
 }
 export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
+  commandInvocationId: number
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
   reviewValidationError?: string
@@ -91,6 +92,7 @@ export type CommandBarMachineEvent =
       type: 'Submit command from dialog'
       data: {
         command: Command
+        commandInvocationId: number
         argumentsToSubmit: { [x: string]: unknown }
       }
     }
@@ -363,6 +365,8 @@ export const commandBarMachine = setup({
       },
     }),
     'Initialize arguments to submit': assign({
+      // Registered command objects are reused when editing another feature.
+      commandInvocationId: ({ context }) => context.commandInvocationId + 1,
       argumentsToSubmit: ({ context, event }) => {
         if (
           event.type !== 'Select command' &&
@@ -493,7 +497,8 @@ export const commandBarMachine = setup({
     'Dialog submission matches selected command': ({ context, event }) =>
       event.type === 'Submit command from dialog' &&
       isModelingDialogCommand(context.selectedCommand) &&
-      event.data.command === context.selectedCommand,
+      event.data.command === context.selectedCommand &&
+      event.data.commandInvocationId === context.commandInvocationId,
     'Has review validation error': ({ event }) =>
       event.type === 'xstate.done.actor.validateArguments' &&
       !!event.output.reviewValidationError,
@@ -695,6 +700,7 @@ export const commandBarMachine = setup({
     ...input,
     commands: input.commands || [],
     selectedCommand: undefined,
+    commandInvocationId: 0,
     currentArgument: undefined,
     selectionRanges: {
       otherSelections: [],

@@ -53,7 +53,7 @@ export type ArgumentFieldProps<Item extends SelectionListItem> = {
   onClearSelection?: () => void
 }
 
-function isOptionValueEqual(a: unknown, b: unknown): boolean {
+export function isOptionValueEqual(a: unknown, b: unknown): boolean {
   if (typeof a === 'object' && typeof b === 'object' && a && b) {
     return JSON.stringify(a) === JSON.stringify(b)
   }

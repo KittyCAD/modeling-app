@@ -13,10 +13,6 @@ vi.mock('@src/lang/queryAst', () => ({
 vi.mock('@src/lang/queryAst/getSafeInsertIndex', () => ({
   getSafeInsertIndex: () => 0,
 }))
-vi.mock('@src/lang/wasm', () => ({
-  parse: () => ({}),
-  resultIsOk: () => true,
-}))
 vi.mock('@src/lib/kclHelpers', () => ({
   getCalculatedKclExpressionValue: vi.fn(),
 }))

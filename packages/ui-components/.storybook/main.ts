@@ -18,9 +18,6 @@ const config: StorybookConfig = {
   docs: {
     autodocs: 'tag',
   },
-  typescript: {
-    reactDocgen: false,
-  },
   viteFinal: async (config) =>
     mergeConfig(config, {
       css: {

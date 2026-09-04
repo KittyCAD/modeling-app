@@ -1,4 +1,12 @@
 import {
+  initializeDialogArguments,
+  reconcileDialogArguments,
+} from '@src/components/ModelingDialog/ModelingDialog.arguments'
+import { MachineManager } from '@src/lib/MachineManager'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import {
   type ModelingCommandSchema,
   modelingMachineCommandConfig,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
@@ -6,10 +14,14 @@ import type {
   CommandArgumentConfig,
   CommandDialogLayout,
 } from '@src/lib/commandTypes'
-import { isKclCommandValue } from '@src/lib/commandUtils'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
+
+let instance: ModuleType
+beforeAll(async () => {
+  ;({ instance } = await buildTheWorldAndNoEngineConnection())
+})
 
 type DialogCommandName =
   | 'Extrude'
@@ -18,6 +30,7 @@ type DialogCommandName =
   | 'Revolve'
   | 'Hole'
   | 'Chamfer'
+  | 'Export'
 
 type DialogArgName<Name extends DialogCommandName> = Extract<
   keyof ModelingCommandSchema[Name],
@@ -51,70 +64,26 @@ function getDialogCommandConfig(name: DialogCommandName): DialogCommandConfig {
   return config as unknown as DialogCommandConfig
 }
 
-function initializeDialogArguments(
+function dialogContext(
   config: DialogCommandConfig,
-  authored: Record<string, unknown>
-): Record<string, unknown> {
-  const commandBarArguments = { ...authored }
-
-  // Match commandBarMachine's initial seeding of skip/prepopulate defaults.
-  for (const [argName, argConfig] of Object.entries(config.args ?? {})) {
-    if (Object.hasOwn(commandBarArguments, argName)) {
-      continue
-    }
-    commandBarArguments[argName] =
-      (argConfig.skip || argConfig.prepopulate) && 'defaultValue' in argConfig
-        ? argConfig.defaultValue
-        : undefined
+  argumentsToSubmit: Record<string, unknown>
+): CommandBarContext {
+  return {
+    argumentsToSubmit,
+    commandInvocationId: 1,
+    commands: [],
+    machineManager: new MachineManager(),
+    wasmInstancePromise: Promise.resolve(instance),
+    selectedCommand: {
+      ...config,
+      name: 'Contract test',
+      groupId: 'modeling',
+      useModelingDialog: true,
+      scopes: ['mode-modeling'],
+      needsReview: true,
+      onSubmit: () => {},
+    },
   }
-
-  // Match ModelingDialog's ordered, context-aware default resolution.
-  const draft: Record<string, unknown> = {}
-  for (const [argName, argConfig] of Object.entries(config.args ?? {})) {
-    if (
-      argConfig.inputType === 'selection' ||
-      argConfig.inputType === 'selectionMixed'
-    ) {
-      continue
-    }
-
-    const context = {
-      argumentsToSubmit: { ...commandBarArguments, ...draft },
-      selectedCommand: { useModelingDialog: true },
-    }
-    const isRequired =
-      typeof argConfig.required === 'function'
-        ? argConfig.required(context)
-        : argConfig.required
-    const rawExistingValue = commandBarArguments[argName]
-    const existingValue =
-      typeof rawExistingValue === 'function'
-        ? rawExistingValue(context)
-        : rawExistingValue
-    const shouldResolveDefault =
-      isRequired ||
-      Boolean(argConfig.prepopulate) ||
-      Boolean(argConfig.skip) ||
-      Boolean(argConfig.dialog?.prepopulate)
-    const rawDefaultValue =
-      existingValue === undefined &&
-      shouldResolveDefault &&
-      'defaultValue' in argConfig
-        ? argConfig.defaultValue
-        : undefined
-    const defaultValue =
-      typeof rawDefaultValue === 'function'
-        ? rawDefaultValue(context)
-        : rawDefaultValue
-    const resolvedValue = existingValue ?? defaultValue
-
-    draft[argName] =
-      argConfig.inputType === 'kcl' && isKclCommandValue(resolvedValue)
-        ? resolvedValue.valueText
-        : resolvedValue
-  }
-
-  return { ...commandBarArguments, ...draft }
 }
 
 function evaluateField(
@@ -154,13 +123,16 @@ function runDialogContract<Name extends DialogCommandName>(
       config.dialogLayout?.normalizeArguments?.(draft) ?? { ...draft }
 
     for (const scenario of scenarios) {
-      it(scenario.name, () => {
+      it(scenario.name, async () => {
         const source = {
           __dialogContractSentinel: 'preserve-me',
           ...scenario.authored,
         }
         const sourceSnapshot = structuredClone(source)
-        const hydrated = initializeDialogArguments(config, source)
+        const hydrated = await initializeDialogArguments(
+          dialogContext(config, source),
+          instance
+        )
         const normalized = normalize(hydrated)
 
         expect(normalized).toMatchObject(scenario.expectedModes)
@@ -173,12 +145,14 @@ function runDialogContract<Name extends DialogCommandName>(
         for (const argName of scenario.cleared ?? []) {
           expect(normalized).toHaveProperty(argName, undefined)
         }
-        for (const [argName, expected] of Object.entries(
-          scenario.fields ?? {}
-        )) {
-          expect(evaluateField(config, argName, normalized)).toMatchObject(
-            expected
-          )
+        for (const [argName, expected] of Object.entries<
+          DialogFieldExpectation | undefined
+        >(scenario.fields ?? {})) {
+          if (expected) {
+            expect(evaluateField(config, argName, normalized)).toMatchObject(
+              expected
+            )
+          }
         }
 
         expect(source).toEqual(sourceSnapshot)
@@ -442,3 +416,35 @@ runDialogContract(
     },
   ]
 )
+
+describe('Export dialog dependencies', () => {
+  it('reconciles storage when the format changes and clears incompatible hidden values', async () => {
+    const context = dialogContext(getDialogCommandConfig('Export'), {})
+    let values = await initializeDialogArguments(context, instance)
+    expect(values).toMatchObject({ type: 'gltf', storage: 'embedded' })
+
+    values = reconcileDialogArguments(context, { ...values, type: 'stl' })
+    expect(values).toMatchObject({ type: 'stl', storage: 'ascii' })
+
+    values = reconcileDialogArguments(context, { ...values, storage: 'binary' })
+    expect(values.storage).toBe('binary')
+    values = reconcileDialogArguments(context, { ...values, type: 'ply' })
+    expect(values.storage).toBe('ascii')
+
+    values = reconcileDialogArguments(context, { ...values, type: 'step' })
+    expect(values.storage).toBeUndefined()
+    values = reconcileDialogArguments(context, { ...values, type: 'gltf' })
+    expect(values.storage).toBe('embedded')
+  })
+
+  it('preserves a selected storage format supported by both formats', async () => {
+    const context = dialogContext(getDialogCommandConfig('Export'), {
+      type: 'gltf',
+      storage: 'binary',
+    })
+    const initial = await initializeDialogArguments(context, instance)
+    expect(
+      reconcileDialogArguments(context, { ...initial, type: 'stl' }).storage
+    ).toBe('binary')
+  })
+})

@@ -156,10 +156,6 @@ export function bodyTypeResultArg(
   return {
     inputType: 'options' as const,
     required,
-    hidden: (context: ModelingDialogContext) =>
-      isUsingModelingDialog(context) &&
-      !required(context) &&
-      !hasModelingDialogValue(context.argumentsToSubmit.bodyType),
     options: kclBodyTypeOptions,
     dialog: {
       displayName: 'Output',

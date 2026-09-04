@@ -161,10 +161,15 @@ describe('commandBarMachine', () => {
         type: 'Find and select command',
         data: { name: command.name, groupId: command.groupId },
       })
+      const { commandInvocationId } = actor.getSnapshot().context
       actor.send({ type: 'Close' })
       actor.send({
         type: 'Submit command from dialog',
-        data: { command, argumentsToSubmit: { name: 'stale value' } },
+        data: {
+          command,
+          commandInvocationId,
+          argumentsToSubmit: { name: 'stale value' },
+        },
       })
 
       expect(actor.getSnapshot().matches('Closed')).toBe(true)
@@ -181,6 +186,7 @@ describe('commandBarMachine', () => {
         type: 'Find and select command',
         data: { name: first.name, groupId: first.groupId },
       })
+      const { commandInvocationId } = actor.getSnapshot().context
       actor.send({ type: 'Close' })
       actor.send({
         type: 'Find and select command',
@@ -192,7 +198,11 @@ describe('commandBarMachine', () => {
       })
       actor.send({
         type: 'Submit command from dialog',
-        data: { command: first, argumentsToSubmit: { name: 'stale value' } },
+        data: {
+          command: first,
+          commandInvocationId,
+          argumentsToSubmit: { name: 'stale value' },
+        },
       })
 
       expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
@@ -217,7 +227,105 @@ describe('commandBarMachine', () => {
       })
       actor.send({
         type: 'Submit command from dialog',
-        data: { command, argumentsToSubmit: { name: 'dialog value' } },
+        data: {
+          command,
+          commandInvocationId: actor.getSnapshot().context.commandInvocationId,
+          argumentsToSubmit: { name: 'dialog value' },
+        },
+      })
+
+      expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
+      expect(actor.getSnapshot().context.argumentsToSubmit.name).toBeUndefined()
+      expect(command.onSubmit).not.toHaveBeenCalled()
+      actor.stop()
+    })
+
+    it.each([
+      { name: 'another feature', target: ['body', 1] },
+      { name: 'the same feature', target: ['body', 0] },
+    ])(
+      'rejects a previous invocation when editing $name',
+      async ({ target }) => {
+        const command = createDialogCommand('Extrude')
+        const actor = startActor([command])
+        expect(actor.getSnapshot().context.commandInvocationId).toBe(0)
+        actor.send({
+          type: 'Find and select command',
+          data: {
+            name: command.name,
+            groupId: command.groupId,
+            argDefaultValues: { name: 'first value', nodeToEdit: ['body', 0] },
+          },
+        })
+        const firstInvocationId =
+          actor.getSnapshot().context.commandInvocationId
+        actor.send({
+          type: 'Find and select command',
+          data: {
+            name: command.name,
+            groupId: command.groupId,
+            argDefaultValues: { name: 'current value', nodeToEdit: target },
+          },
+        })
+        const currentInvocationId =
+          actor.getSnapshot().context.commandInvocationId
+        expect(currentInvocationId).toBeGreaterThan(firstInvocationId)
+        expect(actor.getSnapshot().context.selectedCommand).toBe(command)
+
+        actor.send({
+          type: 'Submit command from dialog',
+          data: {
+            command,
+            commandInvocationId: firstInvocationId,
+            argumentsToSubmit: { name: 'stale value', nodeToEdit: ['body', 0] },
+          },
+        })
+        expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
+        expect(actor.getSnapshot().context.argumentsToSubmit).toEqual({
+          name: 'current value',
+          nodeToEdit: target,
+        })
+        expect(command.onSubmit).not.toHaveBeenCalled()
+
+        actor.send({
+          type: 'Submit command from dialog',
+          data: {
+            command,
+            commandInvocationId: currentInvocationId,
+            argumentsToSubmit: { name: 'submitted value', nodeToEdit: target },
+          },
+        })
+        await vi.waitFor(() => {
+          expect(actor.getSnapshot().matches('Closed')).toBe(true)
+        })
+        expect(command.onSubmit).toHaveBeenCalledExactlyOnceWith({
+          name: 'submitted value',
+          nodeToEdit: target,
+        })
+        actor.stop()
+      }
+    )
+
+    it('rejects a previous invocation after selecting the same command again', () => {
+      const command = createDialogCommand('Extrude')
+      const actor = startActor([command])
+      actor.send({ type: 'Open' })
+      actor.send({ type: 'Select command', data: { command } })
+      const previousInvocationId =
+        actor.getSnapshot().context.commandInvocationId
+      actor.send({ type: 'Close' })
+      actor.send({ type: 'Open' })
+      actor.send({ type: 'Select command', data: { command } })
+      expect(actor.getSnapshot().context.commandInvocationId).toBeGreaterThan(
+        previousInvocationId
+      )
+      actor.send({
+        type: 'Submit command from dialog',
+        data: {
+          command,
+          commandInvocationId: previousInvocationId,
+          argumentsToSubmit: { name: 'stale value' },
+        },
       })
 
       expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
@@ -235,7 +343,11 @@ describe('commandBarMachine', () => {
       })
       actor.send({
         type: 'Submit command from dialog',
-        data: { command, argumentsToSubmit: { name: 'current value' } },
+        data: {
+          command,
+          commandInvocationId: actor.getSnapshot().context.commandInvocationId,
+          argumentsToSubmit: { name: 'current value' },
+        },
       })
 
       await vi.waitFor(() => {

@@ -1,3 +1,9 @@
+import type { SelectionListItem } from '@kittycad/ui-components'
+import {
+  canSubmitSelectionArg,
+  getSelectionCountByType,
+  getSelectionTypeDisplayText,
+} from '@src/lib/selections'
 import type {
   CommandArgument,
   CommandReviewValidationDetails,
@@ -126,4 +132,178 @@ export function invalidReviewValidationState(
     details:
       details ?? (typeof error === 'string' ? undefined : error.reviewDetails),
   }
+}
+
+export function isSelectionValueEmpty(value: unknown): boolean {
+  if (!value || typeof value !== 'object') {
+    return true
+  }
+
+  const selection = value as Partial<Selections>
+  const graphSelections = isArray(selection.graphSelections)
+    ? selection.graphSelections
+    : []
+  const otherSelections = isArray(selection.otherSelections)
+    ? selection.otherSelections
+    : []
+
+  return graphSelections.length === 0 && otherSelections.length === 0
+}
+
+export type CapturedSelectionListItem = SelectionListItem & {
+  source: 'graphSelections' | 'otherSelections'
+  index: number
+}
+
+export const EMPTY_SELECTION: Selections = {
+  graphSelections: [],
+  otherSelections: [],
+}
+
+function hasNonZeroGraphSelection(selection: Selections | undefined): boolean {
+  return (
+    selection?.graphSelections.some(
+      (graphSelection) =>
+        graphSelection.codeRef.range[1] - graphSelection.codeRef.range[0] !== 0
+    ) ?? false
+  )
+}
+
+export function canSubmitDialogSelection(
+  ast: Parameters<typeof getSelectionCountByType>[0],
+  arg: SelectionCommandArgument,
+  selection: Selections | undefined,
+  isRequired: boolean
+): boolean {
+  if (!selection) {
+    return (
+      !isRequired ||
+      (arg.inputType === 'selectionMixed' && Boolean(arg.allowNoSelection))
+    )
+  }
+  if (
+    arg.inputType === 'selectionMixed' &&
+    (!isRequired || arg.allowNoSelection)
+  ) {
+    return true
+  }
+  if (
+    arg.inputType === 'selectionMixed' &&
+    hasNonZeroGraphSelection(selection)
+  ) {
+    return true
+  }
+  return canSubmitSelectionArg(getSelectionCountByType(ast, selection), arg)
+}
+
+export function getSelectionValidationMessage(
+  argName: string,
+  arg: SelectionCommandArgument,
+  selection: Selections | undefined
+): string {
+  const label = arg.dialog?.displayName ?? arg.displayName ?? argName
+  return selection ? `Invalid selection for "${label}".` : `Select "${label}".`
+}
+
+export function removeSelectionItem(
+  value: unknown,
+  source: CapturedSelectionListItem['source'],
+  selectionIndex: number
+): Selections | undefined {
+  if (!value || typeof value !== 'object') {
+    return undefined
+  }
+
+  const graphSelections = isArray(
+    (value as Partial<Selections>).graphSelections
+  )
+    ? (value as Selections).graphSelections
+    : []
+  const otherSelections = isArray(
+    (value as Partial<Selections>).otherSelections
+  )
+    ? (value as Selections).otherSelections
+    : []
+  const nextSelection: Selections = {
+    graphSelections:
+      source === 'graphSelections'
+        ? graphSelections.filter((_, index) => index !== selectionIndex)
+        : graphSelections,
+    otherSelections:
+      source === 'otherSelections'
+        ? otherSelections.filter((_, index) => index !== selectionIndex)
+        : otherSelections,
+  }
+
+  return isSelectionValueEmpty(nextSelection) ? undefined : nextSelection
+}
+
+export function selectionValueOrUndefined(
+  value: unknown
+): Selections | undefined {
+  return isSelectionValueEmpty(value) ? undefined : (value as Selections)
+}
+
+export function cloneSelectionValue(value: unknown): Selections | undefined {
+  const selection = selectionValueOrUndefined(value)
+  return selection ? structuredClone(selection) : undefined
+}
+
+export function selectionSummary(
+  ast: unknown,
+  selection: Selections | undefined
+): string {
+  if (!selection) {
+    return 'No selection captured'
+  }
+  return getSelectionTypeDisplayText(ast as never, selection) ?? 'No selection'
+}
+
+function getSelectionItemLabel(ast: unknown, selection: Selections): string {
+  const summary = selectionSummary(ast, selection).replace(/^1\s+/, '')
+  return summary.charAt(0).toUpperCase() + summary.slice(1)
+}
+
+export function getSelectionListItems(
+  ast: unknown,
+  selection: Selections | undefined
+): CapturedSelectionListItem[] {
+  if (!selection) {
+    return []
+  }
+
+  const items: CapturedSelectionListItem[] = []
+  const canReorder =
+    selection.graphSelections.length === 0 ||
+    selection.otherSelections.length === 0
+
+  selection.graphSelections.forEach((graphSelection, index) => {
+    items.push({
+      id: `graph-${index}`,
+      source: 'graphSelections',
+      index,
+      canMoveUp: canReorder && index > 0,
+      canMoveDown: canReorder && index < selection.graphSelections.length - 1,
+      label: getSelectionItemLabel(ast, {
+        graphSelections: [graphSelection],
+        otherSelections: [],
+      }),
+    })
+  })
+
+  selection.otherSelections.forEach((otherSelection, index) => {
+    items.push({
+      id: `other-${index}`,
+      source: 'otherSelections',
+      index,
+      canMoveUp: canReorder && index > 0,
+      canMoveDown: canReorder && index < selection.otherSelections.length - 1,
+      label: getSelectionItemLabel(ast, {
+        graphSelections: [],
+        otherSelections: [otherSelection],
+      }),
+    })
+  })
+
+  return items
 }

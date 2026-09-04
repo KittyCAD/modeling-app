@@ -20,6 +20,9 @@ const mocks = vi.hoisted(() => {
       astSignal: { value: {} },
       artifactGraph: new Map(),
       setSelectionFilterToDefault: vi.fn(),
+      showPlanes: vi.fn(() => Promise.resolve()),
+      hidePlanes: vi.fn(() => Promise.resolve()),
+      _isAstEmpty: vi.fn(() => false),
     },
     modeling: {
       context: {
@@ -50,9 +53,21 @@ vi.mock('@src/components/MarkdownText', () => ({
   MarkdownText: () => null,
 }))
 vi.mock('@src/components/ModelingDialog/ModelingDialogKclInput', () => ({
-  ModelingDialogKclInput: () => null,
-  getKclInputValue: () => '',
-  getKclSubmitValue: () => '',
+  ModelingDialogKclInput: ({
+    name,
+    value,
+    onChange,
+  }: {
+    name: string
+    value: string
+    onChange: (value: unknown) => void
+  }) => (
+    <input
+      aria-label={name}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+    />
+  ),
 }))
 vi.mock('@src/lang/std/artifactGraph', () => ({
   coerceSelectionsToBody: vi.fn(),
@@ -66,6 +81,8 @@ vi.mock('@src/lib/selections', () => ({
 vi.mock('@src/lib/kclHelpers', () => ({ stringToKclExpression: vi.fn() }))
 
 import { ModelingDialog } from '@src/components/ModelingDialog/ModelingDialog'
+import { normalizeExtrudeDialogArguments } from '@src/lib/commandBarConfigs/extrudeDialog'
+import { ModelingDialogViewExtension } from '@src/registry/extensions/engineScene/ModelingDialogViewExtension'
 
 function command(name = 'extrude'): Command {
   return {
@@ -86,6 +103,8 @@ describe('modeling dialog submission lifetime', () => {
 
   beforeEach(() => {
     mocks.send.mockClear()
+    mocks.kclManager.showPlanes.mockReset().mockResolvedValue()
+    mocks.kclManager.hidePlanes.mockReset().mockResolvedValue()
     mocks.modeling.context.selectionRanges = {
       graphSelections: [],
       otherSelections: [],
@@ -98,6 +117,7 @@ describe('modeling dialog submission lifetime', () => {
     })
     mocks.state.context = {
       selectedCommand: command(),
+      commandInvocationId: 1,
       argumentsToSubmit: {},
     } as CommandBarContext
   })
@@ -134,6 +154,7 @@ describe('modeling dialog submission lifetime', () => {
       type: 'Submit command from dialog',
       data: {
         command: mocks.state.context.selectedCommand,
+        commandInvocationId: mocks.state.context.commandInvocationId,
         argumentsToSubmit: { label: 'Part' },
       },
     })
@@ -162,6 +183,239 @@ describe('modeling dialog submission lifetime', () => {
 
     expect(mocks.send).not.toHaveBeenCalled()
     expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled()
+  })
+
+  it('loads the next feature values when the same command is opened again', async () => {
+    const sharedCommand = command('Extrude')
+    const nextTarget = [
+      ['body', 'Program'],
+      [1, 'index'],
+    ]
+    mocks.state.context = {
+      ...mocks.state.context,
+      selectedCommand: sharedCommand,
+      argumentsToSubmit: {
+        label: 'First feature',
+        nodeToEdit: [
+          ['body', 'Program'],
+          [0, 'index'],
+        ],
+      },
+    }
+    const { rerender } = render(<ModelingDialogViewExtension />)
+    await act(async () => resolveWasm({}))
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('First feature')
+    fireEvent.change(input, { target: { value: 'First feature draft' } })
+
+    mocks.state = {
+      ...mocks.state,
+      context: {
+        ...mocks.state.context,
+        commandInvocationId: 2,
+        argumentsToSubmit: { label: 'Second feature', nodeToEdit: nextTarget },
+      },
+    }
+    rerender(<ModelingDialogViewExtension />)
+    await act(async () => {})
+    expect(screen.getByRole('textbox')).toHaveValue('Second feature')
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
+    await act(async () => {})
+
+    expect(mocks.send).toHaveBeenCalledWith({
+      type: 'Submit command from dialog',
+      data: {
+        command: sharedCommand,
+        commandInvocationId: 2,
+        argumentsToSubmit: { label: 'Second feature', nodeToEdit: nextTarget },
+      },
+    })
+  })
+
+  it('cancels a pending submission when another feature uses the same command', async () => {
+    const sharedCommand = command('Extrude')
+    mocks.state.context = {
+      ...mocks.state.context,
+      selectedCommand: sharedCommand,
+      argumentsToSubmit: {
+        label: 'First feature',
+        nodeToEdit: [
+          ['body', 'Program'],
+          [0, 'index'],
+        ],
+      },
+    }
+    const { rerender } = render(<ModelingDialogViewExtension />)
+    await act(async () => {})
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
+    mocks.state = {
+      ...mocks.state,
+      context: {
+        ...mocks.state.context,
+        commandInvocationId: 2,
+        argumentsToSubmit: {
+          label: 'Second feature',
+          nodeToEdit: [
+            ['body', 'Program'],
+            [1, 'index'],
+          ],
+        },
+      },
+    }
+    rerender(<ModelingDialogViewExtension />)
+    await act(async () => resolveWasm({}))
+
+    expect(mocks.send).not.toHaveBeenCalled()
+    expect(screen.getByRole('textbox')).toHaveValue('Second feature')
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled()
+  })
+
+  it('preserves an inactive KCL draft when changing Extrude extent', async () => {
+    mocks.state.context.selectedCommand = {
+      ...command('Extrude'),
+      dialogLayout: {
+        groups: [],
+        normalizeArguments: normalizeExtrudeDialogArguments,
+      },
+      args: {
+        extentType: {
+          inputType: 'options',
+          required: true,
+          defaultValue: 'distance',
+          options: [
+            { name: 'Distance', value: 'distance' },
+            { name: 'To face', value: 'toFace' },
+          ],
+          dialog: { controlStyle: 'segmented' },
+        },
+        length: {
+          inputType: 'kcl',
+          required: ({ argumentsToSubmit }) =>
+            argumentsToSubmit.extentType === 'distance',
+          hidden: ({ argumentsToSubmit }) =>
+            argumentsToSubmit.extentType === 'toFace',
+          defaultValue: '10',
+        },
+      },
+    }
+    render(<ModelingDialog />)
+    await act(async () => resolveWasm({}))
+    fireEvent.change(screen.getByRole('textbox', { name: 'length' }), {
+      target: { value: '27mm' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'To face' }))
+    expect(
+      screen.queryByRole('textbox', { name: 'length' })
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Distance' }))
+
+    expect(screen.getByRole('textbox', { name: 'length' })).toHaveValue('27mm')
+  })
+
+  it('repairs dependent export options and removes unsupported hidden values', async () => {
+    mocks.state.context.selectedCommand = {
+      ...command('Export'),
+      args: {
+        type: {
+          inputType: 'options',
+          displayName: 'Format',
+          required: true,
+          defaultValue: 'gltf',
+          options: [
+            { name: 'glTF', value: 'gltf' },
+            { name: 'STL', value: 'stl' },
+            { name: 'OBJ', value: 'obj' },
+          ],
+          dialog: { controlStyle: 'segmented' },
+        },
+        storage: {
+          inputType: 'options',
+          displayName: 'Encoding',
+          skip: true,
+          required: ({ argumentsToSubmit }) => argumentsToSubmit.type !== 'obj',
+          hidden: ({ argumentsToSubmit }) => argumentsToSubmit.type === 'obj',
+          defaultValue: ({ argumentsToSubmit }: CommandBarContext) =>
+            argumentsToSubmit.type === 'gltf' ? 'embedded' : 'ascii',
+          options: ({ argumentsToSubmit }) =>
+            argumentsToSubmit.type === 'gltf'
+              ? [{ name: 'Embedded', value: 'embedded', isCurrent: true }]
+              : argumentsToSubmit.type === 'stl'
+                ? [
+                    { name: 'Binary', value: 'binary' },
+                    { name: 'ASCII', value: 'ascii', isCurrent: true },
+                  ]
+                : [],
+        },
+      },
+    }
+    render(<ModelingDialog />)
+    await act(async () => resolveWasm({}))
+    expect(
+      screen.getByRole('combobox', { name: /Encoding/ })
+    ).toHaveDisplayValue('Embedded')
+    fireEvent.click(screen.getByRole('button', { name: 'STL' }))
+    expect(
+      screen.getByRole('combobox', { name: /Encoding/ })
+    ).toHaveDisplayValue('ASCII')
+    fireEvent.change(screen.getByRole('combobox', { name: /Encoding/ }), {
+      target: { value: '0' },
+    })
+    expect(
+      screen.getByRole('combobox', { name: /Encoding/ })
+    ).toHaveDisplayValue('Binary')
+    fireEvent.click(screen.getByRole('button', { name: 'OBJ' }))
+    expect(
+      screen.queryByRole('combobox', { name: /Encoding/ })
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
+    await act(async () => {})
+
+    expect(mocks.send).toHaveBeenCalledWith({
+      type: 'Submit command from dialog',
+      data: {
+        command: mocks.state.context.selectedCommand,
+        commandInvocationId: mocks.state.context.commandInvocationId,
+        argumentsToSubmit: { type: 'obj', storage: undefined },
+      },
+    })
+  })
+
+  it('submits the selected printer after an equivalent object listing refresh', async () => {
+    let machines = [
+      { id: 'Printer 1', state: 'idle' },
+      { id: 'Printer 2', state: 'idle' },
+    ]
+    mocks.state.context.selectedCommand = {
+      ...command('Make'),
+      args: {
+        machine: {
+          inputType: 'options',
+          required: true,
+          defaultValue: () => machines[0],
+          options: () =>
+            machines.map((machine) => ({ name: machine.id, value: machine })),
+        },
+      },
+    }
+    const { rerender } = render(<ModelingDialog />)
+    await act(async () => resolveWasm({}))
+    const input = screen.getByRole('combobox', { name: /Machine/ })
+    fireEvent.change(input, { target: { value: '1' } })
+    expect(input).toHaveDisplayValue('Printer 2')
+
+    machines = machines.map((machine) => ({ ...machine }))
+    rerender(<ModelingDialog />)
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
+    await act(async () => {})
+
+    expect(mocks.send).toHaveBeenCalledWith({
+      type: 'Submit command from dialog',
+      data: {
+        command: mocks.state.context.selectedCommand,
+        commandInvocationId: mocks.state.context.commandInvocationId,
+        argumentsToSubmit: { machine: { id: 'Printer 2', state: 'idle' } },
+      },
+    })
   })
 
   it('keeps initial preselection but does not copy another collector into an empty field', async () => {
@@ -208,5 +462,40 @@ describe('modeling dialog submission lifetime', () => {
     expect(
       screen.getByRole('button', { name: 'Select Profiles' })
     ).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('keeps selection planes visible when a new dialog invocation needs them', async () => {
+    let planesVisible = false
+    mocks.kclManager.showPlanes.mockImplementation(() => {
+      planesVisible = true
+      return Promise.resolve()
+    })
+    mocks.kclManager.hidePlanes.mockImplementation(() => {
+      planesVisible = false
+      return Promise.resolve()
+    })
+    mocks.state.context.selectedCommand = {
+      ...command('Offset plane'),
+      args: {
+        plane: {
+          inputType: 'selection',
+          selectionTypes: ['plane'],
+          multiple: false,
+          required: false,
+        },
+      },
+    }
+    const { rerender } = render(<ModelingDialogViewExtension />)
+    await act(async () => resolveWasm({}))
+    expect(planesVisible).toBe(true)
+
+    mocks.state = {
+      ...mocks.state,
+      context: { ...mocks.state.context, commandInvocationId: 2 },
+    }
+    rerender(<ModelingDialogViewExtension />)
+    await act(async () => {})
+
+    expect(planesVisible).toBe(true)
   })
 })

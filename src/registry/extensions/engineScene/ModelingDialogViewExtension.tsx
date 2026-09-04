@@ -20,7 +20,7 @@ export function ModelingDialogViewExtension() {
 
   return (
     <Suspense fallback={null}>
-      <ModelingDialog />
+      <ModelingDialog key={commandBarState.context.commandInvocationId} />
     </Suspense>
   )
 }

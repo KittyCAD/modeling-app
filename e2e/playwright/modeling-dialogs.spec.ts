@@ -42,7 +42,7 @@ test.describe('Modeling dialogs', { tag: '@desktop' }, () => {
     await expect(dialog).not.toBeAttached()
     await expect(toolbar.revolveButton).toHaveAttribute('aria-pressed', 'false')
 
-    await page.keyboard.press('ControlOrMeta+K')
+    await cmdBar.cmdBarOpenBtn.click()
     await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
     await expect(dialog.getByText('Extrude', { exact: true })).toBeVisible()
     await page.keyboard.press('Escape')
@@ -121,6 +121,51 @@ test.describe('Modeling dialogs', { tag: '@desktop' }, () => {
     await expect(submit).toBeInViewport()
   })
 
+  test('Keeps a dragged dialog inside the modeling area after resizing', async ({
+    page,
+    toolbar,
+  }) => {
+    await toolbar.extrudeButton.click()
+    const dialog = page.getByTestId('modeling-dialog')
+    await expect(
+      dialog.getByRole('textbox', { name: 'Distance', exact: false })
+    ).toBeVisible()
+    const bounds = await dialog.boundingBox()
+    if (!bounds) throw new Error('Expected dialog bounds')
+    await dialog.getByText('Extrude', { exact: true }).hover()
+    await page.mouse.down()
+    await page.mouse.move(bounds.x + 60, bounds.y + 45, { steps: 3 })
+    await page.mouse.up()
+
+    for (const size of [
+      { width: 1000, height: 700 },
+      { width: 1100, height: 600 },
+    ]) {
+      await page.setBodyDimensions(size)
+      await expect
+        .poll(async () => {
+          const dialogBounds = await dialog.boundingBox()
+          const container = await page
+            .locator('#modeling-area-container')
+            .boundingBox()
+          return Boolean(
+            dialogBounds &&
+              container &&
+              dialogBounds.x >= container.x &&
+              dialogBounds.y >= container.y &&
+              dialogBounds.x + dialogBounds.width <=
+                container.x + container.width + 1 &&
+              dialogBounds.y + dialogBounds.height <=
+                container.y + container.height + 1
+          )
+        })
+        .toBe(true)
+      await expect(
+        dialog.getByRole('button', { name: 'Submit', exact: true })
+      ).toBeInViewport()
+    }
+  })
+
   test('Creates and edits an extrude with selection removal and extent changes', async ({
     page,
     toolbar,
@@ -141,11 +186,14 @@ test.describe('Modeling dialogs', { tag: '@desktop' }, () => {
     ).toBeVisible()
     await dialog.getByRole('button', { name: 'Remove selection 1' }).click()
     await expect(submit).toBeDisabled()
-    await editor.scrollToText('sketch001 =')
-    await editor.selectText('region(')
-    await expect(
-      dialog.getByRole('button', { name: 'Remove selection 1' })
-    ).toBeVisible()
+    // Code-to-scene selection suppresses duplicate events for 500ms.
+    await expect(async () => {
+      await editor.scrollToText('sketch001 =')
+      await editor.selectText('region(')
+      await expect(
+        dialog.getByRole('button', { name: 'Remove selection 1' })
+      ).toBeVisible({ timeout: 200 })
+    }).toPass()
 
     await distance.fill('missingDistance')
     await expect(submit).toBeDisabled()

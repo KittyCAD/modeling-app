@@ -1,3 +1,7 @@
+import {
+  getKclSubmitValue,
+  type KclCommandArgument,
+} from '@src/components/ModelingDialog/ModelingDialog.arguments'
 import type { Completion } from '@codemirror/autocomplete'
 import {
   closeBrackets,
@@ -22,7 +26,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
@@ -39,32 +43,6 @@ import styles from './ModelingDialog.module.css'
 
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
   snapshot?.context
-
-export type KclCommandArgument = Extract<
-  CommandArgument<unknown>,
-  { inputType: 'kcl' }
->
-
-export function getKclInputValue(
-  arg: KclCommandArgument,
-  value: unknown
-): string {
-  if (isKclCommandValue(value)) {
-    return arg.kclValueToInput
-      ? arg.kclValueToInput(value.valueText)
-      : value.valueText
-  }
-
-  return typeof value === 'string' ? value : ''
-}
-
-export function getKclSubmitValue(
-  arg: KclCommandArgument,
-  value: string
-): string {
-  const trimmedValue = value.trim()
-  return arg.inputToKclValue ? arg.inputToKclValue(trimmedValue) : trimmedValue
-}
 
 function getKclEditorContentAttributes(labelId: string, disabled: boolean) {
   return EditorView.contentAttributes.of({

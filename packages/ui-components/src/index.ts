@@ -5,7 +5,10 @@ export type {
   ArgumentFieldOption,
   ArgumentFieldProps,
 } from './components/ArgumentField/ArgumentField'
-export { ArgumentField } from './components/ArgumentField/ArgumentField'
+export {
+  ArgumentField,
+  isOptionValueEqual,
+} from './components/ArgumentField/ArgumentField'
 export type { ArgumentGroupProps } from './components/ArgumentGroup/ArgumentGroup'
 export { ArgumentGroup } from './components/ArgumentGroup/ArgumentGroup'
 export {

@@ -406,12 +406,7 @@ pub struct ConstData {
     pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
-    /// The value shown in generated docs and completion details.
     pub value: Option<String>,
-    /// The literal exactly as it appears in KCL source, including when the
-    /// declaration has a type ascription.
-    #[allow(dead_code)] // Read by the test-driven TypeScript binding generator.
-    pub literal_value: Option<String>,
     pub ty: Option<String>,
     pub properties: Properties,
 
@@ -435,9 +430,8 @@ impl ConstData {
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Const);
 
-        let (value, literal_value, ty) = match &var.declaration.init {
+        let (value, ty) = match &var.declaration.init {
             crate::parsing::ast::types::Expr::Literal(lit) => (
-                Some(lit.raw.clone()),
                 Some(lit.raw.clone()),
                 Some(match &lit.value {
                     crate::parsing::ast::types::LiteralValue::Number { suffix, .. } => {
@@ -451,15 +445,8 @@ impl ConstData {
                     crate::parsing::ast::types::LiteralValue::Bool { .. } => "boolean".to_owned(),
                 }),
             ),
-            crate::parsing::ast::types::Expr::AscribedExpression(e) => (
-                None,
-                match &e.expr {
-                    crate::parsing::ast::types::Expr::Literal(lit) => Some(lit.raw.clone()),
-                    _ => None,
-                },
-                Some(e.ty.to_string()),
-            ),
-            _ => (None, None, None),
+            crate::parsing::ast::types::Expr::AscribedExpression(e) => (None, Some(e.ty.to_string())),
+            _ => (None, None),
         };
 
         let name = var.declaration.id.name.clone();
@@ -469,7 +456,6 @@ impl ConstData {
             name,
             qual_name,
             value,
-            literal_value,
             // TODO use type decl when we have them.
             ty,
             properties: Properties {

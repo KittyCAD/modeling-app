@@ -882,6 +882,56 @@ describe('Helix cylinder selection', () => {
 })
 
 describe('Sweep-like bodyType argument', () => {
+  it.each(['Extrude', 'Sweep', 'Loft', 'Revolve'] as const)(
+    '%s keeps Surface available for closed profiles without requiring a body type',
+    (commandName) => {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+      const bodyType = commandConfig.args?.bodyType
+      if (bodyType?.inputType !== 'options') {
+        throw new Error(`${commandName} should expose bodyType options`)
+      }
+
+      for (const useModelingDialog of [undefined, false, true]) {
+        for (const artifact of [
+          { type: 'solid2d' },
+          { type: 'path', subType: 'region' },
+        ] as Artifact[]) {
+          const context = {
+            argumentsToSubmit: {
+              sketches: selectionsForArtifact(artifact),
+              length: parsedLength(),
+            },
+            selectedCommand: { useModelingDialog },
+          }
+          const hidden =
+            typeof bodyType.hidden === 'function'
+              ? bodyType.hidden(context)
+              : Boolean(bodyType.hidden)
+          const required =
+            typeof bodyType.required === 'function'
+              ? bodyType.required(context)
+              : bodyType.required
+          const options =
+            typeof bodyType.options === 'function'
+              ? bodyType.options(context)
+              : bodyType.options
+
+          expect(hidden).toBe(false)
+          expect(required).toBe(false)
+          expect(options).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ value: 'SURFACE' }),
+              expect.objectContaining({ value: 'SOLID' }),
+            ])
+          )
+        }
+      }
+    }
+  )
+
   it('allows sweep profiles to be selected from sketches, segments, regions, and faces', () => {
     const commandConfig = modelingMachineCommandConfig.Sweep
     if (!commandConfig || isArray(commandConfig)) {
@@ -1047,30 +1097,6 @@ describe('Sweep dialog arguments', () => {
     expect(evaluateHidden('orientProfilePerpendicular', {})).toBe(true)
     expect(evaluateHidden('profilePosition', {}, false)).toBe(true)
   })
-
-  it('shows Output only when an open profile needs it or it was authored', () => {
-    const bodyType = sweepConfig().args?.bodyType
-    if (typeof bodyType?.hidden !== 'function') {
-      throw new Error('Sweep bodyType should be contextually hidden')
-    }
-
-    expect(
-      bodyType.hidden({
-        argumentsToSubmit: {
-          sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
-        },
-        selectedCommand: { useModelingDialog: true },
-      } as never)
-    ).toBe(true)
-    expect(
-      bodyType.hidden({
-        argumentsToSubmit: {
-          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
-        },
-        selectedCommand: { useModelingDialog: true },
-      } as never)
-    ).toBe(false)
-  })
 })
 
 describe('Loft dialog arguments', () => {
@@ -1114,30 +1140,6 @@ describe('Loft dialog arguments', () => {
     expect(
       loftConfig().args?.bezApproximateRational?.dialog?.controlStyle
     ).toBe('segmented')
-  })
-
-  it('keeps Output contextual for surface lofts', () => {
-    const bodyType = loftConfig().args?.bodyType
-    if (typeof bodyType?.hidden !== 'function') {
-      throw new Error('Loft bodyType should be contextually hidden')
-    }
-
-    expect(
-      bodyType.hidden({
-        argumentsToSubmit: {
-          sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
-        },
-        selectedCommand: { useModelingDialog: true },
-      } as never)
-    ).toBe(true)
-    expect(
-      bodyType.hidden({
-        argumentsToSubmit: {
-          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
-        },
-        selectedCommand: { useModelingDialog: true },
-      } as never)
-    ).toBe(false)
   })
 })
 
