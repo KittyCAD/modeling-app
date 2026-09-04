@@ -58,7 +58,7 @@ class APIReporter implements Reporter {
       return
     }
 
-    const playwrightProject = test.parent.project()
+    const testProject = test.parent.project()
     const logs = result.attachments.find((a) => {
       return a.name === 'logs'
     })
@@ -93,10 +93,9 @@ class APIReporter implements Reporter {
       target: process.env.TARGET || null,
       platform: process.env.RUNNER_OS || process.platform,
       browser:
-        playwrightProject?.use.browserName ??
-        playwrightProject?.use.defaultBrowserType ??
+        testProject?.use.browserName ??
+        testProject?.use.defaultBrowserType ??
         null,
-      playwrightProject: playwrightProject?.name ?? null,
       url: process.env.VERCEL_BASE_URL || null,
       // Extra test and result data
       annotations: test.annotations.map((a) => a.type), // e.g. 'fail' or 'fixme'
