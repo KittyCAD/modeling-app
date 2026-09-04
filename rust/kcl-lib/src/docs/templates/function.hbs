@@ -31,7 +31,7 @@ layout: manual
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 {{#each args}}
-| `{{name}}` | `{{type_}}` | {{#if deprecated}}**Deprecated.** {{/if}}{{#if deprecated_since}}**Deprecated as of KCL {{deprecated_since}}.** {{/if}}{{#if removed_since}}**Removed as of KCL {{removed_since}}.** {{/if}}{{#if experimental}}**Experimental.** {{/if}}{{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
+| `{{name}}` | `{{type_}}` | {{#if added_in}}**Added in KCL {{added_in}}.** {{/if}}{{#if deprecated}}**Deprecated.** {{/if}}{{#if deprecated_since}}**Deprecated as of KCL {{deprecated_since}}.** {{/if}}{{#if removed_since}}**Removed as of KCL {{removed_since}}.** {{/if}}{{#if experimental}}**Experimental.** {{/if}}{{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
 {{/each}}
 {{/if}}
 

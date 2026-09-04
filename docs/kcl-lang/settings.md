@@ -54,5 +54,7 @@ Valid properties are:
     - Each `if`/`else if`/`else` branch body introduces its own scope: a variable declared
       inside a branch is visible from its declaration to the branch's closing brace, never
       outside it, and may shadow a variable from an enclosing scope.
+    - A member expression evaluates its object before its property: in `a[b]`, `a` is
+      evaluated before `b`. Earlier versions evaluate `b` first.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).

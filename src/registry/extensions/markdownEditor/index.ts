@@ -160,7 +160,7 @@ const markdownEditorKeymapItems: readonly KeymapItem[] =
     id: keymap.id,
     title: keymap.title,
     source: MARKDOWN_EDITOR_KEYMAP_SOURCE,
-    scopes: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
+    when: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
     keystrokes: keymap.keystrokes,
     command: keymap.command,
     hidden: keymap.hidden,

@@ -26,7 +26,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { getKeymapItemScopes } from '@src/registry/contracts/keymap'
+import { getKeymapItemWhen } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -257,12 +257,12 @@ describe('commands extension', () => {
         ?.scopes
     ).toEqual(FILE_COMMAND_SCOPES)
     expect(
-      getKeymapItemScopes(
+      getKeymapItemWhen(
         defaultKeymap.bindings.find((binding) => binding.id === 'view.reset')!
       )
     ).toEqual([MODE_MODELING_COMMAND_SCOPE])
     expect(
-      getKeymapItemScopes(
+      getKeymapItemWhen(
         defaultKeymap.bindings.find(
           (binding) => binding.id === 'view.reset-with-modifier'
         )!

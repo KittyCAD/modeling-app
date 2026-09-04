@@ -4366,6 +4366,16 @@ pub struct Parameter {
     /// Whether it's experimental.
     #[serde(default, skip_serializing_if = "is_false")]
     pub experimental: bool,
+    /// If set, this parameter was added in the given KCL version (e.g., "3.0").
+    /// Before that version, passing the parameter is an error, exactly as if
+    /// the function did not declare it, and the function body sees the
+    /// parameter's default value. The parser requires an added parameter to be
+    /// optional. A pre-release version such as "3.0-preview" counts as the
+    /// release it precedes. May be combined with `deprecated`,
+    /// `deprecated_since` (which must not be earlier than `added_in`), or
+    /// `removed_since` (which must be later than `added_in`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub added_in: Option<VersionConstraint>,
     /// If true, this parameter is deprecated regardless of the KCL version. Use
     /// `deprecated_since` instead to deprecate the parameter only at or after a
     /// particular version. At most one of the two may be set.
@@ -5197,6 +5207,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
                         removed_since: None,
@@ -5221,6 +5232,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
                         removed_since: None,
@@ -5246,6 +5258,7 @@ cylinder = startSketchOn(-XZ)
                     params: vec![
                         Parameter {
                             experimental: Default::default(),
+                            added_in: None,
                             deprecated: false,
                             deprecated_since: None,
                             removed_since: None,
@@ -5260,6 +5273,7 @@ cylinder = startSketchOn(-XZ)
                         },
                         Parameter {
                             experimental: Default::default(),
+                            added_in: None,
                             deprecated: false,
                             deprecated_since: None,
                             removed_since: None,
