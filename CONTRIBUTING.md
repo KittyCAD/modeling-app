@@ -158,7 +158,7 @@ npm run test:e2e:web
 
 [Playwright WebKit](https://playwright.dev/docs/browsers#webkit) provides the
 closest automated coverage to Safari; Playwright does not automate the branded
-Safari browser itself. The macOS WebKit CI lane is currently experimental.
+Safari browser itself.
 
 ```
 npm run playwright -- install webkit
