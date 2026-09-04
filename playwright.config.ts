@@ -78,6 +78,8 @@ export default defineConfig({
     },
     {
       name: 'webkit',
+      snapshotPathTemplate:
+        '{testDir}/{testFileName}-snapshots/webkit/{arg}{ext}',
       use: { ...devices['Desktop Safari'] },
     },
     // {
