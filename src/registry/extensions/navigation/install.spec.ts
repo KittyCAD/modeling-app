@@ -35,6 +35,15 @@ function createHarness({
 }) {
   const location = signal({ pathname: '/home', search: '', hash: '' })
   const navigations: string[] = []
+  const parse = (path: string) => {
+    const [beforeAnchor, anchor = ''] = path.split('#')
+    const [pathname, search = ''] = beforeAnchor.split(/(?=\?)/)
+    return {
+      pathname,
+      search,
+      hash: anchor ? `#${anchor}` : '',
+    }
+  }
 
   const router = {
     location: computed(() => location.value),
@@ -42,8 +51,7 @@ function createHarness({
     navigate: (to: unknown) => {
       const path = String(to)
       navigations.push(path)
-      const [pathname, search] = path.split(/(?=\?)/)
-      const next = { pathname, search: search ?? '', hash: '' }
+      const next = parse(path)
       if (synchronousNavigate) {
         location.value = next
       } else {
@@ -58,12 +66,17 @@ function createHarness({
 
   const derived = signal('/home')
   const opaqueSearch = signal('')
+  const fragment = signal('')
   const navigation = {
     location: computed(() => ({ kind: 'home' as const })),
     path: computed(() => derived.value),
     opaqueSearch: computed(() => opaqueSearch.value),
     setOpaqueSearch: (next: string) => {
       opaqueSearch.value = next
+    },
+    fragment: computed(() => fragment.value),
+    setFragment: (next: string) => {
+      fragment.value = next
     },
     loadUrl: () => Promise.resolve(null),
   } as unknown as NavigationService
@@ -147,6 +160,23 @@ describe('the navigation bridge', () => {
       await Promise.resolve()
       await Promise.resolve()
       expect(navigations).toEqual(['/file/%2Fa%2Fmain.kcl'])
+    } finally {
+      teardown?.()
+    }
+  })
+
+  test('carries the fragment into the write', async () => {
+    const { app, derived, navigations } = createHarness({
+      synchronousNavigate: true,
+    })
+
+    const teardown = install(app)
+    try {
+      // The anchor is part of the place. Dropping it is how settings opens at
+      // the top instead of scrolled to the setting the menu asked for.
+      derived.value = '/home/settings?tab=user#defaultUnit'
+      await Promise.resolve()
+      expect(navigations).toEqual(['/home/settings?tab=user#defaultUnit'])
     } finally {
       teardown?.()
     }

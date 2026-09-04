@@ -87,6 +87,16 @@ export function install(app: ReturnType<typeof useApp>) {
      *    a React effect, takes the whole app down at startup. Desktop's hash
      *    router lands writes synchronously, so it fails there and not on web.
      */
+    /**
+     * The whole URL the router is currently showing, in the same shape the
+     * derived path takes. Four places need this and they must agree, or the
+     * writer and the drift report disagree about what "the same place" means.
+     */
+    const currentUrl = () => {
+      const now = router.location.peek()
+      return `${now.pathname}${now.search}${now.hash}`
+    }
+
     const stopOutbound = effect(() => {
       if (!hasSeeded.value) return
       const next = navigation.path.value
@@ -95,8 +105,7 @@ export function install(app: ReturnType<typeof useApp>) {
       // not do.
       if (!router.isReady.value) return
 
-      const current = router.location.peek()
-      if (samePlace(next, `${current.pathname}${current.search}`)) {
+      if (samePlace(next, currentUrl())) {
         wrote = true
         return
       }
@@ -105,8 +114,7 @@ export function install(app: ReturnType<typeof useApp>) {
       wrote = true
       queueMicrotask(() => {
         // Re-check: the URL may have caught up while this was queued.
-        const now = router.location.peek()
-        if (samePlace(next, `${now.pathname}${now.search}`)) return
+        if (samePlace(next, currentUrl())) return
         void router.navigate(next, replace ? { replace: true } : undefined)
       })
     })
@@ -125,13 +133,14 @@ export function install(app: ReturnType<typeof useApp>) {
        */
       if (!hasSeeded.peek()) {
         navigation.setOpaqueSearch(location.search.replace(/^\?/, ''))
+        navigation.setFragment(location.hash.replace(/^#/, ''))
         // Flipped last, so the outbound effect's first run already sees the
         // carried query string. Without that ordering the first derived write
         // would be a path stripped of every parameter the union does not model.
         hasSeeded.value = true
       }
 
-      const actual = `${location.pathname}${location.search}`
+      const actual = `${location.pathname}${location.search}${location.hash}`
       const derived = navigation.path.peek()
       if (samePlace(derived, actual)) return
 

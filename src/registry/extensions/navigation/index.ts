@@ -57,6 +57,7 @@ export default defineRegistryItemFactory((ctx) => {
   })
 
   const opaqueSearch = signal('')
+  const fragment = signal('')
 
   const path = computed(() => {
     const current = location.value
@@ -70,11 +71,15 @@ export default defineRegistryItemFactory((ctx) => {
     }
 
     const search = opaqueSearch.value
-    if (!search) return base
     // `toPath` is contracted not to emit a query, but `PATHS.SETTINGS_USER` and
     // friends make that easy to get wrong, so joining correctly is cheaper than
     // producing a URL with two '?' in it.
-    return `${base}${base.includes('?') ? '&' : '?'}${search}`
+    const withSearch = search
+      ? `${base}${base.includes('?') ? '&' : '?'}${search}`
+      : base
+
+    const anchor = fragment.value
+    return anchor ? `${withSearch}#${anchor}` : withSearch
   })
 
   const loadUrl = async (url: URL) => {
@@ -94,6 +99,10 @@ export default defineRegistryItemFactory((ctx) => {
           opaqueSearch,
           setOpaqueSearch: (next: string) => {
             opaqueSearch.value = next
+          },
+          fragment,
+          setFragment: (next: string) => {
+            fragment.value = next
           },
           loadUrl,
         }),
