@@ -11,57 +11,54 @@ import type {
   ProjectArchiveFile,
   ProjectManifest,
 } from '@src/lib/cloudSync/types'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
-import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import fsZds from '@src/lib/fs-zds'
 import {
   appendGitignoreForDirectoryWithFs,
   createInitialGitignoreStackWithFs,
+  fileOperationsGitignoreFs,
   type GitignoreStackEntry,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
-
-function statIsDirectory(stat: IStat) {
-  return Boolean(stat.mode & fsZdsConstants.S_IFDIR)
-}
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 /**
  * Collects the files from `projectRoot` that cloud sync would include in an
- * upload archive. The walk uses the caller's filesystem, skips cloud-sync
- * internal paths, respects `.gitignore` rules, and returns normalized files in
- * stable relative-path order.
+ * upload archive. The walk uses coordinated reads, skips cloud-sync internal
+ * paths, respects `.gitignore` rules, and returns normalized files in stable
+ * relative-path order.
  */
 export async function collectLocalProjectFilesForCloudSync({
-  localFs,
+  fileOperations,
   projectRoot,
 }: {
-  localFs: IZooDesignStudioFS
+  fileOperations: FileOperationsRegistryService
   projectRoot: string
 }) {
   const files: ProjectArchiveFile[] = []
+  const gitignoreFs = fileOperationsGitignoreFs(fileOperations)
 
   const walk = async (
     currentPath: string,
     gitignoreStack: GitignoreStackEntry[]
   ) => {
-    const entries = await localFs.readdir(currentPath)
+    const entries = await fileOperations.readDirectory(currentPath)
     for (const entry of entries) {
-      if (isCloudSyncExcludedPath(entry)) {
+      if (isCloudSyncExcludedPath(entry.name)) {
         continue
       }
 
-      const absolutePath = localFs.join(currentPath, entry)
-      const stat = await localFs.stat(absolutePath)
+      const absolutePath = fsZds.join(currentPath, entry.name)
       const relativePath = normalizeRelativePath(
-        localFs.relative(projectRoot, absolutePath)
+        fsZds.relative(projectRoot, absolutePath)
       )
-      const isDirectory = statIsDirectory(stat)
+      const isDirectory = entry.kind === 'directory'
       if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
         continue
       }
 
       if (isDirectory) {
         const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
-          localFs,
+          gitignoreFs,
           gitignoreStack,
           absolutePath,
           projectRoot
@@ -70,7 +67,7 @@ export async function collectLocalProjectFilesForCloudSync({
         continue
       }
 
-      const data = await localFs.readFile(absolutePath)
+      const data = await fileOperations.readFile(absolutePath)
       files.push({
         relativePath,
         data: Uint8Array.from(data),
@@ -79,7 +76,7 @@ export async function collectLocalProjectFilesForCloudSync({
   }
 
   const gitignoreStack = await createInitialGitignoreStackWithFs(
-    localFs,
+    gitignoreFs,
     projectRoot
   )
   await walk(projectRoot, gitignoreStack)
@@ -95,15 +92,15 @@ export async function collectLocalProjectFilesForCloudSync({
  */
 export async function localProjectManifestMatchesBase({
   baseManifest,
-  localFs,
+  fileOperations,
   projectRoot,
 }: {
   baseManifest: ProjectManifest
-  localFs: IZooDesignStudioFS
+  fileOperations: FileOperationsRegistryService
   projectRoot: string
 }) {
   const localManifest = await collectLocalProjectFilesForCloudSync({
-    localFs,
+    fileOperations,
     projectRoot,
   }).then(projectManifestFromFiles)
 

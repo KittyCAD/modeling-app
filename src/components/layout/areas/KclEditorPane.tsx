@@ -1,16 +1,16 @@
-import { Menu } from '@headlessui/react'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown } from '@codemirror/lang-markdown'
 import { searchKeymap } from '@codemirror/search'
 import { Compartment, EditorState } from '@codemirror/state'
 import {
-  EditorView,
   drawSelection,
+  EditorView,
   highlightActiveLine,
   highlightSpecialChars,
   keymap,
   lineNumbers,
 } from '@codemirror/view'
+import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -162,7 +162,7 @@ function TextFileEditor({
 }: {
   activeTextFile: ActiveTextFile
 }) {
-  const { settings } = useApp()
+  const { fileOperations, settings } = useApp()
   const settingsValues = settings.useSettings()
   const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const editorParent = useRef<HTMLDivElement>(null)
@@ -197,7 +197,11 @@ function TextFileEditor({
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              scheduleActiveTextFileWrite(path, update.state.doc.toString())
+              scheduleActiveTextFileWrite(
+                fileOperations,
+                path,
+                update.state.doc.toString()
+              )
             }
           }),
         ],
