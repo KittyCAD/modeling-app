@@ -2,6 +2,7 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import type { FileSystemError } from '@src/lib/fileSystem/fileSystem'
 
 export type FileOperationsOperation =
+  | 'access'
   | 'copy'
   | 'create-directory'
   | 'create-file'
