@@ -234,6 +234,20 @@ describe('findMatchingDimensionConstraint', () => {
         source: { expr: '6', is_literal: true },
       } satisfies ApiConstraint,
     },
+    {
+      existing: {
+        type: 'Radius',
+        arc: 10,
+        radius: { value: 5, units: 'Mm' },
+        source: { expr: '5', is_literal: true },
+      } satisfies ApiConstraint,
+      candidate: {
+        type: 'Diameter',
+        arc: 10,
+        diameter: { value: 10, units: 'Mm' },
+        source: { expr: '10', is_literal: true },
+      } satisfies ApiConstraint,
+    },
   ])(
     'matches $existing.type constraints by circular target',
     ({ existing, candidate }) => {
@@ -244,6 +258,65 @@ describe('findMatchingDimensionConstraint', () => {
       )
     }
   )
+
+  it('does not match circular dimensions on different targets', () => {
+    const radius = createConstraintApiObject(20, {
+      type: 'Radius',
+      arc: 10,
+      radius: { value: 5, units: 'Mm' },
+      source: { expr: '5', is_literal: true },
+    })
+
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'Diameter',
+          arc: 11,
+          diameter: { value: 10, units: 'Mm' },
+          source: { expr: '10', is_literal: true },
+        },
+        [radius]
+      )
+    ).toBeNull()
+  })
+
+  it('matches angle constraints by unordered line pair', () => {
+    const angle = createConstraintApiObject(20, {
+      type: 'Angle',
+      lines: [10, 11],
+      angle: { value: 60, units: 'Deg' },
+      sector: 1,
+      inverse: false,
+      source: { expr: '60deg', is_literal: true },
+    })
+
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'Angle',
+          lines: [11, 10],
+          angle: { value: 120, units: 'Deg' },
+          sector: 2,
+          inverse: false,
+          source: { expr: '120deg', is_literal: true },
+        },
+        [angle]
+      )
+    ).toBe(angle)
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'Angle',
+          lines: [10, 12],
+          angle: { value: 30, units: 'Deg' },
+          sector: 1,
+          inverse: false,
+          source: { expr: '30deg', is_literal: true },
+        },
+        [angle]
+      )
+    ).toBeNull()
+  })
 })
 
 describe('buildTangentConstraintInput', () => {

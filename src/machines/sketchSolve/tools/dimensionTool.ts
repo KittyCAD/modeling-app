@@ -943,19 +943,20 @@ async function updateDraftConstraint(
     mousePoint,
     getDefaultLengthUnit(context.kclManager)
   )
-  if (constraint.type !== 'Angle') {
-    const matchingConstraint = findMatchingDimensionConstraint(
-      constraint,
-      context.initialObjects
-    )
-    if (matchingConstraint) {
-      await deleteVisiblePreviewConstraint(runtime, context, self)
-      if (runtime.matchingConstraintId !== matchingConstraint.id) {
-        showMatchingDimension(self, matchingConstraint.id)
-      }
-      runtime.matchingConstraintId = matchingConstraint.id
+  const matchingConstraint = findMatchingDimensionConstraint(
+    constraint,
+    context.initialObjects
+  )
+  if (matchingConstraint) {
+    await deleteVisiblePreviewConstraint(runtime, context, self)
+    if (!runtime.active || runtime.cancelled) {
       return
     }
+    if (runtime.matchingConstraintId !== matchingConstraint.id) {
+      showMatchingDimension(self, matchingConstraint.id)
+    }
+    runtime.matchingConstraintId = matchingConstraint.id
+    return
   }
   if (runtime.matchingConstraintId !== null) {
     sendParent(self, {
@@ -1072,20 +1073,18 @@ async function commitDraftConstraint(
       return
     }
 
-    if (constraint.type !== 'Angle') {
-      const matchingConstraint = findMatchingDimensionConstraint(
-        constraint,
-        context.initialObjects
-      )
-      if (matchingConstraint) {
-        await deleteVisiblePreviewConstraint(runtime, context, self)
-        if (runtime.cancelled) {
-          return
-        }
-        showMatchingDimension(self, matchingConstraint.id)
-        self.send({ type: 'done' })
+    const matchingConstraint = findMatchingDimensionConstraint(
+      constraint,
+      context.initialObjects
+    )
+    if (matchingConstraint) {
+      await deleteVisiblePreviewConstraint(runtime, context, self)
+      if (runtime.cancelled) {
         return
       }
+      showMatchingDimension(self, matchingConstraint.id)
+      self.send({ type: 'done' })
+      return
     }
 
     if (runtime.previewDeletion) {
@@ -1393,6 +1392,7 @@ function addDimensionListener({
     onMove: (args) => {
       const twoD = args?.intersectionPoint?.twoD
       if (!twoD) {
+        runtime.matchingConstraintId = null
         sendParent(self, {
           type: 'update hovered id',
           data: { hoveredId: null },

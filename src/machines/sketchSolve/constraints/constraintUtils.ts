@@ -553,8 +553,9 @@ type ArcSizeDimensionConstraintInput =
   | Extract<ApiConstraint, { type: 'Radius' }>
   | Extract<ApiConstraint, { type: 'Diameter' }>
 
-export type SizeDimensionConstraintInput =
+type DimensionConstraintInput =
   | ArcSizeDimensionConstraintInput
+  | Extract<ApiConstraint, { type: 'Angle' }>
   | Extract<
       ApiConstraint,
       { type: 'Distance' | 'HorizontalDistance' | 'VerticalDistance' }
@@ -627,13 +628,20 @@ function haveMatchingConstraintSegments(
 
 function dimensionsConstrainSameTarget(
   existing: ApiConstraint,
-  candidate: SizeDimensionConstraintInput
+  candidate: DimensionConstraintInput
 ) {
   switch (candidate.type) {
     case 'Radius':
-      return existing.type === 'Radius' && existing.arc === candidate.arc
     case 'Diameter':
-      return existing.type === 'Diameter' && existing.arc === candidate.arc
+      return (
+        (existing.type === 'Radius' || existing.type === 'Diameter') &&
+        existing.arc === candidate.arc
+      )
+    case 'Angle':
+      return (
+        existing.type === 'Angle' &&
+        haveMatchingConstraintSegments(existing.lines, candidate.lines)
+      )
     case 'Distance':
     case 'HorizontalDistance':
     case 'VerticalDistance':
@@ -645,16 +653,16 @@ function dimensionsConstrainSameTarget(
 }
 
 /**
- * Finds a dimension with the same kind and geometric target. Values, source
- * expressions, and label positions do not make that dimension distinct.
+ * Finds a dimension that constrains the same geometric degree of freedom.
+ * Values, source expressions, and label positions do not make it distinct.
  */
 export function findMatchingDimensionConstraint(
-  candidate: SizeDimensionConstraintInput,
+  candidate: DimensionConstraintInput,
   objects: readonly ApiObject[]
-): ApiObject | null {
+): ConstraintObject | null {
   return (
     objects.find(
-      (object) =>
+      (object): object is ConstraintObject =>
         object?.kind.type === 'Constraint' &&
         dimensionsConstrainSameTarget(object.kind.constraint, candidate)
     ) ?? null
