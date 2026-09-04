@@ -28,6 +28,7 @@ import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
+  useOnboardingStartPending,
 } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
@@ -52,6 +53,7 @@ export const AllSettingsFields = forwardRef(
     const navigate = useNavigate()
     const context = settings.useSettings()
     const userFeaturesContext = userFeatures.useContext()
+    const isOnboardingStartPending = useOnboardingStartPending()
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const projectPath = useMemo(() => {
@@ -156,16 +158,23 @@ export const AllSettingsFields = forwardRef(
           >
             <ActionButton
               Element="button"
+              aria-busy={isOnboardingStartPending}
+              disabled={isOnboardingStartPending}
               onClick={() => {
                 void restartOnboarding().catch(reportOnboardingStartFailure)
               }}
+              className="disabled:cursor-wait disabled:opacity-70"
               iconStart={{
                 icon: 'refresh',
                 size: 'sm',
-                className: 'p-1',
+                className: `p-1 ${
+                  isOnboardingStartPending ? 'animate-spin' : ''
+                }`,
               }}
             >
-              Replay Onboarding
+              {isOnboardingStartPending
+                ? 'Starting Onboarding...'
+                : 'Replay Onboarding'}
             </ActionButton>
           </SettingsSection>
           <SettingsSection

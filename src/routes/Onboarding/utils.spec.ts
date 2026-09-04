@@ -13,7 +13,9 @@ import {
   type OnboardingUtilDeps,
   shouldApplyRememberedOnboardingWorkflow,
   useAdjacentOnboardingSteps,
+  useOnboardingStartPending,
 } from '@src/routes/Onboarding/utils'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import type { Location } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -185,6 +187,40 @@ describe('Onboarding utility functions', () => {
       resolveProject?.(createProject('/cloud/tutorial-project/main.kcl'))
       await Promise.all([firstStart, secondStart])
       expect(navigate).toHaveBeenCalledOnce()
+    })
+
+    it('exposes pending state and restores interaction after a failed replay', async () => {
+      setDesktop(false)
+      let rejectProject: ((reason: Error) => void) | undefined
+      const projectPromise = new Promise<Project>((_resolve, reject) => {
+        rejectProject = reject
+      })
+      const cloud = createTarget({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        path: '/cloud',
+        result: projectPromise,
+      })
+      const { result } = renderHook(() => useOnboardingStartPending())
+
+      expect(result.current).toBe(false)
+
+      let failedStart: Promise<void> | undefined
+      act(() => {
+        failedStart = acceptOnboarding(createOnboardingDeps([cloud.target]))
+      })
+      expect(result.current).toBe(true)
+
+      rejectProject?.(new Error('project creation failed'))
+      await expect(failedStart).rejects.toThrow('project creation failed')
+      await waitFor(() => expect(result.current).toBe(false))
+
+      const retryCloud = createTarget({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        path: '/cloud',
+        result: createProject('/cloud/tutorial-project/main.kcl'),
+      })
+      await acceptOnboarding(createOnboardingDeps([retryCloud.target]))
+      expect(retryCloud.run).toHaveBeenCalledOnce()
     })
   })
 
