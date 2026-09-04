@@ -421,6 +421,56 @@ describe('KclManager diagnostics', () => {
     expect(executeCodeSpy).toHaveBeenCalledWith('abc')
   })
 
+  it('flushes a pending direct editor execution before starting a sketch', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('a')
+    const executeCodeSpy = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+
+    kclManager.engineCommandManager.connection = { connected: true } as any
+
+    kclManager.editorView.dispatch({
+      changes: { from: 1, to: 1, insert: 'b' },
+    })
+
+    await kclManager.flushPendingEditorExecution()
+
+    expect(executeCodeSpy).toHaveBeenCalledTimes(1)
+    expect(executeCodeSpy).toHaveBeenCalledWith('ab')
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(executeCodeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('waits for an active direct editor execution before starting a sketch', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('a')
+    const execution = createDeferred<undefined>()
+    vi.spyOn(kclManager, 'executeCode').mockReturnValue(execution.promise)
+
+    kclManager.engineCommandManager.connection = { connected: true } as any
+
+    kclManager.editorView.dispatch({
+      changes: { from: 1, to: 1, insert: 'b' },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    let flushCompleted = false
+    const flush = kclManager.flushPendingEditorExecution().then(() => {
+      flushCompleted = true
+    })
+    await flushPromises()
+    expect(flushCompleted).toBe(false)
+
+    execution.resolve(undefined)
+    await flush
+    expect(flushCompleted).toBe(true)
+  })
+
   it('tracks whether the editor differs from the last execution', () => {
     const { kclManager } = createKclManagerTestHarness('a')
     ;(kclManager as any).markCodeAsExecuted('a')
