@@ -176,7 +176,7 @@ npm run test:snapshots
 
 Append `-- --update-snapshots` if you made significant UI changes.
 
-WebKit snapshots use separate baselines and run experimentally on macOS:
+WebKit snapshots use separate baselines and run on macOS:
 
 ```
 npm run playwright -- install webkit
@@ -184,8 +184,8 @@ npm run test:snapshots:webkit
 ```
 
 Append `-- --update-snapshots` to update only the selected browser's
-baselines. WebKit snapshot differences are reported in CI but are not updated
-or committed automatically.
+baselines. WebKit snapshot differences fail CI but are not updated or committed
+automatically.
 
 #### Debugger
 

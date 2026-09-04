@@ -266,8 +266,6 @@ jobs:
         run: npm run playwright -- install --with-deps webkit
 
       - name: Run WebKit snapshots
-        id: webkit-snapshots
-        continue-on-error: true
         run: npm run test:snapshots:webkit
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
@@ -277,10 +275,6 @@ jobs:
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:snapshots-webkit
           TARGET: web
-
-      - name: Report experimental snapshot differences
-        if: steps.webkit-snapshots.outcome == 'failure'
-        run: echo "::warning::WebKit snapshot differences are experimental; inspect the uploaded Playwright report."
 
       - name: Upload WebKit Playwright report
         uses: actions/upload-artifact@v7
