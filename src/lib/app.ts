@@ -189,6 +189,9 @@ export class App implements AppSubsystems {
   private get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
+  private get navigation() {
+    return this.registry.get(navigationService)
+  }
   public get projectSignal(): Signal<ZDSProject | undefined> {
     return this.projectSession.project
   }
@@ -205,13 +208,12 @@ export class App implements AppSubsystems {
    * the path from state that never heard about the navigation, and puts the
    * old URL straight back.
    */
-  private readonly overlay = signal<AppOverlay | undefined>(undefined)
   public get overlaySignal(): ReadonlySignal<AppOverlay | undefined> {
-    return this.overlay
+    return this.navigation.overlay
   }
   /** For the URL to seed state on boot or a history pop. */
   public setOverlay(next: AppOverlay | undefined) {
-    this.overlay.value = next
+    this.navigation.setOverlay(next)
   }
 
   /**
@@ -226,18 +228,12 @@ export class App implements AppSubsystems {
    * `/settings?tab=…` did to whatever query was there before.
    */
   public openSettings(options?: { tab?: string; anchor?: string }) {
-    const navigation = this.registry.get(navigationService)
-    this.overlay.value = { kind: 'settings' }
-    navigation.setOpaqueSearch(options?.tab ? `tab=${options.tab}` : '')
-    navigation.setFragment(options?.anchor ?? '')
+    this.navigation.openSettings(options)
   }
 
   /** Hide settings, and clear the tab and anchor that only it used. */
   public closeSettings() {
-    const navigation = this.registry.get(navigationService)
-    this.overlay.value = undefined
-    navigation.setOpaqueSearch('')
-    navigation.setFragment('')
+    this.navigation.closeSettings()
   }
 
   public debug: AppDebug = {}

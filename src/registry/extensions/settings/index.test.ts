@@ -46,6 +46,13 @@ describe('settings extension', () => {
       `${filePath}/settings?tab=project`
     )
 
+    // The click is what tells the app, and it has to survive a registry with no
+    // navigation service rather than taking the status bar down with it.
+    expect(typeof settingsItem.onClick).toBe('function')
+    expect(() =>
+      settingsItem.onClick?.({} as React.MouseEvent<HTMLAnchorElement>)
+    ).not.toThrow()
+
     registry[Symbol.dispose]()
   })
 })

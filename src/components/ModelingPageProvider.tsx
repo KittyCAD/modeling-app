@@ -172,6 +172,7 @@ export const ModelingPageProvider = ({
 
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(
+        app,
         navigate,
         location,
         filePath,

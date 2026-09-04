@@ -6,6 +6,7 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import {
   type AppLocation,
+  type AppOverlay,
   locationSourcesValueSpec,
   navigationService,
   urlRoutesValueSpec,
@@ -58,6 +59,7 @@ export default defineRegistryItemFactory((ctx) => {
 
   const opaqueSearch = signal('')
   const fragment = signal('')
+  const overlay = signal<AppOverlay | undefined>(undefined)
 
   const path = computed(() => {
     const current = location.value
@@ -103,6 +105,20 @@ export default defineRegistryItemFactory((ctx) => {
           fragment,
           setFragment: (next: string) => {
             fragment.value = next
+          },
+          overlay,
+          setOverlay: (next: AppOverlay | undefined) => {
+            overlay.value = next
+          },
+          openSettings: (options?: { tab?: string; anchor?: string }) => {
+            overlay.value = { kind: 'settings' }
+            opaqueSearch.value = options?.tab ? `tab=${options.tab}` : ''
+            fragment.value = options?.anchor ?? ''
+          },
+          closeSettings: () => {
+            overlay.value = undefined
+            opaqueSearch.value = ''
+            fragment.value = ''
           },
           loadUrl,
         }),

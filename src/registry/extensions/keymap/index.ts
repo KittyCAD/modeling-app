@@ -1,3 +1,5 @@
+import type { NavigationService } from '@src/registry/contracts/navigation'
+import { navigationService } from '@src/registry/contracts/navigation'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -9,8 +11,6 @@ import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import type { Command, CommandScopes } from '@src/lib/commandTypes'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
@@ -98,7 +98,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       'zds.settings.open',
       {
         scopes: GLOBAL_COMMAND_SCOPES,
-        run: openSettings,
+        run: () => openSettings(ctx.services.optional(navigationService)),
       },
     ],
     [
@@ -106,7 +106,10 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       {
         scopes: [SETTINGS_COMMAND_SCOPE],
         run: (item) =>
-          updateSettingsTab(getSettingsTabArgument(item.arguments)),
+          updateSettingsTab(
+            ctx.services.optional(navigationService),
+            getSettingsTabArgument(item.arguments)
+          ),
       },
     ],
   ])
@@ -620,21 +623,34 @@ function shouldPreserveFocusScope(target: EventTarget | null) {
   )
 }
 
-function openSettings() {
-  const pathname = getRouterPathname()
-  const settingsPath = pathname.includes(PATHS.SETTINGS)
-    ? pathname
-    : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
+/**
+ * Show settings, asking the app rather than writing the URL.
+ *
+ * This used to `history.pushState` a path it had assembled and then dispatch a
+ * synthetic `popstate` to make React Router notice. That was the bluntest
+ * navigation in the codebase and, once the URL is derived from state, the most
+ * certain to be undone: nothing about the app changed, so the writer recomputed
+ * the old URL and put it back. `Cmd+,` opened nothing.
+ *
+ * The tab choice is preserved: over a project, settings opens on the project
+ * tab. It is now read from the app's own location rather than sniffed out of
+ * `pathname.includes('/file')`.
+ */
+function openSettings(navigation: NavigationService | undefined) {
+  if (!navigation) return
 
-  pushRouterPath(
-    `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
-  )
+  const overProject = navigation.location.peek().kind === 'project'
+  navigation.openSettings(overProject ? { tab: 'project' } : undefined)
 }
 
-function updateSettingsTab(tab: SettingsKeymapTab) {
-  updateRouterSearchParams((searchParams) => {
-    searchParams.set('tab', tab)
-  })
+function updateSettingsTab(
+  navigation: NavigationService | undefined,
+  tab: SettingsKeymapTab
+) {
+  if (!navigation) return
+
+  // Keeps whatever anchor is showing: this only moves between tabs.
+  navigation.openSettings({ tab, anchor: navigation.fragment.peek() })
 }
 
 function getSettingsTabArgument(args: KeymapArguments | undefined) {
@@ -655,65 +671,6 @@ function isKeymapArgumentRecord(
   args: KeymapArguments | undefined
 ): args is { readonly [key: string]: KeymapArguments } {
   return Boolean(args && typeof args === 'object' && !isArray(args))
-}
-
-function getRouterPathname() {
-  if (typeof window === 'undefined') {
-    return '/'
-  }
-
-  const hashPath = getHashRouterPath()
-  if (hashPath) {
-    return hashPath.pathname
-  }
-
-  return window.location.pathname
-}
-
-function getHashRouterPath() {
-  if (typeof window === 'undefined' || !window.location.hash.startsWith('#/')) {
-    return null
-  }
-
-  return new URL(window.location.hash.slice(1), window.location.origin)
-}
-
-function pushRouterPath(pathAndSearch: string) {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  if (window.location.hash.startsWith('#/')) {
-    const url = new URL(window.location.href)
-    url.hash = `#${pathAndSearch}`
-    window.history.pushState(null, '', url)
-  } else {
-    window.history.pushState(null, '', pathAndSearch)
-  }
-
-  window.dispatchEvent(new Event('popstate'))
-}
-
-function updateRouterSearchParams(
-  update: (searchParams: URLSearchParams) => void
-) {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  const hashPath = getHashRouterPath()
-  if (hashPath) {
-    update(hashPath.searchParams)
-    const url = new URL(window.location.href)
-    url.hash = `#${hashPath.pathname}${hashPath.search}${hashPath.hash}`
-    window.history.pushState(null, '', url)
-  } else {
-    const url = new URL(window.location.href)
-    update(url.searchParams)
-    window.history.pushState(null, '', url)
-  }
-
-  window.dispatchEvent(new Event('popstate'))
 }
 
 export default keymapRegistryItem

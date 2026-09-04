@@ -292,13 +292,7 @@ function ProjectMenuPopover({
               )}
             </>
           ),
-          onClick: () => {
-            const targetPath =
-              filePath !== undefined
-                ? filePath + PATHS.SETTINGS_PROJECT
-                : PATHS.HOME + PATHS.SETTINGS_PROJECT
-            void navigate(targetPath)
-          },
+          onClick: () => app.openSettings({ tab: 'project' }),
         },
         { kind: 'break', id: 'after-settings' },
         project
