@@ -45,6 +45,7 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_PRELUDE_BODY_TYPE_VALUES,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
@@ -119,6 +120,15 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
 }))
+const kclExtrudeMethodOptions = KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map(
+  (value) => ({
+    name: capitaliseFC(value.toLowerCase()),
+    value,
+  })
+)
+const kclNewExtrudeMethodOptions = kclExtrudeMethodOptions.filter(
+  ({ value }) => value === KCL_PRELUDE_EXTRUDE_METHOD_NEW
+)
 
 function isSelections(value: unknown): value is Selections {
   return (
@@ -179,15 +189,11 @@ export function extrudeSelectionRequiresBodyType(context: {
   return profileSelectionRequiresBodyType(context)
 }
 
-export function extrudeSelectionRequiresMethod({
+function extrudeSelectionIncludesBodyEdge({
   argumentsToSubmit,
 }: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
-  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
-    return false
-  }
-
   const sketches = argumentsToSubmit.sketches
   if (!isSelections(sketches)) return false
 
@@ -203,6 +209,18 @@ export function extrudeSelectionRequiresMethod({
         selection.primitiveType === 'edge'
     )
   )
+}
+
+export function extrudeSelectionRequiresMethod({
+  argumentsToSubmit,
+}: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
+    return false
+  }
+
+  return extrudeSelectionIncludesBodyEdge({ argumentsToSubmit })
 }
 
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
@@ -680,10 +698,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           method: {
             inputType: 'options',
             required: extrudeSelectionRequiresMethod,
-            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-              name: capitaliseFC(value.toLowerCase()),
-              value,
-            })),
+            options: ({ argumentsToSubmit }) =>
+              extrudeSelectionIncludesBodyEdge({ argumentsToSubmit })
+                ? kclNewExtrudeMethodOptions
+                : kclExtrudeMethodOptions,
           },
           bodyType: {
             inputType: 'options',
