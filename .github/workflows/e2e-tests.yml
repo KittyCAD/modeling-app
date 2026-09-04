@@ -47,16 +47,6 @@ jobs:
           CI_SUITE: e2e:web
           CI_STEP: setup
 
-      - name: Track setup (WebKit web)
-        run: .github/ci-cd-scripts/track-step.sh
-        env:
-          TAB_API_URL: ${{ vars.TAB_API_URL }}
-          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: e2e:web-webkit
-          CI_STEP: setup
-
       - name: Track setup (desktop)
         run: .github/ci-cd-scripts/track-step.sh
         env:
@@ -218,19 +208,16 @@ jobs:
             label: ubuntu
             test_script: test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
-            ci_suite: e2e:web
             experimental: false
           - os: namespace-profile-macos-8-cores
             label: macos
             test_script: test:e2e:web
             playwright_cache_path: ~/Library/Caches/ms-playwright
-            ci_suite: e2e:web
             experimental: false
           - os: namespace-profile-windows-8-cores
             label: windows
             test_script: test:e2e:web
             playwright_cache_path: ~/AppData/Local/ms-playwright
-            ci_suite: e2e:web
             experimental: false
           # Keep WebKit failures visible without blocking the established suite
           # while its remaining Safari compatibility gaps are addressed.
@@ -238,7 +225,6 @@ jobs:
             label: macos-webkit
             test_script: test:e2e:web:webkit
             playwright_cache_path: ~/Library/Caches/ms-playwright
-            ci_suite: e2e:web-webkit
             experimental: true
     runs-on: ${{ matrix.os }}
     name: e2e:web (${{ matrix.label }})
@@ -315,7 +301,7 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: ${{ matrix.ci_suite }}
+          CI_SUITE: e2e:web
           TARGET: web
 
       - name: Upload Playwright report
@@ -336,7 +322,7 @@ jobs:
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: ${{ matrix.ci_suite }}
+          CI_SUITE: e2e:web
           CI_STEP: teardown
 
   desktop:
