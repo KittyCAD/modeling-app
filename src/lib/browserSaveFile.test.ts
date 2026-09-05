@@ -21,7 +21,7 @@ vi.mock('react-hot-toast', () => ({
 }))
 
 import {
-  browserSaveFile,
+  browserSaveFileWithResult,
   getShowSaveFilePickerOptions,
 } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
@@ -74,8 +74,13 @@ describe('browserSaveFile', () => {
   it('uses the download fallback when showSaveFilePicker is unavailable', async () => {
     const blob = new Blob(['contents'])
 
-    await browserSaveFile(blob, 'main.step', 'toast-id')
+    const result = await browserSaveFileWithResult(
+      blob,
+      'main.step',
+      'toast-id'
+    )
 
+    expect(result).toEqual({ status: 'saved' })
     expect(createObjectURL).toHaveBeenCalledWith(blob)
     expect(clickSpy).toHaveBeenCalledTimes(1)
     expect(document.querySelector('a')?.download).toBe('main.step')
@@ -98,8 +103,13 @@ describe('browserSaveFile', () => {
       )
     setShowSaveFilePicker(showSaveFilePicker)
 
-    await browserSaveFile(blob, 'main.step', 'toast-id')
+    const result = await browserSaveFileWithResult(
+      blob,
+      'main.step',
+      'toast-id'
+    )
 
+    expect(result).toEqual({ status: 'saved' })
     expect(showSaveFilePicker).toHaveBeenCalledWith(
       getShowSaveFilePickerOptions('main.step')
     )
@@ -118,8 +128,13 @@ describe('browserSaveFile', () => {
       .mockRejectedValue(new DOMException('User canceled', 'AbortError'))
     setShowSaveFilePicker(showSaveFilePicker)
 
-    await browserSaveFile(new Blob(['contents']), 'main.step', 'toast-id')
+    const result = await browserSaveFileWithResult(
+      new Blob(['contents']),
+      'main.step',
+      'toast-id'
+    )
 
+    expect(result).toEqual({ status: 'cancelled' })
     expect(createObjectURL).not.toHaveBeenCalled()
     expect(clickSpy).not.toHaveBeenCalled()
     expect(mockToast.dismiss).toHaveBeenCalledWith('toast-id')

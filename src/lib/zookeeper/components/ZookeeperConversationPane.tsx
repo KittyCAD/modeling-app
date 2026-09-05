@@ -1,6 +1,7 @@
 import {
-  ZookeeperConversation,
+  type ClientCommandQueueItem,
   type QueuedMessage,
+  ZookeeperConversation,
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
@@ -54,6 +55,8 @@ export const ZookeeperConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: ZookeeperConversationPaneUser
+  clientCommandQueue?: readonly ClientCommandQueueItem[]
+  onCancelClientCommand?: (requestId: string) => void
   showMakeathonAnnouncement?: boolean
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
 }) => {
@@ -786,6 +789,8 @@ export const ZookeeperConversationPane = (props: {
       hasPromptCompleted={!isPromptRunning && !interruptedTurnAwaitingResume}
       isProcessing={isPromptRunning}
       queue={queue}
+      clientCommandQueue={props.clientCommandQueue}
+      onCancelClientCommand={props.onCancelClientCommand}
       onRemoveFromQueue={onRemoveFromQueue}
       onSteer={onSteer}
       userAvatarSrc={props.user?.image}
