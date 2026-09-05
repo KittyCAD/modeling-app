@@ -602,6 +602,26 @@ impl ExecOutcome {
         &self,
         sketch_name: &str,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        self.render_sketch_png_with_overlays(sketch_name, &[], None)
+    }
+
+    /// Render one sketch from this execution result as a PNG, with optional
+    /// overlays for named sketch segments and an engine-resolved region.
+    ///
+    /// Highlighted segment names are local variables from the named sketch
+    /// block. The resolved region must be a top-level `region()` result from
+    /// that sketch, captured with `resolve_sketch_region` before closing the
+    /// engine session. Magenta seed halos and a soft green region fill sit
+    /// underneath the normal constraint-colored lines.
+    pub fn render_sketch_png_with_overlays(
+        &self,
+        sketch_name: &str,
+        highlighted_segment_names: &[String],
+        resolved_region: Option<&crate::tooling::sketch_visualizer::ResolvedSketchRegion>,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        use std::collections::BTreeSet;
+
+        use crate::execution::SegmentRepr;
         use crate::front::ObjectKind;
         use crate::tooling::sketch_visualizer::SketchVisualizationError;
 
@@ -628,7 +648,75 @@ impl ExecOutcome {
             }
         };
 
-        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
+        let needs_sketch_value = !highlighted_segment_names.is_empty() || resolved_region.is_some();
+        let sketch_fields = if needs_sketch_value {
+            let Some(KclValueView::Object { value, .. }) = self.variables.get(sketch_name) else {
+                return Err(SketchVisualizationError::SketchNotFound {
+                    name: sketch_name.to_owned(),
+                });
+            };
+            Some(value)
+        } else {
+            None
+        };
+
+        let mut highlighted_segment_ids = BTreeSet::new();
+        for segment_name in highlighted_segment_names {
+            let segment_value = sketch_fields.and_then(|fields| fields.get(segment_name));
+            let Some(KclValueView::Segment { value }) = segment_value else {
+                return Err(SketchVisualizationError::SegmentNotFound {
+                    sketch_name: sketch_name.to_owned(),
+                    segment_name: segment_name.clone(),
+                });
+            };
+            let SegmentRepr::Solved { segment } = &value.repr else {
+                return Err(SketchVisualizationError::SegmentNotSolved {
+                    sketch_name: sketch_name.to_owned(),
+                    segment_name: segment_name.clone(),
+                });
+            };
+            highlighted_segment_ids.insert(segment.object_id.0);
+        }
+
+        if let Some(region) = resolved_region {
+            let region_name = region.name();
+            // Require the captured geometry's region identity to match.
+            if !matches!(self.variables.get(region_name), Some(KclValueView::Sketch { value }) if value.id == region.id)
+            {
+                return Err(SketchVisualizationError::RegionNotFound {
+                    name: region_name.to_owned(),
+                });
+            }
+
+            let Some(fields) = sketch_fields else {
+                return Err(SketchVisualizationError::SketchNotFound {
+                    name: sketch_name.to_owned(),
+                });
+            };
+            let selected_sketch = fields
+                .get(SKETCH_OBJECT_META)
+                .and_then(|value| match value {
+                    KclValueView::Object { value, .. } => value.get(SKETCH_OBJECT_META_SKETCH),
+                    _ => None,
+                })
+                .and_then(|value| match value {
+                    KclValueView::Sketch { value } => Some(value),
+                    _ => None,
+                });
+            if selected_sketch.is_none_or(|selected_sketch| selected_sketch.id != region.origin_sketch_id) {
+                return Err(SketchVisualizationError::RegionSketchMismatch {
+                    sketch_name: sketch_name.to_owned(),
+                    region_name: region_name.to_owned(),
+                });
+            }
+        }
+
+        crate::tooling::sketch_visualizer::render_sketch_png(
+            &self.scene_objects,
+            sketch,
+            &highlighted_segment_ids,
+            resolved_region,
+        )
     }
 }
 

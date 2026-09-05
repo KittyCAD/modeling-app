@@ -14,5 +14,6 @@ pub(super) struct InternalPoint {
 pub(super) struct InternalSegment {
     pub(super) construction: bool,
     pub(super) freedom: Option<Freedom>,
+    pub(super) highlighted: bool,
     pub(super) polyline: Vec<SketchVisualizationPoint>,
 }

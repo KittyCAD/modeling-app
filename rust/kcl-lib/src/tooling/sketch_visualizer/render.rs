@@ -15,6 +15,7 @@ use image::RgbaImage;
 
 use super::model::InternalPoint;
 use super::model::InternalSegment;
+use super::region::ResolvedSketchRegion;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationPoint;
@@ -24,12 +25,17 @@ const CANVAS_WIDTH: u32 = 1024;
 const CANVAS_HEIGHT: u32 = 1024;
 const CANVAS_PADDING: u32 = 48;
 const PRIMARY_LINE_WIDTH: f64 = 3.0;
+const HIGHLIGHT_LINE_WIDTH: f64 = 5.0;
 const POINT_RADIUS: f64 = 4.0;
 const CONTACT_POINT_RADIUS: f64 = 5.0;
 
 const FREE_COLOR: Color = Color::rgb(0x3c, 0x73, 0xff);
 const CONFLICT_COLOR: Color = Color::rgb(0xff, 0x5e, 0x5b);
 const FIXED_COLOR: Color = Color::rgb(0xff, 0xff, 0xff);
+const HIGHLIGHT_COLOR: Color = Color::rgb(0xff, 0x4f, 0xd8);
+// #75ff5a at 20% opacity over the dark background. The fill is drawn once,
+// before strokes and points, so their original constraint colors stay intact.
+const REGION_FILL_COLOR: Color = Color::rgb(43, 72, 43);
 const DARK_BACKGROUND: Color = Color::rgb(0x18, 0x1a, 0x1f);
 const POINT_OUTLINE_DARK: Color = Color::rgb(0x18, 0x1a, 0x1f);
 
@@ -64,15 +70,35 @@ pub(super) fn render_png(
     points: &BTreeMap<usize, InternalPoint>,
     contact_point_ids: &BTreeSet<usize>,
     bounds: SketchVisualizationBounds,
+    resolved_region: Option<&ResolvedSketchRegion>,
 ) -> Result<Vec<u8>, SketchVisualizationError> {
     let mut image = RgbaImage::from_pixel(CANVAS_WIDTH, CANVAS_HEIGHT, DARK_BACKGROUND.to_rgba());
     let transform = Transform::new(bounds);
 
-    // Segment polylines were sampled in world coordinates by extraction. The
-    // transform below is the only world-to-screen conversion in the raster path.
+    if let Some(region) = resolved_region {
+        fill_region(&mut image, &region.contours, &transform);
+    }
+
+    // Seed halos sit below the normal stroke, not in place of constraint colors.
+    for segment in segments.values().filter(|segment| segment.highlighted) {
+        draw_polyline(
+            &mut image,
+            &segment.polyline,
+            HIGHLIGHT_COLOR,
+            HIGHLIGHT_LINE_WIDTH,
+            segment.construction,
+            &transform,
+        );
+    }
     for segment in segments.values() {
-        let color = dof_color(segment.freedom);
-        draw_polyline(&mut image, &segment.polyline, color, segment.construction, &transform);
+        draw_polyline(
+            &mut image,
+            &segment.polyline,
+            dof_color(segment.freedom),
+            PRIMARY_LINE_WIDTH,
+            segment.construction,
+            &transform,
+        );
     }
 
     for (point_id, point) in points {
@@ -95,6 +121,38 @@ pub(super) fn render_png(
     let mut cursor = Cursor::new(Vec::new());
     dynamic.write_to(&mut cursor, ImageFormat::Png)?;
     Ok(cursor.into_inner())
+}
+
+/// Even-odd scanline filling preserves nested holes regardless of winding.
+/// Contours have already been checked for closure; never infer closing edges.
+fn fill_region(image: &mut RgbaImage, contours: &[Vec<SketchVisualizationPoint>], transform: &Transform) {
+    let edges = contours
+        .iter()
+        .flat_map(|contour| {
+            contour
+                .windows(2)
+                .map(|edge| (transform.point(edge[0]), transform.point(edge[1])))
+        })
+        .collect::<Vec<_>>();
+    let mut crossings = Vec::new();
+    for row in 0..image.height() {
+        let y = row as f64 + 0.5;
+        crossings.clear();
+        for &(a, b) in &edges {
+            // Half-open intervals count a shared vertex only once.
+            if (a.y <= y && y < b.y) || (b.y <= y && y < a.y) {
+                crossings.push(a.x + (y - a.y) * (b.x - a.x) / (b.y - a.y));
+            }
+        }
+        crossings.sort_by(f64::total_cmp);
+        for pair in crossings.as_chunks::<2>().0 {
+            let start = (pair[0] - 0.5).ceil().clamp(0.0, image.width() as f64) as u32;
+            let end = (pair[1] - 0.5).ceil().clamp(0.0, image.width() as f64) as u32;
+            for column in start..end {
+                image.put_pixel(column, row, REGION_FILL_COLOR.to_rgba());
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -141,6 +199,7 @@ fn draw_polyline(
     image: &mut RgbaImage,
     points: &[SketchVisualizationPoint],
     color: Color,
+    line_width: f64,
     dashed: bool,
     transform: &Transform,
 ) {
@@ -148,14 +207,14 @@ fn draw_polyline(
         let start = transform.point(segment[0]);
         let end = transform.point(segment[1]);
         if dashed {
-            draw_dashed_line(image, start, end, color);
+            draw_dashed_line(image, start, end, color, line_width);
         } else {
-            draw_line(image, start, end, color);
+            draw_line(image, start, end, color, line_width);
         }
     }
 }
 
-fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color) {
+fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color, line_width: f64) {
     let length = screen_distance(start, end);
     if length <= f64::EPSILON {
         return;
@@ -169,15 +228,15 @@ fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint,
         let dash_end = libm::fmin(cursor + dash, length);
         let from = interpolate_screen(start, end, cursor / length);
         let to = interpolate_screen(start, end, dash_end / length);
-        draw_line(image, from, to, color);
+        draw_line(image, from, to, color, line_width);
         cursor += step;
     }
 }
 
-fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color) {
+fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color, line_width: f64) {
     let length = screen_distance(start, end);
     if length <= f64::EPSILON {
-        draw_filled_circle(image, start, PRIMARY_LINE_WIDTH * 0.5, color);
+        draw_filled_circle(image, start, line_width * 0.5, color);
         return;
     }
 
@@ -187,12 +246,7 @@ fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color:
     let samples = length.ceil() as usize;
     for index in 0..=samples {
         let t = index as f64 / samples as f64;
-        draw_filled_circle(
-            image,
-            interpolate_screen(start, end, t),
-            PRIMARY_LINE_WIDTH * 0.5,
-            color,
-        );
+        draw_filled_circle(image, interpolate_screen(start, end, t), line_width * 0.5, color);
     }
 }
 
