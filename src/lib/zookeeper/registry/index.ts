@@ -1,39 +1,18 @@
 import {
-  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
-import {
-  AreaType,
-  type AreaTypeComponentProps,
-  type Layout,
-  LayoutType,
-} from '@src/lib/layout/types'
-import {
-  layoutAreaLibraryValueSpec,
-  layoutService,
-} from '@src/registry/contracts/layout'
+import { AreaType, type Layout, LayoutType } from '@src/lib/layout/types'
+import { zookeeperPaneRuntimeRegistryItem } from '@src/lib/zookeeper/registry/runtime'
+import { layoutService } from '@src/registry/contracts/layout'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { createElement, lazy, Suspense } from 'react'
-
-const ZOOKEEPER_PANE_ID = 'ttc'
-const LAYOUT_TOOLBAR_IDS = new Set(['left-toolbar', 'right-toolbar'])
-
-// Registry plugins are imported eagerly while App is still initializing.
-// Keep Zookeeper UI behind lazy imports so importing the plugin does not pull
-// in boot.ts through components that use the global app context.
-const ZookeeperConversationPaneWrapper = lazy(async () => {
-  const { ZookeeperConversationPaneWrapper } = await import(
-    '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
-  )
-  return { default: ZookeeperConversationPaneWrapper }
-})
 
 const ZookeeperCreditsMenu = lazy(async () => {
   const { ZookeeperCreditsMenu } = await import(
@@ -42,13 +21,6 @@ const ZookeeperCreditsMenu = lazy(async () => {
   return { default: ZookeeperCreditsMenu }
 })
 
-const ZookeeperConversationPane = (props: AreaTypeComponentProps) =>
-  createElement(
-    Suspense,
-    { fallback: null },
-    createElement(ZookeeperConversationPaneWrapper, props)
-  )
-
 const ZookeeperCreditsStatusBarItem = () =>
   createElement(
     Suspense,
@@ -56,49 +28,21 @@ const ZookeeperCreditsStatusBarItem = () =>
     createElement(ZookeeperCreditsMenu)
   )
 
-function hasOpenToolbarPane(
-  rootLayout: Layout | undefined,
-  paneId: string
-): boolean {
+function hasOpenZookeeperPane(rootLayout: Layout | undefined): boolean {
   if (!rootLayout) {
     return false
   }
 
-  if (
-    rootLayout.type === LayoutType.Panes &&
-    LAYOUT_TOOLBAR_IDS.has(rootLayout.id) &&
-    rootLayout.activeIndices.some(
-      (activeIndex) => rootLayout.children[activeIndex]?.id === paneId
-    )
-  ) {
-    return true
+  if (rootLayout.type === LayoutType.Simple) {
+    return rootLayout.areaType === AreaType.Zookeeper
   }
 
-  if (rootLayout.type === LayoutType.Splits) {
-    return rootLayout.children.some((child) =>
-      hasOpenToolbarPane(child, paneId)
-    )
-  }
-
-  return false
+  const children =
+    rootLayout.type === LayoutType.Panes
+      ? rootLayout.activeIndices.map((index) => rootLayout.children[index])
+      : rootLayout.children
+  return children.some(hasOpenZookeeperPane)
 }
-
-const zookeeperLayoutArea = defineRegistryItem({
-  id: 'zookeeper.layout-area',
-  provides: [
-    provide(layoutAreaLibraryValueSpec, {
-      [AreaType.Zookeeper]: {
-        hide: () => false,
-        shortcut: 'Ctrl + T',
-        cssClassOverrides: {
-          button:
-            'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
-        },
-        Component: ZookeeperConversationPane,
-      },
-    }),
-  ],
-})
 
 const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
   const layout = ctx.services.signal(layoutService)
@@ -106,8 +50,7 @@ const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
     const layoutSystem = layout.value
 
     return nullableStatusBarItem(
-      layoutSystem &&
-        hasOpenToolbarPane(layoutSystem.signal.value, ZOOKEEPER_PANE_ID)
+      layoutSystem && hasOpenZookeeperPane(layoutSystem.signal.value)
         ? {
             id: 'zookeeper-credits',
             scopes: ['file'],
@@ -129,7 +72,7 @@ const zookeeper = createZdsPlugin({
   id: 'zookeeper',
   title: 'Zookeeper',
   description: 'AI-assisted modeling conversation and project editing tools.',
-  items: [zookeeperLayoutArea, zookeeperCreditsStatusBarItem],
+  items: [zookeeperPaneRuntimeRegistryItem, zookeeperCreditsStatusBarItem],
   defaultSetting: 'core',
 })
 
