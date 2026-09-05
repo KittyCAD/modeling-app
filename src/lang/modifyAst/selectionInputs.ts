@@ -5,6 +5,7 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
+import type { GetVariableExprsOptions } from '@src/lang/queryAst'
 import {
   getBodyIndex,
   getNodeFromPath,
@@ -21,10 +22,6 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-
-type VariableExprsOptions = NonNullable<
-  Parameters<typeof getVariableExprsFromSelection>[4]
->
 
 export type SelectionInputPlan = {
   exprs: Expr[]
@@ -43,20 +40,29 @@ export function resolveSelectionInputPlan({
   options = {},
   materializePipes = 'when-multiple',
   variablePrefix = KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+  nodeToEdit,
 }: {
   selection: Selections
   artifactGraph: ArtifactGraph
   ast: Node<Program>
   wasmInstance: ModuleType
-  options?: VariableExprsOptions
+  options?: GetVariableExprsOptions
   materializePipes?: 'always' | 'when-multiple'
   variablePrefix?: string
+  nodeToEdit?: PathToNode
 }): Error | SelectionInputPlan {
+  // Edit codemods preserve selection arguments verbatim; input planning is
+  // only needed when creating a new call.
+  if (nodeToEdit) {
+    return { exprs: [] }
+  }
+
   const aggregate = getVariableExprsFromSelection(
     selection,
     artifactGraph,
     ast,
     wasmInstance,
+    undefined,
     options
   )
   if (err(aggregate)) {
@@ -81,6 +87,7 @@ export function resolveSelectionInputPlan({
       artifactGraph,
       ast,
       wasmInstance,
+      undefined,
       options
     )
     if (err(input)) {
