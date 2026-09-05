@@ -4,6 +4,7 @@ import {
   getVideoCodecsFromSdp,
   isUnsupportedEngineVideoCodecError,
   preflightEngineVideoCodecSupport,
+  UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE,
   UnsupportedEngineVideoCodecError,
 } from '@src/lib/engineConnection/videoCodecSupport'
 import { afterEach, describe, expect, test, vi } from 'vitest'
@@ -102,6 +103,9 @@ describe('Engine video codec support', () => {
   test('identifies unsupported codec errors as terminal', () => {
     const error = new UnsupportedEngineVideoCodecError(['video/vp8'])
 
+    expect(error.message).toBe(UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE)
+    expect(error.message).toContain('Chrome, Edge, Firefox, or Safari')
+    expect(error.message).toContain('update it to the latest version')
     expect(isUnsupportedEngineVideoCodecError(error)).toBe(true)
     expect(isUnsupportedEngineVideoCodecError(new Error('temporary'))).toBe(
       false

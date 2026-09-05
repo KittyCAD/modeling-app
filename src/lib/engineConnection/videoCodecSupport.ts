@@ -3,6 +3,9 @@
 // API-provided metadata. See modeling-app#13673.
 export const ENGINE_SUPPORTED_VIDEO_CODECS = ['video/H264'] as const
 
+export const UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE =
+  'Zoo Design Studio requires H.264 video, but this browser is not offering it. Use Chrome, Edge, Firefox, or Safari. If you are already using one of these browsers, update it to the latest version and reload this page. If Firefox is already up to date, enable OpenH264, restart Firefox, and try again.'
+
 const normalizeCodec = (mimeType: string) => mimeType.trim().toLowerCase()
 
 export type EngineVideoCodecSupport = {
@@ -16,9 +19,7 @@ export class UnsupportedEngineVideoCodecError extends Error {
   readonly engineCodecs = ENGINE_SUPPORTED_VIDEO_CODECS
 
   constructor(browserCodecs: readonly string[]) {
-    super(
-      'This browser cannot receive H.264 video, which Zoo Design Studio currently requires. Enable OpenH264 and reload, or use another supported browser.'
-    )
+    super(UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE)
     this.name = 'UnsupportedEngineVideoCodecError'
     this.browserCodecs = browserCodecs
   }
