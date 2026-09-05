@@ -324,8 +324,9 @@ function watchConfiguredProjectLibraries({
         for (const libraryId of target.libraryIds) {
           scheduleInvalidation(libraryId)
           if (eventType === 'addDir') {
-            // Root-only watchers see the project folder creation, not every file
-            // copied into it. A settled follow-up catches slower external copies.
+            // The project folder event can arrive before its contents. A
+            // settled follow-up catches slower external copies even if their
+            // metadata event is unavailable.
             scheduleSettledInvalidation(libraryId)
           }
         }
@@ -499,12 +500,19 @@ const projectLibraryRealizationsRegistryService = defineRegistryItem({
   providesServices: [
     provideService(projectLibraryRealizationsService, {
       invalidate: invalidateProjectLibraryRealizations,
-      watchConfiguredLibraries: ({ libraries }) =>
-        watchConfiguredProjectLibraries({
+      watchConfiguredLibraries: ({ libraries }) => {
+        const dispose = watchConfiguredProjectLibraries({
           libraries,
           onInvalidateLibrary: (libraryId) =>
             invalidateProjectLibraryRealizations({ libraryId }),
-        }),
+        })
+
+        for (const libraryId of new Set(libraries.map(({ id }) => id))) {
+          invalidateProjectLibraryRealizations({ libraryId })
+        }
+
+        return dispose
+      },
     } satisfies ProjectLibraryRealizationsService),
   ],
 })

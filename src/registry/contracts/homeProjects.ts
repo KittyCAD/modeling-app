@@ -77,6 +77,8 @@ export interface HomeProjectEntry {
   syncFailure?: HomeProjectSyncFailure
   cloudRelationshipId?: string
   duplicateRealizations?: readonly HomeProjectDuplicateRealization[]
+  /** Other local folders discovered with this project's project.toml ID. */
+  duplicateProjectIdPaths?: readonly string[]
 }
 
 export type HomeProjectEntryContribution = Omit<
@@ -113,6 +115,7 @@ export interface HomeProjectActionsService {
   canDelete: (project: HomeProjectEntry) => boolean
   canMoveToLibrary: (project: HomeProjectEntry) => boolean
   canReviewDuplicateRealizations: (project: HomeProjectEntry) => boolean
+  canSeparateProjectCopies: (project: HomeProjectEntry) => boolean
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
@@ -133,6 +136,10 @@ export interface HomeProjectActionsService {
   deleteDuplicateRealizations: (
     project: HomeProjectEntry,
     duplicateProjectPaths: readonly string[]
+  ) => Promise<void>
+  separateProjectCopies: (
+    project: HomeProjectEntry,
+    keepProjectPath?: string
   ) => Promise<void>
 }
 
