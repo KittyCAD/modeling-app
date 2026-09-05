@@ -154,6 +154,17 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 npm run test:e2e:web
 ```
 
+#### Web tests (WebKit on macOS)
+
+[Playwright WebKit](https://playwright.dev/docs/browsers#webkit) provides the
+closest automated coverage to Safari; Playwright does not automate the branded
+Safari browser itself.
+
+```
+npm run playwright -- install webkit
+npm run test:e2e:web:webkit
+```
+
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
 If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:

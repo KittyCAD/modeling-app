@@ -66,6 +66,10 @@ export class AuthenticatedApp {
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
+      // Persistent WebKit starts on about:blank, where localStorage is unavailable.
+      if (window.location.protocol === 'about:') {
+        return
+      }
       localStorage.setItem('persistCode', code)
       ;(window as any).playwrightSkipFilePicker = true
     }, code)
@@ -475,8 +479,8 @@ const fixturesBasedOnProcessEnvPlatform = {
     // This forces the page to reload after fs operations.
     let ret
     if (!tronApp) {
-      // OPFS is isolated per instance in Playwright!
-      // In the past, it wasn't: https://github.com/microsoft/playwright/issues/29901
+      // The persistent WebKit fixture clears its origin storage before each
+      // serial test; regular browser contexts isolate OPFS themselves.
       const projects = await fs.getPath('documents')
       const projectDirPath = await fs.resolve(projects, PROJECT_FOLDER)
       ret = async function (fn: (dir: string) => Promise<void>) {
@@ -503,9 +507,9 @@ const fixturesBasedOnProcessEnvPlatform = {
     async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
       await use() // <-- runs the actual test
 
-      const engineLogs: ILog[] = await page.evaluate(
-        () => window.engineDebugger.logs || []
-      )
+      const engineLogs: ILog[] = await page
+        .evaluate(() => window.engineDebugger?.logs || [])
+        .catch(() => [])
       const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
         const newLog: IFormattedLog = {
           ...log,

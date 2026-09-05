@@ -205,10 +205,23 @@ jobs:
       matrix:
         include:
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+            label: ubuntu
+            test_script: test:e2e:web
+            playwright_cache_path: ~/.cache/ms-playwright
           - os: namespace-profile-macos-8-cores
+            label: macos
+            test_script: test:e2e:web
+            playwright_cache_path: ~/Library/Caches/ms-playwright
           - os: namespace-profile-windows-8-cores
+            label: windows
+            test_script: test:e2e:web
+            playwright_cache_path: ~/AppData/Local/ms-playwright
+          - os: namespace-profile-macos-8-cores
+            label: macos, webkit
+            test_script: test:e2e:web:webkit
+            playwright_cache_path: ~/Library/Caches/ms-playwright
     runs-on: ${{ matrix.os }}
-    name: e2e:web (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }})
+    name: e2e:web (${{ matrix.label }})
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
@@ -261,7 +274,7 @@ jobs:
       - name: Download browser cache
         uses: actions/cache@v6.1.0
         with:
-          path: ~/.cache/ms-playwright/
+          path: ${{ matrix.playwright_cache_path }}
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
       - name: Install browsers
@@ -274,7 +287,7 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - run: npm run test:e2e:web
+      - run: npm run ${{ matrix.test_script }}
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -288,7 +301,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
-          name: playwright-report-web-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-web-${{ matrix.label }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30

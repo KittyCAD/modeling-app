@@ -35,8 +35,8 @@ class MockFileSystemFileHandle {
 
   async createWritable() {
     return {
-      write: async (blob: Blob) => {
-        this.data = new Uint8Array(await blob.arrayBuffer())
+      write: async (data: Uint8Array<ArrayBuffer>) => {
+        this.data = data.slice()
         this.lastModified = Date.now()
       },
       close: async () => {},
