@@ -125,6 +125,41 @@ export function addFillet({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
+  if (mNodeToEdit) {
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Fillet'),
+      null,
+      [
+        createLabeledArg('radius', valueOrVariable(radius)),
+        ...(tolerance
+          ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+          : []),
+        ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+        ...(version
+          ? [createLabeledArg('version', valueOrVariable(version))]
+          : []),
+      ]
+    )
+    if ('variableName' in radius && radius.variableName) {
+      insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
+    }
+    if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+      insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+    }
+    if (version && 'variableName' in version && version.variableName) {
+      insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+    }
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
+    return { modifiedAst, pathToNode: [pathToNode] }
+  }
+
   // 2. Prepare unlabeled and labeled arguments
   // Group selections by body and add all tags first (before variable insertion)
   // This must happen before insertVariableAndOffsetPathToNode because that invalidates artifactGraph paths
@@ -199,7 +234,7 @@ export function addFillet({
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
-      labeledSelectionArgNames: ['tags'],
+      labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
       wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
@@ -240,6 +275,49 @@ export function addChamfer({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+
+  if (mNodeToEdit) {
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Chamfer'),
+      null,
+      [
+        createLabeledArg('length', valueOrVariable(length)),
+        ...(secondLength
+          ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
+          : []),
+        ...(angle ? [createLabeledArg('angle', valueOrVariable(angle))] : []),
+        ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+        ...(version
+          ? [createLabeledArg('version', valueOrVariable(version))]
+          : []),
+      ]
+    )
+    if ('variableName' in length && length.variableName) {
+      insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
+    }
+    if (
+      secondLength &&
+      'variableName' in secondLength &&
+      secondLength.variableName
+    ) {
+      insertVariableAndOffsetPathToNode(secondLength, modifiedAst, mNodeToEdit)
+    }
+    if (angle && 'variableName' in angle && angle.variableName) {
+      insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
+    }
+    if (version && 'variableName' in version && version.variableName) {
+      insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+    }
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
+    return { modifiedAst, pathToNode: [pathToNode] }
+  }
 
   // 2. Prepare unlabeled and labeled arguments
   // Group selections by body and add all tags first (before variable insertion)
@@ -327,7 +405,7 @@ export function addChamfer({
       pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
-      labeledSelectionArgNames: ['tags'],
+      labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
       wasmInstance,
     })
     if (err(pathToNode)) return pathToNode

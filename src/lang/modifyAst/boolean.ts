@@ -95,26 +95,30 @@ export function addUnion({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
+  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      solids,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(selectionVars)) {
+      return selectionVars
     }
-  )
-  if (err(vars)) {
-    return vars
-  }
+    vars = selectionVars
 
-  const selectionError = validateBooleanSelections([
-    { selections: solids, ...vars },
-  ])
-  if (selectionError) {
-    return selectionError
+    const selectionError = validateBooleanSelections([
+      { selections: solids, ...vars },
+    ])
+    if (selectionError) {
+      return selectionError
+    }
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -167,26 +171,30 @@ export function addIntersect({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
+  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      solids,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(selectionVars)) {
+      return selectionVars
     }
-  )
-  if (err(vars)) {
-    return vars
-  }
+    vars = selectionVars
 
-  const selectionError = validateBooleanSelections([
-    { selections: solids, ...vars },
-  ])
-  if (selectionError) {
-    return selectionError
+    const selectionError = validateBooleanSelections([
+      { selections: solids, ...vars },
+    ])
+    if (selectionError) {
+      return selectionError
+    }
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -241,47 +249,53 @@ export function addSubtract({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
+  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  let toolVars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      solids,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(selectionVars)) {
+      return selectionVars
     }
-  )
-  if (err(vars)) {
-    return vars
-  }
+    vars = selectionVars
 
-  const toolVars = getVariableExprsFromSelection(
-    tools,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    const selectionToolVars = getVariableExprsFromSelection(
+      tools,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(selectionToolVars)) {
+      return selectionToolVars
     }
-  )
-  if (err(toolVars)) {
-    return toolVars
-  }
+    toolVars = selectionToolVars
 
-  const selectionError = validateBooleanSelections([
-    { selections: solids, ...vars },
-    { selections: tools, ...toolVars },
-  ])
-  if (selectionError) {
-    return selectionError
+    const selectionError = validateBooleanSelections([
+      { selections: solids, ...vars },
+      { selections: tools, ...toolVars },
+    ])
+    if (selectionError) {
+      return selectionError
+    }
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
-  if (toolsExpr === null) {
+  if (!mNodeToEdit && toolsExpr === null) {
     return new Error('No tools provided for subtraction operation')
   }
 
@@ -289,7 +303,7 @@ export function addSubtract({
     modelingStdLibCommandName('Boolean Subtract'),
     objectsExpr,
     [
-      createLabeledArg('tools', toolsExpr),
+      ...(toolsExpr ? [createLabeledArg('tools', toolsExpr)] : []),
       ...(tolerance
         ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
         : []),
@@ -351,31 +365,38 @@ export function addSplit({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const vars = getVariableExprsFromSelection(
-    targets,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
+  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      targets,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(selectionVars)) {
+      return selectionVars
     }
-  )
-  if (err(vars)) {
-    return vars
+    vars = selectionVars
   }
 
   const hasTools = Boolean(
-    tools &&
+    !mNodeToEdit &&
+      tools &&
       (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
   )
   const selectionGroups: BooleanSelectionGroup[] = [
     { selections: targets, ...vars },
   ]
-  const targetSelectionError = validateBooleanSelections(selectionGroups)
-  if (targetSelectionError) {
-    return targetSelectionError
+  if (!mNodeToEdit) {
+    const targetSelectionError = validateBooleanSelections(selectionGroups)
+    if (targetSelectionError) {
+      return targetSelectionError
+    }
   }
 
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
@@ -387,7 +408,7 @@ export function addSplit({
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit,
+      undefined,
       {
         lastChildLookup: true,
         artifactTypeFilter: ['compositeSolid', 'sweep'],
@@ -421,7 +442,7 @@ export function addSplit({
       createLabeledArg('merge', createLiteral(merge, wasmInstance))
     )
   }
-  if (hasTools && keepTools !== undefined) {
+  if ((hasTools || mNodeToEdit) && keepTools !== undefined) {
     labeledArgs.push(
       createLabeledArg('keepTools', createLiteral(keepTools, wasmInstance))
     )

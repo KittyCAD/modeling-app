@@ -25,6 +25,33 @@ import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
+function getPatternSelectionVars({
+  solids,
+  artifactGraph,
+  modifiedAst,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  solids: Selections
+  artifactGraph: ArtifactGraph
+  modifiedAst: Node<Program>
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}) {
+  if (nodeToEdit) {
+    return { exprs: [] }
+  }
+
+  return getVariableExprsFromSelection(
+    solids,
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    undefined,
+    { lastChildLookup: true }
+  )
+}
+
 export function addPatternCircular3D({
   ast,
   artifactGraph,
@@ -55,16 +82,13 @@ export function addPatternCircular3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
-  const vars = getVariableExprsFromSelection(
+  const vars = getPatternSelectionVars({
     solids,
     artifactGraph,
     modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+    nodeToEdit: mNodeToEdit,
+  })
   if (err(vars)) {
     return vars
   }
@@ -226,16 +250,13 @@ export function addPatternLinear3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
-  const vars = getVariableExprsFromSelection(
+  const vars = getPatternSelectionVars({
     solids,
     artifactGraph,
     modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+    nodeToEdit: mNodeToEdit,
+  })
   if (err(vars)) {
     return vars
   }

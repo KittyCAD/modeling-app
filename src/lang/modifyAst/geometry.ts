@@ -76,13 +76,15 @@ export function addHelix({
   let pathIfNewPipe: PathToNode | undefined
   const axisExpr: LabeledArg[] = []
   const cylinderExpr: LabeledArg[] = []
-  if (cylinder) {
+  // Only explicit X/Y/Z axes are editable. Selection-backed axis and cylinder
+  // arguments are omitted here, then restored verbatim by setCallInAst.
+  if (cylinder && !mNodeToEdit) {
     const vars = getVariableExprsFromSelection(
       cylinder,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit,
+      undefined,
       {
         lastChildLookup: true,
       }
@@ -92,7 +94,7 @@ export function addHelix({
     }
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
-  } else if (axis || edge) {
+  } else if (axis || (edge && !mNodeToEdit)) {
     const result = getAxisExpression(
       axis,
       edge,
@@ -105,7 +107,7 @@ export function addHelix({
     }
     axisExpr.push(createLabeledArg('axis', result.generatedAxis))
     modifiedAst = result.modifiedAst
-  } else {
+  } else if (!mNodeToEdit) {
     return new Error('Helix must have either an axis or a cylinder')
   }
 

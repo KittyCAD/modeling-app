@@ -135,75 +135,77 @@ export function addExtrude({
     exprs: Expr[]
     pathIfPipe?: PathToNode
   } = { exprs: [] }
-  const res = getFacesExprsFromSelection(
-    modifiedAst,
-    sketches,
-    artifactGraph,
-    wasmInstance
-  )
-  if (err(res)) return res
-  modifiedAst = res.modifiedAst
-  vars.exprs.push(...res.exprs)
-
-  const nonFaceSelections: Selections = {
-    graphSelections: sketches.graphSelections.filter(
-      (selection) =>
-        !isFaceArtifact(selection.artifact) &&
-        selection.artifact?.type !== 'sweepEdge'
-    ),
-    otherSelections: sketches.otherSelections.filter(
-      (selection) =>
-        !(
-          isEnginePrimitiveSelection(selection) &&
-          selection.primitiveType === 'edge'
-        )
-    ),
-  }
-  if (nonFaceSelections.graphSelections.length > 0) {
-    const res = getVariableExprsFromSelection(
-      nonFaceSelections,
-      artifactGraph,
+  if (!mNodeToEdit) {
+    const res = getFacesExprsFromSelection(
       modifiedAst,
-      wasmInstance,
-      mNodeToEdit
+      sketches,
+      artifactGraph,
+      wasmInstance
     )
-    if (err(res)) {
-      return res
-    }
-    vars.pathIfPipe = res.pathIfPipe
+    if (err(res)) return res
+    modifiedAst = res.modifiedAst
     vars.exprs.push(...res.exprs)
-  }
 
-  const edgeProfileExprs = getEdgeProfileExprsFromSelection({
-    selections: sketches,
-    modifiedAst,
-    artifactGraph,
-    wasmInstance,
-    nodeToEdit: mNodeToEdit,
-  })
-  if (err(edgeProfileExprs)) return edgeProfileExprs
-  modifiedAst = edgeProfileExprs.modifiedAst
-  vars.exprs.push(...edgeProfileExprs.exprs)
+    const nonFaceSelections: Selections = {
+      graphSelections: sketches.graphSelections.filter(
+        (selection) =>
+          !isFaceArtifact(selection.artifact) &&
+          selection.artifact?.type !== 'sweepEdge'
+      ),
+      otherSelections: sketches.otherSelections.filter(
+        (selection) =>
+          !(
+            isEnginePrimitiveSelection(selection) &&
+            selection.primitiveType === 'edge'
+          )
+      ),
+    }
+    if (nonFaceSelections.graphSelections.length > 0) {
+      const res = getVariableExprsFromSelection(
+        nonFaceSelections,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance
+      )
+      if (err(res)) {
+        return res
+      }
+      vars.pathIfPipe = res.pathIfPipe
+      vars.exprs.push(...res.exprs)
+    }
 
-  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
-  if (engineRegions.length > 0) {
-    const hideResult = addHideCallsForRegionSketches({
-      engineRegions,
+    const edgeProfileExprs = getEdgeProfileExprsFromSelection({
+      selections: sketches,
       modifiedAst,
       artifactGraph,
       wasmInstance,
     })
-    if (err(hideResult)) return hideResult
-    modifiedAst = hideResult
+    if (err(edgeProfileExprs)) return edgeProfileExprs
+    modifiedAst = edgeProfileExprs.modifiedAst
+    vars.exprs.push(...edgeProfileExprs.exprs)
 
-    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      engineRegions,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (err(regionExprs)) return regionExprs
-    vars.exprs.push(...regionExprs)
+    const engineRegions = sketches.otherSelections.filter(
+      isEngineRegionSelection
+    )
+    if (engineRegions.length > 0) {
+      const hideResult = addHideCallsForRegionSketches({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(hideResult)) return hideResult
+      modifiedAst = hideResult
+
+      const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(regionExprs)) return regionExprs
+      vars.exprs.push(...regionExprs)
+    }
   }
 
   // Extra labeled args expressions
@@ -212,7 +214,7 @@ export function addExtrude({
     : []
   // Special handling for 'to' arg
   let toExpr: LabeledArg[] = []
-  if (to) {
+  if (to && !mNodeToEdit) {
     if (to.graphSelections.length !== 1) {
       return new Error('Extrude "to" argument must have exactly one selection.')
     }
@@ -231,7 +233,7 @@ export function addExtrude({
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
   let directionExpr: LabeledArg[] = []
-  if (direction) {
+  if (direction && !mNodeToEdit) {
     const edgeDirectionResult = getEdgeProfileExprsFromSelection({
       selections: direction,
       modifiedAst,
@@ -440,73 +442,76 @@ export function addSweep({
     exprs: Expr[]
     pathIfPipe?: PathToNode
   } = { exprs: [] }
-  const res = getFacesExprsFromSelection(
-    modifiedAst,
-    sketches,
-    artifactGraph,
-    wasmInstance
-  )
-  if (err(res)) return res
-  modifiedAst = res.modifiedAst
-  vars.exprs.push(...res.exprs)
-
-  const nonFaceSelections: Selections = {
-    graphSelections: sketches.graphSelections.filter(
-      (selection) => !isFaceArtifact(selection.artifact)
-    ),
-    otherSelections: sketches.otherSelections,
-  }
-  if (nonFaceSelections.graphSelections.length > 0) {
-    const res = getVariableExprsFromSelection(
-      nonFaceSelections,
-      artifactGraph,
+  let pathExpr: Expr | null = null
+  if (!mNodeToEdit) {
+    const res = getFacesExprsFromSelection(
       modifiedAst,
-      wasmInstance,
-      mNodeToEdit
+      sketches,
+      artifactGraph,
+      wasmInstance
     )
-    if (err(res)) {
-      return res
-    }
-    vars.pathIfPipe = res.pathIfPipe
+    if (err(res)) return res
+    modifiedAst = res.modifiedAst
     vars.exprs.push(...res.exprs)
-  }
 
-  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
-  if (engineRegions.length > 0) {
-    const hideResult = addHideCallsForRegionSketches({
-      engineRegions,
-      modifiedAst,
+    const nonFaceSelections: Selections = {
+      graphSelections: sketches.graphSelections.filter(
+        (selection) => !isFaceArtifact(selection.artifact)
+      ),
+      otherSelections: sketches.otherSelections,
+    }
+    if (nonFaceSelections.graphSelections.length > 0) {
+      const res = getVariableExprsFromSelection(
+        nonFaceSelections,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance
+      )
+      if (err(res)) {
+        return res
+      }
+      vars.pathIfPipe = res.pathIfPipe
+      vars.exprs.push(...res.exprs)
+    }
+
+    const engineRegions = sketches.otherSelections.filter(
+      isEngineRegionSelection
+    )
+    if (engineRegions.length > 0) {
+      const hideResult = addHideCallsForRegionSketches({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(hideResult)) return hideResult
+      modifiedAst = hideResult
+
+      const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(regionExprs)) return regionExprs
+      vars.exprs.push(...regionExprs)
+    }
+
+    const pathVars = getVariableExprsFromSelection(
+      path,
       artifactGraph,
-      wasmInstance,
-    })
-    if (err(hideResult)) return hideResult
-    modifiedAst = hideResult
-
-    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      engineRegions,
       modifiedAst,
-      artifactGraph,
       wasmInstance,
-    })
-    if (err(regionExprs)) return regionExprs
-    vars.exprs.push(...regionExprs)
-  }
+      undefined
+    )
+    if (err(pathVars)) {
+      return pathVars
+    }
 
-  // Find the path declaration for the labeled argument
-  const pathVars = getVariableExprsFromSelection(
-    path,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
-  )
-  if (err(pathVars)) {
-    return pathVars
-  }
-
-  const pathExpr = createVariableExpressionsArray(pathVars.exprs)
-  if (!pathExpr) {
-    return new Error("Couldn't retrieve path selection")
+    pathExpr = createVariableExpressionsArray(pathVars.exprs)
+    if (!pathExpr) {
+      return new Error("Couldn't retrieve path selection")
+    }
   }
 
   // Extra labeled args expressions
@@ -578,7 +583,7 @@ export function addSweep({
     modelingStdLibCommandName('Sweep'),
     sketchesExpr,
     [
-      createLabeledArg('path', pathExpr),
+      ...(pathExpr ? [createLabeledArg('path', pathExpr)] : []),
       ...sectionalExpr,
       ...toleranceExpr,
       ...relativeToExpr,
@@ -657,36 +662,42 @@ export function addLoft({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    sketches,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
-  )
-  if (err(vars)) {
-    return vars
-  }
-
-  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
-  if (engineRegions.length > 0) {
-    const hideResult = addHideCallsForRegionSketches({
-      engineRegions,
-      modifiedAst,
+  const vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      sketches,
       artifactGraph,
-      wasmInstance,
-    })
-    if (err(hideResult)) return hideResult
-    modifiedAst = hideResult
-
-    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      engineRegions,
       modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (err(regionExprs)) return regionExprs
-    vars.exprs.push(...regionExprs)
+      wasmInstance
+    )
+    if (err(selectionVars)) {
+      return selectionVars
+    }
+    vars.exprs = selectionVars.exprs
+    vars.pathIfPipe = selectionVars.pathIfPipe
+
+    const engineRegions = sketches.otherSelections.filter(
+      isEngineRegionSelection
+    )
+    if (engineRegions.length > 0) {
+      const hideResult = addHideCallsForRegionSketches({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(hideResult)) return hideResult
+      modifiedAst = hideResult
+
+      const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(regionExprs)) return regionExprs
+      vars.exprs.push(...regionExprs)
+    }
   }
 
   // Extra labeled args expressions
@@ -810,49 +821,60 @@ export function addRevolve({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    sketches,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
-  )
-  if (err(vars)) {
-    return vars
-  }
-  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
-  if (engineRegions.length > 0) {
-    const hideResult = addHideCallsForRegionSketches({
-      engineRegions,
-      modifiedAst,
+  const vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      sketches,
       artifactGraph,
-      wasmInstance,
-    })
-    if (err(hideResult)) return hideResult
-    modifiedAst = hideResult
+      modifiedAst,
+      wasmInstance
+    )
+    if (err(selectionVars)) {
+      return selectionVars
+    }
+    vars.exprs = selectionVars.exprs
+    vars.pathIfPipe = selectionVars.pathIfPipe
 
-    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
-      engineRegions,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (err(regionExprs)) return regionExprs
-    vars.exprs.push(...regionExprs)
+    const engineRegions = sketches.otherSelections.filter(
+      isEngineRegionSelection
+    )
+    if (engineRegions.length > 0) {
+      const hideResult = addHideCallsForRegionSketches({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(hideResult)) return hideResult
+      modifiedAst = hideResult
+
+      const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+        engineRegions,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(regionExprs)) return regionExprs
+      vars.exprs.push(...regionExprs)
+    }
   }
 
   // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpression(
-    axis,
-    edge,
-    modifiedAst,
-    wasmInstance,
-    artifactGraph
-  )
-  if (err(getAxisResult)) {
-    return new Error('Generated axis selection is missing.')
+  const axisExpr: LabeledArg[] = []
+  if (axis || !mNodeToEdit) {
+    const getAxisResult = getAxisExpression(
+      axis,
+      edge,
+      modifiedAst,
+      wasmInstance,
+      artifactGraph
+    )
+    if (err(getAxisResult)) {
+      return new Error('Generated axis selection is missing.')
+    }
+    modifiedAst = getAxisResult.modifiedAst
+    axisExpr.push(createLabeledArg('axis', getAxisResult.generatedAxis))
   }
-  modifiedAst = getAxisResult.modifiedAst
 
   // Extra labeled args expressions
   const symmetricExpr =
@@ -886,7 +908,7 @@ export function addRevolve({
     sketchesExpr,
     [
       createLabeledArg('angle', valueOrVariable(angle)),
-      createLabeledArg('axis', getAxisResult.generatedAxis),
+      ...axisExpr,
       ...toleranceExpr,
       ...symmetricExpr,
       ...bidirectionalAngleExpr,

@@ -267,7 +267,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getCapFromCylinder(artifactGraph)
+      const faces = { graphSelections: [], otherSelections: [] }
       const thickness = (await stringToKclExpression(
         '2',
         rustContextInThisFile
@@ -286,7 +286,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinderWithEndTag)
+      expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
         `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
