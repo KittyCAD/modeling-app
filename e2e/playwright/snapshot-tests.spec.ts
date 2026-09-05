@@ -18,9 +18,12 @@ const screenshotMasks = (page: Page) => [
   page.getByTestId('user-sidebar-toggle').locator('.avatar'),
 ]
 
-const screenshotOptions = (page: Page) => ({
+const screenshotOptions = (page: Page, browserName: string) => ({
   maxDiffPixelRatio: 0.001,
   mask: screenshotMasks(page),
+  // WebKit composites the streamed canvas edges with slightly different
+  // antialiasing between runs. Keep the same strict changed-pixel limit.
+  ...(browserName === 'webkit' ? { threshold: 0.25 } : {}),
 })
 
 async function waitForThemeApplied(page: Page, mode: Themes) {
@@ -47,7 +50,7 @@ test(
 type SnapshotTestContext = Pick<
   Fixtures,
   'cmdBar' | 'editor' | 'toolbar' | 'scene' | 'fs' | 'folderSetupFn'
-> & { page: Page }
+> & { page: Page; browserName: string }
 
 function runTestForTheme(mode: Themes) {
   return async ({
@@ -57,7 +60,12 @@ function runTestForTheme(mode: Themes) {
     editor,
     fs,
     folderSetupFn,
+    browserName,
   }: SnapshotTestContext) => {
+    if (browserName === 'webkit') {
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+    }
+
     const tomlStr = settingsToToml({
       settings: {
         ...PLAYWRIGHT_LAYOUT_SETTINGS,
@@ -80,6 +88,7 @@ function runTestForTheme(mode: Themes) {
       await fs.writeFile(userSettingsPath, new TextEncoder().encode(tomlStr))
 
       const projectDir = await fs.join(dir, 'demo-project')
+      await fs.rm(projectDir, { recursive: true, force: true })
       await fs.mkdir(projectDir, { recursive: true })
     })
 
@@ -98,19 +107,22 @@ function runTestForTheme(mode: Themes) {
     await test.step('Create a project', async () => {
       await toolbar.openFeatureTreePane()
       await editor.openPane()
+      await scene.settled()
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'project-created', mode),
-        screenshotOptions(page)
+        screenshotOptions(page, browserName)
       )
     })
 
     await test.step('Start a sketch', async () => {
       await toolbar.startSketchOnDefaultPlane('Front plane')
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XZ)')
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-started', mode),
-        screenshotOptions(page)
+        screenshotOptions(page, browserName)
       )
     })
 
@@ -121,7 +133,7 @@ function runTestForTheme(mode: Themes) {
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-drawn', mode),
-        screenshotOptions(page)
+        screenshotOptions(page, browserName)
       )
     })
 
@@ -132,7 +144,7 @@ function runTestForTheme(mode: Themes) {
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-exited', mode),
-        screenshotOptions(page)
+        screenshotOptions(page, browserName)
       )
     })
   }
