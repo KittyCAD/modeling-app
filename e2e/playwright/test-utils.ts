@@ -100,6 +100,12 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
+async function waitForHomeLoad(page: Page) {
+  await expect(page.getByTestId('home-section')).toBeVisible({
+    timeout: 20_000,
+  })
+}
+
 async function removeCurrentCode(page: Page) {
   // First, hover the element in case the current mouse position is in the way
   await page.mouse.move(0, 0)
@@ -389,12 +395,12 @@ async function waitForAuthAndLsp(page: Page) {
     if (token) {
       // Vercel is external to Playwright, so the token is provided in the URL
       await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-      await waitForPageLoad(page)
+      await waitForHomeLoad(page)
     }
   }
 
   await page.goto('/')
-  await waitForPageLoad(page)
+  await waitForHomeLoad(page)
   return waitForLspPromise
 }
 
