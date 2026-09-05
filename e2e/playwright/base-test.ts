@@ -1,4 +1,5 @@
 import { devices, expect, test as playwrightTest } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 const usePersistentWebKitContext =
   process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT === '1'
@@ -9,7 +10,7 @@ const { defaultBrowserType: _defaultBrowserType, ...desktopSafari } =
 const WEBKIT_OPFS_RESET_PATH = '/__playwright_webkit_opfs_reset__'
 
 async function resetPersistentWebKitOpfs(
-  page: import('@playwright/test').Page,
+  page: Page,
   baseURL: string | undefined
 ) {
   if (!baseURL) {
