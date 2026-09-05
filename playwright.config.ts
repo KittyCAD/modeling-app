@@ -60,7 +60,7 @@ export default defineConfig({
   projects: [
     {
       name: 'Google Chrome',
-      testIgnore: '**/firefox-unsupported-codec.spec.ts',
+      testIgnore: ['*.test.ts', '**/firefox-unsupported-codec.spec.ts'],
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome',
