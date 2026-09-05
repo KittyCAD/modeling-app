@@ -8,8 +8,8 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
       "objectId": 0,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,

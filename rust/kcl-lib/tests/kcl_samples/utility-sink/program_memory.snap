@@ -8,8 +8,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -41,8 +41,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -74,8 +74,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 172,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -193,8 +193,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 25,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -226,8 +226,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 271,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -259,8 +259,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 296,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -292,8 +292,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 321,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 545.0,
@@ -325,8 +325,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 346,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 545.0,
@@ -358,8 +358,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 371,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -391,8 +391,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 371,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -424,8 +424,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 432,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -489,8 +489,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 25,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -522,8 +522,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 86,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -617,6 +617,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -779,17 +781,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -845,8 +847,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -859,6 +861,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1021,17 +1025,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1087,8 +1091,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1101,6 +1105,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1263,17 +1269,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1329,8 +1335,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1343,6 +1349,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1505,17 +1513,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1571,8 +1579,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1623,8 +1631,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 371,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2001,17 +2009,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 371,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 165.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2542,17 +2550,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 371,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 165.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2608,8 +2616,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "doorRow": {
@@ -2620,6 +2628,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2782,17 +2792,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2848,8 +2858,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2862,6 +2872,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3024,17 +3036,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3090,8 +3102,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3106,6 +3118,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3268,17 +3282,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 371,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 165.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3334,8 +3348,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3374,6 +3388,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3428,17 +3444,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 495,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3482,8 +3498,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3496,6 +3512,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3550,17 +3568,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 495,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3604,8 +3622,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3674,8 +3692,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 432,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -4361,17 +4379,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 432,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 780.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5114,17 +5132,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 495,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5168,8 +5186,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "handleSectionProfile": {
@@ -5458,17 +5476,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 495,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5768,6 +5786,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5822,17 +5842,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 495,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5876,8 +5896,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5917,6 +5937,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6079,17 +6101,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6145,8 +6167,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6159,6 +6181,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -6264,17 +6288,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6330,8 +6354,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6344,6 +6368,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -6449,17 +6475,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6515,8 +6541,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6529,6 +6555,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -6634,17 +6662,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6700,8 +6728,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7079,17 +7107,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -7502,17 +7530,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 0,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -7568,8 +7596,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -7676,17 +7704,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 0,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -7742,8 +7770,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -7850,17 +7878,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 0,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -7916,8 +7944,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -8024,17 +8052,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 0,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -8090,8 +8118,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -8203,17 +8231,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 0,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -8269,8 +8297,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -8377,17 +8405,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 0,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -8443,8 +8471,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -8457,6 +8485,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8619,17 +8649,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8685,8 +8715,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8699,6 +8729,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -8804,17 +8836,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8870,8 +8902,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8889,6 +8921,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9051,17 +9085,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9117,8 +9151,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9131,6 +9165,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -9236,17 +9272,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9302,8 +9338,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9345,8 +9381,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 25,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -9723,17 +9759,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 25,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 150.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -10267,17 +10303,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 25,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 150.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -10333,8 +10369,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -10441,17 +10477,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 25,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 150.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -10507,8 +10543,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -10617,17 +10653,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 25,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 150.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10683,8 +10719,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "lowerBeltYProfile": {
@@ -11037,17 +11073,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 25,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 150.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -11581,17 +11617,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 25,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 150.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -11647,8 +11683,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -11755,17 +11791,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 25,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 150.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -11821,8 +11857,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -11844,6 +11880,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12006,17 +12044,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12072,8 +12110,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12086,6 +12124,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12248,17 +12288,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 371,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12314,8 +12354,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12684,17 +12724,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 371,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 165.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -13225,17 +13265,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 371,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 165.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -13291,8 +13331,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "panelSeed": {
@@ -13300,6 +13340,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -13462,17 +13504,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 371,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 165.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -13528,8 +13570,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -13563,6 +13605,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13725,17 +13769,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 86,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 163.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13791,8 +13835,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13805,6 +13849,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -13910,17 +13956,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 86,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 163.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13976,8 +14022,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -14001,8 +14047,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 86,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -14379,17 +14425,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 86,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 163.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -14923,17 +14969,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 86,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 163.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -14989,8 +15035,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -15097,17 +15143,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 86,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 163.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -15163,8 +15209,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -15177,6 +15223,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -15339,17 +15387,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 86,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 163.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15405,8 +15453,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -15419,6 +15467,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -15524,17 +15574,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 86,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 163.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15590,8 +15640,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -15644,6 +15694,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -15866,8 +15918,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": null,
@@ -15880,6 +15932,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -16102,8 +16156,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -17159,8 +17213,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sinkLength": {
@@ -18220,8 +18274,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sinkPlaneInside": {
@@ -18319,6 +18373,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -18481,17 +18537,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 172,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -18547,8 +18603,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -18561,8 +18617,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 172,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -18939,17 +18995,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 172,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 850.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -19359,17 +19415,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 172,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 850.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -19425,8 +19481,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tableWidth": {
@@ -19443,6 +19499,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -19497,17 +19555,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 346,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 545.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -19551,8 +19609,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -19603,17 +19661,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 346,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 545.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -19657,8 +19715,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tapHandleSeed": {
@@ -19666,6 +19724,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -19720,17 +19780,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 346,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 545.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -19774,8 +19834,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -20069,17 +20129,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 346,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 545.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -20379,6 +20439,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -20433,17 +20495,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 321,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 545.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -20487,8 +20549,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -20539,17 +20601,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 321,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 545.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -20593,8 +20655,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tapNoseSeed": {
@@ -20602,6 +20664,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -20656,17 +20720,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 321,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 545.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -20710,8 +20774,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -21005,17 +21069,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 321,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 545.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -21315,6 +21379,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -21369,17 +21435,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 296,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -21423,8 +21489,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -21475,17 +21541,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 296,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 850.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -21529,8 +21595,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tapPillarSeed": {
@@ -21538,6 +21604,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -21592,17 +21660,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 296,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -21646,8 +21714,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -21941,17 +22009,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 296,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 850.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -22251,6 +22319,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -22305,17 +22375,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 271,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -22359,8 +22429,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -22411,17 +22481,17 @@ description: Variables in memory after executing utility-sink.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 271,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 850.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -22465,8 +22535,8 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tapPlateSeed": {
@@ -22474,6 +22544,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -22528,17 +22600,17 @@ description: Variables in memory after executing utility-sink.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 271,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -22582,8 +22654,8 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -22877,17 +22949,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 271,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 850.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -23195,6 +23267,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -23357,17 +23431,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23423,8 +23497,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -23437,6 +23511,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -23542,17 +23618,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23608,8 +23684,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -23627,6 +23703,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -23789,17 +23867,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23855,8 +23933,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -23869,6 +23947,8 @@ description: Variables in memory after executing utility-sink.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -23974,17 +24054,17 @@ description: Variables in memory after executing utility-sink.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24040,8 +24120,8 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -24065,8 +24145,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -24443,17 +24523,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 847.5,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -24866,17 +24946,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 117,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 847.5,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -24932,8 +25012,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -25040,17 +25120,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 117,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 847.5,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -25106,8 +25186,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -25462,17 +25542,17 @@ description: Variables in memory after executing utility-sink.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 847.5,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -26006,17 +26086,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 117,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 847.5,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -26072,8 +26152,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -26180,17 +26260,17 @@ description: Variables in memory after executing utility-sink.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 117,
+            "kind": "Custom",
             "origin": {
               "x": 0.0,
               "y": 0.0,
               "z": 847.5,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -26246,8 +26326,8 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "mm"
+          "units": "mm",
+          "isClosed": "explicitly"
         }
       }
     ]
