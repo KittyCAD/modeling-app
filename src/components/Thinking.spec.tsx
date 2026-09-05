@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
@@ -71,6 +71,69 @@ describe('FilesSnapshot', () => {
     ).not.toBeInTheDocument()
 
     expect(createObjectURLMock).not.toHaveBeenCalled()
+  })
+
+  test('fetches a metadata-only attachment before rendering its contents', () => {
+    const attachmentRef = {
+      prompt_id: '00000000-0000-4000-8000-000000000001',
+      seq: 3,
+      index: 1,
+      content_hash:
+        'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    }
+    const attachmentKey = `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
+    const files: MlCopilotFile[] = [
+      {
+        name: 'reference.png',
+        mimetype: 'image/png',
+        data: [],
+        attachment_ref: attachmentRef,
+      },
+    ]
+    const onFetchAttachment = vi.fn()
+    const { rerender } = render(
+      <FilesSnapshot files={files} onFetchAttachment={onFetchAttachment} />
+    )
+
+    expect(createObjectURLMock).not.toHaveBeenCalled()
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'reference.png: Load attachment',
+      })
+    )
+    expect(onFetchAttachment).toHaveBeenCalledOnce()
+    expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
+
+    rerender(
+      <FilesSnapshot
+        files={files}
+        attachmentFetches={{
+          [attachmentKey]: { status: 'loading' },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(
+      screen.getByRole('button', {
+        name: 'reference.png: Loading attachment',
+      })
+    ).toBeDisabled()
+
+    rerender(
+      <FilesSnapshot
+        files={files}
+        attachmentFetches={{
+          [attachmentKey]: {
+            status: 'loaded',
+            file: { ...files[0], data: MOCK_PNG_DATA },
+          },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+
+    expect(screen.getByAltText('reference.png')).toBeInTheDocument()
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
   })
 
   test('renders a single image file with correct filename', () => {

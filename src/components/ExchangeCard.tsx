@@ -1,4 +1,4 @@
-import type { MlCopilotServerMessage } from '@kittycad/lib'
+import type { AttachmentRef, MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
@@ -10,7 +10,9 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
+  getZookeeperAttachmentKey,
   isMlCopilotUserRequest,
+  type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import ms from 'ms'
 import {
@@ -26,6 +28,8 @@ export type ExchangeCardProps = Exchange & {
   userAvatar?: string
   onClickClearChat: () => void
   isLastResponse: boolean
+  attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
+  onFetchAttachment?: (attachmentRef: AttachmentRef) => void
 }
 
 type MlCopilotServerMessageError = Extract<
@@ -146,6 +150,8 @@ export const ResponseCardToolBar = (props: {
 
 export const ExchangeCardStatus = (props: {
   responses?: MlCopilotServerMessage[]
+  attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
+  onFetchAttachment?: (attachmentRef: AttachmentRef) => void
   onlyShowImmediateThought: boolean
   startedAt: Date
   updatedAt?: Date
@@ -156,6 +162,8 @@ export const ExchangeCardStatus = (props: {
     <Thinking
       thoughts={props.responses}
       isDone={props.responses?.some((m) => 'delta' in m) || false}
+      attachmentFetches={props.attachmentFetches}
+      onFetchAttachment={props.onFetchAttachment}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
     />
   )
@@ -234,6 +242,8 @@ export const AvatarUser = (props: { src?: string }) => {
 
 type RequestCardProps = Exchange['request'] & {
   userAvatar?: ReactNode
+  attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
+  onFetchAttachment?: (attachmentRef: AttachmentRef) => void
 }
 
 const MAX_VISIBLE_ATTACHMENTS = 2
@@ -309,15 +319,54 @@ export const RequestCard = (props: RequestCardProps) => {
             <div className="w-full text-right text-xs font-medium text-chalkboard-70 dark:text-chalkboard-40">
               Attachments
             </div>
-            {visibleAttachments.map((file, index) => (
-              <div
-                key={`${file.name}-${index}`}
-                className="flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs"
-              >
-                <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
-                <span className="min-w-0 truncate">{file.name}</span>
-              </div>
-            ))}
+            {visibleAttachments.map((file, index) => {
+              const attachmentRef = file.attachment_ref
+              const fetchState = attachmentRef
+                ? props.attachmentFetches?.[
+                    getZookeeperAttachmentKey(attachmentRef)
+                  ]
+                : undefined
+              const canFetch =
+                file.data.length === 0 &&
+                attachmentRef !== undefined &&
+                props.onFetchAttachment !== undefined &&
+                fetchState?.status !== 'loaded'
+
+              const contents = (
+                <>
+                  <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
+                  <span className="min-w-0 truncate">{file.name}</span>
+                  {fetchState?.status === 'loading' && (
+                    <span className="text-chalkboard-70 dark:text-chalkboard-40">
+                      Loading…
+                    </span>
+                  )}
+                  {fetchState?.status === 'loaded' && (
+                    <span className="text-chalkboard-70 dark:text-chalkboard-40">
+                      Loaded
+                    </span>
+                  )}
+                </>
+              )
+              const className =
+                'flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs'
+
+              return canFetch ? (
+                <button
+                  type="button"
+                  key={`${file.name}-${index}`}
+                  className={className}
+                  disabled={fetchState?.status === 'loading'}
+                  onClick={() => props.onFetchAttachment?.(attachmentRef)}
+                >
+                  {contents}
+                </button>
+              ) : (
+                <div key={`${file.name}-${index}`} className={className}>
+                  {contents}
+                </div>
+              )
+            })}
             {hasHiddenAttachments && (
               <button
                 type="button"
@@ -348,6 +397,8 @@ type ResponsesCardProp = {
   deltasAggregated: Exchange['deltasAggregated']
   isLastResponse: boolean
   onClickClearChat: () => void
+  attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
+  onFetchAttachment?: (attachmentRef: AttachmentRef) => void
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -408,7 +459,12 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     maybeError ? <MaybeError key="error" maybeError={maybeError} /> : null,
     deltasAggregatedMarkdown,
     exportDownloadFiles.length > 0 ? (
-      <ExportDownloadFiles key="downloads" files={exportDownloadFiles} />
+      <ExportDownloadFiles
+        key="downloads"
+        files={exportDownloadFiles}
+        attachmentFetches={props.attachmentFetches}
+        onFetchAttachment={props.onFetchAttachment}
+      />
     ) : null,
   ].filter((x: ReactNode) => x !== null)
 
@@ -517,12 +573,16 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         <RequestCard
           {...props.request}
           userAvatar={<AvatarUser src={props.userAvatar} />}
+          attachmentFetches={props.attachmentFetches}
+          onFetchAttachment={props.onFetchAttachment}
         />
       )}
       {showFullReasoning && reasoningThoughts.length > 0 && (
         <div>
           <ExchangeCardStatus
             responses={props.responses}
+            attachmentFetches={props.attachmentFetches}
+            onFetchAttachment={props.onFetchAttachment}
             onlyShowImmediateThought={false}
             startedAt={startedAt}
             updatedAt={updatedAt}
@@ -551,6 +611,8 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
             <ExchangeCardStatus
               maybeError={maybeError}
               responses={props.responses}
+              attachmentFetches={props.attachmentFetches}
+              onFetchAttachment={props.onFetchAttachment}
               onlyShowImmediateThought={true}
               startedAt={startedAt}
               updatedAt={updatedAt}
@@ -563,6 +625,8 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         deltasAggregated={props.deltasAggregated}
         isLastResponse={props.isLastResponse}
         onClickClearChat={props.onClickClearChat}
+        attachmentFetches={props.attachmentFetches}
+        onFetchAttachment={props.onFetchAttachment}
       />
     </div>
   )
