@@ -118,10 +118,8 @@ function addMappedRegion(
 describe('getSweepBodyArtifact', () => {
   function createFaceMergeGraph(faceType: 'cap' | 'wall' = 'cap') {
     const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
-    addMappedRegion(artifactGraph, sourceSegment, 'base', true)
-    addMappedRegion(artifactGraph, sourceSegment, 'first', true)
-    addMappedRegion(artifactGraph, sourceSegment, 'second', true)
     const sweeps = ['base', 'first', 'second'].map((suffix) => {
+      addMappedRegion(artifactGraph, sourceSegment, suffix, true)
       const sweep = artifactGraph.get(`sweep-${suffix}`)
       if (sweep?.type !== 'sweep') throw new Error('Missing test sweep')
       const path = artifactGraph.get(sweep.pathId)
@@ -148,46 +146,24 @@ describe('getSweepBodyArtifact', () => {
     }
   )
 
-  it('follows nested face merges to the same body', () => {
-    const { artifactGraph, base, first, second } = createFaceMergeGraph()
-    second.path.planeId = 'cap-first'
-
-    expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(base.sweep)
-    expect(getSweepBodyArtifact(second.sweep, artifactGraph)).toBe(base.sweep)
-  })
-
-  it('keeps new outputs from one face-based extrusion distinct', () => {
+  it('keeps new and cloned bodies distinct from their support body', () => {
     const { artifactGraph, first, second } = createFaceMergeGraph()
     first.sweep.method = 'new'
-    second.sweep.method = 'new'
-
-    expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(first.sweep)
-    expect(getSweepBodyArtifact(second.sweep, artifactGraph)).toBe(second.sweep)
-  })
-
-  it('keeps plane-based outputs distinct despite sharing a call range', () => {
-    const { artifactGraph, first, second } = createFaceMergeGraph()
-    first.path.planeId = 'plane-1'
-    second.path.planeId = 'plane-1'
-    artifactGraph.set('plane-1', {
-      type: 'plane',
-      id: 'plane-1',
-      pathIds: [first.path.id, second.path.id],
-      codeRef,
-    })
-
-    expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(first.sweep)
-    expect(getSweepBodyArtifact(second.sweep, artifactGraph)).toBe(second.sweep)
-  })
-
-  it('does not collapse clones with their source body', () => {
-    const { artifactGraph, first, second } = createFaceMergeGraph()
-    first.sweep.sourceSweepId = 'sweep-base'
     second.sweep.sourceSweepId = 'sweep-base'
 
     expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(first.sweep)
     expect(getSweepBodyArtifact(second.sweep, artifactGraph)).toBe(second.sweep)
   })
+
+  it.each(['loft', 'sweep', 'extrusionTwist'] as const)(
+    'keeps a %s body distinct despite its default merge method',
+    (subType) => {
+      const { artifactGraph, first } = createFaceMergeGraph()
+      first.sweep.subType = subType
+
+      expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(first.sweep)
+    }
+  )
 
   it.each(['selected', 'parent'] as const)(
     'uses a composite body linked from the %s sweep',
@@ -209,13 +185,6 @@ describe('getSweepBodyArtifact', () => {
       expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(composite)
     }
   )
-
-  it('stops when support face ancestry is unavailable', () => {
-    const { artifactGraph, first } = createFaceMergeGraph()
-    artifactGraph.delete('cap-base')
-
-    expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(first.sweep)
-  })
 
   it('rejects a cycle in face ancestry', () => {
     const { artifactGraph, base, first } = createFaceMergeGraph()

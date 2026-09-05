@@ -559,12 +559,23 @@ function modifyAstWithTagsForEdgeSelection(
       const { modifiedAst, expr } = result
       astClone = modifiedAst
 
-      if (
-        selectedFace.type === 'cap' &&
-        edgeContext.selectedBody.type === 'compositeSolid'
-      ) {
-        exprs.push(expr)
-      } else if (selectedFace.type === 'cap') {
+      if (selectedFace.type === 'cap') {
+        const capSweep = getArtifactOfTypes(
+          { key: selectedFace.sweepId, types: ['sweep'] },
+          artifactGraph
+        )
+        if (err(capSweep)) return capSweep
+        const capPath = artifactGraph.get(capSweep.pathId)
+        if (
+          edgeContext.selectedBody.type === 'compositeSolid' &&
+          capPath?.type === 'path' &&
+          capPath.compositeSolidId
+        ) {
+          // Caps inherited by a boolean use their original global tag.
+          // Later merged outputs still need their own qualified cap tags.
+          exprs.push(expr)
+          continue
+        }
         const tagName = getExprName(expr)
         if (!tagName) {
           return new Error(
@@ -575,11 +586,6 @@ function modifyAstWithTagsForEdgeSelection(
         if (!edgeContext.isClone) {
           // Merged sweeps share a solid, but each output retains its own
           // cap tags. Qualify a cap through the sweep that introduced it.
-          const capSweep = getArtifactOfTypes(
-            { key: selectedFace.sweepId, types: ['sweep'] },
-            artifactGraph
-          )
-          if (err(capSweep)) return capSweep
           const capBody = getVariableExprsFromSelection(
             {
               graphSelections: [

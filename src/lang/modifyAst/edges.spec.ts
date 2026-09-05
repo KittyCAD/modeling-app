@@ -622,6 +622,18 @@ fillet001 = fillet(
     ] as const)(
       'should add one %s for merged array outputs with %s caps and primitive edges',
       async (name, capKind) => {
+        const createsCaps = capKind === 'created'
+        const bodyName = createsCaps ? 'part' : 'extrude001'
+        // Exercise new cap ownership after a boolean, not just on a sweep.
+        const booleanSetup = createsCaps
+          ? `toolSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 32mm, var 10mm], center = [var 30mm, var 10mm])
+}
+toolRegion = region(point = [30mm, 10mm], sketch = toolSketch)
+tool = extrude(toolRegion, length = 5)
+part = subtract(extrude001, tools = tool)
+`
+          : ''
         const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
@@ -633,7 +645,7 @@ sketch001 = sketch(on = XY) {
 region001 = region(point = [15mm, 10mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
 
-sketch002 = sketch(on = faceOf(extrude001, face = END)) {
+${booleanSetup}sketch002 = sketch(on = faceOf(${bodyName}, face = END)) {
   circle1 = circle(start = [var 8mm, var 10mm], center = [var 5mm, var 10mm])
   circle2 = circle(start = [var 23mm, var 10mm], center = [var 20mm, var 10mm])
 }
@@ -649,12 +661,20 @@ extrude002 = extrude([region002, region003], length = -2)`
         const sweeps = [...artifactGraph.values()].filter(
           (artifact) => artifact.type === 'sweep'
         )
-        expect(sweeps).toHaveLength(3)
-        const [base, ...merged] = sweeps
+        const base = createsCaps
+          ? [...artifactGraph.values()].find(
+              (artifact) => artifact.type === 'compositeSolid'
+            )
+          : sweeps[0]
+        if (!base) throw new Error('Missing support body')
+        const merged = sweeps.filter(
+          (sweep) => sweep.codeRef.range[0] >= code.indexOf('extrude002 =')
+        )
+        expect(merged).toHaveLength(2)
         // Cover both the inherited top face and the new pocket bottom caps.
         const edges = merged.map((sweep) => {
           const edge = [...artifactGraph.values()].find((artifact) => {
-            if (capKind === 'created') {
+            if (createsCaps) {
               return (
                 artifact.type === 'sweepEdge' &&
                 artifact.subType === 'opposite' &&
@@ -707,7 +727,6 @@ extrude002 = extrude([region002, region003], length = -2)`
         const newCode = recast(result.modifiedAst, instanceInThisFile)
         if (err(newCode)) throw newCode
         // Negative extrusion puts the new pocket bottoms on the start caps.
-        const createsCaps = capKind === 'created'
         const expectedCode = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
@@ -719,24 +738,24 @@ sketch001 = sketch(on = XY) {
 region001 = region(point = [15mm, 10mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
 
-sketch002 = sketch(on = faceOf(extrude001, face = END)) {
+${booleanSetup}sketch002 = sketch(on = faceOf(${bodyName}, face = END)) {
   circle1 = circle(start = [var 8mm, var 10mm], center = [var 5mm, var 10mm])
   circle2 = circle(start = [var 23mm, var 10mm], center = [var 20mm, var 10mm])
 }
 region002 = region(point = [5mm, 10mm], sketch = sketch002)
 region003 = region(point = [20mm, 10mm], sketch = sketch002)
 extrude002 = extrude([region002, region003], length = -2${createsCaps ? ', tagStart = $capStart001' : ''})
-edge001 = edgeId(extrude001, index = 0)
+edge001 = edgeId(${bodyName}, index = 0)
 ${name}001 = ${name}(
-  extrude001,
+  ${bodyName},
   tags = [
     getCommonEdge(faces = [
-      region002.tags.circle1,
-      ${createsCaps ? 'extrude002[0].faces.capStart001' : 'extrude001.faces.capEnd001'}
+      ${createsCaps ? 'region002.tags.circle1' : 'extrude001.faces.capEnd001'},
+      ${createsCaps ? 'extrude002[0].faces.capStart001' : 'region002.tags.circle1'}
     ]),
     getCommonEdge(faces = [
-      region003.tags.circle2,
-      ${createsCaps ? 'extrude002[1].faces.capStart001' : 'extrude001.faces.capEnd001'}
+      ${createsCaps ? 'region003.tags.circle2' : 'extrude001.faces.capEnd001'},
+      ${createsCaps ? 'extrude002[1].faces.capStart001' : 'region003.tags.circle2'}
     ]),
     edge001
   ],

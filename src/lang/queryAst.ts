@@ -1478,20 +1478,13 @@ export function getVariableExprsFromSelection(
       }
 
       if (lastChildSelection) {
-        const childOutputExpr =
-          getCompositeSolidOutputExprFromSelection(
-            lastChildSelection,
-            ast,
-            wasmInstance,
-            artifactTypeFilter
-          ) ??
-          getSweepOutputExprFromSelection(
-            lastChildSelection,
-            artifactGraph,
-            ast,
-            wasmInstance,
-            nodeToEdit
-          )
+        const childOutputExpr = getSweepOutputExprFromSelection(
+          lastChildSelection,
+          artifactGraph,
+          ast,
+          wasmInstance,
+          nodeToEdit
+        )
         if (childOutputExpr) {
           const key = outputExprKey(childOutputExpr)
           if (!pushedNames[key]) {

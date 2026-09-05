@@ -380,7 +380,7 @@ export function getSweepFromSuspectedSweepSurface(
   )
 }
 
-/** Resolve sweeps merged into a face back to their shared body. */
+/** Resolve face-merged extrusions back to their shared body. */
 export function getSweepBodyArtifact(
   sweep: Extract<Artifact, { type: 'sweep' }>,
   artifactGraph: ArtifactGraph
@@ -400,9 +400,15 @@ export function getSweepBodyArtifact(
       )
     }
 
-    // New bodies and clones keep their own identity even when their source
-    // sketch lies on another body's face.
-    if (current.method !== 'merge' || current.sourceSweepId) return current
+    // Loft, sweep and twist artifacts default to "merge" without establishing
+    // shared body identity. Only follow explicit extrusion merges.
+    if (
+      current.subType !== 'extrusion' ||
+      current.method !== 'merge' ||
+      current.sourceSweepId
+    ) {
+      return current
+    }
 
     const face = artifactGraph.get(path.planeId)
     if (face?.type !== 'cap' && face?.type !== 'wall') return current
