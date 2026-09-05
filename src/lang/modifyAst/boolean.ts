@@ -5,28 +5,15 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
-  createLocalName,
-  createVariableDeclaration,
-  findUniqueName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import {
-  getBodyIndex,
-  getNodeFromPath,
-  getVariableExprsFromSelection,
-  stringifyPathToNode,
-  valueOrVariable,
-} from '@src/lang/queryAst'
-import type {
-  ArtifactGraph,
-  ExpressionStatement,
-  PathToNode,
-  Program,
-} from '@src/lang/wasm'
+import { resolveSelectionInputPlans } from '@src/lang/modifyAst/selectionInputs'
+import { stringifyPathToNode, valueOrVariable } from '@src/lang/queryAst'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -41,12 +28,6 @@ type BooleanSelectionGroup = {
   selections: Selections
   exprs: Expr[]
   pathIfPipe?: PathToNode
-}
-
-type BooleanSelectionRecord = {
-  exprs: Expr[]
-  pathIfPipe?: PathToNode
-  pipeBodyIndex?: number
 }
 
 function resolveBooleanSelectionGroups({
@@ -65,122 +46,27 @@ function resolveBooleanSelectionGroups({
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
 }): Error | BooleanSelectionGroup[] {
-  if (nodeToEdit) {
-    const reconstructedGroups: BooleanSelectionGroup[] = []
-    for (const { selections } of selectionGroups) {
-      const vars = getVariableExprsFromSelection(
-        selections,
-        artifactGraph,
-        ast,
-        wasmInstance,
-        nodeToEdit,
-        {
-          lastChildLookup: true,
-          artifactTypeFilter: ['compositeSolid', 'sweep'],
-        }
-      )
-      if (err(vars)) {
-        return vars
-      }
-      reconstructedGroups.push({ selections, ...vars })
-    }
-    return reconstructedGroups
+  const plans = resolveSelectionInputPlans({
+    requests: selectionGroups.map(({ selections, requiresExplicitExpr }) => ({
+      selection: selections,
+      materializePipes: requiresExplicitExpr ? 'always' : 'when-multiple',
+    })),
+    artifactGraph,
+    ast,
+    wasmInstance,
+    nodeToEdit,
+    options: {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    },
+  })
+  if (err(plans)) {
+    return plans
   }
 
-  const recordsByGroup: BooleanSelectionRecord[][] = []
-  const pipeBodyIndexes = new Set<number>()
-  let mustMaterializePipes = false
-
-  for (const { selections, requiresExplicitExpr } of selectionGroups) {
-    const records: BooleanSelectionRecord[] = []
-    for (const selection of selections.graphSelections) {
-      const vars = getVariableExprsFromSelection(
-        {
-          graphSelections: [selection],
-          otherSelections: [],
-        },
-        artifactGraph,
-        ast,
-        wasmInstance,
-        undefined,
-        {
-          lastChildLookup: true,
-          artifactTypeFilter: ['compositeSolid', 'sweep'],
-        }
-      )
-      if (err(vars)) {
-        return vars
-      }
-
-      let pipeBodyIndex: number | undefined
-      if (vars.pathIfPipe) {
-        const expression = getNodeFromPath<ExpressionStatement>(
-          ast,
-          vars.pathIfPipe,
-          wasmInstance,
-          'ExpressionStatement'
-        )
-        if (
-          !err(expression) &&
-          expression.node.type === 'ExpressionStatement'
-        ) {
-          const bodyIndex = getBodyIndex(expression.shallowPath)
-          if (err(bodyIndex)) {
-            return bodyIndex
-          }
-          pipeBodyIndex = bodyIndex
-          pipeBodyIndexes.add(bodyIndex)
-          if (requiresExplicitExpr) {
-            mustMaterializePipes = true
-          }
-        }
-      }
-
-      records.push({ ...vars, pipeBodyIndex })
-    }
-    recordsByGroup.push(records)
-  }
-
-  mustMaterializePipes ||= pipeBodyIndexes.size > 1
-  if (!mustMaterializePipes) {
-    return recordsByGroup.map((records, index) => ({
-      selections: selectionGroups[index].selections,
-      exprs: records.flatMap(({ exprs }) => exprs),
-      pathIfPipe: records.find(({ pathIfPipe }) => pathIfPipe)?.pathIfPipe,
-    }))
-  }
-
-  const variableByBodyIndex = new Map<number, string>()
-  for (const bodyIndex of pipeBodyIndexes) {
-    const statement = ast.body[bodyIndex]
-    if (statement.type !== 'ExpressionStatement') {
-      return new Error('Expected a variable-less Boolean source pipe')
-    }
-    const variableName = findUniqueName(
-      ast,
-      KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
-    )
-    const declaration = createVariableDeclaration(
-      variableName,
-      statement.expression
-    )
-    declaration.preComments = statement.preComments
-    ast.body[bodyIndex] = declaration
-    variableByBodyIndex.set(bodyIndex, variableName)
-  }
-
-  return recordsByGroup.map((records, index) => ({
+  return plans.map((plan, index) => ({
     selections: selectionGroups[index].selections,
-    exprs: records.flatMap(({ exprs, pathIfPipe, pipeBodyIndex }) => {
-      if (!pathIfPipe) {
-        return exprs
-      }
-      if (pipeBodyIndex === undefined) {
-        return []
-      }
-      const variableName = variableByBodyIndex.get(pipeBodyIndex)
-      return variableName ? [createLocalName(variableName)] : []
-    }),
+    ...plan,
   }))
 }
 
@@ -412,7 +298,7 @@ export function addSubtract({
     modelingStdLibCommandName('Boolean Subtract'),
     objectsExpr,
     [
-      ...(toolsExpr ? [createLabeledArg('tools', toolsExpr)] : []),
+      createLabeledArg('tools', toolsExpr),
       ...(tolerance
         ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
         : []),

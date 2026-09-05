@@ -8,8 +8,6 @@ import {
   createLocalName,
   createName,
   createTagDeclarator,
-  createVariableDeclaration,
-  findUniqueName,
 } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import {
@@ -30,6 +28,7 @@ import {
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
+import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import {
   modifyAstWithTagsForSelection,
   resolveEdgeSelectionContext,
@@ -37,7 +36,6 @@ import {
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   createSketchTagMemberExpression,
-  getBodyIndex,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
@@ -56,7 +54,6 @@ import type {
   ArtifactGraph,
   CallExpressionKw,
   Expr,
-  ExpressionStatement,
   LabeledArg,
   PathToNode,
   Program,
@@ -497,45 +494,20 @@ export function addSweep({
   }
 
   // Find the path declaration for the labeled argument
-  const pathVars = getVariableExprsFromSelection(
-    path,
+  const pathVars = resolveSelectionInputPlan({
+    selection: path,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit
-  )
+    nodeToEdit: mNodeToEdit,
+    materializePipes: 'always',
+    variablePrefix: 'path',
+  })
   if (err(pathVars)) {
     return pathVars
   }
 
-  let pathExpr = createVariableExpressionsArray(pathVars.exprs)
-  if (!mNodeToEdit && !pathExpr && pathVars.pathIfPipe) {
-    const expression = getNodeFromPath<ExpressionStatement>(
-      modifiedAst,
-      pathVars.pathIfPipe,
-      wasmInstance,
-      'ExpressionStatement'
-    )
-    if (err(expression) || expression.node.type !== 'ExpressionStatement') {
-      return new Error('Could not retrieve the source pipe for sweep path')
-    }
-    const bodyIndex = getBodyIndex(expression.shallowPath)
-    if (err(bodyIndex)) {
-      return bodyIndex
-    }
-    const sourceStatement = modifiedAst.body[bodyIndex]
-    if (!sourceStatement) {
-      return new Error('Could not retrieve the source pipe statement')
-    }
-    const variableName = findUniqueName(modifiedAst, 'path')
-    const declaration = createVariableDeclaration(
-      variableName,
-      expression.node.expression
-    )
-    declaration.preComments = sourceStatement.preComments
-    modifiedAst.body[bodyIndex] = declaration
-    pathExpr = createLocalName(variableName)
-  }
+  const pathExpr = createVariableExpressionsArray(pathVars.exprs)
   if (!pathExpr) {
     return new Error("Couldn't retrieve path selection")
   }

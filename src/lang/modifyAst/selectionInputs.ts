@@ -28,6 +28,12 @@ export type SelectionInputPlan = {
   pathIfPipe?: PathToNode
 }
 
+export type SelectionInputRequest = {
+  selection: Selections
+  materializePipes?: 'always' | 'when-multiple'
+  variablePrefix?: string
+}
+
 type SelectionInputRecord = SelectionInputPlan & {
   pipeBodyIndex?: number
 }
@@ -51,78 +57,125 @@ export function resolveSelectionInputPlan({
   variablePrefix?: string
   nodeToEdit?: PathToNode
 }): Error | SelectionInputPlan {
-  const aggregate = getVariableExprsFromSelection(
-    selection,
+  const plans = resolveSelectionInputPlans({
+    requests: [{ selection, materializePipes, variablePrefix }],
     artifactGraph,
     ast,
     wasmInstance,
     nodeToEdit,
-    options
-  )
-  if (err(aggregate)) {
-    return aggregate
+    options,
+  })
+  if (err(plans)) {
+    return plans
   }
+  return plans[0]
+}
 
-  // Editing still reconstructs selections for dialog defaults and future true
-  // selection edits, but must not materialize or otherwise rewrite those inputs.
-  if (nodeToEdit) {
-    return aggregate
-  }
+export function resolveSelectionInputPlans({
+  requests,
+  artifactGraph,
+  ast,
+  wasmInstance,
+  options = {},
+  nodeToEdit,
+}: {
+  requests: SelectionInputRequest[]
+  artifactGraph: ArtifactGraph
+  ast: Node<Program>
+  wasmInstance: ModuleType
+  options?: GetVariableExprsOptions
+  nodeToEdit?: PathToNode
+}): Error | SelectionInputPlan[] {
+  const aggregates: SelectionInputPlan[] = []
+  const recordsByRequest: SelectionInputRecord[][] = []
+  const variablePrefixByBodyIndex = new Map<number, string>()
+  let shouldMaterialize = false
 
-  const shouldInspectIndividualInputs =
-    materializePipes === 'always' || selection.graphSelections.length > 1
-  if (!shouldInspectIndividualInputs) {
-    return aggregate
-  }
-
-  const records: SelectionInputRecord[] = []
   const pipeBodyIndexes = new Set<number>()
-
-  for (const graphSelection of selection.graphSelections) {
-    const input = getVariableExprsFromSelection(
-      {
-        graphSelections: [graphSelection],
-        otherSelections: [],
-      },
+  for (const request of requests) {
+    const aggregate = getVariableExprsFromSelection(
+      request.selection,
       artifactGraph,
       ast,
       wasmInstance,
-      undefined,
+      nodeToEdit,
       options
     )
-    if (err(input)) {
-      return input
+    if (err(aggregate)) {
+      return aggregate
+    }
+    aggregates.push(aggregate)
+
+    // Edit calls keep bounded selection reconstruction, but input planning is
+    // create-only so reconstructed selections cannot rewrite source pipes.
+    if (nodeToEdit) {
+      recordsByRequest.push([])
+      continue
     }
 
-    let pipeBodyIndex: number | undefined
-    if (input.pathIfPipe) {
-      const expression = getNodeFromPath<ExpressionStatement>(
+    const materializePipes = request.materializePipes ?? 'when-multiple'
+    const shouldInspectIndividualInputs =
+      materializePipes === 'always' ||
+      request.selection.graphSelections.length > 1 ||
+      requests.length > 1
+    if (!shouldInspectIndividualInputs) {
+      recordsByRequest.push([])
+      continue
+    }
+
+    const records: SelectionInputRecord[] = []
+    recordsByRequest.push(records)
+
+    for (const graphSelection of request.selection.graphSelections) {
+      const input = getVariableExprsFromSelection(
+        {
+          graphSelections: [graphSelection],
+          otherSelections: [],
+        },
+        artifactGraph,
         ast,
-        input.pathIfPipe,
         wasmInstance,
-        'ExpressionStatement'
+        undefined,
+        options
       )
-      if (err(expression) || expression.node.type !== 'ExpressionStatement') {
-        return new Error('Could not resolve the selected source pipe')
+      if (err(input)) {
+        return input
       }
 
-      const bodyIndex = getBodyIndex(expression.shallowPath)
-      if (err(bodyIndex)) {
-        return bodyIndex
+      let pipeBodyIndex: number | undefined
+      if (input.pathIfPipe) {
+        const expression = getNodeFromPath<ExpressionStatement>(
+          ast,
+          input.pathIfPipe,
+          wasmInstance,
+          'ExpressionStatement'
+        )
+        if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+          return new Error('Could not resolve the selected source pipe')
+        }
+
+        const bodyIndex = getBodyIndex(expression.shallowPath)
+        if (err(bodyIndex)) {
+          return bodyIndex
+        }
+        pipeBodyIndex = bodyIndex
+        pipeBodyIndexes.add(bodyIndex)
+        variablePrefixByBodyIndex.set(
+          bodyIndex,
+          request.variablePrefix ?? KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
+        )
+        if (materializePipes === 'always') {
+          shouldMaterialize = true
+        }
       }
-      pipeBodyIndex = bodyIndex
-      pipeBodyIndexes.add(bodyIndex)
+
+      records.push({ ...input, pipeBodyIndex })
     }
-
-    records.push({ ...input, pipeBodyIndex })
   }
 
-  const shouldMaterialize =
-    materializePipes === 'always'
-      ? pipeBodyIndexes.size > 0
-      : pipeBodyIndexes.size > 1
+  shouldMaterialize ||= pipeBodyIndexes.size > 1
   if (!shouldMaterialize) {
-    return aggregate
+    return aggregates
   }
 
   const variableByBodyIndex = new Map<number, string>()
@@ -132,7 +185,11 @@ export function resolveSelectionInputPlan({
       return new Error('Expected a variable-less source pipe')
     }
 
-    const variableName = findUniqueName(ast, variablePrefix)
+    const variableName = findUniqueName(
+      ast,
+      variablePrefixByBodyIndex.get(bodyIndex) ??
+        KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
+    )
     const declaration = createVariableDeclaration(
       variableName,
       structuredClone(statement.expression)
@@ -142,16 +199,20 @@ export function resolveSelectionInputPlan({
     variableByBodyIndex.set(bodyIndex, variableName)
   }
 
-  return {
-    exprs: records.flatMap(({ exprs, pathIfPipe, pipeBodyIndex }) => {
-      if (!pathIfPipe) {
-        return exprs
-      }
-      if (pipeBodyIndex === undefined) {
-        return []
-      }
-      const variableName = variableByBodyIndex.get(pipeBodyIndex)
-      return variableName ? [createLocalName(variableName)] : []
-    }),
-  }
+  return recordsByRequest.map((records, index) =>
+    records.length === 0
+      ? aggregates[index]
+      : {
+          exprs: records.flatMap(({ exprs, pathIfPipe, pipeBodyIndex }) => {
+            if (!pathIfPipe) {
+              return exprs
+            }
+            if (pipeBodyIndex === undefined) {
+              return []
+            }
+            const variableName = variableByBodyIndex.get(pipeBodyIndex)
+            return variableName ? [createLocalName(variableName)] : []
+          }),
+        }
+  )
 }

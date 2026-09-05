@@ -17,9 +17,9 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
-  getBodyIndex,
   getNodeFromPath,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
@@ -38,12 +38,11 @@ import {
   type ArtifactGraph,
   type CallExpressionKw,
   type Expr,
-  type ExpressionStatement,
+  formatNumberValue,
   type PathToNode,
   type Program,
   type VariableDeclaration,
   type VariableMap,
-  formatNumberValue,
 } from '@src/lang/wasm'
 import {
   modelingStdLibCall,
@@ -965,49 +964,18 @@ export function getPlaneExprFromSelection({
     wasmInstance
   )
   if (!planeExpr) {
-    const planeVars = getVariableExprsFromSelection(
-      plane,
+    const planeVars = resolveSelectionInputPlan({
+      selection: plane,
       artifactGraph,
-      modifiedAst,
+      ast: modifiedAst,
       wasmInstance,
-      nodeToEdit
-    )
+      nodeToEdit,
+      materializePipes: 'always',
+      variablePrefix: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
+    })
     if (!err(planeVars) && planeVars.exprs.length === 1) {
       const [planeVar] = planeVars.exprs
-      if (planeVar.type !== 'PipeSubstitution') {
-        planeExpr = planeVar
-      } else if (planeVars.pathIfPipe) {
-        const expression = getNodeFromPath<ExpressionStatement>(
-          modifiedAst,
-          planeVars.pathIfPipe,
-          wasmInstance,
-          'ExpressionStatement'
-        )
-        if (
-          !err(expression) &&
-          expression.node.type === 'ExpressionStatement'
-        ) {
-          const bodyIndex = getBodyIndex(expression.shallowPath)
-          if (err(bodyIndex)) {
-            return bodyIndex
-          }
-          const sourceStatement = modifiedAst.body[bodyIndex]
-          if (!sourceStatement) {
-            return new Error('Could not find source statement for the plane')
-          }
-          const planeVariableName = findUniqueName(
-            modifiedAst,
-            KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
-          )
-          const declaration = createVariableDeclaration(
-            planeVariableName,
-            expression.node.expression
-          )
-          declaration.preComments = sourceStatement.preComments
-          modifiedAst.body[bodyIndex] = declaration
-          planeExpr = createLocalName(planeVariableName)
-        }
-      }
+      planeExpr = planeVar
     }
   }
   if (!planeExpr) {
