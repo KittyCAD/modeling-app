@@ -3,10 +3,39 @@ pub use kcl_api::OpKclValue;
 pub use kcl_api::OpSketch;
 pub use kcl_api::OpSolid;
 pub use kcl_api::Operation;
+use kcl_error::SourceRange;
 
 use super::ArtifactId;
 use super::KclValue;
+use crate::ModuleId;
 use crate::NodePathExt;
+use crate::parsing::ast::types::ImportPath;
+
+pub(crate) fn operation_from_import(
+    name: String,
+    module_id: ModuleId,
+    import_path: &ImportPath,
+    is_glob: bool,
+    source_range: SourceRange,
+) -> Option<Operation> {
+    let operation = match import_path {
+        ImportPath::Kcl { .. } => Operation::ModuleInstance {
+            name,
+            module_id,
+            glob: is_glob,
+            node_path: crate::NodePath::placeholder(),
+            source_range,
+        },
+        ImportPath::Foreign { .. } => Operation::ImportedGeometry {
+            name,
+            module_id,
+            node_path: crate::NodePath::placeholder(),
+            source_range,
+        },
+        ImportPath::Std { .. } => return None,
+    };
+    Some(operation)
+}
 
 pub trait OperationExt {
     fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize);
@@ -39,6 +68,11 @@ impl OperationExt for Operation {
                 ..
             }
             | Operation::ModuleInstance {
+                node_path,
+                source_range,
+                ..
+            }
+            | Operation::ImportedGeometry {
                 node_path,
                 source_range,
                 ..
@@ -127,5 +161,38 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::KclNone { .. } => OpKclValue::KclNone {},
         KclValue::Type { .. } => OpKclValue::Type {},
         KclValue::BoundedEdge { .. } => OpKclValue::BoundedEdge {},
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn import_operation_distinguishes_kcl_modules_from_imported_geometry() {
+        let module_id = ModuleId::default();
+        let source_range = SourceRange::default();
+
+        let kcl = operation_from_import(
+            "part".to_owned(),
+            module_id,
+            &ImportPath::Kcl {
+                filename: "part.kcl".into(),
+            },
+            true,
+            source_range,
+        );
+        assert!(matches!(kcl, Some(Operation::ModuleInstance { glob: true, .. })));
+
+        let foreign = operation_from_import(
+            "mesh".to_owned(),
+            module_id,
+            &ImportPath::Foreign {
+                path: "mesh.obj".into(),
+            },
+            false,
+            source_range,
+        );
+        assert!(matches!(foreign, Some(Operation::ImportedGeometry { .. })));
     }
 }

@@ -35,6 +35,16 @@ function helixOperation(sourceRange: SourceRange): Operation {
   }
 }
 
+function importedGeometryOperation(sourceRange: SourceRange): Operation {
+  return {
+    type: 'ImportedGeometry',
+    name: 'cube',
+    moduleId: 1,
+    nodePath: defaultNodePath(),
+    sourceRange,
+  }
+}
+
 function hideOperation(sourceRange: SourceRange, value: OpKclValue): Operation {
   return {
     type: 'StdLibCall',
@@ -79,6 +89,21 @@ function helixArtifact(id: string, sourceRange: SourceRange): Artifact {
   }
 }
 
+function importedGeometryArtifact(
+  id: string,
+  sourceRange: SourceRange
+): Artifact {
+  return {
+    type: 'importedGeometry',
+    id,
+    codeRef: {
+      range: sourceRange,
+      nodePath: defaultNodePath(),
+      pathToNode: [],
+    },
+  }
+}
+
 function pathArtifact(id: string, sourceRange: SourceRange): Artifact {
   return {
     type: 'path',
@@ -115,6 +140,61 @@ function expectHidden(
 }
 
 describe('resolveFeatureTreeVisibility', () => {
+  it('enables the visibility toggle for imported geometry', () => {
+    const importRange = range(0, 28)
+    const item = importedGeometryOperation(importRange)
+    const artifact = importedGeometryArtifact(
+      'imported-geometry-artifact',
+      importRange
+    )
+
+    const visibilityState = resolveFeatureTreeVisibility({
+      item,
+      operations: [],
+      artifactGraph: toArtifactGraph([artifact]),
+    })
+
+    expect(visibilityState.canToggleVisibility).toBe(true)
+    expect(visibilityState.hideOperation).toBeUndefined()
+    expect(visibilityState.targetArtifact).toBe(artifact)
+  })
+
+  it('resolves imported geometry visibility using artifact-id hide matching', () => {
+    const importRange = range(0, 28)
+    const item = importedGeometryOperation(importRange)
+    const artifact = importedGeometryArtifact(
+      'imported-geometry-artifact',
+      importRange
+    )
+    const hideOp = hideOperation(range(29, 39), {
+      type: 'ImportedGeometry',
+      artifact_id: artifact.id,
+    })
+
+    const visibilityState = resolveFeatureTreeVisibility({
+      item,
+      operations: [hideOp],
+      artifactGraph: toArtifactGraph([artifact]),
+    })
+
+    expect(visibilityState.canToggleVisibility).toBe(true)
+    expectHidden(visibilityState)
+    expect(visibilityState.hideOperation).toBe(hideOp)
+    expect(visibilityState.targetArtifact).toBe(artifact)
+  })
+
+  it('disables imported geometry visibility without its artifact', () => {
+    const visibilityState = resolveFeatureTreeVisibility({
+      item: importedGeometryOperation(range(0, 28)),
+      operations: [],
+      artifactGraph: new Map(),
+    })
+
+    expect(visibilityState.canToggleVisibility).toBe(false)
+    expect(visibilityState.hideOperation).toBeUndefined()
+    expect(visibilityState.targetArtifact).toBeUndefined()
+  })
+
   it('resolves sketch visibility via artifact-id hide matching', () => {
     const sketchDeclaration = 'sketch001 = sketch(on = XY) {}'
     const code = `${sketchDeclaration}\nhide(sketch001)`
