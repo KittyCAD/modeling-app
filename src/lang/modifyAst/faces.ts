@@ -17,6 +17,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
@@ -37,11 +38,11 @@ import {
   type ArtifactGraph,
   type CallExpressionKw,
   type Expr,
+  formatNumberValue,
   type PathToNode,
   type Program,
   type VariableDeclaration,
   type VariableMap,
-  formatNumberValue,
 } from '@src/lang/wasm'
 import {
   modelingStdLibCall,
@@ -963,18 +964,18 @@ export function getPlaneExprFromSelection({
     wasmInstance
   )
   if (!planeExpr) {
-    const planeVars = getVariableExprsFromSelection(
-      plane,
+    const planeVars = resolveSelectionInputPlan({
+      selection: plane,
       artifactGraph,
-      modifiedAst,
+      ast: modifiedAst,
       wasmInstance,
-      nodeToEdit
-    )
+      nodeToEdit,
+      materializePipes: 'always',
+      variablePrefix: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
+    })
     if (!err(planeVars) && planeVars.exprs.length === 1) {
       const [planeVar] = planeVars.exprs
-      if (planeVar.type !== 'PipeSubstitution') {
-        planeExpr = planeVar
-      }
+      planeExpr = planeVar
     }
   }
   if (!planeExpr) {

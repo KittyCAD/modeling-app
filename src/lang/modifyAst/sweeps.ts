@@ -28,6 +28,7 @@ import {
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
+import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import {
   modifyAstWithTagsForSelection,
   resolveEdgeSelectionContext,
@@ -493,13 +494,15 @@ export function addSweep({
   }
 
   // Find the path declaration for the labeled argument
-  const pathVars = getVariableExprsFromSelection(
-    path,
+  const pathVars = resolveSelectionInputPlan({
+    selection: path,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit
-  )
+    nodeToEdit: mNodeToEdit,
+    materializePipes: 'always',
+    variablePrefix: 'path',
+  })
   if (err(pathVars)) {
     return pathVars
   }
