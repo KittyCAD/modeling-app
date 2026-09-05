@@ -1,5 +1,5 @@
-import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -8,6 +8,9 @@ const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const fileOperations = {
+    readFile: vi.fn(async () => new TextEncoder().encode('current disk code')),
+  }
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -23,6 +26,7 @@ const mocks = vi.hoisted(() => {
 
   return {
     kclManager,
+    fileOperations,
     zookeeperSubscribe,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
@@ -70,6 +74,7 @@ vi.mock('@src/lib/boot', () => ({
     },
     billing: { send: vi.fn() },
     debug: {},
+    fileOperations: mocks.fileOperations,
     project: {
       name: 'demo',
       path: '/workspace/demo',

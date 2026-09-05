@@ -106,6 +106,30 @@ import {
   scheduleProjectDirectoryNameSyncFromTitles,
   syncProjectDirectoryNameFromTitle,
 } from '@src/lib/projectLibraries/directoryScanner'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+
+const fileOperations = {
+  readDirectory: async (path: string) =>
+    (await mocks.fsZds.readdir(path)).map((name: string) => ({
+      name,
+      kind: 'directory' as const,
+    })),
+  stat: async (path: string) => {
+    const stat = await mocks.fsZds.stat(path)
+    return {
+      kind: stat.mode & fsZdsConstants.S_IFDIR ? 'directory' : 'file',
+      device: stat.dev,
+      inode: stat.ino,
+      size: stat.size,
+      accessedAt: stat.atimeMs,
+      modifiedAt: stat.mtimeMs,
+      changedAt: stat.ctimeMs,
+      createdAt: stat.birthtimeMs,
+    }
+  },
+  rename: mocks.fsZds.rename,
+  remove: (path: string) => mocks.fsZds.rm(path, { recursive: true }),
+} as unknown as FileOperationsRegistryService
 
 function dirStat(ino: number) {
   const date = new Date(0)
@@ -199,6 +223,7 @@ describe('directory project scanner', () => {
     })
 
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
       onProjectStatFailures,
@@ -233,6 +258,7 @@ describe('directory project scanner', () => {
     const onProjectDirectoriesRenamed = vi.fn()
 
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
     })
@@ -241,6 +267,7 @@ describe('directory project scanner', () => {
     expect(mocks.fsZds.rename).not.toHaveBeenCalled()
 
     scheduleProjectDirectoryNameSyncFromTitles({
+      fileOperations,
       projects,
       onProjectDirectoriesRenamed,
     })
@@ -288,16 +315,19 @@ describe('directory project scanner', () => {
     mocks.desktop.getProjectInfo.mockResolvedValue(project)
 
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
     })
 
     expect(projects).toEqual([project])
     expect(mocks.desktop.getProjectInfo).toHaveBeenCalledWith(
+      fileOperations,
       '/projects/normal',
       expect.anything()
     )
     expect(mocks.desktop.getProjectInfo).not.toHaveBeenCalledWith(
+      fileOperations,
       conflictCopyPath,
       expect.anything()
     )
@@ -348,6 +378,7 @@ describe('directory project scanner', () => {
     mocks.desktop.getProjectInfo.mockResolvedValue(project)
 
     const projects = await readProjectsFromProjectDirectory({
+      fileOperations,
       projectDirectoryPath: '/projects',
       wasmInstancePromise: Promise.resolve({} as ModuleType),
     })
@@ -397,6 +428,7 @@ describe('directory project scanner', () => {
     })
 
     scheduleProjectDirectoryNameSyncFromTitles({
+      fileOperations,
       projects,
       onProjectDirectoriesRenamed,
     })
@@ -448,6 +480,7 @@ describe('directory project scanner', () => {
     })
 
     scheduleProjectDirectoryNameSyncFromTitles({
+      fileOperations,
       projects,
       onProjectDirectoriesRenamed,
     })
@@ -480,6 +513,7 @@ describe('directory project scanner', () => {
     })
 
     const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
+      fileOperations,
       project: createProject(),
       projectDirectoryEntryNames: ['stale-id', 'my-cool-project'],
     })
@@ -500,6 +534,7 @@ describe('directory project scanner', () => {
     })
 
     const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
+      fileOperations,
       project: createProject({ title: '!!!' }),
       projectDirectoryEntryNames: ['stale-id'],
     })
@@ -513,6 +548,7 @@ describe('directory project scanner', () => {
 
   it('does not rename when the project directory already matches the title', async () => {
     const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
+      fileOperations,
       project: createProject({
         name: 'my-cool-project',
         path: '/projects/my-cool-project',

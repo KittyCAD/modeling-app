@@ -69,6 +69,10 @@ function renderProjectLibraryPreviewRow(library: ProjectLibrary) {
         query=""
         projectStatuses={new Map()}
         projectActions={projectActions}
+        fileOperations={{
+          stat: vi.fn(),
+          readFile: vi.fn(),
+        }}
         showCloudSyncUi={true}
         onMoveToLibrary={vi.fn()}
       />

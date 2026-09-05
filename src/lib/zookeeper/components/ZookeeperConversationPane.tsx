@@ -1,8 +1,3 @@
-import {
-  ZookeeperConversation,
-  type QueuedMessage,
-} from '@src/lib/zookeeper/components/ZookeeperConversation'
-import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
@@ -14,15 +9,22 @@ import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
-import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
+  type QueuedMessage,
+  ZookeeperConversation,
+} from '@src/lib/zookeeper/components/ZookeeperConversation'
+import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import type {
+  MlCopilotModeId,
+  ZookeeperManagerActor,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  hasBeenInterruptedOnLast,
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
-  hasBeenInterruptedOnLast,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import type { MlCopilotModeId } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
@@ -163,8 +165,14 @@ export const ZookeeperConversationPane = (props: {
     }
 
     const project: Project = props.theProject
+    const fileOperations = props.kclManager.fileOperations
+    if (!fileOperations) {
+      console.warn('File operations are not configured')
+      return
+    }
 
     const projectFiles = await collectProjectFiles({
+      fileOperations,
       selectedFileContents: props.kclManager.code,
       selectedFilePath: props.kclManager.path,
       fileNames: props.kclManager.execState.filenames,
@@ -261,8 +269,13 @@ export const ZookeeperConversationPane = (props: {
     setIsResumingInterruptedTurn(true)
     try {
       const project = resumeProject
+      const fileOperations = resumeKclManager.fileOperations
+      if (!fileOperations) {
+        return
+      }
       const currentLoaderFile = loaderFileRef.current
       const projectFiles = await collectProjectFiles({
+        fileOperations,
         selectedFileContents: resumeKclManager.code,
         selectedFilePath: resumeKclManager.path,
         fileNames: resumeKclManager.execState.filenames,

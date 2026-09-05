@@ -1,11 +1,11 @@
-import JSZip from 'jszip'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
-
 import { createProjectZipArchive } from '@src/lib/exportProjectZip'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldNode } from '@src/unitTestUtils'
+import JSZip from 'jszip'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 
 const createdProjectPaths: string[] = []
 let wasmInstance: ModuleType
@@ -72,6 +72,7 @@ describe('createProjectZipArchive', () => {
     )
 
     const archive = await createProjectZipArchive({
+      fileOperations: testFileOperations,
       project: makeProject(projectPath),
       currentFilePath: fsZds.join(projectPath, 'main.kcl'),
       currentFileContents: 'unsaved = true',
@@ -110,6 +111,7 @@ describe('createProjectZipArchive', () => {
     )
 
     const archive = await createProjectZipArchive({
+      fileOperations: testFileOperations,
       project: makeProject(projectPath, {
         name: '550e8400-e29b-41d4-a716-446655440000',
         title: 'Human Project',

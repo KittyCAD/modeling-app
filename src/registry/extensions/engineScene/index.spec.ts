@@ -1,15 +1,15 @@
 import {
-  Registry,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
+  commandsValueSpec,
   FILE_COMMAND_SCOPES,
   MODE_MODELING_COMMAND_SCOPE,
-  commandsValueSpec,
 } from '@src/registry/contracts/commands'
 import {
   type EngineSceneExtensionContext,
@@ -32,7 +32,6 @@ import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
-import { saveViewportScreenshot } from './saveViewportScreenshot'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
   ExperimentalFeaturesMenu: () => null,
@@ -224,7 +223,7 @@ describe('engineScene extension', () => {
       icon: 'camera',
       needsReview: false,
       scopes: FILE_COMMAND_SCOPES,
-      onSubmit: saveViewportScreenshot,
+      onSubmit: expect.any(Function),
     })
     expect(command?.hideFromSearch).not.toBe(true)
   })

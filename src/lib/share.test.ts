@@ -147,10 +147,33 @@ vi.mock('react-hot-toast', () => ({
   },
 }))
 
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
-  getCurrentProjectPublicationDetails,
-  publishCurrentProject,
+  getCurrentProjectPublicationDetails as getCurrentProjectPublicationDetailsWithFileOperations,
+  publishCurrentProject as publishCurrentProjectWithFileOperations,
 } from '@src/lib/share'
+
+const publishCurrentProject = (
+  args: Omit<
+    Parameters<typeof publishCurrentProjectWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  publishCurrentProjectWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
+
+const getCurrentProjectPublicationDetails = (
+  args: Omit<
+    Parameters<typeof getCurrentProjectPublicationDetailsWithFileOperations>[0],
+    'fileOperations'
+  >
+) =>
+  getCurrentProjectPublicationDetailsWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
 
 function makeProject(): Project {
   return {

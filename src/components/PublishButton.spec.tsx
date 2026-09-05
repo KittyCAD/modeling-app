@@ -87,6 +87,8 @@ const publishSubmission = {
   categoryIds: ['robotics'],
 }
 
+const fileOperations = {}
+
 function createApp({
   project = defaultProject,
   hasCloudSyncFeature = false,
@@ -107,6 +109,7 @@ function createApp({
   settingsSend?: ReturnType<typeof vi.fn>
 } = {}) {
   return {
+    fileOperations,
     projectSignal: {
       value: {
         projectIORefSignal: {
@@ -294,6 +297,7 @@ describe('PublishButton', () => {
       expect(moveToLibrary).toHaveBeenCalledTimes(shouldMove ? 1 : 0)
       if (shouldMove) {
         expect(mockState.writeProjectTitleToProjectToml).toHaveBeenCalledWith(
+          fileOperations,
           localProject.path,
           'Example'
         )

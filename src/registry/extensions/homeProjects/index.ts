@@ -17,7 +17,7 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { makeZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
@@ -25,6 +25,7 @@ import {
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectDuplicateRealization,
@@ -523,6 +524,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const projectInfo = await getProjectInfo(
+        ctx.services.get(fileOperationsService),
         syncedProject.projectPath,
         await wasmInstancePromise
       )
@@ -663,9 +665,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       })
       try {
         if (!keepProjectPath) {
-          await zookeeperConversationStore.deleteProjectConversationId(
-            sharedProjectId
-          )
+          await makeZookeeperConversationStore(
+            ctx.services.get(fileOperationsService)
+          ).deleteProjectConversationId(sharedProjectId)
         }
       } finally {
         // The project files have already been updated, so refresh Home even if

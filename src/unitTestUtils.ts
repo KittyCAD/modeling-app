@@ -1,8 +1,6 @@
-import { join } from 'path'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
-import { KclManager } from '@src/lang/KclManager'
 import {
   ARG_ANGLE,
   ARG_END_ABSOLUTE_X,
@@ -12,9 +10,12 @@ import {
   ARG_LENGTH_Y,
 } from '@src/lang/constants'
 import { createArrayExpression } from '@src/lang/create'
+import { KclManager } from '@src/lang/KclManager'
 import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -23,11 +24,11 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import {
-  UserFeaturesState,
   type UserFeaturesSettleService,
+  UserFeaturesState,
 } from '@src/machines/userFeaturesMachine'
-import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { join } from 'path'
 import { createActor } from 'xstate'
 
 /**
@@ -93,6 +94,7 @@ export async function buildTheWorldAndConnectToEngine() {
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: {
+      fileOperations: testFileOperations,
       commandBarActor,
       defaultProjectLibraries: [],
       projectLibrarySettingDefaultPolicies: [],
@@ -204,6 +206,7 @@ export async function buildTheWorldAndNoEngineConnection(
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: {
+      fileOperations: testFileOperations,
       commandBarActor,
       defaultProjectLibraries: [],
       projectLibrarySettingDefaultPolicies: [],

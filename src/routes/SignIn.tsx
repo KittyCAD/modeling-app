@@ -1,14 +1,8 @@
-import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
-import { Link, useLocation } from 'react-router-dom'
-
 import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { updateEnvironment } from '@src/env'
-import env from '@src/env'
+import env, { updateEnvironment } from '@src/env'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import {
@@ -24,12 +18,16 @@ import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { mark } from '@src/lib/performance'
-import { Themes, getSystemTheme } from '@src/lib/theme'
+import { getSystemTheme, Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
+import type { CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import { Link, useLocation } from 'react-router-dom'
 
 type SignInRouteState = {
   [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]?: boolean
@@ -42,7 +40,7 @@ const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:t
 let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
-  const { auth, settings } = useApp()
+  const { auth, fileOperations, settings } = useApp()
   const routerLocation = useLocation()
   const [userCode, setUserCode] = useState('')
   const [verificationUri, setVerificationUri] = useState('')
@@ -105,13 +103,16 @@ const SignIn = () => {
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     void (async () => {
-      const persistedEnvironment = await readEnvironmentFile().catch(() => '')
+      const persistedEnvironment = await readEnvironmentFile(
+        fileOperations
+      ).catch(() => '')
       if (requestedEnvironmentFormatted === persistedEnvironment) {
         return
       }
-      await writeEnvironmentFile(requestedEnvironmentFormatted).catch(
-        reportRejection
-      )
+      await writeEnvironmentFile(
+        fileOperations,
+        requestedEnvironmentFormatted
+      ).catch(reportRejection)
       window.location.reload()
     })()
   }
@@ -133,7 +134,7 @@ const SignIn = () => {
   useEffect(() => {
     if (!didReadFromDiskCacheForEnvironment) {
       didReadFromDiskCacheForEnvironment = true
-      readEnvironmentFile()
+      readEnvironmentFile(fileOperations)
         .then((environment) => {
           if (environment) {
             setSelectedEnvironmentFormatter(environment)
@@ -145,7 +146,7 @@ const SignIn = () => {
         })
         .catch(reportRejection)
     }
-  }, [])
+  }, [fileOperations])
 
   const {
     app: { theme },

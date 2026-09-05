@@ -132,6 +132,7 @@ function PublishPopoverContent({
 
       const wasmInstance = await kclManager.wasmInstancePromise
       const details = await getCurrentProjectPublicationDetails({
+        fileOperations: app.fileOperations,
         token,
         project,
         wasmInstance,
@@ -145,7 +146,7 @@ function PublishPopoverContent({
 
       return details
     },
-    [kclManager, project, token]
+    [app.fileOperations, kclManager, project, token]
   )
 
   useEffect(() => {
@@ -261,6 +262,7 @@ function PublishPopoverContent({
       }
 
       const published = await publishCurrentProject({
+        fileOperations: app.fileOperations,
         token,
         project: publicationProject,
         currentFilePath: publicationFilePath,

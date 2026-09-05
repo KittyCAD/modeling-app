@@ -51,7 +51,6 @@ import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
-import fsZds from '@src/lib/fs-zds'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
 import type {
@@ -183,6 +182,7 @@ import {
   waitForUserFeaturesSettled,
 } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -752,17 +752,20 @@ export class File extends EventTarget {
 
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
-    read: (path: string) => fsZds.readFile(path, 'utf8'),
-    write: (path: string, content: string) =>
-      fsZds.writeFile(path, File.encoder.encode(content)),
+    read: (_path: string): Promise<string> =>
+      Promise.reject(new Error('File IO has not been configured')),
+    write: (_path: string, _content: string): Promise<void> =>
+      Promise.reject(new Error('File IO has not been configured')),
     watch: window.electron?.watchFileOn || (() => {}),
     unwatch: window.electron?.watchFileOff || (() => {}),
   }
-  static encoder = new TextEncoder()
 }
 
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
+
+  /** Application storage facade used by workflows owned by this manager. */
+  fileOperations?: FileOperationsRegistryService
 
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
@@ -2586,7 +2589,11 @@ export class KclManager extends File {
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      if (!this.fileOperations) {
+        return
+      }
       createThumbnailPNGOnDesktop({
+        fileOperations: this.fileOperations,
         projectDirectoryWithoutEndingSlash: projectFsManager.dir,
       })
     }
