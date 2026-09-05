@@ -9,6 +9,9 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
+  createLiteral,
+  createLocalName,
+  createMemberExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
 import {
@@ -1170,6 +1173,63 @@ describe('Testing getSelectedSketchTarget', () => {
 })
 
 describe('Testing getVariableExprsFromSelection', () => {
+  it('keeps merged legacy face-sketch outputs indexed after resolving their shared root', async () => {
+    const code = `@settings(kclVersion = 2.0)
+baseProfile = circle(startSketchOn(XY), center = [0, 0], radius = 20)
+base = extrude(baseProfile, length = 5)
+faceSketch = startSketchOn(base, face = END)
+profile1 = circle(faceSketch, center = [-10, 0], radius = 3)
+profile2 = circle(faceSketch, center = [10, 0], radius = 3)
+merged = extrude([profile1, profile2], length = 2)`
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    expect(kclManagerInThisFile.errors).toEqual([])
+    const sweeps = [...artifactGraph.values()].filter(
+      (artifact) => artifact.type === 'sweep'
+    )
+    expect(sweeps).toHaveLength(3)
+    const [root, child] = sweeps
+    const resolve = (nodeToEdit?: PathToNode) => {
+      const result = getVariableExprsFromSelection(
+        {
+          graphSelections: [{ artifact: root, codeRef: root.codeRef }],
+          otherSelections: [],
+        },
+        artifactGraph,
+        ast,
+        instanceInThisFile,
+        nodeToEdit,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['sweep', 'compositeSolid'],
+        }
+      )
+      if (result instanceof Error) {
+        throw result
+      }
+      return result
+    }
+    // Legacy face sketches link the root cap to both merged profiles. The
+    // final child must stay a single solid when resolving the canonical root.
+    expect(resolve().exprs).toEqual([
+      createMemberExpression(
+        'merged',
+        createLiteral(0, instanceInThisFile),
+        true
+      ),
+    ])
+    const mergedCall = child.codeRef.pathToNode
+    expect(resolve(mergedCall).exprs).toEqual([createLocalName('base')])
+    const nodeToEdit = mergedCall.slice(0, 2)
+    expect(resolve(nodeToEdit)).toEqual({
+      exprs: [createPipeSubstitution()],
+      pathIfPipe: nodeToEdit,
+    })
+  })
+
   it('should use the input solid for an unassigned edge cut', () => {
     const code = `extrude001 = extrude(profile001, length = 5)
 chamfer(extrude001, tags = edge001, length = 1)`
