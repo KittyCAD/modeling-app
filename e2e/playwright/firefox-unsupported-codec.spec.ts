@@ -7,6 +7,11 @@ import {
 } from '@src/lib/constants'
 import { UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE } from '@src/lib/engineConnection/videoCodecSupport'
 
+test.skip(
+  Boolean(process.env.CI) && process.platform === 'linux',
+  'GPU-less Linux CI cannot boot the WebGL app in Firefox; macOS and Windows retain this coverage.'
+)
+
 test(
   'Firefox without H.264 stops before Engine allocation',
   { tag: '@web' },
