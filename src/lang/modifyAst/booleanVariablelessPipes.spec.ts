@@ -1,10 +1,11 @@
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addIntersect,
   addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
-import { assertParse, recast } from '@src/lang/wasm'
+import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   enginelessExecutor,
@@ -18,6 +19,47 @@ vi.mock('@src/lib/commandBarConfigs/modelingCommandStdLibCommands', () => ({
 }))
 
 describe('boolean operations on distinct variable-less pipes', () => {
+  it.each(['subtract', 'split'] as const)(
+    'preserves %s selection inputs when editing without reconstructed selections',
+    async (operation) => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const code = `${operation}001 = ${operation}(target, tools = tool)`
+      const ast = assertParse(code, instance)
+      const unavailableSelection = {
+        graphSelections: [],
+        otherSelections: [],
+      }
+
+      const result =
+        operation === 'subtract'
+          ? addSubtract({
+              ast,
+              artifactGraph: new Map() as ArtifactGraph,
+              solids: unavailableSelection,
+              tools: unavailableSelection,
+              nodeToEdit: createPathToNodeForLastVariable(ast),
+              wasmInstance: instance,
+            })
+          : addSplit({
+              ast,
+              artifactGraph: new Map() as ArtifactGraph,
+              targets: unavailableSelection,
+              tools: unavailableSelection,
+              nodeToEdit: createPathToNodeForLastVariable(ast),
+              wasmInstance: instance,
+            })
+      if (err(result)) {
+        throw result
+      }
+
+      const output = recast(result.modifiedAst, instance)
+      if (err(output)) {
+        throw output
+      }
+      expect(output.trim()).toBe(code)
+    }
+  )
+
   it.each(['union', 'intersect', 'subtract', 'split'] as const)(
     'keeps both selected bodies when creating %s',
     async (operation) => {

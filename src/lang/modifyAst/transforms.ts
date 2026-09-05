@@ -19,7 +19,6 @@ import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import {
   getBodyIndex,
   getNodeFromPath,
-  getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
@@ -347,16 +346,14 @@ export function addClone({
 
   // 2. Prepare unlabeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    objects,
+  const vars = resolveSelectionInputPlan({
+    selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+    nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
+  })
   if (err(vars)) {
     return vars
   }
