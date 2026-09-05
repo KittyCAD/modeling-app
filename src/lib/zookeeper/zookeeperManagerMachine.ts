@@ -30,6 +30,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { handleZookeeperAttachmentMessage } from '@src/lib/zookeeper/zookeeperAttachments'
 import {
   constructZookeeperUserPromptRequest,
   type KittyCadLibFile,
@@ -1038,6 +1039,7 @@ export const zookeeperManagerMachine = setup({
       if (maybeConversationId) {
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
+        queryParams.set('replay_attachment_mode', 'metadata_only')
       }
       const querystring = queryParams.toString()
         ? `?${queryParams.toString()}`
@@ -1244,6 +1246,8 @@ export const zookeeperManagerMachine = setup({
               }
               return
             }
+
+            if (handleZookeeperAttachmentMessage(ws, response)) return
 
             if (!isMlCopilotServerMessage(response)) return
 

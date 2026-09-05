@@ -4,6 +4,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import type { MlCopilotFileFetcher } from '@src/components/Thinking'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
@@ -82,6 +83,7 @@ export interface ZookeeperConversationProps {
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
   modeScopeKey?: string
+  onFetchAttachment?: MlCopilotFileFetcher
 }
 
 const getModeOption = (
@@ -676,6 +678,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+          onFetchAttachment={props.onFetchAttachment}
         />
       )
     }
@@ -828,7 +831,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           )}
           {props.isLoadingAttachments ? (
             <div className="border-t b-4 px-4 py-2 bg-chalkboard-10 dark:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30">
-              Progressively loading attachments into context...
+              Loading attachments...
             </div>
           ) : null}
           <div className="border-t b-4">
