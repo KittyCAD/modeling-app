@@ -84,6 +84,8 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         launchOptions: {
           firefoxUserPrefs: {
+            // Let GPU-less Linux CI exercise the real app with software WebGL.
+            'webgl.force-enabled': true,
             'media.gmp-gmpopenh264.autoupdate': false,
             'media.gmp-gmpopenh264.enabled': false,
             'media.peerconnection.video.h264_enabled': false,
