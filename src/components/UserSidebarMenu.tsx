@@ -13,14 +13,14 @@ import usePlatform from '@src/hooks/usePlatform'
 import { useApp } from '@src/lib/boot'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 let didListEnvironments = false
 
 const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
-  const { auth } = useApp()
+  const app = useApp()
+  const { auth } = app
   const platform = usePlatform()
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -74,24 +74,13 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
             </>
           ),
           'data-testid': 'user-settings',
-          onClick: () => {
-            const targetPath =
-              filePath !== undefined
-                ? filePath + PATHS.SETTINGS_USER
-                : PATHS.HOME + PATHS.SETTINGS_USER
-            void navigate(targetPath)
-          },
+          onClick: () => app.openSettings({ tab: 'user' }),
         },
         {
           id: 'keybindings',
           Element: 'button',
           children: 'Keyboard shortcuts',
-          onClick: () => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_KEYBINDINGS
-              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-            void navigate(targetPath)
-          },
+          onClick: () => app.openSettings({ tab: 'keybindings' }),
         },
         'break',
         {

@@ -1,13 +1,12 @@
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { PATHS, webSafeJoin } from '@src/lib/paths'
 import {
-  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
@@ -16,6 +15,7 @@ import {
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { navigationService } from '@src/registry/contracts/navigation'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -105,27 +105,56 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
   }
 }, 'settings-extension')
 
-const settingsRegistryItem = defineRegistryItem({
-  id: 'settings',
-  provides: [
-    provide(statusBarGlobalItemsValueSpec, {
+const settingsRegistryItem = defineRegistryItemFactory(
+  (ctx) => ({
+    item: defineRuntimeRegistryItem({
       id: 'settings',
-      element: 'link',
-      icon: 'settings',
-      href: (location) => {
-        const pathname = location.pathname
-        const settingsPath = pathname.includes(PATHS.SETTINGS)
-          ? pathname
-          : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
+      provides: [
+        /*
+         * Still a link, and the `href` stays.
+         *
+         * Following the href alone is no longer enough: once the URL is derived
+         * from state it changes the URL and nothing else, so the writer
+         * recomputes the old path and the panel never opens. `onClick` tells
+         * the app, and then the two agree about where the click leads.
+         *
+         * Worth saying why this is not a button, since opening settings is an
+         * action rather than a destination and a button is the tidier model:
+         * `testing-settings` reaches this via
+         * `getByRole('link', { name: 'Settings' })`. I did convert it, on the
+         * strength of the `data-testid` being unchanged, and turned two passing
+         * tests red. The DOM contract is not mine to rewrite in passing.
+         */
+        provide(statusBarGlobalItemsValueSpec, {
+          id: 'settings',
+          element: 'link',
+          icon: 'settings',
+          href: (location) => {
+            const pathname = location.pathname
+            const settingsPath = pathname.includes(PATHS.SETTINGS)
+              ? pathname
+              : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
 
-        return `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
-      },
-      'data-testid': 'settings-link',
-      order: 1,
-      label: 'Settings',
+            return `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
+          },
+          onClick: () => {
+            const navigation = ctx.services.optional(navigationService)
+            if (!navigation) return
+
+            const overProject = navigation.location.peek().kind === 'project'
+            navigation.openSettings(
+              overProject ? { tab: 'project' } : undefined
+            )
+          },
+          'data-testid': 'settings-link',
+          order: 1,
+          label: 'Settings',
+        }),
+      ],
+      uses: [settingsExtension],
     }),
-  ],
-  uses: [settingsExtension],
-})
+  }),
+  'settings-status-bar-item'
+)
 
 export default settingsRegistryItem

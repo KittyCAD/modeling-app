@@ -160,6 +160,75 @@ describe('openProjectFile, asked through a URL', () => {
   })
 })
 
+describe('openProjectFile, asked for what is already open', () => {
+  test('does not reopen the project or the editor', async () => {
+    mocks.parseProjectRoute.mockReturnValue({
+      projectName: 'proj',
+      projectPath: '/library/proj',
+      currentFileName: 'main.kcl',
+      currentFilePath: '/library/proj/main.kcl',
+    })
+    mocks.getProjectInfo.mockResolvedValue({
+      path: '/library/proj',
+      default_file: '/library/proj/main.kcl',
+    })
+    mocks.stat.mockResolvedValue({})
+
+    const app = fakeApp()
+    const openProject = vi.fn()
+    Object.assign(app, {
+      openProject,
+      project: {
+        projectIORefSignal: { value: { path: '/library/proj' } },
+        executingPathSignal: { value: { value: '/library/proj/main.kcl' } },
+      },
+    })
+
+    const result = await openProjectFile(app, {
+      id: '/library/proj/main.kcl',
+    })
+
+    // Load-bearing, not an optimisation: re-opening reassigns `projectSignal`,
+    // and once the URL is derived from that signal a loader that re-opens the
+    // project changes the state the URL comes from — which supersedes the
+    // navigation that triggered it and livelocks.
+    expect(result.kind).toBe('opened')
+    expect(openProject).not.toHaveBeenCalled()
+    expect(mocks.openEditor).not.toHaveBeenCalled()
+    expect(mocks.send).not.toHaveBeenCalled()
+  })
+
+  test('still reopens when a different file is asked for', async () => {
+    mocks.parseProjectRoute.mockReturnValue({
+      projectName: 'proj',
+      projectPath: '/library/proj',
+      currentFileName: 'part.kcl',
+      currentFilePath: '/library/proj/part.kcl',
+    })
+    mocks.getProjectInfo.mockResolvedValue({
+      path: '/library/proj',
+      default_file: '/library/proj/main.kcl',
+    })
+    mocks.stat.mockResolvedValue({})
+
+    const app = fakeApp()
+    Object.assign(app, {
+      project: {
+        projectIORefSignal: { value: { path: '/library/proj' } },
+        executingPathSignal: { value: { value: '/library/proj/main.kcl' } },
+      },
+    })
+
+    await openProjectFile(app, { id: '/library/proj/part.kcl' })
+
+    expect(mocks.openEditor).toHaveBeenCalledWith(
+      '/library/proj/part.kcl',
+      expect.anything(),
+      undefined
+    )
+  })
+})
+
 describe('openProjectFile, asked directly', () => {
   test('opens the project default rather than returning a redirect', async () => {
     mocks.parseProjectRoute.mockReturnValue({

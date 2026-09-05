@@ -162,6 +162,7 @@ function StatusBarItem(
           }
           className={`${defaultStatusBarItemClassNames} ${props.className}`}
           data-testid={props['data-testid']}
+          onClick={'onClick' in props ? props.onClick : undefined}
         >
           {'label' in props && props.label && !props.hideLabel && (
             <span>{props.label}</span>

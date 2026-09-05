@@ -6,6 +6,7 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import {
   type AppLocation,
+  type AppOverlay,
   locationSourcesValueSpec,
   navigationService,
   urlRoutesValueSpec,
@@ -57,6 +58,8 @@ export default defineRegistryItemFactory((ctx) => {
   })
 
   const opaqueSearch = signal('')
+  const fragment = signal('')
+  const overlay = signal<AppOverlay | undefined>(undefined)
 
   const path = computed(() => {
     const current = location.value
@@ -70,11 +73,15 @@ export default defineRegistryItemFactory((ctx) => {
     }
 
     const search = opaqueSearch.value
-    if (!search) return base
     // `toPath` is contracted not to emit a query, but `PATHS.SETTINGS_USER` and
     // friends make that easy to get wrong, so joining correctly is cheaper than
     // producing a URL with two '?' in it.
-    return `${base}${base.includes('?') ? '&' : '?'}${search}`
+    const withSearch = search
+      ? `${base}${base.includes('?') ? '&' : '?'}${search}`
+      : base
+
+    const anchor = fragment.value
+    return anchor ? `${withSearch}#${anchor}` : withSearch
   })
 
   const loadUrl = async (url: URL) => {
@@ -94,6 +101,24 @@ export default defineRegistryItemFactory((ctx) => {
           opaqueSearch,
           setOpaqueSearch: (next: string) => {
             opaqueSearch.value = next
+          },
+          fragment,
+          setFragment: (next: string) => {
+            fragment.value = next
+          },
+          overlay,
+          setOverlay: (next: AppOverlay | undefined) => {
+            overlay.value = next
+          },
+          openSettings: (options?: { tab?: string; anchor?: string }) => {
+            overlay.value = { kind: 'settings' }
+            opaqueSearch.value = options?.tab ? `tab=${options.tab}` : ''
+            fragment.value = options?.anchor ?? ''
+          },
+          closeSettings: () => {
+            overlay.value = undefined
+            opaqueSearch.value = ''
+            fragment.value = ''
           },
           loadUrl,
         }),

@@ -424,6 +424,7 @@ const Home = () => {
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
+      app,
       navigate,
       location,
       '',
@@ -445,7 +446,7 @@ const Home = () => {
         },
       })
     }
-  }, [navigate, location, commands])
+  }, [app, navigate, location, commands])
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -523,13 +524,13 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      void navigate(PATHS.HOME + PATHS.SETTINGS)
+      app.openSettings()
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      app.openSettings({ tab: 'keybindings' })
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      app.openSettings({ tab: 'user', anchor: 'defaultUnit' })
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#libraries`)
+      app.openSettings({ tab: 'user', anchor: 'libraries' })
     } else if (data.menuLabel === 'File.Sign out') {
       auth.send({ type: 'Log out' })
     } else if (
@@ -930,6 +931,7 @@ function ProjectLibraryOverview({
 }
 
 function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
+  const app = useApp()
   return (
     <section data-testid="home-section" {...props}>
       <div
@@ -948,6 +950,7 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
         <ActionButton
           Element="link"
           to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+          onClick={() => app.openSettings({ tab: 'user', anchor: 'libraries' })}
           iconStart={{
             icon: 'plus',
             bgClassName: '!bg-transparent',

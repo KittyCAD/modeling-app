@@ -1,3 +1,4 @@
+import { useApp } from '@src/lib/boot'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
@@ -46,6 +47,7 @@ export function HomeHeader({
   showFreeCloudProjectTrainingDisclosure = false,
   ...rest
 }: HomeHeaderProps) {
+  const app = useApp()
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
   const libraryDetailsDescription = library
     ? getProjectLibraryDetailsDescription(library)
@@ -152,6 +154,9 @@ export function HomeHeader({
               <Link
                 data-testid="project-directory-settings-link"
                 to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                onClick={() =>
+                  app.openSettings({ tab: 'user', anchor: 'libraries' })
+                }
                 className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
               >
                 {formatProjectLibraryPathForDisplay(library)}
@@ -182,6 +187,9 @@ export function HomeHeader({
               <Link
                 data-testid="project-directory-settings-link"
                 to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                onClick={() =>
+                  app.openSettings({ tab: 'user', anchor: 'libraries' })
+                }
                 className="py-1 text-white underline underline-offset-2 text-sm"
               >
                 Manage Project Libraries

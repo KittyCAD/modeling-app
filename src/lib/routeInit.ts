@@ -49,6 +49,23 @@ export type RouteInitResult<T> =
   | { kind: 'ok'; data: T }
   | { kind: 'redirect'; to: string }
 
+/**
+ * Where `/` decides the app should actually be.
+ *
+ * `/` renders nothing; it is a funnel. Saying where to go rather than
+ * *redirecting* there lets the same decision serve two callers: the React
+ * Router loader, which turns it into a `redirect`, and the `UrlRoute`, which
+ * turns it into application state. Those two want opposite things from it,
+ * which is why it cannot stay a `Response`.
+ */
+export type IndexTarget =
+  /** Desktop, or web with the cloud feature: the project list. */
+  | { kind: 'home' }
+  /** Unflagged web: the one project it is allowed to have. */
+  | { kind: 'file'; filePath: string }
+  /** `?ask-open-desktop` is present; another part of the app owns this. */
+  | { kind: 'defer' }
+
 type CanonicalWebProjectLibrary = {
   library: ProjectLibrarySetting
   projectPath: string
@@ -116,28 +133,24 @@ function fileRoutePath(filePath: string, routerSearch: string) {
  * Desktop goes home. Web goes home when the OPFS cloud flag is on, and
  * otherwise gets a default project created for it and opens that.
  */
-export async function initIndexRoute(
+export async function resolveIndexTarget(
   app: App,
   { requestUrl }: { requestUrl: string }
-): Promise<RouteInitResult<undefined>> {
+): Promise<IndexTarget> {
   const url = new URL(requestUrl)
-  const routerSearch = getRouterSearchFromRequestUrl(
-    requestUrl,
-    Boolean(window.electron)
-  )
 
-  // Desktop, redirect and return early
+  // Desktop goes to the project list.
   if (window.electron) {
-    return { kind: 'redirect', to: PATHS.HOME + routerSearch }
+    return { kind: 'home' }
   }
 
   // Let another part of the system handle the "open with web/desktop"...
   if (url.searchParams.has('ask-open-desktop')) {
-    return { kind: 'ok', data: undefined }
+    return { kind: 'defer' }
   }
 
   if (await webHomeRouteEnabled(app)) {
-    return { kind: 'redirect', to: PATHS.HOME + routerSearch }
+    return { kind: 'home' }
   }
 
   // Web, make a default project and redirect to it.
@@ -160,10 +173,36 @@ export async function initIndexRoute(
     defaultFilePath = canonicalLibrary.defaultFilePath
   }
 
-  return {
-    kind: 'redirect',
-    to: fileRoutePath(defaultFilePath, routerSearch),
+  return { kind: 'file', filePath: defaultFilePath }
+}
+
+/**
+ * The `/` route as React Router still sees it: a redirect.
+ *
+ * Thin on purpose. The decision is `resolveIndexTarget`; this only renders it
+ * as the `Response` the router wants, preserving the query string exactly as
+ * before.
+ */
+export async function initIndexRoute(
+  app: App,
+  { requestUrl }: { requestUrl: string }
+): Promise<RouteInitResult<undefined>> {
+  const target = await resolveIndexTarget(app, { requestUrl })
+  const routerSearch = getRouterSearchFromRequestUrl(
+    requestUrl,
+    Boolean(window.electron)
+  )
+
+  if (target.kind === 'home') {
+    return { kind: 'redirect', to: PATHS.HOME + routerSearch }
   }
+  if (target.kind === 'file') {
+    return {
+      kind: 'redirect',
+      to: fileRoutePath(target.filePath, routerSearch),
+    }
+  }
+  return { kind: 'ok', data: undefined }
 }
 
 /**
