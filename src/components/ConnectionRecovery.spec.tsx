@@ -56,3 +56,20 @@ test('Loading uses ConnectionRecovery for Engine manual reconnects', () => {
   fireEvent.click(screen.getByRole('button', { name: /reconnect/i }))
   expect(onReconnect).toHaveBeenCalledTimes(1)
 })
+
+test('Loading shows a terminal Engine connection error', () => {
+  render(
+    <Loading
+      showManualConnect={true}
+      manualConnectTitle="Unsupported video codec"
+      manualConnectDescription="This browser cannot receive H.264 video."
+    />
+  )
+
+  expect(
+    screen.getByRole('heading', { name: 'Unsupported video codec' })
+  ).toBeInTheDocument()
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    'This browser cannot receive H.264 video.'
+  )
+})
