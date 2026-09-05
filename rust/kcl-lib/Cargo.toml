@@ -54,7 +54,7 @@ clap = { version = "4.6.1", default-features = false, optional = true, features 
   "std",
   "derive",
 ] }
-convert_case = "0.11.0"
+convert_case = "0.12.0"
 csscolorparser = "0.8.3"
 dhat = { version = "0.3", optional = true }
 form_urlencoded = "1.2.2"
