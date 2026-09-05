@@ -525,7 +525,10 @@ export function ModelingDialogKclInput({
             id={`${inputId}-variable-checkbox`}
             data-testid={`${inputId}-variable-checkbox`}
             disabled={disabled || arg.createVariable === 'force'}
-            onClick={() => setCreateNewVariable((current) => !current)}
+            onClick={() => {
+              onChange({ source: 'edit', value: resolvedKclValue ?? value })
+              setCreateNewVariable((current) => !current)
+            }}
             className={[
               'absolute top-1/2 right-1 m-0 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm border-0 p-0 focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed',
               createNewVariable
@@ -572,6 +575,7 @@ export function ModelingDialogKclInput({
             autoComplete="off"
             spellCheck="false"
             onChange={(event) => {
+              onChange({ source: 'edit', value: resolvedKclValue ?? value })
               setHasEditedVariableName(true)
               setNewVariableName(event.target.value)
             }}
@@ -581,6 +585,7 @@ export function ModelingDialogKclInput({
                 event.key === 'Backspace' &&
                 arg.createVariable !== 'force'
               ) {
+                onChange({ source: 'edit', value: resolvedKclValue ?? value })
                 setCreateNewVariable(false)
               }
             }}
@@ -602,10 +607,11 @@ export function ModelingDialogKclInput({
   )
 }
 
-export type ModelingDialogKclChange =
-  | { source: 'edit'; value: string }
+export type ModelingDialogKclChange = {
+  source: 'edit' | 'calculation'
   // Keep the raw text while its expression is empty, invalid, or calculating.
-  | { source: 'calculation'; value: KclCommandValue | string }
+  value: KclCommandValue | string
+}
 
 export type ModelingDialogKclValidationState = {
   canSubmit: boolean

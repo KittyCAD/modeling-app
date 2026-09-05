@@ -199,6 +199,48 @@ test.describe('Modeling dialogs', { tag: '@desktop' }, () => {
     await scene.settled()
   })
 
+  for (const variableName of ['length001', 'myDepth']) {
+    test(`Creates ${variableName} from the unchanged default distance`, async ({
+      page,
+      toolbar,
+      editor,
+      scene,
+    }) => {
+      await editor.selectText('region(')
+      await toolbar.extrudeButton.click()
+
+      const dialog = page.getByTestId('modeling-dialog')
+      const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
+      const createVariable = dialog.getByTestId(
+        'modeling-dialog-kcl-input-length-variable-checkbox'
+      )
+      const nameInput = dialog.getByRole('textbox', {
+        name: 'Variable name',
+        exact: true,
+      })
+      await expect(
+        dialog.getByRole('textbox', { name: /^Distance/ })
+      ).toHaveText('5')
+      await expect(submit).toBeEnabled()
+      await createVariable.click()
+      if (variableName === 'myDepth') {
+        await nameInput.fill(variableName)
+      }
+
+      await dialog
+        .getByRole('button', { name: 'Select Profiles', exact: true })
+        .click()
+      await expect(createVariable).toHaveAttribute('aria-pressed', 'true')
+      await expect(nameInput).toHaveValue(variableName)
+      await expect(submit).toBeEnabled()
+      await submit.click()
+      await expect(dialog).not.toBeAttached()
+      await editor.expectEditor.toContain(`${variableName} = 5`)
+      await editor.expectEditor.toContain(`length = ${variableName}`)
+      await scene.settled()
+    })
+  }
+
   test('Creates and edits an extrude with native direction arguments', async ({
     page,
     toolbar,
