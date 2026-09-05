@@ -89,32 +89,39 @@ export function addShell({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const result = buildSolidsAndFacesExprs(
-    faces,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['sweep', 'compositeSolid'],
+  let solidsExpr: Expr | null = null
+  let facesExpr: Expr | null = null
+  let pathIfPipe: PathToNode | undefined
+  if (!mNodeToEdit) {
+    const result = buildSolidsAndFacesExprs(
+      faces,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+      }
+    )
+    if (err(result)) {
+      return result
     }
-  )
-  if (err(result)) {
-    return result
-  }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
-  modifiedAst = result.modifiedAst
-  if (!facesExpr) {
-    return new Error("Couldn't retrieve face from selection")
+    solidsExpr = result.solidsExpr
+    facesExpr = result.facesExpr
+    pathIfPipe = result.pathIfPipe
+    modifiedAst = result.modifiedAst
+    if (!facesExpr) {
+      return new Error("Couldn't retrieve face from selection")
+    }
   }
 
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Shell'),
     solidsExpr,
     [
-      createLabeledArg('faces', facesExpr),
+      ...(facesExpr ? [createLabeledArg('faces', facesExpr)] : []),
       createLabeledArg('thickness', valueOrVariable(thickness)),
     ]
   )
@@ -132,6 +139,7 @@ export function addShell({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
+    labeledSelectionArgNames: ['faces'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -165,6 +173,23 @@ export function addDeleteFace({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+
+  if (mNodeToEdit) {
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Delete Face'),
+      null,
+      []
+    )
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      labeledSelectionArgNames: ['faces'],
+      wasmInstance,
+    })
+    if (err(pathToNode)) return pathToNode
+    return { modifiedAst, pathToNode }
+  }
 
   // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
@@ -219,6 +244,7 @@ export function addDeleteFace({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: result.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
+    labeledSelectionArgNames: ['faces'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -283,25 +309,32 @@ export function addHole({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const result = buildSolidsAndFacesExprs(
-    face,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
+  let solidsExpr: Expr | null = null
+  let facesExpr: Expr | null = null
+  let pathIfPipe: PathToNode | undefined
+  if (!mNodeToEdit) {
+    const result = buildSolidsAndFacesExprs(
+      face,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(result)) {
+      return result
     }
-  )
-  if (err(result)) {
-    return result
-  }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
-  modifiedAst = result.modifiedAst
-  if (!facesExpr) {
-    return new Error("Couldn't retrieve face from selection")
+    solidsExpr = result.solidsExpr
+    facesExpr = result.facesExpr
+    pathIfPipe = result.pathIfPipe
+    modifiedAst = result.modifiedAst
+    if (!facesExpr) {
+      return new Error("Couldn't retrieve face from selection")
+    }
   }
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
@@ -406,7 +439,7 @@ export function addHole({
     holeCall.name,
     solidsExpr,
     [
-      createLabeledArg('face', facesExpr),
+      ...(facesExpr ? [createLabeledArg('face', facesExpr)] : []),
       createLabeledArg('cutAt', cutAtExpr),
       createLabeledArg('holeBottom', holeBottomNode),
       createLabeledArg('holeBody', holeBodyNode),
@@ -415,12 +448,6 @@ export function addHole({
     nonCodeMeta,
     modulePath
   )
-
-  if (mNodeToEdit) {
-    // The selected face can resolve to a downstream hole through last-child
-    // lookup. The solid input is not editable, so preserve the existing one.
-    call.unlabeled = null
-  }
 
   // Insert variables for labeled arguments if provided
   // Only insert cutAt variable if we used valueOrVariable (not for arrays)
@@ -512,6 +539,7 @@ export function addHole({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
+    labeledSelectionArgNames: ['face'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -801,22 +829,25 @@ export function addOffsetPlane({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const planeResult = getPlaneExprFromSelection({
-    ast: modifiedAst,
-    artifactGraph,
-    variables,
-    plane,
-    wasmInstance,
-    nodeToEdit: mNodeToEdit,
-  })
-  if (err(planeResult)) {
-    return planeResult
+  let planeExpr: Expr | null = null
+  if (!mNodeToEdit) {
+    const planeResult = getPlaneExprFromSelection({
+      ast: modifiedAst,
+      artifactGraph,
+      variables,
+      plane,
+      wasmInstance,
+    })
+    if (err(planeResult)) {
+      return planeResult
+    }
+    modifiedAst = planeResult.modifiedAst
+    planeExpr = planeResult.expr
   }
-  modifiedAst = planeResult.modifiedAst
 
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Offset plane'),
-    planeResult.expr,
+    planeExpr,
     [createLabeledArg('offset', valueOrVariable(offset))]
   )
 

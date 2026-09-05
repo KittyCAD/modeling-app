@@ -15,6 +15,7 @@ import {
 import { topLevelRange } from '@src/lang/util'
 import {
   type Artifact,
+  type ArtifactGraph,
   type PathToNode,
   assertParse,
   recast,
@@ -166,6 +167,36 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
 `
 
   describe('Testing addFillet', () => {
+    it.each([
+      'tags = [edgeTag]',
+      'edges = [{ sideFaces = [sideTag, capTag] }]',
+      'edgeRefs = [edgeRef]',
+    ])(
+      'edits scalar arguments with an unavailable %s selection',
+      async (selectionArgument) => {
+        const code = `fillet001 = fillet(body, ${selectionArgument}, radius = 1)`
+        const ast = assertParse(code, instanceInThisFile)
+        const radius = (await stringToKclExpression(
+          '2',
+          rustContextInThisFile
+        )) as KclCommandValue
+
+        const result = addFillet({
+          ast,
+          artifactGraph: new Map() as ArtifactGraph,
+          selection: { graphSelections: [], otherSelections: [] },
+          radius,
+          nodeToEdit: createPathToNodeForLastVariable(ast, false),
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(newCode.trim()).toBe(code.replace('radius = 1', 'radius = 2'))
+      }
+    )
+
     it('should add a basic fillet call on sweepEdge', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
@@ -888,18 +919,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        code.replace(
-          '  |> fillet(tags = getCommonEdge(faces = [rectangleSegmentA001, capEnd001]), radius = 2.5)',
-          `  |> fillet(
-       tags = getCommonEdge(faces = [
-         rectangleSegmentA001,
-         %.faces.capEnd001
-       ]),
-       radius = 2,
-     )`
-        )
-      )
+      expect(newCode).toContain(code.replace('radius = 2.5', 'radius = 2'))
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
