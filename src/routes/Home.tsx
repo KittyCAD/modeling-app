@@ -49,6 +49,7 @@ import {
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -56,7 +57,6 @@ import {
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
-import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -685,6 +685,9 @@ const Home = () => {
                       name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
+                        ...(selectedProjectLibrary
+                          ? { libraryId: selectedProjectLibrary.id }
+                          : {}),
                       },
                     },
                   })
