@@ -33,6 +33,7 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::KclVersion;
 use crate::execution::LegacyAngleRefactorMeta;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -939,6 +940,13 @@ impl ExecutorContext {
                         exec_state.mod_local.explicit_length_units = true;
                     }
                     if updated_angle {
+                        if exec_state.kcl_version() >= KclVersion::V3Preview {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                                    .to_owned(),
+                                annotation.as_source_ranges(),
+                            )));
+                        }
                         exec_state.warn(
                             CompilationIssue::err(
                                 annotation.as_source_range(),

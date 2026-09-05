@@ -4937,6 +4937,82 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_warns_in_legacy_kcl() {
+        for version in ["", "kclVersion = 1.0, ", "kclVersion = 2.0, "] {
+            for unit in ["deg", "rad"] {
+                let code = format!("@settings({version}defaultAngleUnit = {unit})\nx = 1\n");
+                let result = parse_execute(&code).await.unwrap();
+                let issues = result.issues();
+                assert_eq!(issues.len(), 1, "code={code}");
+                assert_eq!(issues[0].severity, Severity::Warning, "code={code}");
+                assert_eq!(
+                    issues[0].message,
+                    "The `defaultAngleUnit` setting is deprecated; use explicit units for angles"
+                );
+                assert_eq!(variable_f64(&result, "x"), 1.0);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_errors_in_kcl_v3() {
+        for settings in [
+            "@settings(kclVersion = \"3.0-preview\", defaultAngleUnit = deg)",
+            "@settings(defaultAngleUnit = rad, kclVersion = \"3.0-preview\")",
+            "@settings(defaultAngleUnit = deg)\n@settings(kclVersion = \"3.0-preview\")",
+            "@settings(kclVersion = \"3.0-preview\")\n@settings(defaultAngleUnit = rad)",
+        ] {
+            let code = format!("{settings}\nx = 1\n");
+            let Err(error) = parse_execute(&code).await else {
+                panic!("defaultAngleUnit must fail in KCL 3.0: {code}");
+            };
+            assert_eq!(
+                error.message(),
+                "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles",
+                "code={code}"
+            );
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 1);
+            assert!(code[ranges[0].start()..ranges[0].end()].contains("defaultAngleUnit"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_error_cannot_be_suppressed() {
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let code = format!(
+                "@warnings(allow = angleUnits)\n@settings(kclVersion = {version}, defaultAngleUnit = deg)\nx = 1\n"
+            );
+            let result = parse_execute(&code).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(
+                    result.unwrap_err().message(),
+                    "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                );
+            } else {
+                assert!(result.unwrap().issues().is_empty(), "code={code}");
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_in_import_uses_effective_kcl_version() {
+        let dep = "@settings(kclVersion = 2.0, defaultAngleUnit = deg)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(
+                    result.unwrap_err().message(),
+                    "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                );
+            } else {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn entry_point_kcl_version_recorded_only_for_v3() {
         let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
             .await
