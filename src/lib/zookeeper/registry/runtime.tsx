@@ -35,10 +35,6 @@ import {
   projectSession,
 } from '@src/registry/contracts/projectSession'
 import {
-  type SettingsRegistryService,
-  settingsService,
-} from '@src/registry/contracts/settings'
-import {
   type SystemIORegistryService,
   systemIOService,
 } from '@src/registry/contracts/systemIO'
@@ -58,7 +54,6 @@ type ZookeeperRuntimeServices = {
   billing: ReadonlySignal<BillingRegistryService | undefined>
   debug?: ReadonlySignal<DebugRegistryService | undefined>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
-  settings: ReadonlySignal<SettingsRegistryService | undefined>
   systemIO: ReadonlySignal<SystemIORegistryService | undefined>
 }
 
@@ -73,6 +68,7 @@ type ZookeeperActivation = {
   controller?: ZookeeperSessionController
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
+  projectId: string | undefined
   projectPath: string
 }
 
@@ -215,10 +211,11 @@ export function createZookeeperRuntime(
     const auth = services.auth.value
     const billing = services.billing.value
     const debug = services.debug?.value
-    const settings = services.settings.value
     const systemIO = services.systemIO.value
     const project = currentZdsProject.value
-    const projectPath = project?.projectIORefSignal.value.path
+    const projectRef = project?.projectIORefSignal.value
+    const projectId = projectRef?.projectId
+    const projectPath = projectRef?.path
     const kclManager = project?.executingEditor.value
     const executingFile = project?.executingFileEntry.value
     const editorReady =
@@ -232,6 +229,7 @@ export function createZookeeperRuntime(
     if (
       activation &&
       (activation.projectPath !== projectPath ||
+        activation.projectId !== projectId ||
         (kclManager !== null &&
           kclManager !== undefined &&
           activation.kclManager !== kclManager))
@@ -239,7 +237,11 @@ export function createZookeeperRuntime(
       deactivate()
     }
     const currentActivation = activation
-    if (currentActivation && currentActivation.projectPath === projectPath) {
+    if (
+      currentActivation &&
+      currentActivation.projectPath === projectPath &&
+      currentActivation.projectId === projectId
+    ) {
       if (!isLoggedIn) {
         deactivate()
         return
@@ -264,7 +266,6 @@ export function createZookeeperRuntime(
       !apiToken.trim() ||
       !auth ||
       !billing ||
-      !settings ||
       !systemIO
     ) {
       return
@@ -274,6 +275,7 @@ export function createZookeeperRuntime(
       apiToken,
       kclManager,
       project: currentZdsProject,
+      projectId,
       projectPath,
     }
     activation = next
@@ -289,8 +291,8 @@ export function createZookeeperRuntime(
           debug,
           kclManager: next.kclManager,
           project: next.project,
+          projectId: next.projectId,
           projectPath: next.projectPath,
-          settings,
           systemIO,
         })
         if (disposed || activation !== next) {
@@ -331,7 +333,10 @@ export function createZookeeperRuntime(
       stopObserver?.()
       clearTimeout(controllerLoadRetry)
       deactivate()
-      runtimeDisposal = waitForDisposals([...controllerDisposals])
+      runtimeDisposal = waitForDisposals([
+        ...controllerDisposals,
+        ...(waitingForDisposal ? [waitingForDisposal] : []),
+      ])
       return runtimeDisposal
     },
   }
@@ -372,7 +377,12 @@ export function ZookeeperPaneOutlet({
   const controller = runtime.session.value
   const projectPath = project?.path
 
-  if (!project || !controller || controller.projectPath !== projectPath) {
+  if (
+    !project ||
+    !controller ||
+    controller.projectPath !== projectPath ||
+    controller.projectId !== project.projectId
+  ) {
     return <ZookeeperPaneLoading layout={layout} onClose={onClose} />
   }
 
@@ -398,7 +408,6 @@ export const zookeeperPaneRuntimeRegistryItem = defineRegistryItemFactory(
       billing: ctx.services.signal(billingService),
       debug: ctx.services.signal(debugService),
       projectSession: ctx.services.signal(projectSession),
-      settings: ctx.services.signal(settingsService),
       systemIO: ctx.services.signal(systemIOService),
     })
 

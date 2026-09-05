@@ -31,7 +31,6 @@ import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPrompt
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { DebugRegistryService } from '@src/registry/contracts/debug'
-import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { NIL as uuidNIL } from 'uuid'
@@ -44,8 +43,8 @@ export interface ZookeeperSessionControllerDependencies {
   debug?: DebugRegistryService
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
+  projectId: string | undefined
   projectPath: string
-  settings: SettingsRegistryService
   systemIO: SystemIORegistryService
 }
 
@@ -60,6 +59,7 @@ export interface ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
   readonly isClearingChat: ReadonlySignal<boolean>
   readonly isResumingInterruptedTurn: ReadonlySignal<boolean>
+  readonly projectId: string | undefined
   readonly projectPath: string
   readonly queue: ReadonlySignal<readonly QueuedMessage[]>
   readonly showManualConnect: ReadonlySignal<boolean>
@@ -83,6 +83,7 @@ type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
 
 class SessionController implements ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
+  readonly projectId: string | undefined
   readonly projectPath: string
 
   private readonly queueSignal = signal<QueuedMessage[]>([])
@@ -111,15 +112,14 @@ class SessionController implements ZookeeperSessionController {
   private disposal: Promise<void> | undefined
   private activeSubmission: { messageId: string } | undefined
   private lastSavedConversationId: string | undefined
-  private lookupGeneration = 0
   private lookupLoaded = false
-  private lookupProjectId: string | undefined | null = null
+  private readonly persistenceOperations = new Set<Promise<void>>()
   private reconnectAfterLookup = false
   private reconnectTimer: ReturnType<typeof setTimeout> | undefined
   private resumeInterruptedTurnPending = false
   private savedConversationId: string | undefined
+  private readonly savingConversationIds = new Set<string>()
   private steeredId: string | null = null
-  private stopSettingsEffect: (() => void) | undefined
   private stopProjectEffect: (() => void) | undefined
   private wasPromptRunning = false
 
@@ -128,6 +128,7 @@ class SessionController implements ZookeeperSessionController {
 
   constructor(private readonly deps: ZookeeperSessionControllerDependencies) {
     this.apiToken = deps.apiToken
+    this.projectId = deps.projectId
     this.projectPath = deps.projectPath
     this.actor = createZookeeperManagerActor(deps.apiToken)
     if (IS_STAGING_OR_DEBUG) {
@@ -162,20 +163,14 @@ class SessionController implements ZookeeperSessionController {
       this.actor.send({ type: ZookeeperManagerTransitions.NetworkOffline })
     }
 
-    this.stopSettingsEffect = effect(() => {
-      const projectId = deps.settings.current.value.meta.id.current
-      this.startConversationLookup(projectId)
-      this.saveConversationId(this.actor.getSnapshot())
-    })
+    this.loadConversationId()
 
     this.stopProjectEffect = effect(() => {
-      const project = deps.project.value
+      const project = this.getZdsProject()
       const editor = project?.executingEditor.value
       const executingFilePath = project?.executingFileEntry.value.path
       const isReady =
-        project?.projectIORefSignal.value.path === this.projectPath &&
-        editor === deps.kclManager &&
-        executingFilePath === deps.kclManager.path
+        editor === deps.kclManager && executingFilePath === deps.kclManager.path
 
       if (!isReady) {
         return
@@ -325,17 +320,15 @@ class SessionController implements ZookeeperSessionController {
       this.active &&
       this.clearOperationGeneration === generation &&
       this.isClearingChatSignal.peek()
-    const projectId = this.lookupProjectId
+    const projectId = this.projectId
 
     try {
-      if (
-        projectId !== null &&
-        projectId !== undefined &&
-        projectId !== uuidNIL
-      ) {
-        await (
-          this.deps.conversationStore ?? zookeeperConversationStore
-        ).deleteProjectConversationId(projectId)
+      if (projectId !== undefined && projectId !== uuidNIL) {
+        await this.trackPersistence(
+          (
+            this.deps.conversationStore ?? zookeeperConversationStore
+          ).deleteProjectConversationId(projectId)
+        )
       }
     } catch (error: unknown) {
       if (!isCurrentOperation()) {
@@ -408,11 +401,9 @@ class SessionController implements ZookeeperSessionController {
     this.active = false
     this.clearOperationGeneration += 1
     this.continueCheckGeneration += 1
-    this.lookupGeneration += 1
     this.clearReconnectTimer()
     this.clearSubscription?.unsubscribe()
     this.actorSubscription?.unsubscribe()
-    this.stopSettingsEffect?.()
     this.stopProjectEffect?.()
     this.resumeInterruptedTurnPending = false
     this.isResumingInterruptedTurnSignal.value = false
@@ -434,16 +425,27 @@ class SessionController implements ZookeeperSessionController {
       this.deps.debug?.clear('zookeeperManagerActor', this.actor)
     }
     this.history.finishPending()
-    this.disposal = this.fileRequestProcessor
+    const workerDisposal = this.fileRequestProcessor
       .dispose()
       .finally(() => this.history.dispose())
+    this.disposal = Promise.allSettled([
+      workerDisposal,
+      ...this.persistenceOperations,
+    ]).then((results) => {
+      const failure = results.find((result) => result.status === 'rejected')
+      if (failure?.status === 'rejected') {
+        return Promise.reject(failure.reason)
+      }
+    })
     stopZookeeperManagerActor(this.actor)
     return this.disposal
   }
 
   private getZdsProject(): ZDSProject | undefined {
     const project = this.deps.project.value
-    return project?.projectIORefSignal.value.path === this.projectPath
+    const projectRef = project?.projectIORefSignal.value
+    return projectRef?.path === this.projectPath &&
+      projectRef.projectId === this.projectId
       ? project
       : undefined
   }
@@ -585,58 +587,50 @@ class SessionController implements ZookeeperSessionController {
   }
 
   private saveConversationId(snapshot: ZookeeperSnapshot) {
-    const projectId = this.lookupProjectId
+    const projectId = this.projectId
     const conversationId = snapshot.context.conversationId
     if (
-      projectId === null ||
+      this.isClearingChatSignal.peek() ||
       projectId === undefined ||
       projectId === uuidNIL ||
       conversationId === undefined ||
-      conversationId === this.lastSavedConversationId
+      conversationId === this.lastSavedConversationId ||
+      this.savingConversationIds.has(conversationId)
     ) {
       return
     }
 
-    this.lastSavedConversationId = conversationId
-    void (this.deps.conversationStore ?? zookeeperConversationStore)
+    this.savingConversationIds.add(conversationId)
+    const operation = (
+      this.deps.conversationStore ?? zookeeperConversationStore
+    )
       .saveProjectConversationId({ projectId, conversationId })
-      .catch(reportRejection)
+      .then(() => {
+        this.lastSavedConversationId = conversationId
+      }, reportRejection)
+      .finally(() => this.savingConversationIds.delete(conversationId))
+    void this.trackPersistence(operation)
   }
 
-  private startConversationLookup(projectId: string | undefined) {
-    if (projectId === this.lookupProjectId) {
-      return
-    }
+  private trackPersistence<T>(operation: Promise<T>): Promise<T> {
+    const completion = operation.then(
+      () => undefined,
+      () => undefined
+    )
+    this.persistenceOperations.add(completion)
+    void completion.then(() => this.persistenceOperations.delete(completion))
+    return operation
+  }
 
-    // A session belongs to one project path and, once known, one project ID.
-    // Route loading can publish the next project's settings before its path;
-    // never let that transient state remap the current actor's conversation.
-    if (
-      this.lookupProjectId !== null &&
-      this.lookupProjectId !== undefined &&
-      this.lookupProjectId !== uuidNIL
-    ) {
-      this.cancelClearForScopeChange()
-      return
-    }
-
-    if (this.lookupProjectId !== null) {
-      this.cancelClearForScopeChange()
-    }
-
-    const generation = ++this.lookupGeneration
-    this.lookupProjectId = projectId
+  private loadConversationId() {
+    const projectId = this.projectId
     this.lookupLoaded = false
     this.savedConversationId = undefined
     this.lastSavedConversationId =
       this.actor.getSnapshot().context.conversationId
 
     const finish = (conversationId: string | undefined) => {
-      if (
-        !this.active ||
-        this.lookupGeneration !== generation ||
-        this.lookupLoaded
-      ) {
+      if (!this.active || this.lookupLoaded) {
         return
       }
       this.lookupLoaded = true
@@ -653,33 +647,17 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
-    void (this.deps.conversationStore ?? zookeeperConversationStore)
+    const lookup = (this.deps.conversationStore ?? zookeeperConversationStore)
       .getProjectConversationId(projectId)
       .then(finish)
       .catch((error: unknown) => {
-        if (
-          !this.active ||
-          this.lookupGeneration !== generation ||
-          this.lookupLoaded
-        ) {
+        if (!this.active || this.lookupLoaded) {
           return
         }
         reportRejection(error)
         finish(undefined)
       })
-  }
-
-  private cancelClearForScopeChange() {
-    this.clearOperationGeneration += 1
-    this.clearSubscription?.unsubscribe()
-    this.clearSubscription = undefined
-    this.reconnectAfterLookup = false
-    if (this.isClearingChatSignal.peek()) {
-      this.isClearingChatSignal.value = false
-      const snapshot = this.actor.getSnapshot()
-      this.reconcileReconnect(snapshot)
-      this.flushQueue(snapshot)
-    }
+    void this.trackPersistence(lookup)
   }
 
   private tryConnectWhenIdle(snapshot: ZookeeperSnapshot) {
@@ -688,7 +666,7 @@ class SessionController implements ZookeeperSessionController {
       this.isClearingChatSignal.peek() ||
       this.showManualConnectSignal.peek() ||
       !this.lookupLoaded ||
-      this.lookupProjectId === uuidNIL ||
+      this.projectId === uuidNIL ||
       this.savedConversationId === uuidNIL ||
       snapshot.context.cachedSetup !== undefined
     ) {

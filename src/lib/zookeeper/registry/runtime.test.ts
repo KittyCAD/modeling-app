@@ -9,9 +9,11 @@ import type {
 import { createZookeeperRuntime } from '@src/lib/zookeeper/registry/runtime'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
-import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import { describe, expect, it, vi } from 'vitest'
+
+const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'
+const otherProjectId = 'cba9f0c5-5552-4b50-af44-0fa6fb548a3b'
 
 function deferred<T>() {
   let resolve!: (value: T) => void
@@ -24,7 +26,8 @@ function deferred<T>() {
 function createProject(
   path: string,
   ready = true,
-  providedKclManager?: KclManager
+  providedKclManager?: KclManager,
+  id = projectId
 ) {
   const filePath = `${path}/main.kcl`
   const editorPath = signal(filePath)
@@ -47,7 +50,7 @@ function createProject(
   const project = {
     executingEditor,
     executingFileEntry,
-    projectIORefSignal: signal({ path } as Project),
+    projectIORefSignal: signal({ path, projectId: id } as Project),
   } as ZDSProject
 
   return { executingEditor, executingFileEntry, kclManager, project }
@@ -75,7 +78,6 @@ function createServices({
       auth: signal({ isLoggedIn, token } as AuthRegistryService),
       billing: signal({} as BillingRegistryService),
       projectSession: signal(projectSession),
-      settings: signal({} as SettingsRegistryService),
       systemIO: signal({} as SystemIORegistryService),
     },
     isLoggedIn,
@@ -299,6 +301,34 @@ describe('Zookeeper runtime', () => {
     expect(runtime.session.value).toBe(controllers[0]?.controller)
     expect(controllers[0]?.dispose).not.toHaveBeenCalled()
     expect(loadController).toHaveBeenCalledOnce()
+
+    await runtime.dispose()
+  })
+
+  it('replaces the controller when the project ID changes at the same path', async () => {
+    const { currentProject, projectFixture, services } = createServices()
+    const { controllers, createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    const runtime = createZookeeperRuntime(services, loadController)
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+
+    currentProject.value = createProject(
+      '/project',
+      true,
+      projectFixture.kclManager,
+      otherProjectId
+    ).project
+
+    await vi.waitFor(() => {
+      expect(controllers[0]?.dispose).toHaveBeenCalledOnce()
+      expect(createZookeeperSessionController).toHaveBeenCalledTimes(2)
+    })
+    expect(createZookeeperSessionController).toHaveBeenLastCalledWith(
+      expect.objectContaining({ projectId: otherProjectId })
+    )
 
     await runtime.dispose()
   })
@@ -583,5 +613,42 @@ describe('Zookeeper runtime', () => {
     })
 
     await secondRuntime.dispose()
+  })
+
+  it('drains an inherited session when disposed before activation', async () => {
+    const { services } = createServices()
+    const drain = deferred<undefined>()
+    const firstLoader = createControllerLoader(() => drain.promise)
+    const firstRuntime = createZookeeperRuntime(
+      services,
+      firstLoader.loadController
+    )
+
+    await vi.waitFor(() => {
+      expect(
+        firstLoader.createZookeeperSessionController
+      ).toHaveBeenCalledOnce()
+    })
+    const firstDisposal = firstRuntime.dispose()
+
+    const secondLoader = createControllerLoader()
+    const secondRuntime = createZookeeperRuntime(
+      services,
+      secondLoader.loadController
+    )
+    await Promise.resolve()
+    expect(secondLoader.loadController).not.toHaveBeenCalled()
+
+    const secondDisposal = secondRuntime.dispose()
+    let secondDisposalFinished = false
+    void secondDisposal.then(() => {
+      secondDisposalFinished = true
+    })
+    await Promise.resolve()
+    expect(secondDisposalFinished).toBe(false)
+
+    drain.resolve(undefined)
+    await Promise.all([firstDisposal, secondDisposal])
+    expect(secondDisposalFinished).toBe(true)
   })
 })

@@ -175,7 +175,6 @@ function deferred<T>() {
 }
 
 const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'
-const otherProjectId = 'cba9f0c5-5552-4b50-af44-0fa6fb548a3b'
 const projectPath = '/projects/bracket'
 const interruptedConversation = {
   exchanges: [
@@ -210,9 +209,6 @@ function createHarness({
     getProjectConversationId: vi.fn().mockReturnValue(storeGet),
     saveProjectConversationId: vi.fn().mockResolvedValue(undefined),
   }
-  const settings = signal({
-    meta: { id: { current: initialProjectId } },
-  })
   const project: Project = {
     children: [],
     default_file: `${projectPath}/main.kcl`,
@@ -221,6 +217,7 @@ function createHarness({
     metadata: null,
     name: 'bracket',
     path: projectPath,
+    projectId: initialProjectId,
     readWriteAccess: true,
   }
   const loaderFile = {
@@ -257,8 +254,8 @@ function createHarness({
     conversationStore,
     kclManager,
     project: projectSignal,
+    projectId: initialProjectId,
     projectPath,
-    settings: { current: settings },
     systemIO: { actor: {} },
   } as unknown as ZookeeperSessionControllerDependencies
   const controller = createZookeeperSessionController(dependencies)
@@ -273,7 +270,6 @@ function createHarness({
     kclManager,
     project,
     projectSignal,
-    settings,
     zdsProject,
   }
 }
@@ -692,6 +688,7 @@ describe('Zookeeper session controller', () => {
 
     deletion.resolve(undefined)
     await clearPromise
+    lookup.resolve(undefined)
 
     expect(conversationStore.deleteProjectConversationId).toHaveBeenCalledWith(
       projectId
@@ -731,6 +728,7 @@ describe('Zookeeper session controller', () => {
     })
 
     expect(controller.isClearingChat.value).toBe(true)
+    expect(conversationStore.saveProjectConversationId).not.toHaveBeenCalled()
 
     deletion.resolve(undefined)
     await clearPromise
@@ -792,31 +790,6 @@ describe('Zookeeper session controller', () => {
     })
   })
 
-  it('restarts queued work when a settings scope change cancels clear', async () => {
-    const oldCollection = deferred<[]>()
-    const deletion = deferred<undefined>()
-    projectFilesMocks.collect.mockReturnValueOnce(oldCollection.promise)
-    const { controller, conversationStore, settings } = createHarness({
-      actorState: 'ready-await',
-    })
-    vi.mocked(
-      conversationStore.deleteProjectConversationId
-    ).mockReturnValueOnce(deletion.promise)
-
-    controller.sendOrQueue('keep this prompt', undefined, [])
-    const clear = controller.clearConversation()
-    settings.value = {
-      meta: { id: { current: otherProjectId } },
-    }
-
-    await vi.waitFor(() => {
-      expect(projectFilesMocks.collect).toHaveBeenCalledTimes(2)
-    })
-
-    deletion.resolve(undefined)
-    await clear
-  })
-
   it('cancels an interrupted-turn collection when clear starts', async () => {
     const collectedFiles = deferred<[]>()
     const deletion = deferred<undefined>()
@@ -840,54 +813,6 @@ describe('Zookeeper session controller', () => {
 
     deletion.resolve(undefined)
     await clearPromise
-  })
-
-  it('does not finish clearing after the project settings scope changes', async () => {
-    const deletion = deferred<undefined>()
-    const { actor, controller, conversationStore, settings } = createHarness()
-    vi.mocked(
-      conversationStore.deleteProjectConversationId
-    ).mockReturnValueOnce(deletion.promise)
-
-    const clearPromise = controller.clearConversation()
-    settings.value = {
-      meta: { id: { current: otherProjectId } },
-    }
-    deletion.resolve(undefined)
-    await clearPromise
-
-    expect(controller.isClearingChat.value).toBe(false)
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
-    ).toHaveLength(0)
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
-    ).toHaveLength(0)
-  })
-
-  it('keeps conversation persistence bound to the controller project', async () => {
-    const { actor, controller, conversationStore, settings } = createHarness({
-      actorContext: { conversationId: 'conversation-a' },
-    })
-    await flushPromises()
-    vi.mocked(conversationStore.saveProjectConversationId).mockClear()
-
-    settings.value = {
-      meta: { id: { current: otherProjectId } },
-    }
-    actor.emit('other', { conversationId: 'conversation-b' })
-    await controller.clearConversation()
-
-    expect(conversationStore.getProjectConversationId).not.toHaveBeenCalledWith(
-      otherProjectId
-    )
-    expect(conversationStore.saveProjectConversationId).toHaveBeenCalledWith({
-      projectId,
-      conversationId: 'conversation-b',
-    })
-    expect(conversationStore.deleteProjectConversationId).toHaveBeenCalledWith(
-      projectId
-    )
   })
 
   it('drops a stale ContinueCheck after project ownership changes', async () => {
@@ -1033,9 +958,54 @@ describe('Zookeeper session controller', () => {
     ).toHaveLength(1)
   })
 
+  it('retries a failed conversation save', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const failedSave = deferred<undefined>()
+    const { actor, conversationStore } = createHarness()
+    vi.mocked(conversationStore.saveProjectConversationId)
+      .mockReturnValueOnce(failedSave.promise)
+      .mockResolvedValue(undefined)
+
+    actor.emit('other', { conversationId: 'conversation-id' })
+    failedSave.reject(new Error('save failed'))
+    await flushPromises()
+    actor.emit('other', { conversationId: 'conversation-id' })
+
+    expect(conversationStore.saveProjectConversationId).toHaveBeenCalledTimes(2)
+    consoleError.mockRestore()
+  })
+
+  it('drains pending conversation persistence on dispose', async () => {
+    const save = deferred<undefined>()
+    const deletion = deferred<undefined>()
+    const { actor, controller, conversationStore } = createHarness()
+    vi.mocked(conversationStore.saveProjectConversationId).mockReturnValueOnce(
+      save.promise
+    )
+    vi.mocked(
+      conversationStore.deleteProjectConversationId
+    ).mockReturnValueOnce(deletion.promise)
+
+    actor.emit('other', { conversationId: 'conversation-id' })
+    const clear = controller.clearConversation()
+    const disposal = controller.dispose()
+    let disposed = false
+    void disposal.then(() => {
+      disposed = true
+    })
+
+    save.resolve(undefined)
+    await flushPromises()
+    expect(disposed).toBe(false)
+
+    deletion.resolve(undefined)
+    await Promise.all([clear, disposal])
+    expect(disposed).toBe(true)
+  })
+
   it('cancels subscriptions, workers, reconnects, and active billing on dispose', async () => {
     vi.useFakeTimers()
-    const { actor, billingSend, controller, conversationStore, settings } =
+    const { actor, billingSend, controller, conversationStore } =
       createHarness()
     actor.emit('other', {
       abruptlyClosed: true,
@@ -1048,9 +1018,6 @@ describe('Zookeeper session controller', () => {
     billingSend.mockClear()
 
     const disposal = controller.dispose()
-    settings.value = {
-      meta: { id: { current: otherProjectId } },
-    }
     online = false
     window.dispatchEvent(new Event('offline'))
     vi.advanceTimersByTime(3000)
