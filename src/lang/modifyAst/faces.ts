@@ -132,6 +132,7 @@ export function addShell({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
+    labeledSelectionArgNames: ['faces'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -219,6 +220,7 @@ export function addDeleteFace({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: result.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
+    labeledSelectionArgNames: ['faces'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -512,6 +514,7 @@ export function addHole({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
+    labeledSelectionArgNames: ['face'],
     wasmInstance,
   })
   if (err(pathToNode)) {

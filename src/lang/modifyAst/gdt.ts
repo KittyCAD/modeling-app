@@ -12,7 +12,7 @@ import {
   createPoint2dExpression,
   deduplicateFaceExprs,
   insertVariableAndOffsetPathToNode,
-  setCallInAst,
+  setCallInAst as setBaseCallInAst,
 } from '@src/lang/modifyAst'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -25,6 +25,21 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+const GDT_LABELED_SELECTION_ARG_NAMES = [
+  'faces',
+  'edges',
+  'from',
+  'to',
+  'face',
+] as const
+
+function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
+  return setBaseCallInAst({
+    ...args,
+    labeledSelectionArgNames: GDT_LABELED_SELECTION_ARG_NAMES,
+  })
+}
 
 function isProfileEdgeArtifact(
   artifact: Selections['graphSelections'][number]['artifact']

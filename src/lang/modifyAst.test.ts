@@ -30,7 +30,7 @@ describe('editing calls in place', () => {
     expect(replacementCall.unlabeled).toBeNull()
   })
 
-  it('uses a reconstructed unlabeled argument when available', () => {
+  it('preserves an existing unlabeled argument when reconstruction differs', () => {
     const existingCall = createCallExpressionStdLibKw(
       'translate',
       createLocalName('oldBody'),
@@ -45,7 +45,97 @@ describe('editing calls in place', () => {
 
     replaceCallInPlace(existingCall, replacementCall)
 
-    expect(existingCall.unlabeled).toEqual(replacementInput)
+    expect(existingCall.unlabeled).toEqual(createLocalName('oldBody'))
+  })
+
+  it('uses an equivalent reconstructed unlabeled argument', () => {
+    const existingInput = createLocalName('body')
+    existingInput.start = 10
+    existingInput.end = 14
+    existingInput.name.start = 10
+    existingInput.name.end = 14
+    const existingCall = createCallExpressionStdLibKw(
+      'translate',
+      existingInput,
+      [createLabeledArg('x', createLocalName('oldX'))]
+    )
+    const replacementInput = createLocalName('body')
+    const replacementCall = createCallExpressionStdLibKw(
+      'translate',
+      replacementInput,
+      [createLabeledArg('x', createLocalName('newX'))]
+    )
+
+    replaceCallInPlace(existingCall, replacementCall)
+
+    expect(existingCall.unlabeled).toBe(replacementInput)
+    expect(existingCall.arguments).toEqual(replacementCall.arguments)
+  })
+
+  it('preserves changed, removed, and added labeled selection arguments', () => {
+    const existingTools = createLabeledArg(
+      'tools',
+      createLocalName('existingTools')
+    )
+    const existingDirection = createLabeledArg(
+      'direction',
+      createLocalName('existingDirection')
+    )
+    const replacementMerge = createLabeledArg(
+      'merge',
+      createLocalName('replacementMerge')
+    )
+    const existingCall = createCallExpressionStdLibKw('split', null, [
+      existingTools,
+      existingDirection,
+      createLabeledArg('merge', createLocalName('existingMerge')),
+    ])
+    const replacementCall = createCallExpressionStdLibKw('split', null, [
+      createLabeledArg('tools', createLocalName('differentTools')),
+      createLabeledArg('to', createLocalName('addedTarget')),
+      replacementMerge,
+    ])
+
+    replaceCallInPlace(existingCall, replacementCall, [
+      'tools',
+      'direction',
+      'to',
+    ])
+
+    expect(
+      existingCall.arguments.find((arg) => arg.label?.name === 'tools')
+    ).toEqual(existingTools)
+    expect(
+      existingCall.arguments.find((arg) => arg.label?.name === 'direction')
+    ).toEqual(existingDirection)
+    expect(
+      existingCall.arguments.find((arg) => arg.label?.name === 'to')
+    ).toBeUndefined()
+    expect(
+      existingCall.arguments.find((arg) => arg.label?.name === 'merge')
+    ).toBe(replacementMerge)
+  })
+
+  it('uses an equivalent reconstructed labeled selection argument', () => {
+    const existingSelection = createLocalName('tool')
+    existingSelection.start = 10
+    existingSelection.end = 14
+    existingSelection.name.start = 10
+    existingSelection.name.end = 14
+    const existingCall = createCallExpressionStdLibKw('split', null, [
+      createLabeledArg('tools', existingSelection),
+    ])
+    const replacementSelection = createLabeledArg(
+      'tools',
+      createLocalName('tool')
+    )
+    const replacementCall = createCallExpressionStdLibKw('split', null, [
+      replacementSelection,
+    ])
+
+    replaceCallInPlace(existingCall, replacementCall, ['tools'])
+
+    expect(existingCall.arguments[0]).toBe(replacementSelection)
   })
 
   it('recognizes different calls in the same pipe', () => {

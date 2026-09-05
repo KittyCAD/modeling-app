@@ -1308,15 +1308,110 @@ export function pathsReferToSamePipe(
   )
 }
 
+const AST_METADATA_KEYS = new Set([
+  'start',
+  'end',
+  'moduleId',
+  'commentStart',
+  'digest',
+  'outerAttrs',
+  'preComments',
+  'nonCodeMeta',
+])
+
+function areAstValuesEquivalent(first: unknown, second: unknown): boolean {
+  if (Object.is(first, second)) {
+    return true
+  }
+
+  if (isArray(first) || isArray(second)) {
+    return (
+      isArray(first) &&
+      isArray(second) &&
+      first.length === second.length &&
+      first.every((value, index) =>
+        areAstValuesEquivalent(value, second[index])
+      )
+    )
+  }
+
+  if (
+    !first ||
+    !second ||
+    typeof first !== 'object' ||
+    typeof second !== 'object'
+  ) {
+    return false
+  }
+
+  const firstRecord = first as Record<string, unknown>
+  const secondRecord = second as Record<string, unknown>
+  const keys = new Set([
+    ...Object.keys(firstRecord),
+    ...Object.keys(secondRecord),
+  ])
+
+  for (const key of keys) {
+    if (AST_METADATA_KEYS.has(key)) {
+      continue
+    }
+    if (!areAstValuesEquivalent(firstRecord[key], secondRecord[key])) {
+      return false
+    }
+  }
+
+  return true
+}
+
 export function replaceCallInPlace(
   existingCall: CallExpressionKw,
-  replacementCall: CallExpressionKw
+  replacementCall: CallExpressionKw,
+  labeledSelectionArgNames: readonly string[] = []
 ) {
+  // Selection changes are not rollback-safe yet. Only trust reconstructed
+  // selections when they are equivalent to the existing ones.
   const unlabeled =
-    replacementCall.unlabeled === null
+    replacementCall.unlabeled === null ||
+    !areAstValuesEquivalent(existingCall.unlabeled, replacementCall.unlabeled)
       ? structuredClone(existingCall.unlabeled)
       : replacementCall.unlabeled
-  Object.assign(existingCall, replacementCall, { unlabeled })
+
+  const args = [...replacementCall.arguments]
+  for (const label of labeledSelectionArgNames) {
+    const existingArgIndex = existingCall.arguments.findIndex(
+      (arg) => arg.label?.name === label
+    )
+    const replacementArgIndex = args.findIndex(
+      (arg) => arg.label?.name === label
+    )
+    const existingArg = existingCall.arguments[existingArgIndex]
+    const replacementArg = args[replacementArgIndex]
+
+    if (existingArg === undefined) {
+      if (replacementArgIndex !== -1) {
+        args.splice(replacementArgIndex, 1)
+      }
+      continue
+    }
+
+    if (replacementArg === undefined) {
+      args.splice(
+        Math.min(existingArgIndex, args.length),
+        0,
+        structuredClone(existingArg)
+      )
+      continue
+    }
+
+    if (!areAstValuesEquivalent(existingArg.arg, replacementArg.arg)) {
+      args[replacementArgIndex] = structuredClone(existingArg)
+    }
+  }
+
+  Object.assign(existingCall, replacementCall, {
+    unlabeled,
+    arguments: args,
+  })
 }
 
 export function setCallInAst({
@@ -1325,6 +1420,7 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  labeledSelectionArgNames,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1332,6 +1428,7 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  labeledSelectionArgNames?: readonly string[]
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
@@ -1353,7 +1450,7 @@ export function setCallInAst({
       return result
     }
 
-    replaceCallInPlace(result.node, call)
+    replaceCallInPlace(result.node, call, labeledSelectionArgNames)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
     const pipe = getNodeFromPath<PipeExpression>(
