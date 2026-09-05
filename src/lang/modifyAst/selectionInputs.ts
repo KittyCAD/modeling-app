@@ -10,6 +10,7 @@ import {
   getNodeFromPath,
   getVariableExprsFromSelection,
 } from '@src/lang/queryAst'
+import type { GetVariableExprsOptions } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   Expr,
@@ -21,10 +22,6 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-
-type VariableExprsOptions = NonNullable<
-  Parameters<typeof getVariableExprsFromSelection>[4]
->
 
 export type SelectionInputPlan = {
   exprs: Expr[]
@@ -43,23 +40,32 @@ export function resolveSelectionInputPlan({
   options = {},
   materializePipes = 'when-multiple',
   variablePrefix = KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+  nodeToEdit,
 }: {
   selection: Selections
   artifactGraph: ArtifactGraph
   ast: Node<Program>
   wasmInstance: ModuleType
-  options?: VariableExprsOptions
+  options?: GetVariableExprsOptions
   materializePipes?: 'always' | 'when-multiple'
   variablePrefix?: string
+  nodeToEdit?: PathToNode
 }): Error | SelectionInputPlan {
   const aggregate = getVariableExprsFromSelection(
     selection,
     artifactGraph,
     ast,
     wasmInstance,
+    nodeToEdit,
     options
   )
   if (err(aggregate)) {
+    return aggregate
+  }
+
+  // Editing still reconstructs selections for dialog defaults and future true
+  // selection edits, but must not materialize or otherwise rewrite those inputs.
+  if (nodeToEdit) {
     return aggregate
   }
 
@@ -81,6 +87,7 @@ export function resolveSelectionInputPlan({
       artifactGraph,
       ast,
       wasmInstance,
+      undefined,
       options
     )
     if (err(input)) {
