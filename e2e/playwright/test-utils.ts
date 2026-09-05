@@ -964,7 +964,8 @@ export async function setup(
   context: BrowserContext,
   page: Page,
   testInfo?: TestInfo,
-  userFeatures: readonly Feature[] = []
+  userFeatures: readonly Feature[] = [],
+  { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
 ) {
   const testProjectSettings =
     TEST_SETTINGS.project &&
@@ -1009,7 +1010,7 @@ export async function setup(
         settings: {
           ...TEST_SETTINGS,
           plugins: playwrightPluginSettings({
-            cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+            cloudSyncEnabled,
             zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,

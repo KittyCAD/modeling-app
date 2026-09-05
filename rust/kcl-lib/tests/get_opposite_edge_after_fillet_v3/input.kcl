@@ -1,0 +1,17 @@
+// Under KCL 3.0, fillets and chamfers are sent to the engine immediately, in
+// order with other modeling commands. The fillet consumes the edge tagged
+// seg01, so looking up that edge afterwards is an engine error. Under earlier
+// KCL versions, edge cuts were deferred until the end of the program and this
+// lookup succeeded. To do this under KCL 3.0, look up the opposite edge before
+// the fillet and store it in a variable.
+@settings(kclVersion = "3.0-preview")
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10], tag = $seg01)
+  |> line(end = [-10, 0])
+  |> close()
+extrude001 = extrude(sketch001, length = 5)
+  |> fillet(radius = 1, tags = [seg01])
+  |> chamfer(length = 1, tags = [getOppositeEdge(seg01)])
