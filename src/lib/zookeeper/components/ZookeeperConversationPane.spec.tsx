@@ -1,6 +1,12 @@
+import {
+  CMD_GROUP_QUERY_PARAM,
+  CMD_NAME_QUERY_PARAM,
+  LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+} from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import type { ReactNode } from 'react'
+import { MemoryRouter, useSearchParams } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
 import { beforeAll, describe, expect, test, vi } from 'vitest'
 import { createActor } from 'xstate'
@@ -39,8 +45,8 @@ import type {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   ZookeeperManagerStates,
-  zookeeperManagerMachine,
   ZookeeperManagerTransitions,
+  zookeeperManagerMachine,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
 
@@ -351,6 +357,29 @@ type RenderPaneOptions = {
   sendBillingUpdate?: () => void
   sendBillingUsageStarted?: () => void
   sendBillingUsageEnded?: () => void
+  initialEntries?: string[]
+  queryParamConsumer?: ReactNode
+}
+
+const GenericCommandQueryConsumer = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          const newSearchParams = new URLSearchParams(searchParams)
+          newSearchParams.delete(CMD_NAME_QUERY_PARAM)
+          newSearchParams.delete(CMD_GROUP_QUERY_PARAM)
+          setSearchParams(newSearchParams)
+        }}
+      >
+        Consume generic command
+      </button>
+      <output data-testid="query-params">{searchParams.toString()}</output>
+    </>
+  )
 }
 
 const createPaneElement = ({
@@ -371,9 +400,12 @@ const createPaneElement = ({
   sendBillingUpdate = vi.fn(),
   sendBillingUsageStarted = vi.fn(),
   sendBillingUsageEnded = vi.fn(),
+  initialEntries = ['/'],
+  queryParamConsumer = undefined,
 }: RenderPaneOptions = {}) => {
   return (
-    <MemoryRouter>
+    <MemoryRouter initialEntries={initialEntries}>
+      {queryParamConsumer}
       <ZookeeperConversationPane
         zookeeperManagerActor={zookeeperManagerActor as any}
         conversationStore={conversationStore}
@@ -435,6 +467,36 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('waits for generic command params before consuming a deep-link prompt', async () => {
+    const prompt = 'Make a cube'
+    const initialSearchParams = new URLSearchParams([
+      [CMD_NAME_QUERY_PARAM, 'set-layout'],
+      [CMD_GROUP_QUERY_PARAM, 'application'],
+      [LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt],
+    ]).toString()
+
+    renderPane({
+      initialEntries: [`/?${initialSearchParams}`],
+      queryParamConsumer: <GenericCommandQueryConsumer />,
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('ml-ephant-conversation-input')).toHaveValue(
+        prompt
+      )
+    })
+    expect(screen.getByTestId('query-params')).toHaveTextContent(
+      initialSearchParams
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Consume generic command' })
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('query-params')).toHaveTextContent(/^$/)
+    })
+  })
+
   test('restores an interrupted conversation but waits for the user to resume it', async () => {
     const projectRoot = fsZds.join(
       '/tmp',
