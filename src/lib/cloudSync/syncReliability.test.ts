@@ -102,6 +102,7 @@ describe('cloud sync reliability', () => {
   afterEach(async () => {
     setCloudSyncOpenedProject(undefined)
     configureCloudSyncEngine({ enabled: false })
+    vi.useRealTimers()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })
@@ -119,6 +120,7 @@ describe('cloud sync reliability', () => {
       projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
     ])
     installFetchMock()
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
 
     // A direct browser reload can restore the project path before project
     // library ownership has been resolved.
@@ -133,15 +135,21 @@ describe('cloud sync reliability', () => {
 
     await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
 
-    await vi.waitFor(() => {
-      expect(
-        fetchMock.mock.calls.filter(
-          ([input, init]) =>
-            getFetchUrl(input).startsWith(remoteProjectUrl) &&
-            getFetchMethod(input, init) === 'PUT'
-        )
-      ).toHaveLength(1)
-    })
+    const putCalls = () =>
+      fetchMock.mock.calls.filter(
+        ([input, init]) =>
+          getFetchUrl(input).startsWith(remoteProjectUrl) &&
+          getFetchMethod(input, init) === 'PUT'
+      )
+
+    // The write notification replaced configureCloudSyncEngine's immediate
+    // timer with the normal 2.5 second write debounce.
+    expect(putCalls()).toHaveLength(0)
+    await vi.advanceTimersByTimeAsync(1_000)
+    expect(putCalls()).toHaveLength(0)
+    await vi.advanceTimersByTimeAsync(1_500)
+    vi.useRealTimers()
+    await vi.waitFor(() => expect(putCalls()).toHaveLength(1))
     await expect(getAllOutboxEntries()).resolves.toEqual([])
   })
 
