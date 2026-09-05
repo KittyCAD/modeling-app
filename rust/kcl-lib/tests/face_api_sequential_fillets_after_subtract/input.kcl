@@ -1,0 +1,82 @@
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.99mm, var 6.13mm], end = [var -8.31mm, var 6.13mm])
+  line2 = line(start = [var -13.56mm, var 0.65mm], end = [var -8.31mm, var -4.82mm])
+  lineOfInterest = line(start = [var -8.31mm, var -4.82mm], end = [var 4.99mm, var -4.82mm])
+  coincident([line2.end, lineOfInterest.start])
+  horizontal(line1)
+  horizontal(lineOfInterest)
+  arc2 = arc(start = [var 4.99mm, var -4.82mm], end = [var 4.99mm, var 6.13mm], center = [var 4.99mm, var 0.65mm])
+  coincident([arc2.end, line1.start])
+  coincident([arc2.start, lineOfInterest.end])
+  tangent([lineOfInterest, arc2])
+  tangent([line1, arc2])
+  circle1 = circle(start = [var 6.18mm, var 2.16mm], center = [var 4.99mm, var 0.65mm])
+  coincident([circle1.center, arc2.center])
+  line4 = line(start = [var -13.56mm, var 0.65mm], end = [var -8.31mm, var 6.13mm])
+  coincident([line1.end, line4.end])
+  coincident([line2.start, line4.start])
+  vertical([line4.end, lineOfInterest.start])
+  equalLength([line2, line4])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [0, 0], sketch = sketch001)
+extrude001 = extrude(
+  region001,
+  length = 5,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+
+sketch002 = sketch(on = XZ) {
+  faceCutSeg = line(start = [var 4.54mm, var 11.75mm], end = [var 0mm, var -6.89mm])
+  vertical([faceCutSeg.end, ORIGIN])
+  line2 = line(start = [var 0mm, var -6.89mm], end = [var -3.23mm, var -13.13mm])
+  coincident([faceCutSeg.end, line2.start])
+  line3 = line(start = [var -3.23mm, var -13.13mm], end = [var -5.17mm, var 9.58mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -5.17mm, var 9.58mm], end = [var 4.54mm, var 11.75mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, faceCutSeg.start])
+  vertical([line2.start, ORIGIN])
+}
+hidden002 = hide(sketch002)
+region002 = region(segments = [sketch002.faceCutSeg, sketch002.line2], direction = CW)
+extrude002 = extrude(
+  region002,
+  length = 200,
+  symmetric = true,
+  method = NEW,
+)
+solid001 = subtract(extrude001, tools = extrude002)
+
+fillet001 = fillet(
+  solid001,
+  edges = [
+    {
+      sideFaces = [
+        region001.tags.line1,
+        region002.tags.faceCutSeg
+      ],
+      endFaces = [
+        region001.tags.arc2,
+        region001.tags.line4
+      ]
+    }
+  ],
+  radius = 1,
+)
+fillet002 = fillet(
+  solid001,
+  edges = [
+    {
+      sideFaces = [
+        region001.tags.lineOfInterest,
+        capEnd001
+      ],
+    }
+  ],
+  radius = 1.01,
+)
+rotate(solid001, yaw = -50deg)
