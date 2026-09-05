@@ -9,14 +9,12 @@ import {
   addLoft,
   addRevolve,
   addSweep,
-  retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import {
   type ArtifactGraph,
   type Artifact,
   type Name,
-  type PathToNode,
   type Program,
   type SourceRange,
   assertParse,
@@ -3022,20 +3020,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
         (a) => a.type === 'segment'
       )
       const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
-      const nodeToEdit: PathToNode = [
-        ['body', ''],
-        [1, 'index'],
-        ['expression', 'ExpressionStatement'],
-        ['body', 'PipeExpression'],
-        [1, 'index'],
-      ]
       const result = getAxisExpression(
         undefined,
         edge,
         ast,
         instanceInThisFile,
-        artifactGraph,
-        nodeToEdit
+        artifactGraph
       )
       if (err(result)) throw result
       expect(result.generatedAxis.type).toEqual('Name')
@@ -3054,123 +3044,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
         instanceInThisFile
       )
       expect(result).toBeInstanceOf(Error)
-    })
-  })
-
-  describe('Testing retrieveAxisOrEdgeSelectionsFromOpArg', () => {
-    it.each(['X', 'Y', 'Z'])(
-      'should return axis selection from axis op argument %s',
-      async (axis) => {
-        const helixCode = `helix001 = helix(
-  axis = ${axis},
-  revolutions = 1,
-  angleStart = 0,
-  radius = 1,
-  length = 1,
-)`
-        const ast = assertParse(helixCode, instanceInThisFile)
-        const { artifactGraph, operations } = await enginelessExecutor(
-          ast,
-          rustContextInThisFile
-        )
-        const op = getAllOperations(operations).find(
-          (o) => o.type === 'StdLibCall' && o.name === 'helix'
-        )
-        if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
-          throw new Error('Helix operation not found')
-        }
-
-        const result = retrieveAxisOrEdgeSelectionsFromOpArg(
-          op.labeledArgs.axis,
-          artifactGraph
-        )
-        if (err(result)) throw result
-        expect(result.axisOrEdge).toEqual('Axis')
-        expect(result.axis).toEqual(axis)
-        expect(result.edge).toBeUndefined()
-      }
-    )
-
-    it('should return edge selection from axis op argument', async () => {
-      const helixCode = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = 1, tag = $seg01)
-helix001 = helix(
-  axis = seg01,
-  revolutions = 1,
-  angleStart = 0,
-  radius = 1,
-)`
-      const ast = assertParse(helixCode, instanceInThisFile)
-      const { artifactGraph, operations } = await enginelessExecutor(
-        ast,
-        rustContextInThisFile
-      )
-      const op = getAllOperations(operations).find(
-        (o) => o.type === 'StdLibCall' && o.name === 'helix'
-      )
-      if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
-        throw new Error('Helix operation not found')
-      }
-      const result = retrieveAxisOrEdgeSelectionsFromOpArg(
-        op.labeledArgs.axis,
-        artifactGraph
-      )
-      if (err(result)) throw result
-      const segId = [...artifactGraph.values()].find(
-        (a) => a.type === 'segment'
-      )
-      expect(result.axisOrEdge).toEqual('Edge')
-      expect(result.edge).toBeDefined()
-      expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
-      expect(result.axis).toBeUndefined()
-    })
-
-    it('should return edge selection from member-expression axis op argument', async () => {
-      const revolveCode = `sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
-  line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
-  line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
-  line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line4.start])
-  coincident([line4.end, line1.start])
-  parallel([line2, line4])
-  parallel([line3, line1])
-  perpendicular([line1, line2])
-  horizontal(line3)
-  line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])
-}
-region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
-revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
-      const ast = assertParse(revolveCode, instanceInThisFile)
-      const { artifactGraph, operations } = await enginelessExecutor(
-        ast,
-        rustContextInThisFile
-      )
-      const op = getAllOperations(operations).find(
-        (o) => o.type === 'StdLibCall' && o.name === 'revolve'
-      )
-      if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.axis) {
-        throw new Error('Revolve operation not found')
-      }
-      const result = retrieveAxisOrEdgeSelectionsFromOpArg(
-        op.labeledArgs.axis,
-        artifactGraph
-      )
-      if (err(result)) throw result
-      const segId = [...artifactGraph.values()].findLast(
-        (a) => a.type === 'segment'
-      )
-      if (!segId) throw new Error('Segment artifact not found')
-      const edgeSelection = result.edge?.graphSelections[0]
-      if (!edgeSelection) throw new Error('Edge selection not found')
-      if (!edgeSelection.artifact) throw new Error('Edge artifact not found')
-      expect(result.axisOrEdge).toEqual('Edge')
-      expect(result.edge).toBeDefined()
-      expect(edgeSelection.artifact.id).toEqual(segId.id)
-      expect(result.axis).toBeUndefined()
     })
   })
 

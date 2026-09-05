@@ -1,6 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
@@ -43,7 +42,6 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
-  getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
 import type {
@@ -128,34 +126,36 @@ export function addFillet({
   // 2. Prepare unlabeled and labeled arguments
   // Group selections by body and add all tags first (before variable insertion)
   // This must happen before insertVariableAndOffsetPathToNode because that invalidates artifactGraph paths
-  const bodyData = groupSelectionsByBodyAndAddTags(
-    selection,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
-  )
-  if (err(bodyData)) return bodyData
-  let bodies = bodyData.bodies
-  modifiedAst = bodyData.modifiedAst
+  let bodySelections: Array<BodySelectionData | undefined>
+  if (mNodeToEdit) {
+    bodySelections = [undefined]
+  } else {
+    const bodyData = groupSelectionsByBodyAndAddTags(
+      selection,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (err(bodyData)) return bodyData
+    let bodies = bodyData.bodies
+    modifiedAst = bodyData.modifiedAst
 
-  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selection)
-  if (primitiveEdgeSelections.length > 0) {
-    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
-      {
+    const primitiveEdgeSelections = getPrimitiveEdgeSelections(selection)
+    if (primitiveEdgeSelections.length > 0) {
+      const primitiveEdgeResult = insertPrimitiveEdgeVariables({
         primitiveEdgeSelections,
         bodies,
         modifiedAst,
         artifactGraph,
         wasmInstance,
-        nodeToEdit: mNodeToEdit,
-      }
-    )
-    if (err(primitiveEdgeResult)) return primitiveEdgeResult
-    bodies = primitiveEdgeResult.bodies
-  }
-  if (bodies.size === 0) {
-    return new Error('No edges found in the selection')
+      })
+      if (err(primitiveEdgeResult)) return primitiveEdgeResult
+      bodies = primitiveEdgeResult.bodies
+    }
+    if (bodies.size === 0) {
+      return new Error('No edges found in the selection')
+    }
+    bodySelections = [...bodies.values()]
   }
 
   // Insert variables for labeled arguments if provided
@@ -171,7 +171,7 @@ export function addFillet({
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
-  for (const data of bodies.values()) {
+  for (const data of bodySelections) {
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
@@ -183,9 +183,9 @@ export function addFillet({
       : []
     const call = createCallExpressionStdLibKw(
       modelingStdLibCommandName('Fillet'),
-      data.solidsExpr,
+      data?.solidsExpr ?? null,
       [
-        createLabeledArg('tags', data.tagsExpr),
+        ...(data ? [createLabeledArg('tags', data.tagsExpr)] : []),
         createLabeledArg('radius', valueOrVariable(radius)),
         ...toleranceArgs,
         ...tagArgs,
@@ -197,8 +197,9 @@ export function addFillet({
       ast: modifiedAst,
       call,
       pathToEdit: mNodeToEdit,
-      pathIfNewPipe: data.pathIfPipe,
+      pathIfNewPipe: data?.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
+      labeledSelectionArgNames: ['tags'],
       wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
@@ -243,34 +244,36 @@ export function addChamfer({
   // 2. Prepare unlabeled and labeled arguments
   // Group selections by body and add all tags first (before variable insertion)
   // This must happen before insertVariableAndOffsetPathToNode because that invalidates artifactGraph paths
-  const bodyData = groupSelectionsByBodyAndAddTags(
-    selection,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
-  )
-  if (err(bodyData)) return bodyData
-  let bodies = bodyData.bodies
-  modifiedAst = bodyData.modifiedAst
+  let bodySelections: Array<BodySelectionData | undefined>
+  if (mNodeToEdit) {
+    bodySelections = [undefined]
+  } else {
+    const bodyData = groupSelectionsByBodyAndAddTags(
+      selection,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (err(bodyData)) return bodyData
+    let bodies = bodyData.bodies
+    modifiedAst = bodyData.modifiedAst
 
-  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selection)
-  if (primitiveEdgeSelections.length > 0) {
-    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
-      {
+    const primitiveEdgeSelections = getPrimitiveEdgeSelections(selection)
+    if (primitiveEdgeSelections.length > 0) {
+      const primitiveEdgeResult = insertPrimitiveEdgeVariables({
         primitiveEdgeSelections,
         bodies,
         modifiedAst,
         artifactGraph,
         wasmInstance,
-        nodeToEdit: mNodeToEdit,
-      }
-    )
-    if (err(primitiveEdgeResult)) return primitiveEdgeResult
-    bodies = primitiveEdgeResult.bodies
-  }
-  if (bodies.size === 0) {
-    return new Error('No edges found in the selection')
+      })
+      if (err(primitiveEdgeResult)) return primitiveEdgeResult
+      bodies = primitiveEdgeResult.bodies
+    }
+    if (bodies.size === 0) {
+      return new Error('No edges found in the selection')
+    }
+    bodySelections = [...bodies.values()]
   }
 
   // Insert variables for labeled arguments if provided
@@ -293,7 +296,7 @@ export function addChamfer({
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
-  for (const data of bodies.values()) {
+  for (const data of bodySelections) {
     const secondLengthArgs = secondLength
       ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
       : []
@@ -309,9 +312,9 @@ export function addChamfer({
 
     const call = createCallExpressionStdLibKw(
       modelingStdLibCommandName('Chamfer'),
-      data.solidsExpr,
+      data?.solidsExpr ?? null,
       [
-        createLabeledArg('tags', data.tagsExpr),
+        ...(data ? [createLabeledArg('tags', data.tagsExpr)] : []),
         createLabeledArg('length', valueOrVariable(length)),
         ...secondLengthArgs,
         ...angleArgs,
@@ -324,8 +327,9 @@ export function addChamfer({
       ast: modifiedAst,
       call,
       pathToEdit: mNodeToEdit,
-      pathIfNewPipe: data.pathIfPipe,
+      pathIfNewPipe: data?.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
+      labeledSelectionArgNames: ['tags'],
       wasmInstance,
     })
     if (err(pathToNode)) return pathToNode
@@ -419,15 +423,13 @@ function buildEdgeExpr(
       )
     }
 
-    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
-      {
-        primitiveEdgeSelections: [edgeSelection],
-        bodies: new Map(),
-        modifiedAst: ast,
-        artifactGraph,
-        wasmInstance,
-      }
-    )
+    const primitiveEdgeResult = insertPrimitiveEdgeVariables({
+      primitiveEdgeSelections: [edgeSelection],
+      bodies: new Map(),
+      modifiedAst: ast,
+      artifactGraph,
+      wasmInstance,
+    })
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
 
     const primitiveBody = [...primitiveEdgeResult.bodies.values()][0]
@@ -472,7 +474,6 @@ function buildEdgeExpr(
     graphEdgeSelection,
     artifactGraph,
     wasmInstance,
-    undefined,
     false
   )
   if (err(edgeContext)) return edgeContext
@@ -569,15 +570,13 @@ export function getPrimitiveEdgeSelections(
  * @param selections - Edge selections to process
  * @param artifactGraph - Graph mapping artifacts to AST nodes
  * @param ast - The AST to modify
- * @param nodeToEdit - Optional path to the node being edited
  * @returns Object containing modified AST and Map of body data, or Error
  */
 export function groupSelectionsByBodyAndAddTags(
   selections: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -588,8 +587,7 @@ export function groupSelectionsByBodyAndAddTags(
     selections,
     artifactGraph,
     ast,
-    wasmInstance,
-    nodeToEdit
+    wasmInstance
   )
   if (err(selectionsByBody)) return selectionsByBody
 
@@ -603,8 +601,7 @@ export function groupSelectionsByBodyAndAddTags(
       modifiedAst,
       firstSelection,
       artifactGraph,
-      wasmInstance,
-      nodeToEdit
+      wasmInstance
     )
     if (err(edgeContext)) return edgeContext
 
@@ -612,8 +609,7 @@ export function groupSelectionsByBodyAndAddTags(
       modifiedAst,
       bodySelections,
       artifactGraph,
-      wasmInstance,
-      nodeToEdit
+      wasmInstance
     )
     modifiedAst = taggedAst
 
@@ -650,8 +646,7 @@ function groupSelectionsByBody(
   selections: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 ): Map<string, Selections> | Error {
   const bodyToSelections = new Map<string, Selection[]>()
 
@@ -660,8 +655,7 @@ function groupSelectionsByBody(
       ast,
       selection,
       artifactGraph,
-      wasmInstance,
-      nodeToEdit
+      wasmInstance
     )
     if (err(edgeContext)) return edgeContext
     const bodyKey = edgeContext.bodyKey
@@ -683,70 +677,11 @@ function groupSelectionsByBody(
   return result
 }
 
-export function buildSolidsAndTagsExprs(
-  faces: Selections,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode,
-  solidsCount = 1
-) {
-  const solids: Selections = {
-    graphSelections: faces.graphSelections.flatMap((f) => {
-      if (!f.artifact) return []
-      const sweep = getSweepArtifactFromSelection(f, artifactGraph)
-      if (err(sweep) || !sweep) return []
-      return {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
-    }),
-    otherSelections: [],
-  }
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    ast,
-    wasmInstance,
-    nodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
-  if (err(vars)) {
-    return vars
-  }
-
-  if (vars.exprs.length > solidsCount) {
-    return new Error(
-      `Selection has more solids (${vars.exprs.length}) than expected (${solidsCount})`
-    )
-  }
-
-  const pathIfPipe = vars.pathIfPipe
-  const solidsExpr = createVariableExpressionsArray(vars.exprs)
-  const { tagsExprs, modifiedAst } = getTagsExprsFromSelection(
-    ast,
-    faces,
-    artifactGraph,
-    wasmInstance,
-    nodeToEdit
-  )
-  const tagsExpr = createVariableExpressionsArray(tagsExprs)
-  if (!tagsExpr) {
-    return new Error('No edges found in the selection')
-  }
-
-  return { solidsExpr, tagsExpr, pathIfPipe, modifiedAst }
-}
-
 function getTagsExprsFromSelection(
   ast: Node<Program>,
   edges: Selections,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 ) {
   const tagsExprs: Expr[] = []
   let modifiedAst = ast
@@ -765,8 +700,7 @@ function getTagsExprsFromSelection(
       modifiedAst,
       edge,
       artifactGraph,
-      wasmInstance,
-      { nodeToEdit }
+      wasmInstance
     )
     if (err(result)) {
       console.warn('Failed to add tag for edge selection', result)
@@ -782,54 +716,6 @@ function getTagsExprsFromSelection(
     modifiedAst = result.modifiedAst
   }
   return { tagsExprs, modifiedAst }
-}
-
-// Sort of an opposite of getTagsExprsFromSelection above, used for edit flows
-export function retrieveEdgeSelectionsFromOpArgs(
-  tagsArg: OpArg,
-  artifactGraph: ArtifactGraph
-) {
-  const tagValues: OpKclValue[] = []
-  if (tagsArg.value.type === 'Array') {
-    tagValues.push(...tagsArg.value.value)
-  } else {
-    tagValues.push(tagsArg.value)
-  }
-
-  const graphSelections: Selection[] = []
-  const unmatchedEdgeEntityIds: string[] = []
-  for (const v of tagValues) {
-    if (!(v.type == 'Uuid' && v.value)) {
-      console.warn('Face value is not a TagIdentifier', v)
-      continue
-    }
-
-    const artifact = getArtifactOfTypes(
-      { key: v.value, types: ['segment', 'sweepEdge', 'primitiveEdge'] },
-      artifactGraph
-    )
-    if (err(artifact)) {
-      console.warn(
-        'No artifact found for face tag, will try primitive fallback',
-        v.value
-      )
-      unmatchedEdgeEntityIds.push(v.value)
-      continue
-    }
-
-    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-    if (!codeRefs || codeRefs.length === 0) {
-      console.warn('No codeRefs found for artifact', artifact)
-      continue
-    }
-
-    graphSelections.push({
-      artifact,
-      codeRef: codeRefs[0],
-    })
-  }
-
-  return { graphSelections, otherSelections: [] }
 }
 
 type FilletEdgeRefPayload = {
@@ -2366,129 +2252,6 @@ export function refactorZ0006Unified(
   return recast(modifiedAst, wasmInstance)
 }
 
-function faceRefToArtifactId(v: OpKclValue): string | null {
-  if (v.type === 'Uuid' && v.value) return v.value
-  if (v.type === 'TagIdentifier' && v.artifact_id) {
-    return v.artifact_id
-  }
-  return null
-}
-
-function findEdgeArtifactFromFaceIds(
-  faceIds: string[],
-  artifactGraph: ArtifactGraph
-): Artifact | null {
-  if (faceIds.length === 0) return null
-  const faceArtifacts: Artifact[] = []
-  for (const id of faceIds) {
-    const artifact = artifactGraph.get(id)
-    if (artifact) faceArtifacts.push(artifact)
-  }
-  if (faceArtifacts.length === 0) return null
-
-  const edgeType = (
-    artifact: Artifact
-  ): artifact is Artifact & { type: 'segment' | 'edgeCut' } =>
-    artifact.type === 'segment' || artifact.type === 'edgeCut'
-  const directEdge = faceArtifacts.find(edgeType)
-  if (directEdge) return directEdge
-
-  const faceIdSet = new Set(faceIds)
-  for (const [, artifact] of artifactGraph) {
-    if (artifact.type !== 'segment') continue
-    const commonIds = artifact.commonSurfaceIds
-    if (!commonIds?.length) continue
-    const commonIdSet = new Set(commonIds)
-    if (
-      faceIdSet.size === commonIdSet.size &&
-      [...faceIdSet].every((id) => commonIdSet.has(id))
-    ) {
-      return artifact
-    }
-  }
-
-  return null
-}
-
-export function retrieveEdgeSelectionsFromEdgeRefs(
-  edgeRefsArg: OpArg,
-  artifactGraph: ArtifactGraph
-): Selections | Error {
-  if (edgeRefsArg.value.type !== 'Array') {
-    return new Error('edges argument is not an array')
-  }
-
-  const graphSelections: Selection[] = []
-  for (const item of edgeRefsArg.value.value) {
-    if (item.type !== 'Object' || !item.value) continue
-    // Selection recovery only needs the primary graph edge so edit/delete flows
-    // can reselect an operation in the scene. `endFaces` and `index` refine how
-    // the engine resolves ambiguous edge specifiers, but they are not needed to
-    // recover the editable artifact from the current artifact graph.
-    const facesProp = item.value.sideFaces
-    if (facesProp?.type !== 'Array') continue
-    const faceIds = facesProp.value
-      .map(faceRefToArtifactId)
-      .filter((id): id is string => Boolean(id))
-    if (faceIds.length < 2) continue
-
-    const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
-    if (!edgeArtifact) continue
-    const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
-    if (!codeRefs?.length) continue
-    graphSelections.push({
-      artifact: edgeArtifact,
-      codeRef: codeRefs[0],
-    })
-  }
-
-  return { graphSelections, otherSelections: [] }
-}
-
-export function retrieveEdgeSelectionsFromSingleEdgeRef(
-  edgeRefArg: OpArg,
-  artifactGraph: ArtifactGraph
-): Selections | Error {
-  if (edgeRefArg.value.type !== 'Object' || !edgeRefArg.value.value) {
-    return new Error('edgeRef argument is not an object')
-  }
-
-  // Selection recovery intentionally uses only side faces. `endFaces` and
-  // `index` are engine disambiguators for executing the edge specifier, while
-  // this path only needs to map the stdlib argument back to a selectable graph
-  // artifact for editing.
-  const facesProp = edgeRefArg.value.value.sideFaces
-  if (facesProp?.type !== 'Array') {
-    return new Error('edgeRef has no sideFaces array')
-  }
-
-  const faceIds = facesProp.value
-    .map(faceRefToArtifactId)
-    .filter((id): id is string => Boolean(id))
-  if (faceIds.length < 2) {
-    return new Error('edgeRef sideFaces array needs at least 2 faces')
-  }
-
-  const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
-  if (!edgeArtifact) {
-    return new Error('Could not find edge from faces in artifact graph')
-  }
-  const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
-  if (!codeRefs?.length) {
-    return new Error('Edge artifact has no codeRef')
-  }
-
-  return {
-    graphSelections: [
-      {
-        artifact: edgeArtifact,
-        codeRef: codeRefs[0],
-      },
-    ],
-    otherSelections: [],
-  }
-}
-
 // Delete Edge Treatment
 // Type Guards
 // Edge Treatment Types
@@ -2594,20 +2357,18 @@ export function getEdgeTagCall(
 // Adds all the edgeId calls needed in the AST so we can refer to them,
 // keeps track of their names as "tags",
 // and gathers the corresponding solid expressions.
-export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+export function insertPrimitiveEdgeVariables({
   primitiveEdgeSelections,
   bodies,
   modifiedAst,
   artifactGraph,
   wasmInstance,
-  nodeToEdit,
 }: {
   primitiveEdgeSelections: EnginePrimitiveSelection[]
   bodies: Map<string, BodySelectionData>
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
-  nodeToEdit?: PathToNode
 }): Error | { bodies: Map<string, BodySelectionData> } {
   if (primitiveEdgeSelections.length === 0) {
     return { bodies }
@@ -2665,7 +2426,6 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      nodeToEdit,
       {
         lastChildLookup: true,
         artifactTypeFilter: ['compositeSolid', 'sweep'],

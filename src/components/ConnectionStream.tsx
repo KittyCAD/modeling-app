@@ -206,12 +206,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
               }
 
               await prepareEditCommand({
-                artifactGraph: kclManager.artifactGraph,
                 code: kclManager.code,
                 commandBarActor: commands.actor,
                 operation,
                 rustContext: kclManager.rustContext,
-                artifact,
               })
               return
             }

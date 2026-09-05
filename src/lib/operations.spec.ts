@@ -90,21 +90,6 @@ function compositeSolidArtifact(
   }
 }
 
-function segmentArtifact(id: string): Extract<Artifact, { type: 'segment' }> {
-  return {
-    type: 'segment',
-    id,
-    pathId: 'path-id',
-    edgeIds: [],
-    codeRef: {
-      range: defaultSourceRange(),
-      nodePath: defaultNodePath(),
-      pathToNode: [],
-    },
-    commonSurfaceIds: [],
-  }
-}
-
 function pathArtifact(id: string): Artifact {
   return {
     type: 'path',
@@ -119,59 +104,6 @@ function pathArtifact(id: string): Artifact {
       nodePath: defaultNodePath(),
       pathToNode: [['body', '']],
     },
-  }
-}
-
-function sweepArtifact(id: string, pathId: string): Artifact {
-  return {
-    type: 'sweep',
-    id,
-    subType: 'extrusion',
-    pathId,
-    surfaceIds: [],
-    edgeIds: [],
-    codeRef: {
-      range: defaultSourceRange(),
-      nodePath: defaultNodePath(),
-      pathToNode: [['body', '']],
-    },
-    trajectoryId: null,
-    method: 'new',
-    consumed: false,
-    patternIds: [],
-  }
-}
-
-function sweepEdgeArtifact(
-  id: string,
-  segId: string,
-  sweepId: string
-): Artifact {
-  return {
-    type: 'sweepEdge',
-    id,
-    subType: 'opposite',
-    segId,
-    cmdId: '',
-    sweepId,
-    commonSurfaceIds: [],
-  }
-}
-
-function capArtifact(id: string, sweepId: string): Artifact {
-  return {
-    type: 'cap',
-    id,
-    subType: 'end',
-    sweepId,
-    pathIds: [],
-    edgeCutEdgeIds: [],
-    faceCodeRef: {
-      range: defaultSourceRange(),
-      nodePath: defaultNodePath(),
-      pathToNode: [['body', '']],
-    },
-    cmdId: '',
   }
 }
 
@@ -576,7 +508,7 @@ describe('operations.test.ts', () => {
   }
 
   describe('Extrude edit flow', () => {
-    it('continues when the unlabeled selection cannot be retrieved', async () => {
+    it('omits the selection from command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
         'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10)'
@@ -598,7 +530,6 @@ describe('operations.test.ts', () => {
       const result = await enterEditFlow({
         operation,
         code,
-        artifactGraph: new Map(),
         rustContext,
       })
       if (isErr(result)) {
@@ -648,7 +579,6 @@ describe('operations.test.ts', () => {
       const result = await enterEditFlow({
         operation,
         code,
-        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
         rustContext,
       })
       if (result instanceof Error) {
@@ -665,64 +595,7 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
     })
 
-    it('preserves tagged segment direction in the command defaults', async () => {
-      const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      const code =
-        'extrude001 = extrude(profile001, length = 10, direction = seg01)'
-      const operation = stdlib('extrude')
-      if (operation.type !== 'StdLibCall') {
-        throw new Error('Expected operation to be a StdLibCall')
-      }
-      operation.unlabeledArg = {
-        value: {
-          type: 'Sketch',
-          value: { artifactId: 'path-id' },
-        },
-        sourceRange: rangeOfText(code, 'profile001'),
-      }
-      operation.labeledArgs = {
-        length: {
-          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
-          sourceRange: rangeOfText(code, '10'),
-        },
-        direction: {
-          value: {
-            type: 'TagIdentifier',
-            value: 'seg01',
-            artifact_id: 'segment-id',
-          },
-          sourceRange: rangeOfText(code, 'seg01'),
-        },
-      }
-
-      const result = await enterEditFlow({
-        operation,
-        code,
-        artifactGraph: toArtifactGraph([
-          pathArtifact('path-id'),
-          segmentArtifact('segment-id'),
-        ]),
-        rustContext,
-      })
-      if (result instanceof Error) {
-        throw result
-      }
-      if (result.type !== 'Find and select command') {
-        throw new Error(`Expected edit flow event, got ${result.type}`)
-      }
-
-      const argDefaultValues = result.data.argDefaultValues as {
-        direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
-        }
-      }
-      expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'segment-id'
-      )
-    })
-
-    it('preserves sweep edge profiles and direction in the command defaults', async () => {
+    it('omits selections while preserving scalar defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
         'surface001 = extrude(edge001, length = 5, direction = edge001, bodyType = SURFACE)'
@@ -755,17 +628,9 @@ describe('operations.test.ts', () => {
         },
       }
 
-      const segment = segmentArtifact('segment-id')
-      segment.codeRef.pathToNode = [['body', '']]
       const result = await enterEditFlow({
         operation,
         code,
-        artifactGraph: toArtifactGraph([
-          pathArtifact('path-id'),
-          segment,
-          sweepArtifact('sweep-id', 'path-id'),
-          sweepEdgeArtifact('edge-id', 'segment-id', 'sweep-id'),
-        ]),
         rustContext,
       })
       if (result instanceof Error) {
@@ -776,27 +641,19 @@ describe('operations.test.ts', () => {
       }
 
       const argDefaultValues = result.data.argDefaultValues as {
-        sketches?: {
-          graphSelections: Array<{ artifact: Artifact }>
-        }
-        direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
-        }
+        sketches?: { graphSelections: unknown[] }
+        direction?: { graphSelections: unknown[] }
         bodyType?: string
       }
       expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.sketches?.graphSelections[0].artifact.id).toBe(
-        'edge-id'
-      )
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'edge-id'
-      )
+      expect(argDefaultValues.sketches?.graphSelections).toEqual([])
+      expect(argDefaultValues.direction?.graphSelections).toEqual([])
       expect(argDefaultValues.bodyType).toBe('SURFACE')
     })
   })
 
   describe('Sweep edit flow', () => {
-    it('retrieves tagged cap profiles in the command defaults', async () => {
+    it('omits selections while preserving scalar defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
         'sweep001 = sweep(capEnd001, path = profile002, tolerance = 0.01mm, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
@@ -855,12 +712,6 @@ describe('operations.test.ts', () => {
       const result = await enterEditFlow({
         operation,
         code,
-        artifactGraph: toArtifactGraph([
-          pathArtifact('source-path-id'),
-          sweepArtifact('sweep-id', 'source-path-id'),
-          capArtifact('cap-id', 'sweep-id'),
-          pathArtifact('trajectory-path-id'),
-        ]),
         rustContext,
       })
       if (result instanceof Error) {
@@ -871,20 +722,16 @@ describe('operations.test.ts', () => {
       }
 
       const argDefaultValues = result.data.argDefaultValues as {
-        sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
-        path?: { graphSelections: Array<{ artifact?: Artifact }> }
+        sketches?: { graphSelections: unknown[] }
+        path?: { graphSelections: unknown[] }
         tolerance?: { valueText: string }
         version?: { valueText: string }
         translateProfileToPath?: boolean
         orientProfilePerpendicular?: boolean
       }
       expect(result.data.name).toBe('Sweep')
-      expect(argDefaultValues.sketches?.graphSelections[0].artifact?.type).toBe(
-        'cap'
-      )
-      expect(argDefaultValues.path?.graphSelections[0].artifact?.type).toBe(
-        'path'
-      )
+      expect(argDefaultValues.sketches?.graphSelections).toEqual([])
+      expect(argDefaultValues.path?.graphSelections).toEqual([])
       expect(argDefaultValues.tolerance?.valueText).toBe('0.01mm')
       expect(argDefaultValues.version?.valueText).toBe('2')
       expect(argDefaultValues.translateProfileToPath).toBe(false)
@@ -926,7 +773,6 @@ describe('operations.test.ts', () => {
       const result = await enterEditFlow({
         operation,
         code,
-        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
         rustContext,
       })
       if (result instanceof Error) {
@@ -959,7 +805,6 @@ describe('operations.test.ts', () => {
         operation: stdlib('startSketchOn'),
         code,
         artifact: pathArtifact('path-id'),
-        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
         rustContext,
       })
     }
@@ -1174,7 +1019,6 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
         const result = await enterEditFlow({
           operation,
           code,
-          artifactGraph: toArtifactGraph([segmentArtifact('segment-id')]),
           rustContext,
         })
         if (result instanceof Error) {
@@ -1199,8 +1043,6 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       }
     )
 
-    // A note has no geometry selection, so it does not fit the parameterized
-    // cases above (which all resolve faces/edges). Cover its edit flow on its own.
     it('enters edit flow for gdt::note', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code = 'gdt::note(note = "Note on XY", framePlane = XZ)'
@@ -1222,7 +1064,6 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       const result = await enterEditFlow({
         operation,
         code,
-        artifactGraph: toArtifactGraph([]),
         rustContext,
       })
       if (result instanceof Error) {

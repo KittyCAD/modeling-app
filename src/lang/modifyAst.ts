@@ -28,7 +28,6 @@ import {
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
-  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
@@ -1119,7 +1118,7 @@ function getSegmentExprForEngineRegion({
   return createMemberExpression(sketchVarName, segmentVarName)
 }
 
-export function insertRegionVariablesAndOffsetPathToNode({
+export function insertRegionVariables({
   engineRegions,
   modifiedAst,
   artifactGraph,
@@ -1295,28 +1294,33 @@ export function createPathToNodeForLastVariable(
   return pathToCall
 }
 
-export function pathsReferToSamePipe(
-  first: PathToNode,
-  second: PathToNode
-): boolean {
-  const firstPipe = splitPathAtPipeExpression(first)
-  const secondPipe = splitPathAtPipeExpression(second)
-  return (
-    firstPipe.index !== -1 &&
-    secondPipe.index !== -1 &&
-    stringifyPathToNode(firstPipe.path) === stringifyPathToNode(secondPipe.path)
-  )
-}
-
 export function replaceCallInPlace(
   existingCall: CallExpressionKw,
-  replacementCall: CallExpressionKw
+  replacementCall: CallExpressionKw,
+  labeledSelectionArgNames: readonly string[] = []
 ) {
-  const unlabeled =
-    replacementCall.unlabeled === null
-      ? structuredClone(existingCall.unlabeled)
-      : replacementCall.unlabeled
-  Object.assign(existingCall, replacementCall, { unlabeled })
+  // Selection editing has no rollback yet, so edit codemods only replace
+  // non-selection arguments. Keep every existing selection verbatim.
+  const selectionArgNames = new Set(labeledSelectionArgNames)
+  const mergedArguments = replacementCall.arguments.filter(
+    (arg) => !selectionArgNames.has(arg.label?.name ?? '')
+  )
+
+  for (const [index, argument] of existingCall.arguments.entries()) {
+    if (!selectionArgNames.has(argument.label?.name ?? '')) {
+      continue
+    }
+    mergedArguments.splice(
+      Math.min(index, mergedArguments.length),
+      0,
+      structuredClone(argument)
+    )
+  }
+
+  Object.assign(existingCall, replacementCall, {
+    unlabeled: structuredClone(existingCall.unlabeled),
+    arguments: mergedArguments,
+  })
 }
 
 export function setCallInAst({
@@ -1325,6 +1329,7 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  labeledSelectionArgNames,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1332,17 +1337,11 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  labeledSelectionArgNames?: readonly string[]
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
-    if (pathIfNewPipe && !pathsReferToSamePipe(pathIfNewPipe, pathToEdit)) {
-      // A pipe substitution reconstructed outside the edited call's pipe is
-      // invalid. Discard the reconstruction so replaceCallInPlace preserves
-      // the existing unlabeled argument and applies only the labeled edits.
-      call.unlabeled = null
-    }
-
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
       pathToEdit,
@@ -1353,7 +1352,7 @@ export function setCallInAst({
       return result
     }
 
-    replaceCallInPlace(result.node, call)
+    replaceCallInPlace(result.node, call, labeledSelectionArgNames)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
     const pipe = getNodeFromPath<PipeExpression>(

@@ -3,12 +3,11 @@ import {
   createLabeledArg,
   createLocalName,
 } from '@src/lang/create'
-import { pathsReferToSamePipe, replaceCallInPlace } from '@src/lang/modifyAst'
-import type { PathToNode } from '@src/lang/wasm'
+import { replaceCallInPlace } from '@src/lang/modifyAst'
 import { describe, expect, it } from 'vitest'
 
 describe('editing calls in place', () => {
-  it('preserves an existing unlabeled argument when reconstruction fails', () => {
+  it('preserves an existing unlabeled argument when the edit omits it', () => {
     const inlineInput = createCallExpressionStdLibKw(
       'extrude',
       createLocalName('profile'),
@@ -30,7 +29,7 @@ describe('editing calls in place', () => {
     expect(replacementCall.unlabeled).toBeNull()
   })
 
-  it('uses a reconstructed unlabeled argument when available', () => {
+  it('ignores a replacement unlabeled argument', () => {
     const existingCall = createCallExpressionStdLibKw(
       'translate',
       createLocalName('oldBody'),
@@ -45,52 +44,52 @@ describe('editing calls in place', () => {
 
     replaceCallInPlace(existingCall, replacementCall)
 
-    expect(existingCall.unlabeled).toEqual(replacementInput)
+    expect(existingCall.unlabeled).toEqual(createLocalName('oldBody'))
   })
 
-  it('recognizes different calls in the same pipe', () => {
-    const first: PathToNode = [
-      ['body', ''],
-      [0, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', 'VariableDeclarator'],
-      ['body', 'PipeExpression'],
-      [1, 'index'],
-    ]
-    const second: PathToNode = [...first.slice(0, -1), [2, 'index']]
+  it('preserves labeled selection arguments and applies other edits', () => {
+    const existingCall = createCallExpressionStdLibKw(
+      'split',
+      createLocalName('target'),
+      [
+        createLabeledArg('tools', createLocalName('oldTool')),
+        createLabeledArg('merge', createLocalName('oldMerge')),
+      ]
+    )
+    const replacementMerge = createLabeledArg(
+      'merge',
+      createLocalName('newMerge')
+    )
+    const replacementCall = createCallExpressionStdLibKw(
+      'split',
+      createLocalName('differentTarget'),
+      [replacementMerge]
+    )
 
-    expect(pathsReferToSamePipe(first, second)).toBe(true)
+    replaceCallInPlace(existingCall, replacementCall, ['tools'])
+
+    expect(existingCall.unlabeled).toEqual(createLocalName('target'))
+    expect(existingCall.arguments).toEqual([
+      createLabeledArg('tools', createLocalName('oldTool')),
+      replacementMerge,
+    ])
   })
 
-  it('rejects paths from different pipes', () => {
-    const first: PathToNode = [
-      ['body', ''],
-      [0, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', 'VariableDeclarator'],
-      ['body', 'PipeExpression'],
-      [1, 'index'],
-    ]
-    const second: PathToNode = [
-      ['body', ''],
-      [1, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', 'VariableDeclarator'],
-      ['body', 'PipeExpression'],
-      [1, 'index'],
-    ]
+  it('ignores a replacement labeled selection argument', () => {
+    const existingTool = createLabeledArg('tools', createLocalName('oldTool'))
+    const existingCall = createCallExpressionStdLibKw(
+      'subtract',
+      createLocalName('target'),
+      [existingTool]
+    )
+    const replacementCall = createCallExpressionStdLibKw(
+      'subtract',
+      createLocalName('differentTarget'),
+      [createLabeledArg('tools', createLocalName('differentTool'))]
+    )
 
-    expect(pathsReferToSamePipe(first, second)).toBe(false)
-  })
+    replaceCallInPlace(existingCall, replacementCall, ['tools'])
 
-  it('rejects identical paths that are not inside a pipe', () => {
-    const path: PathToNode = [
-      ['body', ''],
-      [0, 'index'],
-      ['declaration', 'VariableDeclaration'],
-      ['init', 'VariableDeclarator'],
-    ]
-
-    expect(pathsReferToSamePipe(path, path)).toBe(false)
+    expect(existingCall.arguments).toEqual([existingTool])
   })
 })

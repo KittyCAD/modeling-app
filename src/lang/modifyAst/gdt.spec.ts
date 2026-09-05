@@ -19,12 +19,14 @@ import {
   getNextAvailableDatumName,
   getUsedDatumNames,
 } from '@src/lang/modifyAst/gdt'
+import type { PathToNode } from '@src/lang/wasm'
 import {
   type Artifact,
   type ArtifactGraph,
   assertParse,
   recast,
 } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
@@ -163,6 +165,35 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )`
 
   describe('Testing addFlatnessGdt', () => {
+    it('edits parameters without reconstructing face selections', async () => {
+      const code = 'gdt::flatness(faces = [faceA], tolerance = 0.1)'
+      const ast = assertParse(code, instanceInThisFile)
+      const tolerance = (await stringToKclExpression(
+        '0.2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const nodeToEdit: PathToNode = [
+        ['body', ''],
+        [0, 'index'],
+        ['expression', 'ExpressionStatement'],
+      ]
+      const faces: Selections = { graphSelections: [], otherSelections: [] }
+
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph: new Map(),
+        faces,
+        tolerance,
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'gdt::flatness(faces = [faceA], tolerance = 0.2)'
+      )
+    })
+
     it('should add a basic flatness annotation to a single face (cap)', async () => {
       const { artifactGraph, ast } = await executeCode(
         cylinder,

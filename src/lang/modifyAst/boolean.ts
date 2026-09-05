@@ -95,24 +95,25 @@ export function addUnion({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        solids,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
   if (err(vars)) {
     return vars
   }
 
-  const selectionError = validateBooleanSelections([
-    { selections: solids, ...vars },
-  ])
+  const selectionError = mNodeToEdit
+    ? undefined
+    : validateBooleanSelections([{ selections: solids, ...vars }])
   if (selectionError) {
     return selectionError
   }
@@ -167,24 +168,25 @@ export function addIntersect({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        solids,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
   if (err(vars)) {
     return vars
   }
 
-  const selectionError = validateBooleanSelections([
-    { selections: solids, ...vars },
-  ])
+  const selectionError = mNodeToEdit
+    ? undefined
+    : validateBooleanSelections([{ selections: solids, ...vars }])
   if (selectionError) {
     return selectionError
   }
@@ -241,47 +243,51 @@ export function addSubtract({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const vars = getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        solids,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
   if (err(vars)) {
     return vars
   }
 
-  const toolVars = getVariableExprsFromSelection(
-    tools,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+  const toolVars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        tools,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
   if (err(toolVars)) {
     return toolVars
   }
 
-  const selectionError = validateBooleanSelections([
-    { selections: solids, ...vars },
-    { selections: tools, ...toolVars },
-  ])
+  const selectionError = mNodeToEdit
+    ? undefined
+    : validateBooleanSelections([
+        { selections: solids, ...vars },
+        { selections: tools, ...toolVars },
+      ])
   if (selectionError) {
     return selectionError
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
-  if (toolsExpr === null) {
+  if (!mNodeToEdit && toolsExpr === null) {
     return new Error('No tools provided for subtraction operation')
   }
 
@@ -289,7 +295,7 @@ export function addSubtract({
     modelingStdLibCommandName('Boolean Subtract'),
     objectsExpr,
     [
-      createLabeledArg('tools', toolsExpr),
+      ...(toolsExpr ? [createLabeledArg('tools', toolsExpr)] : []),
       ...(tolerance
         ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
         : []),
@@ -314,6 +320,7 @@ export function addSubtract({
     pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    labeledSelectionArgNames: ['tools'],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -350,17 +357,18 @@ export function addSplit({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const vars = getVariableExprsFromSelection(
-    targets,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+  const vars = mNodeToEdit
+    ? { exprs: [], pathIfPipe: undefined }
+    : getVariableExprsFromSelection(
+        targets,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        {
+          lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
   if (err(vars)) {
     return vars
   }
@@ -372,7 +380,9 @@ export function addSplit({
   const selectionGroups: BooleanSelectionGroup[] = [
     { selections: targets, ...vars },
   ]
-  const targetSelectionError = validateBooleanSelections(selectionGroups)
+  const targetSelectionError = mNodeToEdit
+    ? undefined
+    : validateBooleanSelections(selectionGroups)
   if (targetSelectionError) {
     return targetSelectionError
   }
@@ -380,13 +390,12 @@ export function addSplit({
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
   let pathIfNewPipe = vars.pathIfPipe
 
-  if (hasTools && tools) {
+  if (!mNodeToEdit && hasTools && tools) {
     const toolVars = getVariableExprsFromSelection(
       tools,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit,
       {
         lastChildLookup: true,
         artifactTypeFilter: ['compositeSolid', 'sweep'],
@@ -441,6 +450,7 @@ export function addSplit({
     pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SPLIT,
+    labeledSelectionArgNames: ['tools'],
     wasmInstance,
   })
   if (err(pathToNode)) {
