@@ -15,8 +15,10 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 
 // Adapts generated KCL stdlib metadata into the command-bar argument shapes.
 // UI-specific aliases and omissions stay explicit here.
-type StdLibCommandArg<Name extends StdLibCommandName> =
-  (typeof STD_LIB_COMMANDS)[Name]['args'][number]
+type StdLibCommandArg<Name extends StdLibCommandName> = Extract<
+  (typeof STD_LIB_COMMANDS)[Name]['args'][number],
+  { readonly deprecated: false; readonly deprecatedSince: null }
+>
 
 type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
   Arg['ty'] extends 'bool'
@@ -48,8 +50,10 @@ type GdtFrameArgs = {
   framePlane?: string
 }
 
+type GdtPointAndClickArgs<Base> = Omit<Base, 'annotationName'>
+
 type GdtObjectsArgs<Base> = Override<
-  Omit<Base, 'faces' | 'edges'>,
+  Omit<GdtPointAndClickArgs<Base>, 'faces' | 'edges'>,
   { objects: Selections } & GdtFrameArgs
 >
 
@@ -196,7 +200,7 @@ export type PatternLinear3DCommandArgs = Override<
 >
 
 export type GdtFlatnessCommandArgs = Override<
-  StdLibCommandArgs<'gdt::flatness'>,
+  GdtPointAndClickArgs<StdLibCommandArgs<'gdt::flatness'>>,
   GdtFrameArgs
 >
 export type GdtStraightnessCommandArgs =
@@ -207,14 +211,17 @@ export type GdtCylindricityCommandArgs =
   GdtObjectsCommandArgs<'gdt::cylindricity'>
 export type GdtPositionCommandArgs = GdtObjectsCommandArgs<'gdt::position'>
 export type GdtProfileCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::profileLine'>, 'edges'>,
+  Omit<GdtPointAndClickArgs<StdLibCommandArgs<'gdt::profileLine'>>, 'edges'>,
   {
     objects: Selections
     profileFunction?: ProfileGdtFunction
   } & GdtFrameArgs
 >
 export type GdtDistanceCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::distance'>, 'from' | 'to' | 'edges'>,
+  Omit<
+    GdtPointAndClickArgs<StdLibCommandArgs<'gdt::distance'>>,
+    'from' | 'to' | 'edges'
+  >,
   { objects: Selections } & GdtFrameArgs
 >
 export type GdtPerpendicularityCommandArgs =
@@ -228,11 +235,11 @@ export type GdtParallelismCommandArgs =
   GdtObjectsCommandArgs<'gdt::parallelism'>
 export type GdtAnnotationCommandArgs = GdtObjectsCommandArgs<'gdt::annotation'>
 export type GdtNoteCommandArgs = Override<
-  StdLibCommandArgs<'gdt::note'>,
+  GdtPointAndClickArgs<StdLibCommandArgs<'gdt::note'>>,
   GdtFrameArgs
 >
 export type GdtDatumCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::datum'>, 'face'>,
+  Omit<GdtPointAndClickArgs<StdLibCommandArgs<'gdt::datum'>>, 'face'>,
   { faces: Selections } & GdtFrameArgs
 >
 

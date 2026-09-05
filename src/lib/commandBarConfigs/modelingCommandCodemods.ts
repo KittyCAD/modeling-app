@@ -108,6 +108,19 @@ type AddCodemod<
   ExtraContext extends object = object,
 > = (args: AddCodemodArgs<CommandName, ExtraContext>) => ModelingCodemodResult
 
+// Keep every command argument listed in the handwritten add* input type.
+type CheckedAddCodemod<
+  CommandName extends ModelingCodemodCommandName,
+  Add extends (...args: never[]) => unknown,
+> = Add &
+  Record<
+    Exclude<
+      keyof ModelingCodemodCommandSchema[CommandName],
+      keyof Parameters<NoInfer<Add>>[0] | 'nodeToEdit'
+    >,
+    never
+  >
+
 type ModelingCodemodOptions<CommandName extends ModelingCodemodCommandName> =
   Omit<
     ModelingCommandCodemodConfig<CommandName>,
@@ -139,89 +152,123 @@ const addCodemodArgs = <
   ...context,
 })
 
-const withAst = <CommandName extends ModelingCodemodCommandName>(
-  commandName: CommandName,
-  add: AddCodemod<CommandName>,
-  options?: ModelingCodemodOptions<CommandName>
+const withAddForDriftCheck = <
+  Add extends (...args: never[]) => unknown,
+  Codemod extends object,
+>(
+  add: Add,
+  codemod: Codemod
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
-    ...withStdLibExperimentalFeatures(commandName, options),
-    run: ({ args, ast, wasmInstance }) =>
-      add({
-        ...args,
-        ast,
-        wasmInstance,
-      }),
-  })
+  Object.defineProperty(codemod, 'add', {
+    value: add,
+    enumerable: false,
+  }) as Codemod & { readonly add: Add }
 
-const withArtifactGraph = <CommandName extends ModelingCodemodCommandName>(
+const withAst = <
+  CommandName extends ModelingCodemodCommandName,
+  Add extends AddCodemod<CommandName>,
+>(
   commandName: CommandName,
-  add: AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
+  add: CheckedAddCodemod<CommandName, Add>,
   options?: ModelingCodemodOptions<CommandName>
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
-    ...withStdLibExperimentalFeatures(commandName, options),
-    run: ({ args, ast, kclManager, wasmInstance }) =>
-      add(
-        addCodemodArgs(args, {
+  withAddForDriftCheck(
+    add,
+    defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+      ...withStdLibExperimentalFeatures(commandName, options),
+      run: ({ args, ast, wasmInstance }) =>
+        add({
+          ...args,
           ast,
-          artifactGraph: kclManager.artifactGraph,
           wasmInstance,
-        })
-      ),
-  })
+        }),
+    })
+  )
+
+const withArtifactGraph = <
+  CommandName extends ModelingCodemodCommandName,
+  Add extends AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
+>(
+  commandName: CommandName,
+  add: CheckedAddCodemod<CommandName, Add>,
+  options?: ModelingCodemodOptions<CommandName>
+) =>
+  withAddForDriftCheck(
+    add,
+    defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+      ...withStdLibExperimentalFeatures(commandName, options),
+      run: ({ args, ast, kclManager, wasmInstance }) =>
+        add(
+          addCodemodArgs(args, {
+            ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+        ),
+    })
+  )
 
 const withArtifactGraphAndVariables = <
   CommandName extends ModelingCodemodCommandName,
->(
-  commandName: CommandName,
-  add: AddCodemod<
+  Add extends AddCodemod<
     CommandName,
     { artifactGraph: ArtifactGraph; variables: VariableMap }
   >,
+>(
+  commandName: CommandName,
+  add: CheckedAddCodemod<CommandName, Add>,
   options?: ModelingCodemodOptions<CommandName>
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
-    ...withStdLibExperimentalFeatures(commandName, options),
-    run: ({ args, ast, kclManager, wasmInstance }) =>
-      add(
-        addCodemodArgs(args, {
-          ast,
-          artifactGraph: kclManager.artifactGraph,
-          variables: kclManager.variables,
-          wasmInstance,
-        })
-      ),
-  })
+  withAddForDriftCheck(
+    add,
+    defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+      ...withStdLibExperimentalFeatures(commandName, options),
+      run: ({ args, ast, kclManager, wasmInstance }) =>
+        add(
+          addCodemodArgs(args, {
+            ast,
+            artifactGraph: kclManager.artifactGraph,
+            variables: kclManager.variables,
+            wasmInstance,
+          })
+        ),
+    })
+  )
 
 type GdtCommandData = Parameters<typeof withDefaultGdtFrameDefaults>[0]['data']
 
-const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
+const withGdtDefaults = <
+  CommandName extends ModelingCodemodCommandName,
+  Add extends AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
+>(
   commandName: CommandName,
-  add: AddCodemod<CommandName, { artifactGraph: ArtifactGraph }>,
+  add: CheckedAddCodemod<CommandName, Add>,
   options?: ModelingCodemodOptions<CommandName>
 ) =>
-  defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
-    ...withStdLibExperimentalFeatures(commandName, options),
-    run: async ({ args, ast, kclManager, wasmInstance }) => {
-      const data = await withDefaultGdtFrameDefaults({
-        data: args as GdtCommandData,
-        engineCommandManager: kclManager.engineCommandManager,
-        ast,
-        sourceCode: kclManager.code,
-        outputUnit: kclManager.fileSettings.defaultLengthUnit,
-        wasmInstance,
-      })
-
-      return add(
-        addCodemodArgs(data as ModelingCodemodCommandSchema[CommandName], {
+  withAddForDriftCheck(
+    add,
+    defineModelingCodemod<ModelingCodemodCommandSchema[CommandName]>({
+      ...withStdLibExperimentalFeatures(commandName, options),
+      run: async ({ args, ast, kclManager, wasmInstance }) => {
+        const data = await withDefaultGdtFrameDefaults({
+          data: args as GdtCommandData,
+          engineCommandManager: kclManager.engineCommandManager,
           ast,
-          artifactGraph: kclManager.artifactGraph,
+          sourceCode: kclManager.code,
+          outputUnit: kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
-      )
-    },
-  })
+
+        return add(
+          addCodemodArgs(data as ModelingCodemodCommandSchema[CommandName], {
+            ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+        )
+      },
+    })
+  )
 
 export const modelingCommandCodemods = {
   Extrude: withArtifactGraph('Extrude', addExtrude),
