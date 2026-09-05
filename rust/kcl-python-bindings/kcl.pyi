@@ -202,7 +202,9 @@ class ExecOutcome:
     def render_sketch_png(self, sketch_name: builtins.str, *, highlighted_segments: typing.Optional[typing.Sequence[builtins.str]] = None, resolved_region: typing.Optional[builtins.str] = None) -> builtins.list[builtins.int]:
         r"""
         Render one sketch from this execution as a PNG, colored by solver
-        freedom, with optional highlighted segments and a resolved region.
+        freedom, with optional seed halos and a soft region fill. To fill a
+        region, pass its name to execute/execute_code's resolved_region option
+        first so its trimmed boundary is captured before the engine disconnects.
         """
     def report_all(self) -> builtins.list[builtins.str]: ...
 
@@ -1305,9 +1307,10 @@ async def default_units(path: builtins.str) -> zooDefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path: builtins.str) -> zooExecOutcome:
+async def execute(path: builtins.str, *, resolved_region: typing.Optional[builtins.str] = None) -> zooExecOutcome:
     r"""
     Execute the kcl code from a file path.
+    Optionally capture a region's trimmed boundary for render_sketch_png.
     """
 
 async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
@@ -1332,9 +1335,10 @@ async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat,
 
 async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
 
-async def execute_code(code: builtins.str) -> zooExecOutcome:
+async def execute_code(code: builtins.str, *, resolved_region: typing.Optional[builtins.str] = None) -> zooExecOutcome:
     r"""
     Execute the kcl code.
+    Optionally capture a region's trimmed boundary for render_sketch_png.
     """
 
 async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:

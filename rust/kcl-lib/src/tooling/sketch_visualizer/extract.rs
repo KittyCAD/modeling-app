@@ -5,6 +5,7 @@ use std::collections::BTreeSet;
 
 use super::model::InternalPoint;
 use super::model::InternalSegment;
+use super::region::ResolvedSketchRegion;
 use super::render::render_png;
 use super::sampling::BoundsBuilder;
 use super::sampling::distance;
@@ -28,21 +29,15 @@ use crate::front::Segment;
 pub(super) struct Extraction<'a> {
     scene_objects: &'a [Object],
     highlighted_segment_ids: &'a BTreeSet<usize>,
-    region_boundary_segment_ids: &'a BTreeSet<usize>,
     points: BTreeMap<usize, InternalPoint>,
     segments: BTreeMap<usize, InternalSegment>,
 }
 
 impl<'a> Extraction<'a> {
-    pub(super) fn new(
-        scene_objects: &'a [Object],
-        highlighted_segment_ids: &'a BTreeSet<usize>,
-        region_boundary_segment_ids: &'a BTreeSet<usize>,
-    ) -> Self {
+    pub(super) fn new(scene_objects: &'a [Object], highlighted_segment_ids: &'a BTreeSet<usize>) -> Self {
         Self {
             scene_objects,
             highlighted_segment_ids,
-            region_boundary_segment_ids,
             points: BTreeMap::new(),
             segments: BTreeMap::new(),
         }
@@ -76,7 +71,6 @@ impl<'a> Extraction<'a> {
                             construction: line.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
                             highlighted: self.highlighted_segment_ids.contains(&object.id.0),
-                            region_boundary: self.region_boundary_segment_ids.contains(&object.id.0),
                             polyline,
                         },
                     );
@@ -91,7 +85,6 @@ impl<'a> Extraction<'a> {
                             construction: arc.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
                             highlighted: self.highlighted_segment_ids.contains(&object.id.0),
-                            region_boundary: self.region_boundary_segment_ids.contains(&object.id.0),
                             polyline,
                         },
                     );
@@ -106,7 +99,6 @@ impl<'a> Extraction<'a> {
                             construction: circle.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
                             highlighted: self.highlighted_segment_ids.contains(&object.id.0),
-                            region_boundary: self.region_boundary_segment_ids.contains(&object.id.0),
                             polyline,
                         },
                     );
@@ -126,7 +118,6 @@ impl<'a> Extraction<'a> {
                             construction: spline.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
                             highlighted: self.highlighted_segment_ids.contains(&object.id.0),
-                            region_boundary: self.region_boundary_segment_ids.contains(&object.id.0),
                             polyline: sample_control_point_spline(&control_points, spline.degree as usize),
                         },
                     );
@@ -137,10 +128,19 @@ impl<'a> Extraction<'a> {
         Ok(())
     }
 
-    pub(super) fn finish(self) -> Result<Vec<u8>, SketchVisualizationError> {
+    pub(super) fn finish(
+        self,
+        resolved_region: Option<&ResolvedSketchRegion>,
+    ) -> Result<Vec<u8>, SketchVisualizationError> {
         let bounds = self.bounds();
         let contact_point_ids = self.contact_point_ids();
-        render_png(&self.segments, &self.points, &contact_point_ids, bounds)
+        render_png(
+            &self.segments,
+            &self.points,
+            &contact_point_ids,
+            bounds,
+            resolved_region,
+        )
     }
 
     fn insert_point(&mut self, id: ObjectId, point: &crate::front::Point) {

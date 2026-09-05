@@ -15,6 +15,7 @@ use image::RgbaImage;
 
 use super::model::InternalPoint;
 use super::model::InternalSegment;
+use super::region::ResolvedSketchRegion;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationPoint;
@@ -24,7 +25,6 @@ const CANVAS_WIDTH: u32 = 1024;
 const CANVAS_HEIGHT: u32 = 1024;
 const CANVAS_PADDING: u32 = 48;
 const PRIMARY_LINE_WIDTH: f64 = 3.0;
-const REGION_BOUNDARY_LINE_WIDTH: f64 = 8.0;
 const HIGHLIGHT_LINE_WIDTH: f64 = 5.0;
 const POINT_RADIUS: f64 = 4.0;
 const CONTACT_POINT_RADIUS: f64 = 5.0;
@@ -33,7 +33,9 @@ const FREE_COLOR: Color = Color::rgb(0x3c, 0x73, 0xff);
 const CONFLICT_COLOR: Color = Color::rgb(0xff, 0x5e, 0x5b);
 const FIXED_COLOR: Color = Color::rgb(0xff, 0xff, 0xff);
 const HIGHLIGHT_COLOR: Color = Color::rgb(0xff, 0x4f, 0xd8);
-const REGION_BOUNDARY_COLOR: Color = Color::rgb(0x75, 0xff, 0x5a);
+// #75ff5a at 20% opacity over the dark background. The fill is drawn once,
+// before strokes and points, so their original constraint colors stay intact.
+const REGION_FILL_COLOR: Color = Color::rgb(43, 72, 43);
 const DARK_BACKGROUND: Color = Color::rgb(0x18, 0x1a, 0x1f);
 const POINT_OUTLINE_DARK: Color = Color::rgb(0x18, 0x1a, 0x1f);
 
@@ -68,44 +70,33 @@ pub(super) fn render_png(
     points: &BTreeMap<usize, InternalPoint>,
     contact_point_ids: &BTreeSet<usize>,
     bounds: SketchVisualizationBounds,
+    resolved_region: Option<&ResolvedSketchRegion>,
 ) -> Result<Vec<u8>, SketchVisualizationError> {
     let mut image = RgbaImage::from_pixel(CANVAS_WIDTH, CANVAS_HEIGHT, DARK_BACKGROUND.to_rgba());
     let transform = Transform::new(bounds);
 
-    // Segment polylines were sampled in world coordinates by extraction. The
-    // transform below is the only world-to-screen conversion in the raster path.
-    for segment in segments.values() {
-        let color = dof_color(segment.freedom);
-        draw_polyline(
-            &mut image,
-            &segment.polyline,
-            color,
-            PRIMARY_LINE_WIDTH,
-            segment.construction,
-            &transform,
-        );
+    if let Some(region) = resolved_region {
+        fill_region(&mut image, &region.contours, &transform);
     }
 
-    // Draw the engine-resolved region first, then the caller-selected seed
-    // segments. When a seed is also on the resolved boundary, the green halo
-    // remains visible around the narrower magenta stroke.
-    for segment in segments.values().filter(|segment| segment.region_boundary) {
-        draw_polyline(
-            &mut image,
-            &segment.polyline,
-            REGION_BOUNDARY_COLOR,
-            REGION_BOUNDARY_LINE_WIDTH,
-            false,
-            &transform,
-        );
-    }
+    // Seed halos sit below the normal stroke, not in place of constraint colors.
     for segment in segments.values().filter(|segment| segment.highlighted) {
         draw_polyline(
             &mut image,
             &segment.polyline,
             HIGHLIGHT_COLOR,
             HIGHLIGHT_LINE_WIDTH,
-            false,
+            segment.construction,
+            &transform,
+        );
+    }
+    for segment in segments.values() {
+        draw_polyline(
+            &mut image,
+            &segment.polyline,
+            dof_color(segment.freedom),
+            PRIMARY_LINE_WIDTH,
+            segment.construction,
             &transform,
         );
     }
@@ -130,6 +121,38 @@ pub(super) fn render_png(
     let mut cursor = Cursor::new(Vec::new());
     dynamic.write_to(&mut cursor, ImageFormat::Png)?;
     Ok(cursor.into_inner())
+}
+
+/// Even-odd scanline filling preserves nested holes regardless of winding.
+/// Contours have already been checked for closure; never infer closing edges.
+fn fill_region(image: &mut RgbaImage, contours: &[Vec<SketchVisualizationPoint>], transform: &Transform) {
+    let edges = contours
+        .iter()
+        .flat_map(|contour| {
+            contour
+                .windows(2)
+                .map(|edge| (transform.point(edge[0]), transform.point(edge[1])))
+        })
+        .collect::<Vec<_>>();
+    let mut crossings = Vec::new();
+    for row in 0..image.height() {
+        let y = row as f64 + 0.5;
+        crossings.clear();
+        for &(a, b) in &edges {
+            // Half-open intervals count a shared vertex only once.
+            if (a.y <= y && y < b.y) || (b.y <= y && y < a.y) {
+                crossings.push(a.x + (y - a.y) * (b.x - a.x) / (b.y - a.y));
+            }
+        }
+        crossings.sort_by(f64::total_cmp);
+        for pair in crossings.as_chunks::<2>().0 {
+            let start = (pair[0] - 0.5).ceil().clamp(0.0, image.width() as f64) as u32;
+            let end = (pair[1] - 0.5).ceil().clamp(0.0, image.width() as f64) as u32;
+            for column in start..end {
+                image.put_pixel(column, row, REGION_FILL_COLOR.to_rgba());
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]

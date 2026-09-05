@@ -271,6 +271,7 @@ async fn new_context_state(
 #[derive(Debug, Clone)]
 struct ExecOutcome {
     inner: kcl_lib::ExecOutcome,
+    resolved_region: Option<kcl_lib::tooling::sketch_visualizer::ResolvedSketchRegion>,
     code: String,
     filename: String,
 }
@@ -305,7 +306,9 @@ impl ExecOutcome {
     }
 
     /// Render one sketch from this execution as a PNG, colored by solver
-    /// freedom, with optional highlighted segments and a resolved region.
+    /// freedom, with optional seed halos and a soft region fill. To fill a
+    /// region, pass its name to execute/execute_code's resolved_region option
+    /// first so its trimmed boundary is captured before the engine disconnects.
     #[pyo3(signature = (sketch_name, *, highlighted_segments = None, resolved_region = None))]
     fn render_sketch_png(
         &self,
@@ -313,12 +316,15 @@ impl ExecOutcome {
         highlighted_segments: Option<Vec<String>>,
         resolved_region: Option<&str>,
     ) -> PyResult<Vec<u8>> {
+        let region = resolved_region
+            .map(|name| {
+                self.resolved_region.as_ref().filter(|region| region.name() == name).ok_or_else(|| {
+                    to_py_exception(format!("region `{name}` was not captured; call execute or execute_code with resolved_region=\"{name}\""))
+                })
+            })
+            .transpose()?;
         self.inner
-            .render_sketch_png_with_overlays(
-                sketch_name,
-                highlighted_segments.as_deref().unwrap_or_default(),
-                resolved_region,
-            )
+            .render_sketch_png_with_overlays(sketch_name, highlighted_segments.as_deref().unwrap_or_default(), region)
             .map_err(to_py_exception)
     }
 
@@ -370,7 +376,7 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
     })
 }
 
-async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
+async fn execute_impl(input: KclInput, mock: bool, resolved_region_name: Option<String>) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
         state,
@@ -386,9 +392,25 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
             return Err(to_py_exception(err));
         }
     };
+    let resolved_region = match resolved_region_name {
+        Some(name) => match outcome.resolve_sketch_region(&ctx, &name).await {
+            Ok(region) => Some(region),
+            Err(err) => {
+                ctx.close().await;
+                return Err(match err {
+                    kcl_lib::tooling::sketch_visualizer::SketchVisualizationError::Engine(err) => {
+                        into_kcl_exception(err)
+                    }
+                    err => to_py_exception(err),
+                });
+            }
+        },
+        None => None,
+    };
     ctx.close().await;
     Ok(ExecOutcome {
         inner: outcome,
+        resolved_region,
         code,
         filename,
     })
@@ -588,31 +610,33 @@ fn parse_code(code: String) -> PyResult<bool> {
 }
 
 /// Execute the kcl code from a file path.
+/// Optionally capture a region's trimmed boundary for render_sketch_png.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute(path: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Path(path), false).await }).await
+#[pyfunction(signature = (path, *, resolved_region = None))]
+async fn execute(path: String, resolved_region: Option<String>) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Path(path), false, resolved_region).await }).await
 }
 
 /// Execute the kcl code.
+/// Optionally capture a region's trimmed boundary for render_sketch_png.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code(code: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Code(code), false).await }).await
+#[pyfunction(signature = (code, *, resolved_region = None))]
+async fn execute_code(code: String, resolved_region: Option<String>) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Code(code), false, resolved_region).await }).await
 }
 
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute_code(code: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Code(code), true).await }).await
+    spawn_py(async move { execute_impl(KclInput::Code(code), true, None).await }).await
 }
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute(path: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Path(path), true).await }).await
+    spawn_py(async move { execute_impl(KclInput::Path(path), true, None).await }).await
 }
 
 /// Execute a kcl file and return a report of sketch constraint status.
@@ -1383,7 +1407,7 @@ result = subtract(cube, tools = [cylinder])
 
     #[tokio::test(flavor = "multi_thread")]
     async fn exec_outcome_report_renders_csg_no_overlap_warning() {
-        let outcome = execute_impl(KclInput::Code(NO_OVERLAP_SUBTRACT_KCL.to_string()), false)
+        let outcome = execute_impl(KclInput::Code(NO_OVERLAP_SUBTRACT_KCL.to_string()), false, None)
             .await
             .expect("execute_impl should succeed for valid non-overlapping subtract");
 
@@ -1424,7 +1448,7 @@ result = subtract(cube, tools = [cylinder])
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_exec_outcome_report_renders_imported_module_warning_against_imported_source() {
         let project_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/files/imported_warning");
-        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true)
+        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true, None)
             .await
             .expect("mock execute_impl should succeed for a project that only warns");
 

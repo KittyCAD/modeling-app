@@ -34,8 +34,10 @@ pub enum SketchVisualizationError {
     NotARegion { name: String },
     #[error("region `{region_name}` was resolved from a different sketch than `{sketch_name}`")]
     RegionSketchMismatch { sketch_name: String, region_name: String },
-    #[error("region `{region_name}` has no resolved boundary segments in the artifact graph")]
+    #[error("region `{region_name}` has no complete supported closed boundary available for filling")]
     RegionBoundaryNotFound { region_name: String },
+    #[error("failed to query the resolved region: {0}")]
+    Engine(#[from] crate::KclError),
     #[error("object id {id} was missing from the execution scene objects")]
     MissingObject { id: usize },
     #[error("failed to encode sketch visualization PNG: {0}")]

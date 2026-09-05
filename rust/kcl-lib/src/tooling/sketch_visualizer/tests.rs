@@ -37,7 +37,7 @@ async fn exec_outcome_highlights_named_segments() {
         .expect("the named segments should be highlighted");
 
     assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
-    assert!(!png_contains_color(&png, [0x75, 0xff, 0x5a, 0xff]));
+    assert!(!png_contains_color(&png, [43, 72, 43, 255]));
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -52,8 +52,10 @@ async fn exec_outcome_rejects_unknown_overlay_names() {
         crate::tooling::sketch_visualizer::SketchVisualizationError::SegmentNotFound { .. }
     ));
 
+    let ctx = ExecutorContext::new_mock(None).await;
     let region_error = outcome
-        .render_sketch_png_with_overlays("profile", &[], Some("missing"))
+        .resolve_sketch_region(&ctx, "missing")
+        .await
         .expect_err("an unknown region should fail");
     assert!(matches!(
         region_error,
@@ -62,19 +64,30 @@ async fn exec_outcome_rejects_unknown_overlay_names() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn exec_outcome_renders_engine_resolved_region_boundary() {
-    let outcome =
+async fn exec_outcome_renders_engine_resolved_region_fill() {
+    let (outcome, region) =
         execute_visualizer_kcl_with_engine(&sketch_visualizer_test_root().join("region_overlay/input.kcl")).await;
     let png = outcome
-        .render_sketch_png_with_overlays(
-            "profile",
-            &["bottom".to_owned(), "right".to_owned()],
-            Some("selectedRegion"),
-        )
+        .render_sketch_png_with_overlays("profile", &["bottom".to_owned(), "right".to_owned()], Some(&region))
         .expect("the named segments and resolved region should be highlighted");
 
     assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
-    assert!(png_contains_color(&png, [0x75, 0xff, 0x5a, 0xff]));
+    assert!(png_contains_color(&png, [43, 72, 43, 255]));
+    // Every original line/point pixel must retain its constraint color.
+    let plain = image::load_from_memory(&outcome.render_sketch_png("profile").unwrap())
+        .unwrap()
+        .into_rgba8();
+    let filled = image::load_from_memory(&png).unwrap().into_rgba8();
+    for (before, after) in plain.pixels().zip(filled.pixels()) {
+        if matches!(
+            before.0,
+            [60, 115, 255, 255] | [255, 255, 255, 255] | [255, 94, 91, 255]
+        ) {
+            assert_eq!(before, after);
+        }
+    }
+    assert_eq!(filled.get_pixel(512, 512).0, [43, 72, 43, 255]);
+    assert_eq!(filled.get_pixel(20, 20).0, [24, 26, 31, 255]);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -88,6 +101,83 @@ async fn snapshots_kcl_visualizer_pngs() {
             .render_sketch_png(&case.sketch)
             .unwrap_or_else(|err| panic!("failed to visualize sketch for case `{}`: {err:?}", case.name));
         assert_png_snapshot(&case.name, &png);
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn engine_region_fill_uses_trimmed_curves_and_sketch_units() {
+    // Public primitive regression fixtures, not trace/eval checkpoint data.
+    for (plane, unit, direction) in [("XY", "mm", "CW"), ("XZ", "in", "CCW")] {
+        let source = format!(
+            r#"
+@settings(defaultLengthUnit = {unit}, kclVersion = "3.0-preview")
+profile = sketch(on = {plane}) {{
+  rim = circle(start = [10{unit}, 0{unit}], center = [0{unit}, 0{unit}])
+  chord = line(start = [-8{unit}, 6{unit}], end = [8{unit}, 6{unit}])
+}}
+selectedRegion = region(segments = [profile.chord, profile.rim], direction = {direction})
+"#
+        );
+        let ctx = ExecutorContext::new_with_client(ExecutorSettings::default(), None, None)
+            .await
+            .unwrap();
+        let outcome = ctx
+            .run_with_caching(Program::parse_no_errs(&source).unwrap())
+            .await
+            .unwrap_or_else(|e| panic!("{}", e.error));
+        let region = outcome.resolve_sketch_region(&ctx, "selectedRegion").await.unwrap();
+        ctx.close().await;
+        assert_eq!(region.contours.len(), 1);
+        let contour = &region.contours[0];
+        assert!(contour.len() > 4, "the circular portion must be sampled");
+        assert!(
+            contour.iter().all(|p| libm::hypot(p.x, p.y) <= 10.00001),
+            "must not include untrimmed chord endpoints"
+        );
+        assert!(
+            contour
+                .iter()
+                .any(|p| (p.y - 6.0).abs() < 1e-6 && (p.x.abs() - 8.0).abs() < 1e-6)
+        );
+        let png = outcome
+            .render_sketch_png_with_overlays("profile", &["chord".to_owned()], Some(&region))
+            .unwrap();
+        assert!(png_contains_color(&png, [43, 72, 43, 255]));
+        assert!(png_contains_color(&png, [255, 255, 255, 255]));
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn engine_region_fill_preserves_holes() {
+    let source = r#"
+@settings(kclVersion = "3.0-preview")
+profile = sketch(on = XY) {
+  rim = circle(start = [10mm, 0mm], center = [0mm, 0mm])
+  hole = circle(start = [3mm, 0mm], center = [0mm, 0mm])
+}
+selectedRegion = subtract2d(region(segments = [profile.rim]), tool = region(segments = [profile.hole]))
+"#;
+    let inch_source = source
+        .replace("mm", "in")
+        .replace("on = XY", "on = XZ")
+        .replace("@settings(", "@settings(defaultLengthUnit = in, ");
+    for source in [source, inch_source.as_str()] {
+        let ctx = ExecutorContext::new_with_client(ExecutorSettings::default(), None, None)
+            .await
+            .unwrap();
+        let outcome = ctx
+            .run_with_caching(Program::parse_no_errs(source).unwrap())
+            .await
+            .unwrap_or_else(|e| panic!("{}", e.error));
+        let region = outcome.resolve_sketch_region(&ctx, "selectedRegion").await.unwrap();
+        ctx.close().await;
+        assert_eq!(region.contours.len(), 2);
+        let png = outcome
+            .render_sketch_png_with_overlays("profile", &[], Some(&region))
+            .unwrap();
+        let image = image::load_from_memory(&png).unwrap().into_rgba8();
+        assert_eq!(image.get_pixel(540, 540).0, [24, 26, 31, 255]);
+        assert_eq!(image.get_pixel(800, 512).0, [43, 72, 43, 255]);
     }
 }
 
@@ -128,7 +218,7 @@ async fn execute_visualizer_kcl(input_path: &Path) -> ExecOutcome {
     outcome
 }
 
-async fn execute_visualizer_kcl_with_engine(input_path: &Path) -> ExecOutcome {
+async fn execute_visualizer_kcl_with_engine(input_path: &Path) -> (ExecOutcome, super::ResolvedSketchRegion) {
     let source = std::fs::read_to_string(input_path)
         .unwrap_or_else(|err| panic!("failed to read `{}`: {err}", input_path.display()));
     let program = Program::parse_no_errs(&source)
@@ -143,8 +233,9 @@ async fn execute_visualizer_kcl_with_engine(input_path: &Path) -> ExecOutcome {
         .run_with_caching(program)
         .await
         .unwrap_or_else(|err| panic!("failed to execute `{}`: {err:?}", input_path.display()));
+    let region = outcome.resolve_sketch_region(&ctx, "selectedRegion").await.unwrap();
     ctx.close().await;
-    outcome
+    (outcome, region)
 }
 
 fn sketch_visualizer_snapshot_manifest() -> SketchVisualizerSnapshotManifest {

@@ -601,13 +601,14 @@ impl ExecOutcome {
     ///
     /// Highlighted segment names are local variables from the named sketch
     /// block. The resolved region must be a top-level `region()` result from
-    /// that sketch. Highlighted segments are magenta and the resolved region
-    /// boundary is green.
+    /// that sketch, captured with `resolve_sketch_region` before closing the
+    /// engine session. Magenta seed halos and a soft green region fill sit
+    /// underneath the normal constraint-colored lines.
     pub fn render_sketch_png_with_overlays(
         &self,
         sketch_name: &str,
         highlighted_segment_names: &[String],
-        resolved_region_name: Option<&str>,
+        resolved_region: Option<&crate::tooling::sketch_visualizer::ResolvedSketchRegion>,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
         use std::collections::BTreeSet;
 
@@ -638,7 +639,7 @@ impl ExecOutcome {
             }
         };
 
-        let needs_sketch_value = !highlighted_segment_names.is_empty() || resolved_region_name.is_some();
+        let needs_sketch_value = !highlighted_segment_names.is_empty() || resolved_region.is_some();
         let sketch_fields = if needs_sketch_value {
             let Some(KclValueView::Object { value, .. }) = self.variables.get(sketch_name) else {
                 return Err(SketchVisualizationError::SketchNotFound {
@@ -668,26 +669,15 @@ impl ExecOutcome {
             highlighted_segment_ids.insert(segment.object_id.0);
         }
 
-        let mut region_boundary_segment_ids = BTreeSet::new();
-        if let Some(region_name) = resolved_region_name {
-            let region = match self.variables.get(region_name) {
-                Some(KclValueView::Sketch { value }) => value,
-                Some(_) => {
-                    return Err(SketchVisualizationError::NotARegion {
-                        name: region_name.to_owned(),
-                    });
-                }
-                None => {
-                    return Err(SketchVisualizationError::RegionNotFound {
-                        name: region_name.to_owned(),
-                    });
-                }
-            };
-            let Some(origin_sketch_id) = region.origin_sketch_id else {
-                return Err(SketchVisualizationError::NotARegion {
+        if let Some(region) = resolved_region {
+            let region_name = region.name();
+            // Require the captured geometry's region identity to match.
+            if !matches!(self.variables.get(region_name), Some(KclValueView::Sketch { value }) if value.id == region.id)
+            {
+                return Err(SketchVisualizationError::RegionNotFound {
                     name: region_name.to_owned(),
                 });
-            };
+            }
 
             let Some(fields) = sketch_fields else {
                 return Err(SketchVisualizationError::SketchNotFound {
@@ -704,41 +694,9 @@ impl ExecOutcome {
                     KclValueView::Sketch { value } => Some(value),
                     _ => None,
                 });
-            if selected_sketch.is_none_or(|selected_sketch| selected_sketch.id != origin_sketch_id) {
+            if selected_sketch.is_none_or(|selected_sketch| selected_sketch.id != region.origin_sketch_id) {
                 return Err(SketchVisualizationError::RegionSketchMismatch {
                     sketch_name: sketch_name.to_owned(),
-                    region_name: region_name.to_owned(),
-                });
-            }
-
-            let solved_segments = fields.values().filter_map(|value| {
-                let KclValueView::Segment { value } = value else {
-                    return None;
-                };
-                let SegmentRepr::Solved { segment } = &value.repr else {
-                    return None;
-                };
-                Some(segment.as_ref())
-            });
-            let segments_by_artifact_id = solved_segments
-                .filter(|segment| segment.sketch_id == origin_sketch_id)
-                .map(|segment| (ArtifactId::new(segment.id), segment.object_id.0))
-                .collect::<BTreeMap<_, _>>();
-
-            for path in &region.paths {
-                let artifact_id = ArtifactId::new(path.get_id());
-                let Some(Artifact::Segment(region_segment)) = self.artifact_graph.get(&artifact_id) else {
-                    continue;
-                };
-                let Some(original_segment_id) = region_segment.original_seg_id else {
-                    continue;
-                };
-                if let Some(object_id) = segments_by_artifact_id.get(&original_segment_id) {
-                    region_boundary_segment_ids.insert(*object_id);
-                }
-            }
-            if region_boundary_segment_ids.is_empty() {
-                return Err(SketchVisualizationError::RegionBoundaryNotFound {
                     region_name: region_name.to_owned(),
                 });
             }
@@ -748,7 +706,7 @@ impl ExecOutcome {
             &self.scene_objects,
             sketch,
             &highlighted_segment_ids,
-            &region_boundary_segment_ids,
+            resolved_region,
         )
     }
 }

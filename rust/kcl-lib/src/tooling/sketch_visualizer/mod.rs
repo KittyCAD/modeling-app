@@ -3,6 +3,7 @@
 mod api;
 mod extract;
 mod model;
+mod region;
 mod render;
 mod sampling;
 mod scene;
@@ -12,4 +13,5 @@ mod types;
 mod tests;
 
 pub(crate) use api::render_sketch_png;
+pub use region::ResolvedSketchRegion;
 pub use types::SketchVisualizationError;
