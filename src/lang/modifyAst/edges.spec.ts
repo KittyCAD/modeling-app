@@ -2392,6 +2392,97 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             kclManagerInThisFile
           )
         }, 10_000)
+        // KCL 3.0 copies of the two multiple-treatment cases above. Under
+        // KCL 3.0, fillets and chamfers execute immediately, so each edge
+        // lookup is hoisted above the first cut that could consume its edge.
+        it(`should delete a piped ${edgeTreatmentType} from a body with multiple treatments under KCL 3.0`, async () => {
+          const code = `@settings(kclVersion = "3.0-preview")
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
+  |> fillet(radius = 5, tags = [seg02OppositeEdge])
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
+          const edgeTreatmentSnippet = `${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
+          const expectedCode = `@settings(kclVersion = "3.0-preview")
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
+  |> fillet(radius = 5, tags = [seg02OppositeEdge])
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
+
+          await runDeleteEdgeTreatmentTest(
+            code,
+            edgeTreatmentSnippet,
+            expectedCode,
+            instanceInThisFile,
+            kclManagerInThisFile
+          )
+        }, 10_000)
+        it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments under KCL 3.0`, async () => {
+          const code = `@settings(kclVersion = "3.0-preview")
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
+  |> fillet( radius = 5, tags = [seg02OppositeEdge] )
+fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
+          const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])`
+          const expectedCode = `@settings(kclVersion = "3.0-preview")
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
+  |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
+  |> fillet(radius = 5, tags = [seg02OppositeEdge])
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
+
+          await runDeleteEdgeTreatmentTest(
+            code,
+            edgeTreatmentSnippet,
+            expectedCode,
+            instanceInThisFile,
+            kclManagerInThisFile
+          )
+        }, 10_000)
         // Revolve-specific test
         it(`should delete a ${edgeTreatmentType} from a revolved C-shape with rectangular profile`, async () => {
           const code = `sketch001 = startSketchOn(XY)
