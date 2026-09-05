@@ -408,10 +408,20 @@ export function addClone({
     }
   }
 
-  const declaration = createVariableDeclaration(variableName, call)
-  modifiedAst.body.push(declaration)
-  const toFirstKwarg = false
-  const pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
+  let pathToNode: PathToNode | Error
+  if (mNodeToEdit) {
+    pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      wasmInstance,
+    })
+  } else {
+    const declaration = createVariableDeclaration(variableName, call)
+    modifiedAst.body.push(declaration)
+    const toFirstKwarg = false
+    pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
+  }
   if (err(pathToNode)) {
     return pathToNode
   }

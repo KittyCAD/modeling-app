@@ -1469,7 +1469,7 @@ export function addPerpendicularityGdt({
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (datums && 'variableName' in datums && datums.variableName) {
-    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
@@ -1655,7 +1655,7 @@ export function addAngularityGdt({
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (datums && 'variableName' in datums && datums.variableName) {
-    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
@@ -2387,7 +2387,7 @@ export function addParallelismGdt({
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (datums && 'variableName' in datums && datums.variableName) {
-    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
