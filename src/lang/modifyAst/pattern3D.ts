@@ -16,7 +16,13 @@ import {
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  CallExpressionKw,
+  Expr,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -24,6 +30,15 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+function preserveSolidsInputOnEdit(
+  call: Node<CallExpressionKw>,
+  nodeToEdit?: PathToNode
+) {
+  if (nodeToEdit) {
+    call.unlabeled = null
+  }
+}
 
 export function addPatternCircular3D({
   ast,
@@ -70,7 +85,7 @@ export function addPatternCircular3D({
   }
 
   // Handle axis parameter - can be named axis or Point3d array
-  let axisExpr
+  let axisExpr: Expr
   if (typeof axis === 'string') {
     // Named axis like 'X', 'Y', 'Z'
     axisExpr = createLocalName(axis)
@@ -98,7 +113,7 @@ export function addPatternCircular3D({
   }
 
   // Handle center parameter - should be Point3d [x, y, z]
-  let centerExpr
+  let centerExpr: Expr
   if ('value' in center && isArray(center.value)) {
     // Direct array value [x, y, z]
     const arrayElements = []
@@ -155,6 +170,7 @@ export function addPatternCircular3D({
       ...useOriginalExpr,
     ]
   )
+  preserveSolidsInputOnEdit(call, mNodeToEdit)
 
   // Insert variables for labeled arguments only when we actually use the variable
   if ('variableName' in instances && instances.variableName) {
@@ -241,7 +257,7 @@ export function addPatternLinear3D({
   }
 
   // Handle axis parameter - can be named axis or Point3d array
-  let axisExpr
+  let axisExpr: Expr
   if (typeof axis === 'string') {
     // Named axis like 'X', 'Y', 'Z'
     axisExpr = createLocalName(axis)
@@ -290,6 +306,7 @@ export function addPatternLinear3D({
       ...useOriginalExpr,
     ]
   )
+  preserveSolidsInputOnEdit(call, mNodeToEdit)
 
   // Insert variables for labeled arguments only when we actually use the variable
   if ('variableName' in instances && instances.variableName) {
