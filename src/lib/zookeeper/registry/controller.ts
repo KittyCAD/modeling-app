@@ -443,9 +443,7 @@ class SessionController implements ZookeeperSessionController {
 
   private getZdsProject(): ZDSProject | undefined {
     const project = this.deps.project.value
-    const projectRef = project?.projectIORefSignal.value
-    return projectRef?.path === this.projectPath &&
-      projectRef.projectId === this.projectId
+    return project?.projectIORefSignal.value.path === this.projectPath
       ? project
       : undefined
   }

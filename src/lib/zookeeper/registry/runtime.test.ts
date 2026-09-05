@@ -9,6 +9,7 @@ import type {
 import { createZookeeperRuntime } from '@src/lib/zookeeper/registry/runtime'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -70,6 +71,20 @@ function createServices({
   const projectSession = {
     project: currentProject,
   } as ProjectSessionService
+  let settingsProjectPath = projectPath
+  const currentSettings = signal({
+    meta: { id: { current: projectId } },
+  } as SettingsRegistryService['current']['value'])
+  const settings = {
+    actor: {
+      getSnapshot: () => ({
+        context: {
+          currentProject: { path: settingsProjectPath },
+        },
+      }),
+    },
+    current: currentSettings,
+  } as unknown as SettingsRegistryService
 
   return {
     currentProject,
@@ -78,9 +93,20 @@ function createServices({
       auth: signal({ isLoggedIn, token } as AuthRegistryService),
       billing: signal({} as BillingRegistryService),
       projectSession: signal(projectSession),
+      settings: signal(settings),
       systemIO: signal({} as SystemIORegistryService),
     },
     isLoggedIn,
+    setSettingsProject: (path: string, id: string) => {
+      settingsProjectPath = path
+      currentSettings.value = {
+        ...currentSettings.value,
+        meta: {
+          ...currentSettings.value.meta,
+          id: { ...currentSettings.value.meta.id, current: id },
+        },
+      } as SettingsRegistryService['current']['value']
+    },
     token,
   }
 }
@@ -305,8 +331,46 @@ describe('Zookeeper runtime', () => {
     await runtime.dispose()
   })
 
-  it('replaces the controller when the project ID changes at the same path', async () => {
-    const { currentProject, projectFixture, services } = createServices()
+  it('uses the matching settings ID when project metadata is stale', async () => {
+    const { projectFixture, services } = createServices()
+    projectFixture.project.projectIORefSignal.value = {
+      ...projectFixture.project.projectIORefSignal.value,
+      projectId: otherProjectId,
+    }
+    const { createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    const runtime = createZookeeperRuntime(services, loadController)
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+    expect(createZookeeperSessionController).toHaveBeenCalledWith(
+      expect.objectContaining({ projectId })
+    )
+
+    await runtime.dispose()
+  })
+
+  it('waits for settings to identify the active project', async () => {
+    const { services, setSettingsProject } = createServices()
+    setSettingsProject('/next-project', otherProjectId)
+    const { createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    const runtime = createZookeeperRuntime(services, loadController)
+
+    await Promise.resolve()
+    expect(loadController).not.toHaveBeenCalled()
+
+    setSettingsProject('/project', projectId)
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+
+    await runtime.dispose()
+  })
+
+  it('keeps the active session while settings switch projects', async () => {
+    const { projectFixture, services, setSettingsProject } = createServices()
     const { controllers, createZookeeperSessionController, loadController } =
       createControllerLoader()
     const runtime = createZookeeperRuntime(services, loadController)
@@ -315,12 +379,15 @@ describe('Zookeeper runtime', () => {
       expect(createZookeeperSessionController).toHaveBeenCalledOnce()
     })
 
-    currentProject.value = createProject(
-      '/project',
-      true,
-      projectFixture.kclManager,
-      otherProjectId
-    ).project
+    setSettingsProject('/next-project', otherProjectId)
+    projectFixture.project.projectIORefSignal.value = {
+      ...projectFixture.project.projectIORefSignal.value,
+      projectId: undefined,
+    }
+    expect(controllers[0]?.dispose).not.toHaveBeenCalled()
+    expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+
+    setSettingsProject('/project', otherProjectId)
 
     await vi.waitFor(() => {
       expect(controllers[0]?.dispose).toHaveBeenCalledOnce()
@@ -418,7 +485,7 @@ describe('Zookeeper runtime', () => {
   })
 
   it('stops a stale project and starts its replacement', async () => {
-    const { currentProject, services } = createServices({
+    const { currentProject, services, setSettingsProject } = createServices({
       projectPath: '/first',
     })
     const { controllers, createZookeeperSessionController, loadController } =
@@ -429,6 +496,7 @@ describe('Zookeeper runtime', () => {
       expect(createZookeeperSessionController).toHaveBeenCalledOnce()
     })
     expect(runtime.session.value).toBe(controllers[0]?.controller)
+    setSettingsProject('/second', projectId)
     currentProject.value = createProject('/second').project
 
     await vi.waitFor(() => {
@@ -442,9 +510,8 @@ describe('Zookeeper runtime', () => {
   })
 
   it('waits for a shared editor to drain before starting another project', async () => {
-    const { currentProject, projectFixture, services } = createServices({
-      projectPath: '/first',
-    })
+    const { currentProject, projectFixture, services, setSettingsProject } =
+      createServices({ projectPath: '/first' })
     const drain = deferred<undefined>()
     const { controllers, createZookeeperSessionController, loadController } =
       createControllerLoader((index) =>
@@ -457,6 +524,7 @@ describe('Zookeeper runtime', () => {
     })
 
     projectFixture.kclManager.path = '/second/main.kcl'
+    setSettingsProject('/second', projectId)
     currentProject.value = createProject(
       '/second',
       true,
@@ -563,9 +631,8 @@ describe('Zookeeper runtime', () => {
   })
 
   it('returns an in-progress project drain and gates the next runtime by editor', async () => {
-    const { currentProject, projectFixture, services } = createServices({
-      projectPath: '/first',
-    })
+    const { currentProject, projectFixture, services, setSettingsProject } =
+      createServices({ projectPath: '/first' })
     const drain = deferred<undefined>()
     const firstController = createController('/first', drain.promise)
     const firstFactory = vi.fn(() => firstController.controller)
@@ -578,6 +645,7 @@ describe('Zookeeper runtime', () => {
 
     await vi.waitFor(() => expect(firstFactory).toHaveBeenCalledOnce())
     projectFixture.kclManager.path = '/second/main.kcl'
+    setSettingsProject('/second', projectId)
     currentProject.value = createProject(
       '/second',
       true,

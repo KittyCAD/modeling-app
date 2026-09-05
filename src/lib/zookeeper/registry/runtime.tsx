@@ -35,6 +35,10 @@ import {
   projectSession,
 } from '@src/registry/contracts/projectSession'
 import {
+  type SettingsRegistryService,
+  settingsService,
+} from '@src/registry/contracts/settings'
+import {
   type SystemIORegistryService,
   systemIOService,
 } from '@src/registry/contracts/systemIO'
@@ -54,6 +58,7 @@ type ZookeeperRuntimeServices = {
   billing: ReadonlySignal<BillingRegistryService | undefined>
   debug?: ReadonlySignal<DebugRegistryService | undefined>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
+  settings: ReadonlySignal<SettingsRegistryService | undefined>
   systemIO: ReadonlySignal<SystemIORegistryService | undefined>
 }
 
@@ -211,11 +216,22 @@ export function createZookeeperRuntime(
     const auth = services.auth.value
     const billing = services.billing.value
     const debug = services.debug?.value
+    const settings = services.settings.value
     const systemIO = services.systemIO.value
     const project = currentZdsProject.value
     const projectRef = project?.projectIORefSignal.value
-    const projectId = projectRef?.projectId
     const projectPath = projectRef?.path
+    const settingsProjectPath =
+      settings?.actor.getSnapshot().context.currentProject?.path
+    const settingsProjectId = settings?.current.value.meta.id.current
+    const settingsMatchProject = settingsProjectPath === projectPath
+    // Settings can lead the project signal during navigation, while folder
+    // metadata can lag. Keep an active session stable until their paths agree.
+    const projectId = settingsMatchProject
+      ? settingsProjectId
+      : activation?.projectPath === projectPath
+        ? activation?.projectId
+        : undefined
     const kclManager = project?.executingEditor.value
     const executingFile = project?.executingFileEntry.value
     const editorReady =
@@ -262,10 +278,12 @@ export function createZookeeperRuntime(
       !project ||
       !kclManager ||
       !editorReady ||
+      !settingsMatchProject ||
       !isLoggedIn ||
       !apiToken.trim() ||
       !auth ||
       !billing ||
+      !settings ||
       !systemIO
     ) {
       return
@@ -377,12 +395,7 @@ export function ZookeeperPaneOutlet({
   const controller = runtime.session.value
   const projectPath = project?.path
 
-  if (
-    !project ||
-    !controller ||
-    controller.projectPath !== projectPath ||
-    controller.projectId !== project.projectId
-  ) {
+  if (!project || !controller || controller.projectPath !== projectPath) {
     return <ZookeeperPaneLoading layout={layout} onClose={onClose} />
   }
 
@@ -408,6 +421,7 @@ export const zookeeperPaneRuntimeRegistryItem = defineRegistryItemFactory(
       billing: ctx.services.signal(billingService),
       debug: ctx.services.signal(debugService),
       projectSession: ctx.services.signal(projectSession),
+      settings: ctx.services.signal(settingsService),
       systemIO: ctx.services.signal(systemIOService),
     })
 
