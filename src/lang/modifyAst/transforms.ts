@@ -15,6 +15,7 @@ import {
 } from '@src/lang/modifyAst'
 import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
+import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import {
   getVariableExprsFromSelection,
   valueOrVariable,
@@ -62,16 +63,14 @@ export function addTranslate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    objects,
+  const vars = resolveSelectionInputPlan({
+    selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+    nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
+  })
   if (err(vars)) {
     return vars
   }
@@ -157,16 +156,14 @@ export function addRotate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    objects,
+  const vars = resolveSelectionInputPlan({
+    selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+    nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
+  })
   if (err(vars)) {
     return vars
   }
@@ -262,16 +259,14 @@ export function addScale({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    objects,
+  const vars = resolveSelectionInputPlan({
+    selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+    nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
+  })
   if (err(vars)) {
     return vars
   }
@@ -413,16 +408,14 @@ export function addAppearance({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    objects,
+  const vars = resolveSelectionInputPlan({
+    selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-    }
-  )
+    nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
+  })
   if (err(vars)) {
     return vars
   }
@@ -503,16 +496,15 @@ function addObjectTransform({
   const artifact = objects.graphSelections[0].artifact
   const lastChildLookup =
     artifact?.type !== 'helix' && artifact?.type !== 'sketchBlock'
-  const vars = getVariableExprsFromSelection(
-    objects,
+  const vars = resolveSelectionInputPlan({
+    selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    undefined,
-    {
+    options: {
       lastChildLookup,
-    }
-  )
+    },
+  })
 
   if (err(vars)) {
     return vars
@@ -525,6 +517,7 @@ function addObjectTransform({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl,
     wasmInstance,
   })
@@ -601,17 +594,17 @@ export function addMirror3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const vars = getVariableExprsFromSelection(
-    bodies,
+  const vars = resolveSelectionInputPlan({
+    selection: bodies,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    mNodeToEdit,
-    {
+    nodeToEdit: mNodeToEdit,
+    options: {
       lastChildLookup: true,
       artifactTypeFilter: ['compositeSolid', 'sweep'],
-    }
-  )
+    },
+  })
   if (err(vars)) {
     return vars
   }
