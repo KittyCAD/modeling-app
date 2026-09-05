@@ -3,12 +3,11 @@ import {
   type StdLibCommandArg,
   type StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
-
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 
-type ModelingCommandName = Extract<keyof ModelingCommandSchema, string>
+type ModelingCommandName = Extract<keyof StdLibModelingCommandSchema, string>
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -44,10 +43,16 @@ export type StdLibCommandDriftConfig = {
   flowArgOrder?: readonly string[]
 }
 
-type StdLibCommandArgOverride = Partial<
+export type StdLibCommandArgOverride = Partial<
   CommandArgumentConfig<unknown, ModelingMachineContext>
 > &
   Record<string, unknown>
+
+export type ModelingCommandArgOverrides<CommandArgs extends object> = Partial<{
+  [ArgName in keyof CommandArgs]: Partial<
+    CommandArgumentConfig<CommandArgs[ArgName], ModelingMachineContext>
+  >
+}>
 
 type StdLibCommandArgsOptions = {
   omitted?: readonly string[]
@@ -65,6 +70,10 @@ type CommandArgConfigs<CommandArgs extends object> = {
   >
 }
 
+type StdLibSemanticCommandArg = StdLibCommandArg & {
+  readonly defaultValue?: { readonly source: string }
+}
+
 const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   if (ty === 'bool') {
     return 'boolean'
@@ -72,7 +81,7 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   if (ty === 'TagDecl') {
     return 'tagDeclarator'
   }
-  if (ty === 'Point2d') {
+  if (ty === 'Point2d' || ty === '[number(Length); 2]') {
     return 'vector2d'
   }
   if (ty === 'Point3d') {
@@ -100,6 +109,88 @@ const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
   ]
     .filter(Boolean)
     .join(' ')
+}
+
+function stdLibStringLiteralValue(source: string): string | undefined {
+  const quote = source[0]
+  if ((quote !== '"' && quote !== "'") || source.at(-1) !== quote) {
+    return undefined
+  }
+
+  if (quote === '"') {
+    try {
+      const value: unknown = JSON.parse(source)
+      return typeof value === 'string' ? value : undefined
+    } catch {
+      return undefined
+    }
+  }
+
+  return source.slice(1, -1).replaceAll("\\'", "'").replaceAll('\\\\', '\\')
+}
+
+export type StdLibCommandArgDefaultValue = boolean | string
+
+const stdLibArgDefaultValue = (
+  arg: StdLibSemanticCommandArg
+): StdLibCommandArgDefaultValue | undefined => {
+  const source = arg.defaultValue?.source.trim()
+  if (!source) {
+    return undefined
+  }
+
+  if (arg.ty === 'bool') {
+    if (source === 'true') {
+      return true
+    }
+    if (source === 'false') {
+      return false
+    }
+    return undefined
+  }
+
+  if (arg.ty === 'string') {
+    return stdLibStringLiteralValue(source)
+  }
+
+  return source
+}
+
+export type StdLibCommandArgMetadata = Readonly<{
+  name: string
+  ty: StdLibCommandArg['ty']
+  docs?: string
+  required: boolean
+  defaultValue?: StdLibCommandArgDefaultValue
+}>
+
+export type StdLibCommandArgName<Name extends StdLibCommandName> =
+  (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name']
+
+/**
+ * Returns UI-safe semantic metadata without constructing a command argument.
+ * Boolean and string defaults are decoded; KCL expression defaults keep their
+ * source text.
+ */
+export function stdLibCommandArgMetadata<Name extends StdLibCommandName>(
+  stdLibName: Name,
+  argName: StdLibCommandArgName<Name>
+): StdLibCommandArgMetadata | undefined {
+  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
+    (candidate) => candidate.name === argName
+  )
+  if (!arg) {
+    return undefined
+  }
+
+  const defaultValue = stdLibArgDefaultValue(arg)
+  return {
+    name: arg.name,
+    ty: arg.ty,
+    required: arg.required,
+    ...(arg.docs?.trim() ? { docs: arg.docs } : {}),
+    ...(defaultValue === undefined ? {} : { defaultValue }),
+  }
 }
 
 const hasExistingEditFlowArgument = (
@@ -197,6 +288,13 @@ export function stdLibCommandArgs<CommandArgs extends object>(
     args,
     options.flowArgOrder
   ) as CommandArgConfigs<CommandArgs>
+}
+
+export function stdLibCommandSummary(
+  stdLibName: StdLibCommandName
+): string | undefined {
+  const summary: string | undefined = STD_LIB_COMMANDS[stdLibName].summary
+  return summary?.trim() ? summary : undefined
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -566,6 +664,43 @@ export const modelingCommandStdLibDriftConfig = {
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
 
+/**
+ * Command-palette copy that intentionally differs from the canonical KCL
+ * summary. Keep these exceptions here rather than changing public KCL docs to
+ * fit the command UI.
+ */
+const modelingCommandSummaryOverrides: Partial<
+  Record<ModelingStdLibCommandName, string>
+> = {
+  Extrude: 'Pull a sketch into 3D along its normal or perpendicular.',
+  Revolve: 'Create a 3D surface or solid by rotating a sketch around an axis.',
+  Shell: 'Hollow out a 3D solid.',
+  Hole: 'Cut a standard hole into a solid at a 2D position on one of its faces.',
+  Fillet: 'Fillet edge',
+  Chamfer: 'Create a straight bevel along one or more edges.',
+  Helix: 'Create a helix or spiral in 3D about an axis.',
+  'Helical Gear': 'Create a helical gear.',
+  'Herringbone Gear': 'Create a herringbone gear.',
+  'Spur Gear': 'Create a spur gear.',
+  'Ring Gear': 'Create a ring gear.',
+  Appearance:
+    'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+  Delete: 'Delete selected bodies from the scene.',
+  'Mirror 3D': 'Mirror solids across a plane or edge.',
+  'Pattern Circular 3D':
+    'Create a circular pattern of 3D solids around an axis.',
+  'Pattern Linear 3D': 'Create a linear pattern of 3D solids along an axis.',
+  'GDT Datum':
+    'Add datum geometric dimensioning & tolerancing annotation to a face.',
+  'GDT Profile':
+    'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
+  'Boolean Split':
+    "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
+  'Delete Face': 'Delete a face from a body, leaving an open surface.',
+  Blend: 'Blend two selected surface edges into a new surface.',
+  'Join Surfaces': 'Join selected surfaces into one polysurface.',
+}
+
 export function modelingStdLibCommandName<
   CommandName extends keyof typeof modelingCommandStdLibDriftConfig,
 >(
@@ -582,6 +717,16 @@ export function modelingStdLibCall(
   const name = parts.pop() ?? stdLibName
 
   return { name, path: parts }
+}
+
+/** Uses the concise KCL summary unless the command has product-specific copy. */
+export function modelingStdLibCommandSummary(
+  commandName: ModelingStdLibCommandName
+) {
+  return (
+    modelingCommandSummaryOverrides[commandName] ??
+    stdLibCommandSummary(modelingStdLibCommandName(commandName))
+  )
 }
 
 export function modelingStdLibCommandArgs<CommandArgs extends object>(

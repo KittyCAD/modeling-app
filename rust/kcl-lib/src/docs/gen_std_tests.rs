@@ -730,6 +730,7 @@ fn test_render_function_page_marks_arg_lifecycle() {
             override_in_snippet: None,
             docs: Some(docs.to_owned()),
             snippet_array: None,
+            default_value: None,
             added_in: None,
             deprecated: false,
             deprecated_since: None,

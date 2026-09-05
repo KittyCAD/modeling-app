@@ -1,11 +1,10 @@
+import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
+import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
+import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
 import type {
   STD_LIB_COMMANDS,
   StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
-
-import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
-import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
-import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type {
   KclPreludeBodyType,
@@ -89,7 +88,6 @@ export type RevolveCommandArgs = Override<
     axisOrEdge: 'Axis' | 'Edge'
     axis: string | undefined
     edge: Selections | undefined
-    angle: KclCommandValue
     bodyType?: KclPreludeBodyType
   }
 >

@@ -20,6 +20,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -76,10 +77,34 @@ type ToolbarProps = {
 
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
+function getCommandBarTargetKey(
+  target: ToolbarItemResolved['commandBarTarget'] | undefined
+) {
+  return target ? `${target.groupId}:${target.name}` : undefined
+}
+
+function getCommandBarTargetFromToolbarItem(
+  itemConfig: Pick<ToolbarItemResolved, 'command' | 'commandBarTarget'>
+): ToolbarItemResolved['commandBarTarget'] | undefined {
+  if (itemConfig.commandBarTarget) {
+    return itemConfig.commandBarTarget
+  }
+
+  const separatorIndex = itemConfig.command?.indexOf(':') ?? -1
+  if (!itemConfig.command || separatorIndex <= 0) {
+    return undefined
+  }
+
+  const groupId = itemConfig.command.slice(0, separatorIndex)
+  const name = itemConfig.command.slice(separatorIndex + 1)
+  return groupId && name ? { groupId, name } : undefined
+}
+
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
     useSignals()
     const app = useApp()
+    const commandBarState = app.commands.useState()
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
@@ -102,8 +127,9 @@ const Toolbar_ = memo(
           props.context.selectionRanges.graphSelections[0],
           wasmInstance
         )
-      )
+      ) {
         return false
+      }
       return isCursorInSketchCommandRange(
         kclManager.artifactGraph,
         props.context.selectionRanges
@@ -114,6 +140,15 @@ const Toolbar_ = memo(
     const toolbarButtonsRef = useRef<HTMLUListElement>(null)
     const { showRichContent, handleMouseEnter, handleMouseLeave } =
       useRichTooltipContent()
+    const selectedCommand = commandBarState.context.selectedCommand
+    const activeModelingDialogCommandKey =
+      !commandBarState.matches('Closed') &&
+      isModelingDialogCommand(selectedCommand)
+        ? getCommandBarTargetKey({
+            groupId: selectedCommand.groupId,
+            name: selectedCommand.name,
+          })
+        : undefined
 
     const disableAllButtons =
       (props.overallState !== NetworkHealthState.Ok &&
@@ -262,7 +297,13 @@ const Toolbar_ = memo(
         )
 
         // Calculate the isActive state for this specific item
-        const itemIsActive = maybeIconConfig.isActive?.(props.state) || false
+        const commandBarTargetKey = getCommandBarTargetKey(
+          getCommandBarTargetFromToolbarItem(maybeIconConfig)
+        )
+        const itemIsActive =
+          maybeIconConfig.isActive?.(props.state) ||
+          (activeModelingDialogCommandKey !== undefined &&
+            commandBarTargetKey === activeModelingDialogCommandKey)
 
         // Create item-specific callback props with the correct isActive value
         const itemCallbackProps = {
@@ -338,6 +379,7 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
+      activeModelingDialogCommandKey,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
@@ -356,6 +398,33 @@ const Toolbar_ = memo(
       (event: Pick<MouseEvent, 'metaKey' | 'ctrlKey'>) =>
         event.metaKey || event.ctrlKey,
       []
+    )
+    const runToolbarItemClick = useCallback(
+      (
+        itemConfig: ToolbarItemResolved,
+        event: Pick<MouseEvent, 'metaKey' | 'ctrlKey'>
+      ) => {
+        const commandBarTargetKey = getCommandBarTargetKey(
+          getCommandBarTargetFromToolbarItem(itemConfig)
+        )
+
+        if (activeModelingDialogCommandKey) {
+          app.commands.send({ type: 'Close' })
+          if (commandBarTargetKey === activeModelingDialogCommandKey) {
+            return
+          }
+        }
+
+        itemConfig.onClick({
+          ...itemConfig.callbackProps,
+          keepSelection: getKeepSelectionFromMouseEvent(event),
+        })
+      },
+      [
+        activeModelingDialogCommandKey,
+        app.commands,
+        getKeepSelectionFromMouseEvent,
+      ]
     )
 
     const rememberRecentDropdownItem = useCallback(
@@ -418,7 +487,10 @@ const Toolbar_ = memo(
             if (maybeIconConfig === 'break') {
               return (
                 <div
-                  key={'break-' + i}
+                  key={
+                    // biome-ignore lint/suspicious/noArrayIndexKey: separator identity is defined by its fixed position in the toolbar configuration.
+                    `break-${i}`
+                  }
                   className="h-5 w-[1px] block bg-chalkboard-30 dark:bg-chalkboard-80"
                 />
               )
@@ -460,10 +532,7 @@ const Toolbar_ = memo(
                             (visibleItem) => visibleItem.id === itemConfig.id
                           )
                         )
-                        itemConfig.onClick({
-                          ...itemConfig.callbackProps,
-                          keepSelection: getKeepSelectionFromMouseEvent(event),
-                        })
+                        runToolbarItemClick(itemConfig, event)
                       },
                       disabled:
                         disableAllButtons ||
@@ -475,6 +544,7 @@ const Toolbar_ = memo(
                     }))}
                   >
                     {visibleItems.map((itemConfig, visibleIndex) => (
+                      // biome-ignore lint/a11y/noStaticElementInteractions: this layout wrapper only observes hover for its child button tooltip.
                       <div
                         className="relative"
                         key={itemConfig.id}
@@ -516,11 +586,7 @@ const Toolbar_ = memo(
                               itemConfig.id,
                               false
                             )
-                            itemConfig.onClick({
-                              ...itemConfig.callbackProps,
-                              keepSelection:
-                                getKeepSelectionFromMouseEvent(event),
-                            })
+                            runToolbarItemClick(itemConfig, event)
                           }}
                         >
                           <span
@@ -530,8 +596,6 @@ const Toolbar_ = memo(
                           </span>
                         </ActionButton>
                         <ToolbarItemTooltip
-                          itemConfig={itemConfig}
-                          configCallbackProps={configCallbackProps}
                           wrapperClassName="ui-open:!hidden"
                           contentClassName={tooltipContentClassName}
                         >
@@ -566,9 +630,9 @@ const Toolbar_ = memo(
                 <ActionButtonDropdown
                   Element="button"
                   key={selectedIcon.id}
-                  data-testid={selectedIcon.id + '-dropdown'}
-                  data-onboarding-id={selectedIcon.id + '-dropdown'}
-                  id={selectedIcon.id + '-dropdown'}
+                  data-testid={`${selectedIcon.id}-dropdown`}
+                  data-onboarding-id={`${selectedIcon.id}-dropdown`}
+                  id={`${selectedIcon.id}-dropdown`}
                   name={maybeIconConfig.id}
                   platform={platform}
                   className={
@@ -591,10 +655,7 @@ const Toolbar_ = memo(
                         next.set(i, maybeIconConfig.array.indexOf(itemConfig))
                         return next
                       })
-                      itemConfig.onClick({
-                        ...itemConfig.callbackProps,
-                        keepSelection: getKeepSelectionFromMouseEvent(event),
-                      })
+                      runToolbarItemClick(itemConfig, event)
                     },
                     disabled:
                       disableAllButtons ||
@@ -605,6 +666,7 @@ const Toolbar_ = memo(
                     status: itemConfig.status,
                   }))}
                 >
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: this layout wrapper only observes hover for its child button tooltip. */}
                   <div
                     className="contents"
                     // Mouse events do not fire on disabled buttons
@@ -637,10 +699,7 @@ const Toolbar_ = memo(
                       name={selectedIcon.title}
                       aria-description={selectedIcon.description}
                       onClick={(event) =>
-                        selectedIcon.onClick({
-                          ...selectedIcon.callbackProps,
-                          keepSelection: getKeepSelectionFromMouseEvent(event),
-                        })
+                        runToolbarItemClick(selectedIcon, event)
                       }
                     >
                       <span
@@ -649,8 +708,6 @@ const Toolbar_ = memo(
                         {selectedIcon.title}
                       </span>
                       <ToolbarItemTooltip
-                        itemConfig={selectedIcon}
-                        configCallbackProps={configCallbackProps}
                         wrapperClassName="ui-open:!hidden"
                         contentClassName={tooltipContentClassName}
                       >
@@ -680,6 +737,7 @@ const Toolbar_ = memo(
 
             // A single button
             return (
+              // biome-ignore lint/a11y/noStaticElementInteractions: this layout wrapper only observes hover for its child button tooltip.
               <div
                 className={`relative ${itemConfig.alwaysDark ? ' dark bg-chalkboard-90 ' : ''}`}
                 key={itemConfig.id}
@@ -718,22 +776,13 @@ const Toolbar_ = memo(
                     ) ||
                     itemConfig.disabled
                   }
-                  onClick={(event) =>
-                    itemConfig.onClick({
-                      ...itemConfig.callbackProps,
-                      keepSelection: getKeepSelectionFromMouseEvent(event),
-                    })
-                  }
+                  onClick={(event) => runToolbarItemClick(itemConfig, event)}
                 >
                   <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
                     {itemConfig.title}
                   </span>
                 </ActionButton>
-                <ToolbarItemTooltip
-                  itemConfig={itemConfig}
-                  configCallbackProps={configCallbackProps}
-                  contentClassName={tooltipContentClassName}
-                >
+                <ToolbarItemTooltip contentClassName={tooltipContentClassName}>
                   {showRichContent ? (
                     <ToolbarItemTooltipRichContent
                       itemConfig={itemConfig}
@@ -834,8 +883,6 @@ const ToolbarToasts = memo(function ToolbarToasts() {
 })
 
 interface ToolbarItemContentsProps extends React.PropsWithChildren {
-  itemConfig: ToolbarItemResolved
-  configCallbackProps: ToolbarItemCallbackProps
   wrapperClassName?: string
   contentClassName?: string
 }
@@ -844,8 +891,6 @@ interface ToolbarItemContentsProps extends React.PropsWithChildren {
  * It contains a tooltip with the title, description, and links.
  */
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
-  itemConfig,
-  configCallbackProps,
   wrapperClassName = '',
   contentClassName = '',
   children,
@@ -866,7 +911,7 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       wrapperStyle={wrapperStyle}
       hoverOnly
       position="bottom"
-      wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
+      wrapperClassName={`!p-4 !pointer-events-auto ${wrapperClassName}`}
       contentClassName={contentClassName}
     >
       {children}

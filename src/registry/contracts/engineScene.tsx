@@ -1,4 +1,4 @@
-import { Slot, defineContract, defineValueSpec } from '@kittycad/registry'
+import { defineContract, defineValueSpec, Slot } from '@kittycad/registry'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { ComponentType, Dispatch, SetStateAction } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -14,6 +14,7 @@ export const engineSceneViewExtensionZones = [
   'bottom-left',
   'bottom',
   'bottom-right',
+  'overlay',
 ] as const
 
 export type EngineSceneViewExtensionZone =
@@ -139,6 +140,7 @@ const zoneClassNames: Record<EngineSceneViewExtensionZone, string> = {
   bottom:
     'absolute bottom-2 left-2 right-2 flex items-end justify-center gap-2',
   'bottom-right': 'absolute bottom-2 right-2 flex items-end justify-end gap-3',
+  overlay: 'absolute inset-0',
 }
 
 type EngineSceneViewExtensionOverlayProps = EngineSceneExtensionContext & {

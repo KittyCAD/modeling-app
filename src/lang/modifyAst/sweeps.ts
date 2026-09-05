@@ -785,7 +785,7 @@ export function addRevolve({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   sketches: Selections
-  angle: KclCommandValue
+  angle?: KclCommandValue
   wasmInstance: ModuleType
   axis?: string
   edge?: Selections
@@ -853,6 +853,9 @@ export function addRevolve({
   modifiedAst = getAxisResult.modifiedAst
 
   // Extra labeled args expressions
+  const angleExpr = angle
+    ? [createLabeledArg('angle', valueOrVariable(angle))]
+    : []
   const symmetricExpr =
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
@@ -883,7 +886,7 @@ export function addRevolve({
     modelingStdLibCommandName('Revolve'),
     sketchesExpr,
     [
-      createLabeledArg('angle', valueOrVariable(angle)),
+      ...angleExpr,
       createLabeledArg('axis', getAxisResult.generatedAxis),
       ...toleranceExpr,
       ...symmetricExpr,
@@ -895,7 +898,7 @@ export function addRevolve({
   )
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in angle && angle.variableName) {
+  if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
   if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
