@@ -2,8 +2,15 @@ import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
+import {
+  isUnsupportedEngineVideoCodecError,
+  preflightEngineVideoCodecSupport,
+} from '@src/lib/engineConnection/videoCodecSupport'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
@@ -13,8 +20,6 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useRef } from 'react'
 
 /**
@@ -39,6 +44,20 @@ const attemptToConnectToEngine = async ({
   engineCommandManager: ConnectionManager
   rustContext: RustContext
 }) => {
+  const codecSupport = await preflightEngineVideoCodecSupport()
+  if (isUnsupportedEngineVideoCodecError(codecSupport)) {
+    void reportClientError({
+      code: ClientErrorCode.EngineUnsupportedVideoCodec,
+      error: codecSupport,
+      dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
+      extra: {
+        browserVideoCodecs: codecSupport.browserCodecs,
+        engineVideoCodecs: codecSupport.engineCodecs,
+      },
+    })
+    return Promise.reject(codecSupport)
+  }
+
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
       EngineDebugger.addLog({
@@ -279,6 +298,15 @@ async function tryConnecting({
         } catch (e) {
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
+          if (isUnsupportedEngineVideoCodecError(e)) {
+            EngineDebugger.addLog({
+              label: 'useTryConnect.tsx',
+              message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} stopped before Engine allocation: unsupported video codec`,
+            })
+            numberOfConnectionAttempts.current = 0
+            setShowManualConnect(true)
+            return reject(e)
+          }
           EngineDebugger.addLog({
             label: 'useTryConnect.tsx',
             message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
