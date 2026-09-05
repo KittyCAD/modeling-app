@@ -1,7 +1,8 @@
+import { useOwnedSearchParams } from '@src/hooks/useOwnedSearchParams'
 import { Dialog, Transition } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { Fragment, useEffect, useRef } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { pluginsValueSpec } from '@kittycad/registry'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -39,7 +40,7 @@ export const Settings = () => {
   const app = useApp()
   const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useOwnedSearchParams()
   const close = () => {
     // This makes sure input texts are saved before closing the dialog (eg. default project name).
     if (document.activeElement instanceof HTMLInputElement) {

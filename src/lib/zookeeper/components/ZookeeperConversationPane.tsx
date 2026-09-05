@@ -1,3 +1,4 @@
+import { useOwnedSearchParams } from '@src/hooks/useOwnedSearchParams'
 import {
   ZookeeperConversation,
   type QueuedMessage,
@@ -28,7 +29,6 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
 
@@ -65,7 +65,7 @@ export const ZookeeperConversationPane = (props: {
     zookeeperManagerActor: resumeZookeeperManagerActor,
   } = props
   const [defaultPrompt, setDefaultPrompt] = useState('')
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useOwnedSearchParams()
   const [queue, setQueue] = useState<QueuedMessage[]>([])
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)

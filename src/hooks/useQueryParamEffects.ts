@@ -1,3 +1,4 @@
+import { useOwnedSearchParams } from '@src/hooks/useOwnedSearchParams'
 import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
@@ -34,7 +35,7 @@ import {
 } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
 // For initializing the command arguments, we actually want `method` to be undefined
@@ -85,7 +86,7 @@ export function useQueryParamEffects() {
   const app = useApp()
   const { auth, commands } = app
   const authState = auth.useAuthState()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useOwnedSearchParams()
   const navigate = useNavigate()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
   // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
