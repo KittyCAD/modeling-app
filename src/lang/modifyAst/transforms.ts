@@ -17,12 +17,15 @@ import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import {
+  getBodyIndex,
+  getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   Expr,
+  ExpressionStatement,
   PathToNode,
   Program,
   VariableMap,
@@ -365,8 +368,49 @@ export function addClone({
     []
   )
 
-  // 3. If edit, we assign the new function call declaration to the existing node,
-  // otherwise just push to the end
+  if (!mNodeToEdit && vars.pathIfPipe) {
+    const expression = getNodeFromPath<ExpressionStatement>(
+      modifiedAst,
+      vars.pathIfPipe,
+      wasmInstance,
+      'ExpressionStatement'
+    )
+    if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+      return new Error('Could not retrieve the source pipe for clone')
+    }
+    if (expression.node.expression.type !== 'PipeExpression') {
+      return new Error('Expected the source clone selection to be in a pipe')
+    }
+
+    expression.node.expression.body.push(call)
+    const bodyIndex = getBodyIndex(expression.shallowPath)
+    if (err(bodyIndex)) {
+      return bodyIndex
+    }
+    const sourceStatement = modifiedAst.body[bodyIndex]
+    if (!sourceStatement) {
+      return new Error('Could not find source statement for clone')
+    }
+    const declaration = createVariableDeclaration(
+      variableName,
+      expression.node.expression
+    )
+    declaration.preComments = sourceStatement.preComments
+    modifiedAst.body[bodyIndex] = declaration
+
+    return {
+      modifiedAst,
+      pathToNode: [
+        ['body', ''],
+        [bodyIndex, 'index'],
+        ['declaration', 'VariableDeclaration'],
+        ['init', 'VariableDeclarator'],
+        ['body', 'PipeExpression'],
+        [expression.node.expression.body.length - 1, 'index'],
+      ],
+    }
+  }
+
   const declaration = createVariableDeclaration(variableName, call)
   modifiedAst.body.push(declaration)
   const toFirstKwarg = false
