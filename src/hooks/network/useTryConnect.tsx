@@ -298,15 +298,19 @@ async function tryConnecting({
         } catch (e) {
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
-          EngineDebugger.addLog({
-            label: 'useTryConnect.tsx',
-            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
-          })
           if (isUnsupportedEngineVideoCodecError(e)) {
+            EngineDebugger.addLog({
+              label: 'useTryConnect.tsx',
+              message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} stopped before Engine allocation: unsupported video codec`,
+            })
             numberOfConnectionAttempts.current = 0
             setShowManualConnect(true)
             return reject(e)
           }
+          EngineDebugger.addLog({
+            label: 'useTryConnect.tsx',
+            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
+          })
           engineCommandManager.tearDown()
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
