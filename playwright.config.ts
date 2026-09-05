@@ -60,6 +60,7 @@ export default defineConfig({
   projects: [
     {
       name: 'Google Chrome',
+      testIgnore: '**/firefox-unsupported-codec.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
         channel: 'chrome',
@@ -75,6 +76,20 @@ export default defineConfig({
             : {}),
         },
       }, // or 'chrome-beta'
+    },
+    {
+      name: 'Firefox without H.264',
+      testMatch: '**/firefox-unsupported-codec.spec.ts',
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            'media.gmp-gmpopenh264.autoupdate': false,
+            'media.gmp-gmpopenh264.enabled': false,
+            'media.peerconnection.video.h264_enabled': false,
+          },
+        },
+      },
     },
     // {
     //   name: 'webkit',
