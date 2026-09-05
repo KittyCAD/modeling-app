@@ -2372,6 +2372,28 @@ export function getSketchSegmentName(
     return null
   }
 
+  const segmentCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    segment.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    !err(segmentCall) &&
+    segmentCall.node.type === 'CallExpressionKw' &&
+    isSketchSegmentCallName(segmentCall.node.callee.name.name)
+  ) {
+    const tagArg = segmentCall.node.arguments.find(
+      (arg) => arg.label?.name === 'tag'
+    )?.arg
+    if (tagArg?.type === 'TagDeclarator') {
+      return tagArg.value
+    }
+    if (tagArg?.type === 'Name') {
+      return tagArg.name.name
+    }
+  }
+
   const directSegmentVarDec = getNodeFromPath<VariableDeclaration>(
     ast,
     segment.codeRef.pathToNode,
@@ -2411,7 +2433,10 @@ export function getSketchSegmentNameFromSourceSurface(
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  options: { fallbackToFirstSegment?: boolean } = {}
+  options: {
+    fallbackToFirstSegment?: boolean
+    resolveNamedSweepInput?: boolean
+  } = {}
 ): string | null {
   if (sourceSurfaceArtifact.type !== 'sweep') {
     return null
@@ -2461,6 +2486,23 @@ export function getSketchSegmentNameFromSourceSurface(
     sweepInput.property.type === 'Name'
   ) {
     return sweepInput.property.name.name
+  }
+
+  if (
+    options.resolveNamedSweepInput &&
+    sweepInput.type === 'Name' &&
+    selectedSegment
+  ) {
+    const sourceSegmentId =
+      selectedSegment.originalSegId ??
+      selectedSegment.sourceSegmentId ??
+      selectedSegment.id
+    return getSketchSegmentName(
+      ast,
+      sourceSegmentId,
+      artifactGraph,
+      wasmInstance
+    )
   }
 
   if (sweepInput.type !== 'ArrayExpression') {
