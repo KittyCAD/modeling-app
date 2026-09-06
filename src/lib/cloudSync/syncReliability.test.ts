@@ -3,6 +3,7 @@ import {
   cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   filterCloudSyncProjectFilesForSync,
   getCloudSyncProjectMetadata,
   notifyCloudSyncWriteLikeMutation,
@@ -103,7 +104,7 @@ describe('cloud sync reliability', () => {
 
   afterEach(async () => {
     setCloudSyncOpenedProject(undefined)
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })
