@@ -1,9 +1,11 @@
+import type { App } from '@src/lib/app'
 import type { Location, NavigateFunction } from 'react-router-dom'
 
 import type { Command } from '@src/lib/commandTypes'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 
 export function createRouteCommands(
+  app: App,
   navigate: NavigateFunction,
   location: Location,
   filePath: string,
@@ -48,10 +50,11 @@ export function createRouteCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (_data) => {
-      const path = location.pathname.includes(PATHS.FILE)
-        ? filePath + PATHS.SETTINGS + '?tab=project'
-        : PATHS.HOME + PATHS.SETTINGS
-      void navigate(path)
+      // Over a project, settings opens on the project tab. Which place the app
+      // is in is the app's own answer now, not something read back off a path.
+      app.openSettings(
+        location.pathname.includes(PATHS.FILE) ? { tab: 'project' } : undefined
+      )
     },
   }
 

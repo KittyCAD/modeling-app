@@ -1,6 +1,7 @@
 import { Registry } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { App } from '@src/lib/app'
+import type { AppOverlay } from '@src/registry/contracts/navigation'
 import { PATHS } from '@src/lib/paths'
 import {
   type NavigationService,
@@ -28,13 +29,18 @@ import { describe, expect, test } from 'vitest'
 
 /**
  * An app that only does what these routes ask of it: remember which project is
- * open. `openFile` echoes the id back as both the project path and the
- * executing file, which is what closes the round trip.
+ * open, and which overlay is showing. `openFile` echoes the id back as both the
+ * project path and the executing file, which is what closes the round trip.
  */
 function createFakeApp() {
   const projectSignal = signal<unknown>(undefined)
+  const overlay = signal<AppOverlay | undefined>(undefined)
   return {
     projectSignal,
+    overlaySignal: overlay,
+    setOverlay: (next: AppOverlay | undefined) => {
+      overlay.value = next
+    },
     openFile: ({ id }: { id: string | undefined }) => {
       projectSignal.value = {
         projectIORefSignal: { value: { path: id } },

@@ -210,6 +210,9 @@ export function useQueryParamEffects() {
           importedProject.default_file
         )}`
       )
+      // Same as the sample flow below: the parameter is spent, and saying so is
+      // now the only thing that removes it.
+      clearProjectIdSearchParam()
     })().catch((error) => {
       if (cancelled) {
         return
@@ -341,6 +344,11 @@ export function useQueryParamEffects() {
             importedProject.default_file
           )}`
         )
+        // The parameters have done their job, so say so. Navigating to a path
+        // with no query used to drop them as a side effect; now that the URL is
+        // derived from state, an implicit drop has to become an explicit one or
+        // the carried string puts them back.
+        cleanupQueryParams()
       })().catch((error) => {
         if (cancelled) {
           return

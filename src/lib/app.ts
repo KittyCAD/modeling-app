@@ -6,11 +6,18 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, type Signal, signal } from '@preact/signals-core'
+import {
+  effect,
+  type ReadonlySignal,
+  type Signal,
+  signal,
+} from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { openProjectFile } from '@src/lib/openFile'
+import type { AppOverlay } from '@src/registry/contracts/navigation'
+import { navigationService } from '@src/registry/contracts/navigation'
 import { createNavigationContributions } from '@src/registry/extensions/navigation/contributions'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -182,12 +189,53 @@ export class App implements AppSubsystems {
   private get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
+  private get navigation() {
+    return this.registry.get(navigationService)
+  }
   public get projectSignal(): Signal<ZDSProject | undefined> {
     return this.projectSession.project
   }
   public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
     return this.projectSession.currentProjectLibraryId
   }
+  /**
+   * Whether settings, onboarding or telemetry is showing, and over what.
+   *
+   * Real UI state, and it has to live somewhere the app can set it. Until now
+   * it was seeded only from the URL, which meant a call site could open
+   * settings solely by navigating to `/settings` — fine while the URL was
+   * authoritative, and broken the moment it is derived: the writer recomputes
+   * the path from state that never heard about the navigation, and puts the
+   * old URL straight back.
+   */
+  public get overlaySignal(): ReadonlySignal<AppOverlay | undefined> {
+    return this.navigation.overlay
+  }
+  /** For the URL to seed state on boot or a history pop. */
+  public setOverlay(next: AppOverlay | undefined) {
+    this.navigation.setOverlay(next)
+  }
+
+  /**
+   * Show settings, optionally on a tab and scrolled to a setting.
+   *
+   * The counterpart to `closeSettings`, and the replacement for
+   * `navigate(path + PATHS.SETTINGS_USER)`. The tab is a query parameter and
+   * the anchor a fragment, so this sets three things that used to be one
+   * string — which is the point: each is now state the URL is derived from.
+   *
+   * Both are replaced wholesale, matching what navigating to a fresh
+   * `/settings?tab=…` did to whatever query was there before.
+   */
+  public openSettings(options?: { tab?: string; anchor?: string }) {
+    this.navigation.openSettings(options)
+  }
+
+  /** Hide settings, and clear the tab and anchor that only it used. */
+  public closeSettings() {
+    this.navigation.closeSettings()
+  }
+
   public debug: AppDebug = {}
   get project() {
     return this.projectSession.getProject()

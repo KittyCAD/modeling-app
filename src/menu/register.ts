@@ -1,6 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { AxisNames } from '@src/lib/constants'
-import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -13,11 +12,13 @@ import {
   SystemIOMachineEvents,
   type SystemIOActor,
 } from '@src/machines/systemIO/utils'
+import type { App } from '@src/lib/app'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
 
 export function modelingMenuCallbackMostActions({
+  app,
   settings,
   navigate,
   filePath,
@@ -28,6 +29,7 @@ export function modelingMenuCallbackMostActions({
   settingsActor,
   systemIOActor,
 }: {
+  app: App
   settings: SettingsType
   navigate: NavigateFunction
   filePath: string | undefined
@@ -101,25 +103,25 @@ export function modelingMenuCallbackMostActions({
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER)
+      app.openSettings({ tab: 'user' })
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
       if (!filePath) {
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
+      app.openSettings({ tab: 'keybindings' })
     } else if (data.menuLabel === 'Edit.Change project directory') {
       if (!filePath) {
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#libraries')
+      app.openSettings({ tab: 'user', anchor: 'libraries' })
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
       if (!filePath) {
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_PROJECT)
+      app.openSettings({ tab: 'project' })
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -140,7 +142,7 @@ export function modelingMenuCallbackMostActions({
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
+      app.openSettings({ tab: 'user', anchor: 'defaultUnit' })
     } else if (data.menuLabel === 'File.Add file to project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({

@@ -109,6 +109,44 @@ export interface NavigationService {
   /** Replace the carried query string wholesale. Exclude the leading `?`. */
   setOpaqueSearch(next: string): void
   /**
+   * The URL fragment, carried verbatim, for the same reason as `opaqueSearch`.
+   *
+   * `AppLocation` does not model in-page anchors, and four call sites depend on
+   * them: the native menu and the home screen open settings scrolled to
+   * `libraries` or `defaultUnit`. Without this the derived write drops the
+   * anchor, and "Changing modeling default unit" fails because settings opens
+   * at the top.
+   *
+   * Excludes the leading marker, and is set through `setFragment` for the same
+   * reason `opaqueSearch` is.
+   */
+  readonly fragment: ReadonlySignal<string>
+  /** Replace the fragment wholesale. Exclude the leading marker. */
+  setFragment(next: string): void
+  /**
+   * Which overlay is showing, if any.
+   *
+   * Real UI state, and it lives here because the overlay is part of
+   * `AppLocation` and because everything that opens settings needs to reach it:
+   * components, the native menu, the command bar and the keymap extension. An
+   * extension can resolve a service; it cannot reach `App`.
+   */
+  readonly overlay: ReadonlySignal<AppOverlay | undefined>
+  /** For a URL to seed state on boot or a history pop. */
+  setOverlay(next: AppOverlay | undefined): void
+  /**
+   * Show settings, optionally on a tab and scrolled to a setting.
+   *
+   * The replacement for building `/settings?tab=…#anchor` and navigating to it.
+   * Sets three things that used to be one string — overlay, `?tab=` and the
+   * fragment — because each is separately part of where the app is. The tab and
+   * the anchor are replaced wholesale, matching what navigating to a fresh
+   * `/settings?tab=…` did to whatever query was there before.
+   */
+  openSettings(options?: { tab?: string; anchor?: string }): void
+  /** Hide settings, and clear the tab and anchor that only it used. */
+  closeSettings(): void
+  /**
    * Apply an incoming URL, on boot or on a history pop.
    *
    * Resolves to the route that claimed it, or null when nothing matched — in

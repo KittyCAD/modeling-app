@@ -2,6 +2,7 @@ import { defineRegistryItem, provide } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
 import type { App } from '@src/lib/app'
 import { PATHS } from '@src/lib/paths'
+import { resolveIndexTarget } from '@src/lib/routeInit'
 import {
   type AppLocation,
   type AppOverlay,
@@ -42,8 +43,11 @@ const LIBRARY_ROUTE = new RegExp(`^${PATHS.LIBRARY}/([^/]+)`)
  * argument, and the registration in `app.ts` disappears.
  */
 export function createNavigationContributions(app: App) {
-  /** URL-seeded placeholder. See the note above. */
-  const overlay = signal<AppOverlay | undefined>(undefined)
+  /**
+   * Owned by `App` now, not seeded here. The location is still *derived* from
+   * app state — this reads it, nothing assigns a location.
+   */
+  const overlay = app.overlaySignal
   /** URL-seeded placeholder. See the note above. */
   const libraryId = signal<string | undefined>(undefined)
 
@@ -152,7 +156,7 @@ export function createNavigationContributions(app: App) {
           const match = FILE_ROUTE.exec(url.pathname)
           const encodedId = match?.[1]
           if (!encodedId) return false
-          overlay.value = parseOverlay(url.pathname)
+          app.setOverlay(parseOverlay(url.pathname))
           libraryId.value = undefined
           await app.openFile({ id: decodeURIComponent(encodedId) })
           return true
@@ -168,9 +172,43 @@ export function createNavigationContributions(app: App) {
         load: (url) => {
           const id = LIBRARY_ROUTE.exec(url.pathname)?.[1]
           if (!id) return false
-          overlay.value = parseOverlay(url.pathname)
+          app.setOverlay(parseOverlay(url.pathname))
           libraryId.value = id
           app.closeProject()
+          return true
+        },
+      }),
+      /**
+       * `/` is a funnel, not a place, so it has no `toPath`: no application
+       * state ever serialises back to it. It only claims the URL on the way in,
+       * and what it claims it resolves into state — desktop and flagged web to
+       * the project list, unflagged web to the one project it may have.
+       *
+       * `?ask-open-desktop` is declined rather than claimed, because
+       * `OpenInDesktopAppHandler` owns that decision and this must not move the
+       * app out from under it.
+       */
+      provide(urlRoutesValueSpec, {
+        id: 'index',
+        order: 50,
+        toPath: () => null,
+        load: async (url) => {
+          if (url.pathname !== PATHS.INDEX) return false
+
+          const target = await resolveIndexTarget(app, {
+            requestUrl: url.href,
+          })
+          if (target.kind === 'defer') return false
+
+          app.setOverlay(undefined)
+          libraryId.value = undefined
+
+          if (target.kind === 'home') {
+            app.closeProject()
+            return true
+          }
+
+          await app.openFile({ id: target.filePath })
           return true
         },
       }),
@@ -183,7 +221,7 @@ export function createNavigationContributions(app: App) {
             : null,
         load: (url) => {
           if (!url.pathname.startsWith(PATHS.HOME)) return false
-          overlay.value = parseOverlay(url.pathname)
+          app.setOverlay(parseOverlay(url.pathname))
           libraryId.value = undefined
           app.closeProject()
           return true

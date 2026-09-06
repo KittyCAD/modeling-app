@@ -62,7 +62,8 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project, systemIOActor } = useApp()
+  const app = useApp()
+  const { auth, commands, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
@@ -171,6 +172,7 @@ export const ModelingPageProvider = ({
 
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(
+        app,
         navigate,
         location,
         filePath,
@@ -203,6 +205,7 @@ export const ModelingPageProvider = ({
   }, [location])
 
   const cb = modelingMenuCallbackMostActions({
+    app,
     authActor: auth.actor,
     commandBarActor: commands.actor,
     currentProject: projectIORef?.value,

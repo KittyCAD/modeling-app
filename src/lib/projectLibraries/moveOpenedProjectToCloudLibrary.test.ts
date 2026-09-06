@@ -24,7 +24,7 @@ vi.mock('@src/lib/desktop', () => ({
   writeProjectTitleToProjectToml,
 }))
 
-test('moves an open directory project before navigating directly to its new file', async () => {
+test('moves an open directory project before opening its new file', async () => {
   const project = {
     path: '/projects/example',
     libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -49,8 +49,10 @@ test('moves an open directory project before navigating directly to its new file
   } as unknown as HomeProjectActionsService
   const closeProject = vi.fn()
   const clearProjectSettings = vi.fn()
+  const openFile = vi.fn().mockResolvedValue({ kind: 'opened' })
   const app = {
     closeProject,
+    openFile,
     settings: { actor: { send: clearProjectSettings } },
     registry: {
       optional: (service: unknown) =>
@@ -80,7 +82,12 @@ test('moves an open directory project before navigating directly to its new file
     'Published example'
   )
   expect(moveToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud')
-  expect(navigate).toHaveBeenCalledOnce()
-  expect(navigate).toHaveBeenCalledWith('/file/%2Fcloud%2Fexample%2Fmain.kcl')
-  expect(moveToLibrary).toHaveBeenCalledBefore(navigate)
+  // Opening the moved file is an application command now, not a URL
+  // navigation. The URL still ends up at that file — it is derived from the
+  // project this opens — but nothing here spells it out as a path.
+  expect(openFile).toHaveBeenCalledOnce()
+  expect(openFile).toHaveBeenCalledWith({ id: '/cloud/example/main.kcl' })
+  expect(moveToLibrary).toHaveBeenCalledBefore(openFile)
+  // `navigate` survives for the failure branch, which still sends you home.
+  expect(navigate).not.toHaveBeenCalled()
 })
