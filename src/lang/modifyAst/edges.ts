@@ -95,6 +95,18 @@ function createMemberExpr(
   }
 }
 
+function insertKclVariables(
+  variables: Array<KclCommandValue | undefined>,
+  modifiedAst: Node<Program>,
+  nodeToEdit?: PathToNode
+) {
+  for (const variable of variables) {
+    if (variable) {
+      insertVariableAndOffsetPathToNode(variable, modifiedAst, nodeToEdit)
+    }
+  }
+}
+
 export function addFillet({
   ast,
   artifactGraph,
@@ -125,33 +137,24 @@ export function addFillet({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
+  const nonSelectionArgs = [
+    createLabeledArg('radius', valueOrVariable(radius)),
+    ...(tolerance
+      ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+      : []),
+    ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+    ...(version ? [createLabeledArg('version', valueOrVariable(version))] : []),
+  ]
+
   if (mNodeToEdit) {
-    const call = createCallExpressionStdLibKw(
-      modelingStdLibCommandName('Fillet'),
-      null,
-      [
-        createLabeledArg('radius', valueOrVariable(radius)),
-        ...(tolerance
-          ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
-          : []),
-        ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
-        ...(version
-          ? [createLabeledArg('version', valueOrVariable(version))]
-          : []),
-      ]
-    )
-    if ('variableName' in radius && radius.variableName) {
-      insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
-    }
-    if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
-      insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
-    }
-    if (version && 'variableName' in version && version.variableName) {
-      insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
-    }
+    insertKclVariables([radius, tolerance, version], modifiedAst, mNodeToEdit)
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call,
+      call: createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Fillet'),
+        null,
+        nonSelectionArgs
+      ),
       pathToEdit: mNodeToEdit,
       labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
       wasmInstance,
@@ -194,37 +197,17 @@ export function addFillet({
   }
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in radius && radius.variableName) {
-    insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
-  }
-  if (version && 'variableName' in version && version.variableName) {
-    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
-  }
-  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
-    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
-  }
+  insertKclVariables([radius, version, tolerance], modifiedAst, mNodeToEdit)
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
   for (const data of bodies.values()) {
-    const tagArgs = tag
-      ? [createLabeledArg('tag', createTagDeclarator(tag))]
-      : []
-    const toleranceArgs = tolerance
-      ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
-      : []
-    const versionArgs = version
-      ? [createLabeledArg('version', valueOrVariable(version))]
-      : []
     const call = createCallExpressionStdLibKw(
       modelingStdLibCommandName('Fillet'),
       data.solidsExpr,
       [
         createLabeledArg('tags', data.tagsExpr),
-        createLabeledArg('radius', valueOrVariable(radius)),
-        ...toleranceArgs,
-        ...tagArgs,
-        ...versionArgs,
+        ...structuredClone(nonSelectionArgs),
       ]
     )
 
@@ -276,41 +259,29 @@ export function addChamfer({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
+  const nonSelectionArgs = [
+    createLabeledArg('length', valueOrVariable(length)),
+    ...(secondLength
+      ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
+      : []),
+    ...(angle ? [createLabeledArg('angle', valueOrVariable(angle))] : []),
+    ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+    ...(version ? [createLabeledArg('version', valueOrVariable(version))] : []),
+  ]
+
   if (mNodeToEdit) {
-    const call = createCallExpressionStdLibKw(
-      modelingStdLibCommandName('Chamfer'),
-      null,
-      [
-        createLabeledArg('length', valueOrVariable(length)),
-        ...(secondLength
-          ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
-          : []),
-        ...(angle ? [createLabeledArg('angle', valueOrVariable(angle))] : []),
-        ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
-        ...(version
-          ? [createLabeledArg('version', valueOrVariable(version))]
-          : []),
-      ]
+    insertKclVariables(
+      [length, secondLength, angle, version],
+      modifiedAst,
+      mNodeToEdit
     )
-    if ('variableName' in length && length.variableName) {
-      insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
-    }
-    if (
-      secondLength &&
-      'variableName' in secondLength &&
-      secondLength.variableName
-    ) {
-      insertVariableAndOffsetPathToNode(secondLength, modifiedAst, mNodeToEdit)
-    }
-    if (angle && 'variableName' in angle && angle.variableName) {
-      insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
-    }
-    if (version && 'variableName' in version && version.variableName) {
-      insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
-    }
     const pathToNode = setCallInAst({
       ast: modifiedAst,
-      call,
+      call: createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Chamfer'),
+        null,
+        nonSelectionArgs
+      ),
       pathToEdit: mNodeToEdit,
       labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
       wasmInstance,
@@ -353,49 +324,21 @@ export function addChamfer({
   }
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
-  }
-  if (
-    secondLength &&
-    'variableName' in secondLength &&
-    secondLength.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(secondLength, modifiedAst, mNodeToEdit)
-  }
-  if (angle && 'variableName' in angle && angle.variableName) {
-    insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
-  }
-  if (version && 'variableName' in version && version.variableName) {
-    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
-  }
+  insertKclVariables(
+    [length, secondLength, angle, version],
+    modifiedAst,
+    mNodeToEdit
+  )
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
   for (const data of bodies.values()) {
-    const secondLengthArgs = secondLength
-      ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
-      : []
-    const angleArgs = angle
-      ? [createLabeledArg('angle', valueOrVariable(angle))]
-      : []
-    const tagArgs = tag
-      ? [createLabeledArg('tag', createTagDeclarator(tag))]
-      : []
-    const versionArgs = version
-      ? [createLabeledArg('version', valueOrVariable(version))]
-      : []
-
     const call = createCallExpressionStdLibKw(
       modelingStdLibCommandName('Chamfer'),
       data.solidsExpr,
       [
         createLabeledArg('tags', data.tagsExpr),
-        createLabeledArg('length', valueOrVariable(length)),
-        ...secondLengthArgs,
-        ...angleArgs,
-        ...tagArgs,
-        ...versionArgs,
+        ...structuredClone(nonSelectionArgs),
       ]
     )
 
