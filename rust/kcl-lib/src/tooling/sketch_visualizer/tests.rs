@@ -187,6 +187,109 @@ fn assert_png_snapshot(case_name: &str, png: &[u8]) {
     twenty_twenty::assert_image(output_dir.join("dof.png"), &image, 1.0);
 }
 
+#[tokio::test(flavor = "multi_thread")]
+async fn engine_trace_checkpoint_overlays() {
+    for (name, sketch, seeds, region_name) in [
+        (
+            "case_cover_0009",
+            "flangeSketch",
+            vec!["topRightBlend", "topLeftBlend", "bottomRightBlend", "bottomLeftBlend"],
+            Some("topEarRegion"),
+        ),
+        (
+            "case_cover_0034",
+            "flangeSketch",
+            vec!["topChord", "topRightBlend", "topLug", "topLeftBlend"],
+            Some("topEarRegion"),
+        ),
+        (
+            "case_cover_0055",
+            "flangeSketch",
+            vec!["topChord", "topRightBlend", "topLug", "topLeftBlend"],
+            Some("topEarRegion"),
+        ),
+        (
+            "case_cover_0126",
+            "topEarSketch",
+            vec!["rightBlend", "lugOuter", "leftBlend", "chord"],
+            Some("topEarRegion"),
+        ),
+        (
+            "ceiling_tile_hanger_0054",
+            "hookOuterSketch",
+            vec!["topEdge", "rightEdge", "rightRound", "leftRound", "leftEdge"],
+            None,
+        ),
+    ] {
+        let source = std::fs::read_to_string(
+            sketch_visualizer_test_root()
+                .join("trace_overlays")
+                .join(format!("{name}.kcl")),
+        )
+        .unwrap();
+        let ctx = ExecutorContext::new_with_client(ExecutorSettings::default(), None, None)
+            .await
+            .unwrap();
+        let outcome = ctx
+            .run_with_caching(Program::parse_no_errs(&source).unwrap())
+            .await
+            .unwrap_or_else(|e| panic!("{name}: {}", e.error));
+        let region = match region_name {
+            Some(region_name) => Some(outcome.resolve_sketch_region(&ctx, region_name).await.unwrap()),
+            None => None,
+        };
+        ctx.close().await;
+        let seeds = seeds.into_iter().map(str::to_owned).collect::<Vec<_>>();
+        let plain = image::load_from_memory(&outcome.render_sketch_png(sketch).unwrap())
+            .unwrap()
+            .into_rgba8();
+        let png = outcome
+            .render_sketch_png_with_overlays(sketch, &seeds, region.as_ref())
+            .unwrap();
+        let overlay = image::load_from_memory(&png).unwrap().into_rgba8();
+        assert_eq!(plain.dimensions(), overlay.dimensions());
+        for (before, after) in plain.pixels().zip(overlay.pixels()) {
+            if matches!(
+                before.0,
+                [60, 115, 255, 255] | [255, 255, 255, 255] | [255, 94, 91, 255]
+            ) {
+                assert_eq!(before, after, "{name}: overlay replaced a constraint color");
+            }
+        }
+        assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
+        let filled_pixels = overlay.pixels().filter(|p| p.0 == [43, 72, 43, 255]).count();
+        if let Some(region) = region {
+            assert_eq!(region.contours.len(), 1, "{name}: unexpected extra boundary");
+            let contour = &region.contours[0];
+            assert!(super::sampling::distance(contour[0], *contour.last().unwrap()) < 1e-6);
+            let area = contour
+                .windows(2)
+                .map(|p| p[0].x * p[1].y - p[1].x * p[0].y)
+                .sum::<f64>()
+                .abs()
+                / 2.0;
+            if name == "case_cover_0009" {
+                assert!((area - 34.1219393).abs() < 1e-4);
+                assert!(filled_pixels > 350_000);
+                assert_eq!(overlay.get_pixel(550, 550).0, [43, 72, 43, 255]);
+            } else {
+                // These real checkpoints select a tiny cap of the right blend,
+                // not the intended ear. Do not inflate it or fill the whole loop.
+                assert!((area - 0.0709887).abs() < 1e-5, "{name}: area={area}");
+                assert!(
+                    contour
+                        .iter()
+                        .all(|p| (1.07..1.91).contains(&p.x) && (2.86..2.99).contains(&p.y))
+                );
+                assert!((300..700).contains(&filled_pixels), "{name}: pixels={filled_pixels}");
+                assert_eq!(overlay.get_pixel(550, 550).0, [24, 26, 31, 255]);
+            }
+        } else {
+            assert_eq!(filled_pixels, 0);
+        }
+    }
+}
+
 fn png_contains_color(png: &[u8], expected: [u8; 4]) -> bool {
     image::load_from_memory(png)
         .expect("the renderer should return a valid PNG")
