@@ -522,7 +522,7 @@ describe('KclManager diagnostics', () => {
     vi.useFakeTimers()
 
     const { kclManager } = createKclManagerTestHarness('x = 1')
-    const queueDrain = createDeferred<void>()
+    const queueDrain = createDeferred<undefined>()
     kclManager.engineCommandManager.connection = {
       connected: true,
     } as unknown as typeof kclManager.engineCommandManager.connection
@@ -557,7 +557,7 @@ describe('KclManager diagnostics', () => {
     expect(executeCodeSpy).toHaveBeenCalledTimes(1)
     expect(flushCompleted).toBe(false)
 
-    queueDrain.resolve()
+    queueDrain.resolve(undefined)
     await flush
 
     expect(waitForExecutionQueueToIdleSpy).toHaveBeenCalledTimes(2)
