@@ -135,6 +135,11 @@ struct Test {
 const REPO_ROOT: &str = "../..";
 const KCL_SAMPLE_DEPRECATION_VERSION: &str = "2.0";
 const MATERIAL_DENSITY_KG_PER_CUBIC_METER: f64 = 1000.0;
+// Physical properties come from floating-point geometry calculations. Require
+// agreement to one part per trillion, with a small absolute floor for values
+// near zero. The snapshots use fixed units: mm, mm^2, g, and kg/m^3.
+const PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE: f64 = 1e-9;
+const PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE: f64 = 1e-12;
 
 fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
@@ -287,6 +292,189 @@ where
     }
     // Run `f` (the closure that was passed in) with these settings.
     settings.bind(f);
+}
+
+fn physical_property_values_match(expected: f64, actual: f64) -> bool {
+    approx::relative_eq!(
+        expected,
+        actual,
+        epsilon = PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE,
+        max_relative = PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE
+    )
+}
+
+fn physical_properties_mismatch(
+    expected: &serde_json::Value,
+    actual: &serde_json::Value,
+    path: &str,
+) -> Option<String> {
+    match (expected, actual) {
+        (serde_json::Value::Number(expected), serde_json::Value::Number(actual)) => {
+            let (Some(expected), Some(actual)) = (expected.as_f64(), actual.as_f64()) else {
+                return (expected != actual).then(|| format!("{path}: expected {expected}, got {actual}"));
+            };
+            (!physical_property_values_match(expected, actual)).then(|| {
+                format!(
+                    "{path}: expected {expected}, got {actual} (absolute tolerance {}, relative tolerance {})",
+                    PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE, PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE
+                )
+            })
+        }
+        (serde_json::Value::Object(expected), serde_json::Value::Object(actual)) => {
+            for (key, expected_value) in expected {
+                let child_path = format!("{path}.{key}");
+                let Some(actual_value) = actual.get(key) else {
+                    return Some(format!("{child_path}: missing from actual physical properties"));
+                };
+                if let Some(mismatch) = physical_properties_mismatch(expected_value, actual_value, &child_path) {
+                    return Some(mismatch);
+                }
+            }
+            actual
+                .keys()
+                .find(|key| !expected.contains_key(*key))
+                .map(|key| format!("{path}.{key}: unexpected physical property"))
+        }
+        (serde_json::Value::Array(expected), serde_json::Value::Array(actual)) => {
+            if expected.len() != actual.len() {
+                return Some(format!(
+                    "{path}: expected an array of length {}, got {}",
+                    expected.len(),
+                    actual.len()
+                ));
+            }
+            expected
+                .iter()
+                .zip(actual)
+                .enumerate()
+                .find_map(|(index, (expected, actual))| {
+                    physical_properties_mismatch(expected, actual, &format!("{path}[{index}]"))
+                })
+        }
+        _ => (expected != actual).then(|| format!("{path}: expected {expected}, got {actual}")),
+    }
+}
+
+fn assert_physical_properties_snapshot(test: &Test, mut actual: serde_json::Value) {
+    if !is_writing() {
+        let expected = insta::Snapshot::from_file(&test.output_dir.join("physical_properties.snap"))
+            .ok()
+            .and_then(|snapshot| serde_json::from_str(&snapshot.as_text()?.to_string()).ok());
+        if let Some(expected) = expected
+            && physical_properties_mismatch(&expected, &actual, "physical_properties").is_none()
+        {
+            // Keep the stored values for harmless numeric noise. Still invoke Insta
+            // below so it tracks this snapshot as referenced by the test.
+            actual = expected;
+        }
+    }
+
+    // Missing, unreadable, or materially different snapshots use Insta's normal
+    // failure reporting and update policy, including .snap.new review files.
+    assert_snapshot(test, "Physical properties", || {
+        insta::assert_json_snapshot!("physical_properties", actual)
+    });
+}
+
+#[test]
+fn physical_property_values_allow_numeric_noise_but_reject_wrong_results() {
+    let expected = serde_json::json!({
+        "surface_area": {
+            "unit": "mm2",
+            "value": 138_485.213_581_107_76,
+        },
+    });
+    let observed_numeric_noise = serde_json::json!({
+        "surface_area": {
+            "unit": "mm2",
+            "value": 138_485.213_581_107_73,
+        },
+    });
+    let materially_wrong_surface_area = serde_json::json!({
+        "surface_area": {
+            "unit": "mm2",
+            "value": 138_486.213_581_107_76,
+        },
+    });
+
+    assert_eq!(
+        physical_properties_mismatch(&expected, &observed_numeric_noise, "physical_properties"),
+        None
+    );
+    assert!(physical_properties_mismatch(&expected, &materially_wrong_surface_area, "physical_properties").is_some());
+}
+
+#[test]
+fn physical_properties_snapshot_preserves_insta_workflow() {
+    const CHILD_MODE: &str = "KCL_PHYSICAL_PROPERTIES_SNAPSHOT_TEST_MODE";
+    let Ok(mode) = std::env::var(CHILD_MODE) else {
+        // Insta caches its environment configuration. Use subprocesses to test
+        // each policy without changing the environment of parallel tests.
+        for mode in ["new", "always", "no", "force"] {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "simulation_tests::physical_properties_snapshot_preserves_insta_workflow",
+                    "--nocapture",
+                ])
+                .env(CHILD_MODE, mode)
+                .env("INSTA_UPDATE", if mode == "force" { "always" } else { mode })
+                .env("ZOO_SIM_UPDATE", if mode == "force" { "always" } else { "" })
+                .env("INSTA_FORCE_PASS", "0")
+                .env_remove("INSTA_SNAPSHOT_REFERENCES_FILE")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{mode}:\n{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        return;
+    };
+
+    for (stored, value, within_tolerance) in [
+        (None, 2.0, false),
+        (Some(1.0), 2.0, false),
+        (Some(1.0), 1.0 + 5e-13, true),
+    ] {
+        let directory = tempfile::tempdir().unwrap();
+        let mut test = Test::new("physical_properties_snapshot_workflow");
+        test.output_dir = directory.path().to_owned();
+        let snapshot_path = test.output_dir.join("physical_properties.snap");
+        let properties = |value| serde_json::json!({"surface_area": {"unit": "mm2", "value": value}});
+        let original = stored.map(|value| {
+            format!(
+                "---\nsource: simulation_tests.rs\n---\n{}\n",
+                serde_json::to_string_pretty(&properties(value)).unwrap()
+            )
+        });
+        if let Some(original) = &original {
+            std::fs::write(&snapshot_path, original).unwrap();
+        }
+
+        let actual = properties(value);
+        let result = catch_unwind(|| assert_physical_properties_snapshot(&test, actual.clone()));
+        let updates = matches!(mode.as_str(), "always" | "force");
+        assert_eq!(result.is_ok(), within_tolerance || updates);
+        assert_eq!(
+            test.output_dir.join("physical_properties.snap.new").exists(),
+            mode == "new" && !within_tolerance
+        );
+        if updates {
+            let snapshot = insta::Snapshot::from_file(&snapshot_path).unwrap();
+            let updated: serde_json::Value = serde_json::from_str(&snapshot.as_text().unwrap().to_string()).unwrap();
+            let expected = if within_tolerance && mode != "force" {
+                properties(stored.unwrap())
+            } else {
+                actual
+            };
+            assert_eq!(updated, expected);
+        } else {
+            assert_eq!(std::fs::read_to_string(&snapshot_path).ok(), original);
+        }
+    }
 }
 
 fn parse(test_name: &str) {
@@ -591,9 +779,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             let mut snapshot_results = common_snapshots(test, program_memory, responses);
             if let Some(physical_properties) = physical_properties {
                 snapshot_results.push(catch_unwind(AssertUnwindSafe(|| {
-                    assert_snapshot(test, "Physical properties", || {
-                        insta::assert_json_snapshot!("physical_properties", physical_properties)
-                    })
+                    assert_physical_properties_snapshot(test, physical_properties)
                 })));
             } else {
                 let physical_properties_snap_path = test.output_dir.join("physical_properties.snap");
