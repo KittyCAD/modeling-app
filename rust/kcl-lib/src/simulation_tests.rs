@@ -355,27 +355,25 @@ fn physical_properties_mismatch(
     }
 }
 
-fn assert_physical_properties_snapshot(test: &Test, actual: serde_json::Value) {
-    if is_writing() {
-        assert_snapshot(test, "Physical properties", || {
-            insta::assert_json_snapshot!("physical_properties", actual)
-        });
-        return;
+fn assert_physical_properties_snapshot(test: &Test, mut actual: serde_json::Value) {
+    if !is_writing() {
+        let expected = insta::Snapshot::from_file(&test.output_dir.join("physical_properties.snap"))
+            .ok()
+            .and_then(|snapshot| serde_json::from_str(&snapshot.as_text()?.to_string()).ok());
+        if let Some(expected) = expected
+            && physical_properties_mismatch(&expected, &actual, "physical_properties").is_none()
+        {
+            // Keep the stored values for harmless numeric noise. Still invoke Insta
+            // below so it tracks this snapshot as referenced by the test.
+            actual = expected;
+        }
     }
 
-    let snapshot_path = test.output_dir.join("physical_properties.snap");
-    let snapshot = insta::Snapshot::from_file(&snapshot_path)
-        .unwrap_or_else(|err| panic!("Failed to read {}: {err}", snapshot_path.display()));
-    let snapshot_text = snapshot
-        .as_text()
-        .unwrap_or_else(|| panic!("Expected {} to be a text snapshot", snapshot_path.display()))
-        .to_string();
-    let expected = serde_json::from_str(&snapshot_text)
-        .unwrap_or_else(|err| panic!("Failed to parse {} as JSON: {err}", snapshot_path.display()));
-
-    if let Some(mismatch) = physical_properties_mismatch(&expected, &actual, "physical_properties") {
-        panic!("Physical properties snapshot mismatch: {mismatch}");
-    }
+    // Missing, unreadable, or materially different snapshots use Insta's normal
+    // failure reporting and update policy, including .snap.new review files.
+    assert_snapshot(test, "Physical properties", || {
+        insta::assert_json_snapshot!("physical_properties", actual)
+    });
 }
 
 #[test]
@@ -404,6 +402,79 @@ fn physical_property_values_allow_numeric_noise_but_reject_wrong_results() {
         None
     );
     assert!(physical_properties_mismatch(&expected, &materially_wrong_surface_area, "physical_properties").is_some());
+}
+
+#[test]
+fn physical_properties_snapshot_preserves_insta_workflow() {
+    const CHILD_MODE: &str = "KCL_PHYSICAL_PROPERTIES_SNAPSHOT_TEST_MODE";
+    let Ok(mode) = std::env::var(CHILD_MODE) else {
+        // Insta caches its environment configuration. Use subprocesses to test
+        // each policy without changing the environment of parallel tests.
+        for mode in ["new", "always", "no", "force"] {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "simulation_tests::physical_properties_snapshot_preserves_insta_workflow",
+                    "--nocapture",
+                ])
+                .env(CHILD_MODE, mode)
+                .env("INSTA_UPDATE", if mode == "force" { "always" } else { mode })
+                .env("ZOO_SIM_UPDATE", if mode == "force" { "always" } else { "" })
+                .env("INSTA_FORCE_PASS", "0")
+                .env_remove("INSTA_SNAPSHOT_REFERENCES_FILE")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{mode}:\n{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        return;
+    };
+
+    for (stored, value, within_tolerance) in [
+        (None, 2.0, false),
+        (Some(1.0), 2.0, false),
+        (Some(1.0), 1.0 + 5e-13, true),
+    ] {
+        let directory = tempfile::tempdir().unwrap();
+        let mut test = Test::new("physical_properties_snapshot_workflow");
+        test.output_dir = directory.path().to_owned();
+        let snapshot_path = test.output_dir.join("physical_properties.snap");
+        let properties = |value| serde_json::json!({"surface_area": {"unit": "mm2", "value": value}});
+        let original = stored.map(|value| {
+            format!(
+                "---\nsource: simulation_tests.rs\n---\n{}\n",
+                serde_json::to_string_pretty(&properties(value)).unwrap()
+            )
+        });
+        if let Some(original) = &original {
+            std::fs::write(&snapshot_path, original).unwrap();
+        }
+
+        let actual = properties(value);
+        let result = catch_unwind(|| assert_physical_properties_snapshot(&test, actual.clone()));
+        let updates = matches!(mode.as_str(), "always" | "force");
+        assert_eq!(result.is_ok(), within_tolerance || updates);
+        assert_eq!(
+            test.output_dir.join("physical_properties.snap.new").exists(),
+            mode == "new" && !within_tolerance
+        );
+        if updates {
+            let snapshot = insta::Snapshot::from_file(&snapshot_path).unwrap();
+            let updated: serde_json::Value = serde_json::from_str(&snapshot.as_text().unwrap().to_string()).unwrap();
+            let expected = if within_tolerance && mode != "force" {
+                properties(stored.unwrap())
+            } else {
+                actual
+            };
+            assert_eq!(updated, expected);
+        } else {
+            assert_eq!(std::fs::read_to_string(&snapshot_path).ok(), original);
+        }
+    }
 }
 
 fn parse(test_name: &str) {
