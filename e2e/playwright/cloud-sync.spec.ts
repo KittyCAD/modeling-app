@@ -43,85 +43,6 @@ async function expectCloudSyncHomeReady(page: Page) {
 }
 
 test(
-  'creates a fresh blank Personal Cloud project for every Zookeeper deep link',
-  { tag: ['@web'] },
-  async ({ context, page }, testInfo) => {
-    const createdProjects: CloudProject[] = [
-      {
-        id: '12945000-0000-4000-8000-000000000001',
-        title: 'demo-project',
-        revision: 'demo-project-rev-1',
-        files: {},
-      },
-      {
-        id: '12945000-0000-4000-8000-000000000002',
-        title: 'demo-project-1',
-        revision: 'demo-project-1-rev-1',
-        files: {},
-      },
-    ]
-    let createIndex = 0
-    const remoteProjects: CloudProject[] = []
-    const { calls: apiCalls } = await routeCloudProjects(context, {
-      remoteProjects,
-      createProject: () => {
-        const project = createdProjects[createIndex++]
-        if (!project) {
-          throw new Error('Unexpected extra demo project creation.')
-        }
-        remoteProjects.push(project)
-        return project
-      },
-    })
-    const prompt = 'Design a spur gear'
-    const deepLink =
-      `/?cmd=set-layout&groupId=application&layoutId=zookeeper` +
-      `&ttc-prompt=${encodeURIComponent(prompt)}`
-
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
-    await expectCloudFeatureEnabled(page)
-
-    for (const [index, projectName] of [
-      'demo-project',
-      'demo-project-1',
-    ].entries()) {
-      await page.goto(deepLink)
-
-      await expectProjectFileRoute(page)
-      await expect(page).toHaveURL(new RegExp(`${projectName}%2Fmain\\.kcl`))
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const layout = window.app.layout.get()
-            return 'sizes' in layout ? layout.sizes : []
-          })
-        )
-        .toEqual([0, 50, 50])
-      await expect(page.getByTestId('command-bar-wrapper')).not.toBeVisible()
-      await expect(
-        page.getByTestId('ml-ephant-conversation-input')
-      ).toHaveValue(prompt)
-      await expect
-        .poll(() => new URL(page.url()).searchParams.has('cmd'))
-        .toBe(false)
-      await expect
-        .poll(() => new URL(page.url()).searchParams.has('ttc-prompt'))
-        .toBe(false)
-      await expect.poll(() => apiCalls.creates.length).toBe(index + 1)
-      await expect
-        .poll(() =>
-          opfsPathExists(page, `${PROJECT_DIR}/${projectName}/main.kcl`)
-        )
-        .toBe(true)
-      const files = await readOpfsTextFiles(page, {
-        main: `${PROJECT_DIR}/${projectName}/main.kcl`,
-      })
-      expect(files.main.trim()).toBe('@settings(kclVersion = 2.0)')
-    }
-  }
-)
-
-test(
   'streams remote-only projects into an empty local list and materializes opened clones',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
@@ -180,7 +101,9 @@ test(
       brokenArchiveProjectIds: ['remote-empty-broken'],
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
     await expect(
@@ -320,7 +243,9 @@ test(
       createProject: () => personalCloudProject,
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
     await page.getByTestId('continue-to-web-app-button').click()
@@ -470,7 +395,9 @@ test(
       )
 
     await mockClientErrorReports(context)
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
 

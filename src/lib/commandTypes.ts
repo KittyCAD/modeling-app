@@ -145,8 +145,8 @@ export type Command<
   icon?: Icon
   hide?: TARGET[number]
   hideFromSearch?: boolean
-  /** App contexts where the command may be exposed and invoked. */
-  scopes?: CommandScopes
+  /** App contexts where the command palette and keymap may expose this command. */
+  scopes: CommandScopes
   disabled?: boolean
   status?: CommandStatus
 }
@@ -158,10 +158,17 @@ export type CommandConfig<
     StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = Omit<
   Command<T, CommandName, CommandSchema>,
-  'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
+  | 'name'
+  | 'groupId'
+  | 'onSubmit'
+  | 'onCancel'
+  | 'args'
+  | 'needsReview'
+  | 'scopes'
 > & {
   needsReview?: boolean
   status?: CommandStatus
+  scopes?: CommandScopes
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],

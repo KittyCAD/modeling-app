@@ -16,6 +16,7 @@ export { commandKey } from '@src/lib/commandUtils'
 export const BASE_COMMAND_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_COMMAND_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE = 'code-editor-not-focused'
+export const EDITABLE_FOCUSED_COMMAND_SCOPE = 'editable-focused'
 export const MODE_MODELING_COMMAND_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_COMMAND_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_COMMAND_SCOPE = 'mode-sketch-no-face'
@@ -29,6 +30,24 @@ export const PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE =
 
 const COMMAND_CONTEXT_SCOPE_GROUP = 'context'
 const COMMAND_PROJECT_EXPLORER_SCOPE_GROUP = 'project-explorer'
+
+export const GLOBAL_COMMAND_SCOPES = [BASE_COMMAND_SCOPE] as const
+
+export const SKETCH_COMMAND_SCOPES = [
+  MODE_SKETCHING_COMMAND_SCOPE,
+  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
+  MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+] as const
+
+export const FILE_COMMAND_SCOPES = [
+  MODE_MODELING_COMMAND_SCOPE,
+  ...SKETCH_COMMAND_SCOPES,
+] as const
+
+export const FILE_AND_CODE_EDITOR_COMMAND_SCOPES = [
+  ...FILE_COMMAND_SCOPES,
+  CODE_EDITOR_FOCUSED_COMMAND_SCOPE,
+] as const
 
 export type CommandScope = {
   id: string
@@ -54,12 +73,14 @@ export const DEFAULT_COMMAND_SCOPES: readonly CommandScope[] = [
   {
     id: SETTINGS_COMMAND_SCOPE,
     displayName: 'Settings open',
+    group: COMMAND_CONTEXT_SCOPE_GROUP,
     priority: 1900,
     userEditable: false,
   },
   {
     id: HOME_COMMAND_SCOPE,
     displayName: 'Home',
+    group: COMMAND_CONTEXT_SCOPE_GROUP,
     priority: 50,
     userEditable: false,
   },
@@ -106,6 +127,13 @@ export const DEFAULT_COMMAND_SCOPES: readonly CommandScope[] = [
     userEditable: false,
   },
   {
+    id: EDITABLE_FOCUSED_COMMAND_SCOPE,
+    displayName: 'Editable control focused',
+    group: COMMAND_CONTEXT_SCOPE_GROUP,
+    priority: 1100,
+    userEditable: false,
+  },
+  {
     id: PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE,
     displayName: 'Project explorer focused',
     group: COMMAND_PROJECT_EXPLORER_SCOPE_GROUP,
@@ -141,10 +169,15 @@ export type CommandSystemService = {
 export function normalizeCommandScopeIds(
   scopes: readonly string[] | undefined
 ): readonly string[] {
-  const normalizedScopes = [
+  return [
     ...new Set((scopes ?? []).map((scope) => scope.trim()).filter(Boolean)),
   ]
-  return normalizedScopes.length > 0 ? normalizedScopes : [BASE_COMMAND_SCOPE]
+}
+
+export function getCommandPaletteScopes(activeScopes: readonly string[]) {
+  return activeScopes.filter(
+    (scope) => scope !== EDITABLE_FOCUSED_COMMAND_SCOPE
+  )
 }
 
 export function getEffectiveCommandScopeSet(
@@ -158,8 +191,10 @@ export function isCommandAvailable(
   command: Partial<Pick<Command, 'scopes'>>,
   effectiveScopes: ReadonlySet<string>
 ) {
-  return normalizeCommandScopeIds(command.scopes).some((scope) =>
-    effectiveScopes.has(scope)
+  const commandScopes = normalizeCommandScopeIds(command.scopes)
+  return (
+    commandScopes.length > 0 &&
+    commandScopes.some((scope) => effectiveScopes.has(scope))
   )
 }
 

@@ -431,7 +431,7 @@ function enableCloudSyncPlugin(registry: Registry) {
     return
   }
 
-  registry.get(pluginService).enable()
+  void registry.get(pluginService).enable()
 }
 
 afterEach(() => {
@@ -1091,14 +1091,14 @@ describe('cloud sync project library', () => {
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(true)
 
-      pluginToggle.enable()
+      void pluginToggle.enable()
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(true)
 
-      pluginToggle.disable()
+      void pluginToggle.disable()
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
@@ -1438,7 +1438,7 @@ describe('cloud sync project library', () => {
         return
       }
 
-      registry.get(pluginService).enable()
+      void registry.get(pluginService).enable()
 
       expect(
         projectLibrariesFromSettings(
@@ -1523,7 +1523,7 @@ describe('cloud sync project library', () => {
         return
       }
 
-      registry.get(pluginService).enable()
+      await registry.get(pluginService).enable()
       await Promise.resolve()
       await Promise.resolve()
 

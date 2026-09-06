@@ -415,6 +415,24 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     await page.mouse.click(700, 200)
     await expect(toolbar.exitSketchBtn).toBeVisible()
+    await rectangleToolButton.click()
+    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
+
+    await page.keyboard.press('ControlOrMeta+K')
+    await expect(page.getByPlaceholder('Search commands')).toBeFocused()
+    await expect(
+      page.getByRole('option', { name: 'Reset view', exact: false })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('option', {
+        name: 'Pull a sketch into 3D',
+        exact: false,
+      })
+    ).toHaveCount(0)
+    await page.keyboard.press('Escape')
+    await expect(page.getByPlaceholder('Search commands')).not.toBeVisible()
+    await page.keyboard.press('l')
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
 
     // Switch between sketch tools via the command bar
     if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {
