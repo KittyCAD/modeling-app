@@ -7,6 +7,7 @@ import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
+  onlyAcceptsBodySelectionTypes,
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
@@ -60,13 +61,7 @@ export default function CommandBarSelectionMixedInput({
 
     // Check if this argument only accepts body types
     // These are the artifact types that represent 3D bodies/objects
-    const onlyAcceptsBodies = arg.selectionTypes?.every(
-      (type) =>
-        type === 'sweep' ||
-        type === 'compositeSolid' ||
-        type === 'path' ||
-        type === 'helix'
-    )
+    const onlyAcceptsBodies = onlyAcceptsBodySelectionTypes(arg.selectionTypes)
 
     if (!onlyAcceptsBodies) return // Command accepts non-body types
     if (!arg.machineActor) return // No state machine to update
