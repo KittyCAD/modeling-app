@@ -675,6 +675,79 @@ describe('KclManager diagnostics', () => {
     expect(writeSpy).toHaveBeenCalledWith('second')
   })
 
+  it('does not let a delayed save write into a file selected later', async () => {
+    vi.useFakeTimers()
+
+    const sourcePath = '/tmp/source.kcl'
+    const destinationPath = '/tmp/destination.kcl'
+    const sourceCode = 'source contents'
+    const destinationCode = 'destination contents'
+    const { kclManager } = createKclManagerTestHarness(sourceCode)
+    const writeSpy = vi.spyOn(File.ioImplementations, 'write')
+
+    kclManager.path = sourcePath
+    ;(kclManager as any).markFileCodeAsSynced(sourceCode)
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue(destinationCode)
+
+    const pendingWrite = kclManager.writeToFile('pending source edit')
+    kclManager.path = destinationPath
+    ;(kclManager as any).markFileCodeAsSynced(destinationCode)
+
+    await vi.advanceTimersByTimeAsync(1_000)
+    await pendingWrite
+
+    expect(writeSpy).not.toHaveBeenCalled()
+  })
+
+  it('flushes the source editor before switching to another file', async () => {
+    const sourcePath = '/tmp/source.kcl'
+    const destinationPath = '/tmp/destination.kcl'
+    const sourceCode = 'source contents'
+    const editedSourceCode = 'edited source contents'
+    const destinationCode = 'destination contents'
+    const files = new Map([
+      [sourcePath, sourceCode],
+      [destinationPath, destinationCode],
+    ])
+    const { kclManager } = createKclManagerTestHarness(sourceCode)
+
+    kclManager.path = sourcePath
+    ;(kclManager as any).markFileCodeAsSynced(sourceCode)
+    vi.spyOn(File.ioImplementations, 'read').mockImplementation(
+      async (path) => {
+        const contents = files.get(path)
+        if (contents === undefined) {
+          throw new Error(`Unexpected path: ${path}`)
+        }
+        return contents
+      }
+    )
+    const writeSpy = vi
+      .spyOn(File.ioImplementations, 'write')
+      .mockImplementation(async (path, contents) => {
+        files.set(path, contents)
+      })
+
+    kclManager.updateCodeEditor(editedSourceCode, {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await KclManager.fromFile(
+      new File(destinationPath),
+      (kclManager as any).systemDeps,
+      kclManager,
+      destinationCode
+    )
+
+    expect(writeSpy).toHaveBeenCalledWith(sourcePath, editedSourceCode)
+    expect(files.get(sourcePath)).toBe(editedSourceCode)
+    expect(files.get(destinationPath)).toBe(destinationCode)
+    expect(kclManager.path).toBe(destinationPath)
+    expect(kclManager.code).toBe(destinationCode)
+  })
+
   it('reloads clean editor state from disk watcher updates', async () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
 
@@ -1168,6 +1241,40 @@ describe('KclManager diagnostics', () => {
     expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
   })
 
+  it('reports when a flush cannot persist unsaved changes', async () => {
+    const path = '/tmp/kcl-manager-flush-conflict-test.kcl'
+    const { kclManager } = createKclManagerTestHarness('disk base')
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external newer')
+
+    kclManager.updateCodeEditor('local newer', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await expect(kclManager.flushWriteToFile()).resolves.toBe(false)
+    expect(writeSpy).not.toHaveBeenCalled()
+    expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
+  })
+
+  it('does not recreate a missing empty file when there is nothing to flush', async () => {
+    const path = '/tmp/renamed-empty-file.kcl'
+    const { kclManager } = createKclManagerTestHarness('')
+    const readSpy = vi.spyOn(File.ioImplementations, 'read')
+    const writeSpy = vi.spyOn(File.ioImplementations, 'write')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('')
+
+    await expect(kclManager.flushWriteToFile()).resolves.toBe(true)
+    expect(readSpy).not.toHaveBeenCalled()
+    expect(writeSpy).not.toHaveBeenCalled()
+  })
+
   it('reports KCL autosave failures without including source or path', async () => {
     const path = '/tmp/kcl-manager-reporting-test.kcl'
     const newCode = 'local edits'
@@ -1183,6 +1290,7 @@ describe('KclManager diagnostics', () => {
       (kclManager as any).performDelayedWriteToFile({
         newCode,
         requestedDocumentVersion: (kclManager as any)._documentVersion,
+        requestedPath: path,
         options: {},
       })
     ).rejects.toBe(error)
@@ -1223,6 +1331,7 @@ describe('KclManager diagnostics', () => {
       (kclManager as any).performDelayedWriteToFile({
         newCode,
         requestedDocumentVersion: (kclManager as any)._documentVersion,
+        requestedPath: path,
         options: {},
       })
     ).rejects.toBe(error)

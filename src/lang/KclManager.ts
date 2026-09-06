@@ -2179,6 +2179,7 @@ export class KclManager extends File {
     }
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
+    await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
     providedEditor.editorStatesByPath.set(
       providedEditor.path,
@@ -3819,6 +3820,9 @@ export class KclManager extends File {
     options: { suppressConflictToast?: boolean } = {}
   ) {
     if (this.path !== '') {
+      // KclManager is reused across file navigation. Bind this save to the
+      // file that owned the buffer when the debounce was scheduled.
+      const requestedPath = this.path
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
@@ -3826,9 +3830,11 @@ export class KclManager extends File {
       clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
+          this.timeoutWriter = undefined
           this.performDelayedWriteToFile({
             newCode,
             requestedDocumentVersion,
+            requestedPath,
             options,
           }).then(resolve, reject)
         }, 1000)
@@ -3841,6 +3847,46 @@ export class KclManager extends File {
     }
   }
 
+  async flushWriteToFile(
+    options: { suppressConflictToast?: boolean } = {}
+  ): Promise<boolean> {
+    if (!this.path) {
+      return true
+    }
+
+    const hasPendingWrite = this.timeoutWriter !== undefined
+    if (!hasPendingWrite && !this.hasUnsavedLocalChanges()) {
+      return true
+    }
+
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutWriter = undefined
+    this.timeoutRewatch = undefined
+
+    await this.performDelayedWriteToFile({
+      newCode: this.code,
+      requestedDocumentVersion: this._documentVersion,
+      requestedPath: this.path,
+      options,
+    })
+
+    // Seeding an empty main.kcl (or an edit that lands during the flush) can
+    // schedule one more save. Persist that latest buffer before changing paths.
+    if (this.timeoutWriter !== undefined) {
+      clearTimeout(this.timeoutWriter)
+      this.timeoutWriter = undefined
+      await this.performDelayedWriteToFile({
+        newCode: this.code,
+        requestedDocumentVersion: this._documentVersion,
+        requestedPath: this.path,
+        options,
+      })
+    }
+
+    return !this.hasUnsavedLocalChanges()
+  }
+
   /**
    * Performs the debounced disk-sync work after `writeToFile()` schedules it.
    * This keeps the timeout callback synchronous while preserving the existing
@@ -3849,27 +3895,37 @@ export class KclManager extends File {
   private async performDelayedWriteToFile({
     newCode,
     requestedDocumentVersion,
+    requestedPath,
     options,
   }: {
     newCode: string
     requestedDocumentVersion: number
+    requestedPath: string
     options: { suppressConflictToast?: boolean }
   }) {
-    if (!this.path) {
+    if (!requestedPath) {
       return Promise.reject(new Error('currentFilePath not set'))
     }
-    if (requestedDocumentVersion !== this._documentVersion) {
+    if (
+      requestedDocumentVersion !== this._documentVersion ||
+      requestedPath !== this.path
+    ) {
       return
     }
 
-    if (await this.seedDefaultKclVersionOnBlankMain(requestedDocumentVersion)) {
+    if (
+      await this.seedDefaultKclVersionOnBlankMain(
+        requestedDocumentVersion,
+        requestedPath
+      )
+    ) {
       return
     }
 
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
-        await File.ioImplementations.read(this.path)
+        await File.ioImplementations.read(requestedPath)
       )
     } catch (err: unknown) {
       if (isPathNotFoundError(err)) {
@@ -3890,7 +3946,10 @@ export class KclManager extends File {
       }
     }
 
-    if (requestedDocumentVersion !== this._documentVersion) {
+    if (
+      requestedDocumentVersion !== this._documentVersion ||
+      requestedPath !== this.path
+    ) {
       return
     }
     if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
@@ -3919,6 +3978,12 @@ export class KclManager extends File {
 
     try {
       await this.write(newCode)
+      if (
+        requestedDocumentVersion !== this._documentVersion ||
+        requestedPath !== this.path
+      ) {
+        return
+      }
       this.markFileCodeAsSynced(newCode)
 
       // After a cooldown, start watching this file again on disk.
@@ -3952,9 +4017,10 @@ export class KclManager extends File {
    * version to prevent them from implicitly falling back to a legacy version.
    */
   private async seedDefaultKclVersionOnBlankMain(
-    requestedDocumentVersion: number
+    requestedDocumentVersion: number,
+    requestedPath: string
   ): Promise<boolean> {
-    if (!isMainKclPath(this.path) || this.code.trim() !== '') {
+    if (!isMainKclPath(requestedPath) || this.code.trim() !== '') {
       return false
     }
 
@@ -3962,13 +4028,16 @@ export class KclManager extends File {
     if (typeof wasmInstance === 'string') {
       return false
     }
-    if (requestedDocumentVersion !== this._documentVersion) {
+    if (
+      requestedDocumentVersion !== this._documentVersion ||
+      requestedPath !== this.path
+    ) {
       return false
     }
 
     const currentCode = this.code
     const seeded = ensureDefaultKclVersionOnBlankMain(
-      this.path,
+      requestedPath,
       currentCode,
       wasmInstance
     )
