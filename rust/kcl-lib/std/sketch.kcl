@@ -2483,7 +2483,7 @@ export fn tangentToEnd(
   @tag: TaggedEdge,
 ): number(Angle) {}
 
-/// Extract the provided 2-dimensional sketch's profile's origin value.
+/// Extract the provided 2-dimensional sketch's profile origin as an array containing its X and Y values.
 ///
 /// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
