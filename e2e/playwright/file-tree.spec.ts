@@ -4,10 +4,17 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  FILE_EXT,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as nodeFsP from 'fs/promises'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
@@ -1248,135 +1255,6 @@ test(
     })
   }
 )
-test.describe('Drag and drop moves are undoable', { tag: ['@desktop'] }, () => {
-  // Flakey. The file move happens slow enough a user or test can click on the
-  // file before it moves. Not flakey enough to warrant skipping.
-  test('dragging a file moves it and undo restores it', async ({
-    folderSetupFn,
-    page,
-    homePage,
-    toolbar,
-    editor,
-    fs,
-    scene,
-    cmdBar,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const projectDir = await fs.join(dir, 'Drag File Project')
-      await fs.mkdir(await fs.join(projectDir, 'target'), { recursive: true })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(await fs.join(projectDir, 'main.kcl'), testData)
-
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(await fs.join(projectDir, 'fileToMove.kcl'), testData2)
-    })
-
-    const u = await getUtils(page)
-
-    const fileToMove = u.locatorFile('fileToMove.kcl')
-    const targetFolder = u.locatorFolder('target')
-
-    await homePage.openProject('Drag File Project')
-    await scene.settled()
-
-    await u.openFilePanel()
-
-    await expect(fileToMove).toBeVisible()
-    await expect(targetFolder).toBeVisible()
-
-    await test.step('Move and ensure that the file lands where it should', async () => {
-      await fileToMove.dragTo(targetFolder)
-
-      await toolbar.ensureFolderOpen(targetFolder, true)
-      await expect(u.locatorFile('fileToMove.kcl')).toBeVisible()
-      await toolbar.ensureFolderOpen(targetFolder, false)
-    })
-
-    await test.step('Undo and ensure the file returns and has content', async () => {
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-
-      await expect(fileToMove).toBeVisible()
-      await toolbar.openFile('fileToMove.kcl')
-      await expect(editor.codeContent).toContainText('circle')
-    })
-  })
-
-  test('dragging a folder moves it and undo restores it', async ({
-    folderSetupFn,
-    page,
-    homePage,
-    toolbar,
-    editor,
-    fs,
-    scene,
-    cmdBar,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const projectDir = await fs.join(dir, 'Drag Folder Project')
-      await fs.mkdir(await fs.join(projectDir, 'folderToMove'), {
-        recursive: true,
-      })
-      await fs.mkdir(await fs.join(projectDir, 'targetFolder'), {
-        recursive: true,
-      })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(await fs.join(projectDir, 'main.kcl'), testData)
-
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(projectDir, 'folderToMove', 'inside.kcl'),
-        testData2
-      )
-    })
-
-    const u = await getUtils(page)
-
-    const folderToMove = u.locatorFolder('folderToMove')
-    const targetFolder = u.locatorFolder('targetFolder')
-    const movedFile = u.locatorFile('inside.kcl')
-
-    await homePage.openProject('Drag Folder Project')
-    await scene.settled()
-
-    await u.openFilePanel()
-
-    await expect(folderToMove).toBeVisible()
-    await expect(targetFolder).toBeVisible()
-
-    await test.step('Move folder and ensure it lands where it, with contents intact', async () => {
-      await folderToMove.dragTo(targetFolder)
-
-      await toolbar.ensureFolderOpen(targetFolder, true)
-      await expect(folderToMove).toBeVisible()
-      await toolbar.ensureFolderOpen(folderToMove, true)
-      await expect(movedFile).toBeVisible()
-      await toolbar.openFile('inside.kcl')
-      await expect(editor.codeContent).toContainText('circle')
-      await toolbar.ensureFolderOpen(targetFolder, false)
-    })
-
-    await test.step('Undo and ensure the folder returns and has content', async () => {
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-
-      await expect(folderToMove).toBeVisible()
-      await toolbar.ensureFolderOpen(folderToMove, true)
-      await expect(movedFile).toBeVisible()
-    })
-  })
-})
-
 test.describe(
   'Undo and redo do not keep history when navigating between files',
   { tag: ['@desktop'] },

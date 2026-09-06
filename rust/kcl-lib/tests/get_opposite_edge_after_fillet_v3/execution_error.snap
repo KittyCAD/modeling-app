@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing get_opposite_edge_after_fillet_v3.kcl
+---
+KCL Engine error
+
+  × engine: Entity found but it was of the wrong type
+    ╭─[17:34]
+ 16 │   |> fillet(radius = 1, tags = [seg01])
+ 17 │   |> chamfer(length = 1, tags = [getOppositeEdge(seg01)])
+    ·                                  ───────────┬──────────
+    ·                                             ╰── tests/get_opposite_edge_after_fillet_v3/input.kcl
+    ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: Entity found but it was of the wrong type
+          ╭─[17:34]
+       16 │   |> fillet(radius = 1, tags = [seg01])
+       17 │   |> chamfer(length = 1, tags = [getOppositeEdge(seg01)])
+          ·                                  ───────────┬──────────
+          ·                                             ╰── tests/
+      get_opposite_edge_after_fillet_v3/input.kcl
+          ╰────

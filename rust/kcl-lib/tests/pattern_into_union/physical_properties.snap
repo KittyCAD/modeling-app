@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties pattern_into_union.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 5.7625,
+      "y": 1.6437007874015666,
+      "z": 0.675
+    },
+    "dimensions": {
+      "x": 11.525,
+      "y": 3.2874015748032184,
+      "z": 1.35
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 211.2944939863734
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.018006771176057534
+  }
+}

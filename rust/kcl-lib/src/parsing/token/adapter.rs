@@ -41,7 +41,7 @@ enum LexErrorKind {
 /// Lexical problems stay lexical by converting to `KclError::new_lexical` (see
 /// [`LexResult::to_lexical_error`]).
 #[derive(Debug, Clone)]
-pub(crate) struct LexDiagnostic {
+pub struct LexDiagnostic {
     kind: LexErrorKind,
     /// Offending source text, used to render `found unknown token '<x>'`.
     text: String,
@@ -64,9 +64,9 @@ impl LexDiagnostic {
 /// [`LexResult::to_lexical_error`]; the LSP renders each as a diagnostic while
 /// keeping `tokens` for highlighting.
 #[derive(Debug)]
-pub(crate) struct LexResult {
-    pub(crate) tokens: TokenStream,
-    pub(crate) issues: Vec<LexDiagnostic>,
+pub struct LexResult {
+    pub tokens: TokenStream,
+    pub issues: Vec<LexDiagnostic>,
 }
 
 impl LexResult {
@@ -74,7 +74,7 @@ impl LexResult {
     /// there are none. Matches the legacy public contract: a run of unknown
     /// tokens aggregates into one message with all ranges (mirroring
     /// `parse_tokens`); any other case reports the first issue in source order.
-    pub(crate) fn to_lexical_error(&self) -> Option<KclError> {
+    pub fn to_lexical_error(&self) -> Option<KclError> {
         let issues = &self.issues;
         let first = issues.first()?;
 
@@ -103,7 +103,7 @@ impl LexResult {
 /// Lex `source` with the `kcl-syntax` lexer, mapping to the legacy token stream
 /// and collecting lexical diagnostics. Never fails: recoverable problems appear
 /// in `tokens` (as `Unknown`) and in `issues`.
-pub(crate) fn lex_with_diagnostics(source: &str, module_id: ModuleId) -> LexResult {
+pub fn lex_with_diagnostics(source: &str, module_id: ModuleId) -> LexResult {
     let lexed = kcl_syntax::lexer::lex(source);
 
     let mut tokens: Vec<Token> = Vec::with_capacity(lexed.len());

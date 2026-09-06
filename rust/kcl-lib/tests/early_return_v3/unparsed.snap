@@ -1,0 +1,40 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing early_return_v3.kcl
+---
+// This tests early-return semantics under KCL 3.0: an
+// executed return immediately terminates the enclosing function body.
+@settings(kclVersion = "3.0-preview")
+
+fn simple() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+assert(simple(), isEqualTo = 1, error = "return produces the function's value")
+
+fn firstReturnWins() {
+  return 1
+  return 2
+}
+assert(firstReturnWins(), isEqualTo = 1, error = "the second return never executes")
+
+fn fromIfArm(@b) {
+  dummy = if b {
+    return 10
+    0
+  } else {
+    0
+  }
+  return 20
+}
+assert(fromIfArm(true), isEqualTo = 10, error = "return inside an if-arm returns from the function")
+assert(fromIfArm(false), isEqualTo = 20, error = "the untaken arm does not return")
+
+fn viaClosure() {
+  inner = fn() {
+    return 5
+    assert(1, isEqualTo = 2, error = "code after the closure's return ran")
+  }
+  return inner() + 1
+}
+assert(viaClosure(), isEqualTo = 6, error = "a closure's return terminates only the closure")

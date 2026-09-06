@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties crash-box.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -0.0000000003195737008354626,
+      "z": -575.0000000000001
+    },
+    "dimensions": {
+      "x": 420.0,
+      "y": 403.99999999986915,
+      "z": 1250.0000000000002
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 3232614.9765685843
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 31454.95327711009
+  }
+}

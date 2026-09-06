@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties tag_inner_face.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 29.464,
+      "y": -25.4,
+      "z": 13.462000000000003
+    },
+    "dimensions": {
+      "x": 131.67360000000002,
+      "y": 50.8,
+      "z": 103.02239999999998
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 32752.052531577647
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 148.85353281594385
+  }
+}
