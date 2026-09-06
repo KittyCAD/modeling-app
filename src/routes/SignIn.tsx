@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
@@ -16,10 +16,7 @@ import {
   errorToMessage,
   reportClientError,
 } from '@src/lib/clientErrors'
-import {
-  APP_NAME,
-  SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY,
-} from '@src/lib/constants'
+import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -31,10 +28,6 @@ import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 
-type SignInRouteState = {
-  [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]?: boolean
-}
-
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
@@ -43,7 +36,6 @@ let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   const { auth, settings } = useApp()
-  const routerLocation = useLocation()
   const [userCode, setUserCode] = useState('')
   const [verificationUri, setVerificationUri] = useState('')
   const signInAttemptRef = useRef(0)
@@ -268,19 +260,19 @@ const SignIn = () => {
 
   useEffect(() => {
     const electron = window.electron
-    const routeState = routerLocation.state as SignInRouteState | null
-    if (
-      autoSignInAttemptedRef.current ||
-      !electron ||
-      !routeState?.[SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]
-    ) {
+    if (autoSignInAttemptedRef.current || !electron) {
+      return
+    }
+
+    // Reading the intent clears it, so a remount cannot start a second flow.
+    if (!auth.consumeSessionExpiredSignIn()) {
       return
     }
 
     autoSignInAttemptedRef.current = true
     void signInDesktop(electron)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- The router state is a one-shot intent to start desktop sign-in with the current environment.
-  }, [routerLocation.state])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- A one-shot intent to start desktop sign-in with the current environment.
+  }, [])
 
   const cancelSignIn = async () => {
     signInAttemptRef.current += 1

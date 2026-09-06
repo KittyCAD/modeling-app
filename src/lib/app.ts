@@ -10,6 +10,7 @@ import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
+import { openProjectFile } from '@src/lib/openFile'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -478,6 +479,17 @@ export class App implements AppSubsystems {
   async disposeAsync() {
     this.stopSubsystems()
     await this.registry.disposeAsync()
+  }
+
+  /**
+   * Open a project and one of its files.
+   *
+   * The counterpart to `closeProject`. This exists so that opening a file is an
+   * application command rather than a side effect of a route transition — until
+   * it did, a URL navigation was the only thing in the app that could open one.
+   */
+  async openFile(input: Parameters<typeof openProjectFile>[1]) {
+    return openProjectFile(this, input)
   }
 
   closeProject() {

@@ -29,6 +29,13 @@ export type AuthRegistryService = {
   isLoggedIn: ReadonlySignal<boolean>
   sessionExpiredNotice: ReadonlySignal<SessionExpiredNotice | undefined>
   clearSessionExpiredNotice: () => void
+  /**
+   * A pending one-shot intent to start desktop sign-in on reaching the sign-in
+   * screen. Read it with `consumeSessionExpiredSignIn`, which clears it.
+   */
+  sessionExpiredSignInIntent: ReadonlySignal<boolean>
+  requestSessionExpiredSignIn: () => void
+  consumeSessionExpiredSignIn: () => boolean
   useAuthState: () => SnapshotFrom<typeof authMachine>
   useToken: () => string
   useUser: () => UserResponse | undefined
