@@ -90,7 +90,7 @@ describe('duplicateProjectInDirectory', () => {
     createdProjectPaths.length = 0
   })
 
-  it('uses the current editor contents for the active file when duplicating a project', async () => {
+  it('copies current editor contents without overwriting the source file', async () => {
     const project = await makeProject({
       mainKcl: 'disk = true',
     })
@@ -112,7 +112,7 @@ describe('duplicateProjectInDirectory', () => {
     )
     await expect(
       readText(fsZds.join(project.sourcePath, 'main.kcl'))
-    ).resolves.toBe('editor = true')
+    ).resolves.toBe('disk = true')
   })
 
   it('keeps duplicated project metadata even when project.toml is the active file', async () => {

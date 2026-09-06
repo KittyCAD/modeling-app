@@ -120,16 +120,18 @@ export async function duplicateProjectInDirectory({
     currentFilePath,
   })
   try {
+    await fsZds.mkdir(temporaryPath)
+    await fsZds.cp(source.path, temporaryPath, { recursive: true })
+    // Overlay the editor snapshot on the copy without bypassing source-file
+    // conflict detection or racing its pending autosave.
     if (relativeCurrentFilePath && currentFileContents !== undefined) {
       await writeProjectRelativeFile(
-        source.path,
+        temporaryPath,
         relativeCurrentFilePath,
         currentFileContents
       )
     }
 
-    await fsZds.mkdir(temporaryPath)
-    await fsZds.cp(source.path, temporaryPath, { recursive: true })
     await fsZds.writeFile(
       fsZds.join(temporaryPath, PROJECT_SETTINGS_FILE_NAME),
       new TextEncoder().encode(duplicatedProjectToml)
