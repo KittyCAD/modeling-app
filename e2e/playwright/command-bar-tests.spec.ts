@@ -229,10 +229,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     scene,
     editor,
   }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `distance = sqrt(20)
+    const initialCode = `distance = sqrt(20)
     sketch001 = startSketchOn(XZ)
     |> startProfile(at = [-6.95, 10.98])
     |> line(end = [25.1, 0.41])
@@ -240,12 +237,20 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     |> line(end = [-23.44, 0.52])
     |> close()
         `
-      )
-    })
+    const u = await getUtils(page)
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
+
+    await u.openDebugPanel()
+    await u.clearCommandLogs()
+    await u.closeDebugPanel()
+    await editor.replaceCode('', initialCode)
+    await editor.expectEditor.toContain('startProfile(at = [-6.95, 10.98])')
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('ControlOrMeta+K')
