@@ -1,9 +1,11 @@
 import 'fake-indexeddb/auto'
 import {
+  cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
   disableCloudSyncEngineForTest,
   filterCloudSyncProjectFilesForSync,
+  getCloudSyncProjectMetadata,
   notifyCloudSyncWriteLikeMutation,
   type ProjectArchiveFile,
   setCloudSyncOpenedProject,
@@ -105,6 +107,96 @@ describe('cloud sync reliability', () => {
     await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
+  })
+
+  it('preserves newer sync metadata when a write notification finishes late', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'local = 2\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    const cloudSyncFs = createCloudSyncTestFs(files, { projectDirectory })
+    configureCloudSyncLocalFileSystem(cloudSyncFs)
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+      if (url === `${baseUrl}/user/projects` && method === 'GET') {
+        return jsonResponse([])
+      }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+    await vi.waitFor(() => {
+      expect(
+        fetchMock.mock.calls.some(
+          ([input, init]) =>
+            getFetchUrl(input) === `${baseUrl}/user/projects` &&
+            getFetchMethod(input, init) === 'GET'
+        )
+      ).toBe(true)
+      expect(cloudSyncStatus.value.state).toBe('idle')
+    })
+
+    const staleMetadata = {
+      schemaVersion: 1 as const,
+      localProjectPath: projectPath,
+      projectName: 'bracket',
+      remoteProjectId,
+      baseManifest: await projectManifestFromFiles([
+        projectFile('main.kcl', 'base = 1\n'),
+        projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+      ]),
+    }
+    await putProjectMetadata(staleMetadata)
+
+    let releaseDirectoryStat!: () => void
+    let markDirectoryStatStarted!: () => void
+    const directoryStatGate = new Promise<void>((resolve) => {
+      releaseDirectoryStat = resolve
+    })
+    const directoryStatStarted = new Promise<void>((resolve) => {
+      markDirectoryStatStarted = resolve
+    })
+    const originalStat = cloudSyncFs.stat.bind(cloudSyncFs)
+    let heldDirectoryStat = false
+    cloudSyncFs.stat = async (targetPath) => {
+      if (!heldDirectoryStat && targetPath === projectPath) {
+        heldDirectoryStat = true
+        markDirectoryStatStarted()
+        await directoryStatGate
+      }
+      return originalStat(targetPath)
+    }
+
+    const notification = notifyCloudSyncWriteLikeMutation(
+      `${projectPath}/main.kcl`
+    )
+    await directoryStatStarted
+    await putProjectMetadata({
+      ...staleMetadata,
+      remoteRevision,
+      lastSyncedAt: '2026-09-06T00:00:00.000Z',
+    })
+    releaseDirectoryStat()
+    await notification
+
+    await expect(
+      getCloudSyncProjectMetadata(projectPath)
+    ).resolves.toMatchObject({
+      remoteProjectId,
+      remoteRevision,
+      lastSyncedAt: '2026-09-06T00:00:00.000Z',
+    })
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
   })
 
   it('drains project writes when a direct file-route reload omitted library ownership', async () => {
