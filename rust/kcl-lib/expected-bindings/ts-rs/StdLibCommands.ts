@@ -1846,7 +1846,7 @@ export default {
       {
         "name": "bidirectionalLength",
         "ty": "number(Length)",
-        "docs": "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.",
+        "docs": "How far to extrude opposite the primary extrusion direction. Only used with `length`; incompatible with `symmetric`.",
         "required": false,
         "special": false,
         "experimental": false,
