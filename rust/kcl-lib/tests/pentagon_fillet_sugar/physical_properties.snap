@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties pentagon_fillet_sugar.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.00000000000011368683772161605,
+      "y": 216.5063509461097,
+      "z": 100.0
+    },
+    "dimensions": {
+      "x": 600.0,
+      "y": 519.6152422706632,
+      "z": 200.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 612681.5935998593
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 25665.854456293386
+  }
+}

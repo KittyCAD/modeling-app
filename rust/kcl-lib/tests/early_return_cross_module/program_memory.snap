@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing early_return_cross_module.kcl
+---
+{
+  "addOne": {
+    "type": "Function"
+  }
+}

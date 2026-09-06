@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties riddle_small.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -25.5,
+      "y": -0.5,
+      "z": 33.5
+    },
+    "dimensions": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 6.0000088524247985
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0010000307248958509
+  }
+}

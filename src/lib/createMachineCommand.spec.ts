@@ -3,6 +3,10 @@ import { createActor, createMachine } from 'xstate'
 
 import type { StateMachineCommandSetConfig } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
+import {
+  GLOBAL_COMMAND_SCOPES,
+  MODE_SKETCHING_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
 
 const testMachine = createMachine({
   id: 'testMachine',
@@ -45,6 +49,7 @@ const commandBarConfig = {
     {
       displayName: 'Available child',
       description: 'Available child command',
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     },
   ],
   WithArguments: {
@@ -80,6 +85,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
       }
     )
 
@@ -99,6 +105,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
         showExperimentalCommands: true,
       }
     )
@@ -122,6 +129,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
       }
     )
 
@@ -130,6 +138,7 @@ describe('createMachineCommand', () => {
     expect(command).toMatchObject({
       name: 'Deprecated',
       status: 'deprecated',
+      scopes: GLOBAL_COMMAND_SCOPES,
     })
   })
 
@@ -146,6 +155,7 @@ describe('createMachineCommand', () => {
       send: vi.fn(),
       actor,
       commandBarConfig,
+      defaultScopes: GLOBAL_COMMAND_SCOPES,
     })
 
     actor.stop()
@@ -154,6 +164,7 @@ describe('createMachineCommand', () => {
       expect.objectContaining({
         name: 'ManyCommands',
         displayName: 'Available child',
+        scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       }),
     ])
   })
@@ -169,6 +180,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
       }
     )
 
@@ -202,6 +214,7 @@ describe('createMachineCommand', () => {
         send: vi.fn(),
         actor,
         commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
         showExperimentalCommands: true,
       }
     )

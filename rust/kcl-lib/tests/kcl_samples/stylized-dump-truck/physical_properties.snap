@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties stylized-dump-truck.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.00000160000081450562,
+      "y": 14.749998059999823,
+      "z": 1204.9999998879998
+    },
+    "dimensions": {
+      "x": 5279.999994240001,
+      "y": 2110.4999961199997,
+      "z": 2550.0000002240004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 86672493.12716728
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 14015305.378037738
+  }
+}

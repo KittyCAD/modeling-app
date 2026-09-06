@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties socket-head-cap-screw.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -10.287,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 9.7536,
+      "y": 30.226,
+      "z": 9.7536
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 677.4186983662389
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.710009977436532
+  }
+}

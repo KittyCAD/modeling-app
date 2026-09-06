@@ -1105,7 +1105,7 @@ export class KclManager extends File {
   private _cancelTokens: Map<number, boolean> = new Map()
   private _executeIsStale: ExecuteArgs | null = null
   private _isExecuting = signal(false)
-  private _executionElapsedMs = signal(0)
+  private _executionElapsedMs = signal<number | null>(null)
   private executionStartedAtMs: number | null = null
   private executionTimerIntervalId: ReturnType<typeof setInterval> | undefined =
     undefined

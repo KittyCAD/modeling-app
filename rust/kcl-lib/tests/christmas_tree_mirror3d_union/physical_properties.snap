@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties christmas_tree_mirror3d_union.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.25,
+      "y": -2.5,
+      "z": 5.000000000000001
+    },
+    "dimensions": {
+      "x": 10.5,
+      "y": 5.0,
+      "z": 12.000000000000002
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 334.68852890528035
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.2940924753539835
+  }
+}
