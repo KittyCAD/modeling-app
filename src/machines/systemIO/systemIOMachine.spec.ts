@@ -634,7 +634,7 @@ describe('systemIOMachine - XState', () => {
       it('rejects a rename collision without flushing or mutating either path', async () => {
         const oldPath = '/Test Project/cylinder.kcl'
         const executingPathSignal = signal(oldPath)
-        const flushWriteToFile = vi.fn().mockResolvedValue(undefined)
+        const flushWriteToFile = vi.fn().mockResolvedValue(true)
         const previousProject = appInstanceInThisFile.project
         const joinSpy = vi
           .spyOn(fsZds, 'join')
@@ -680,7 +680,7 @@ describe('systemIOMachine - XState', () => {
         const oldPath = '/Test Project/main.kcl'
         const newPath = '/Test Project/renamed.kcl'
         const executingPathSignal = signal(oldPath)
-        const flushWriteToFile = vi.fn().mockResolvedValue(undefined)
+        const flushWriteToFile = vi.fn().mockResolvedValue(true)
         const previousProject = appInstanceInThisFile.project
         const joinSpy = vi
           .spyOn(fsZds, 'join')
@@ -707,14 +707,56 @@ describe('systemIOMachine - XState', () => {
             app: appInstanceInThisFile,
           })
 
-          expect(flushWriteToFile).toHaveBeenCalledWith({
-            suppressConflictToast: true,
-          })
+          expect(flushWriteToFile).toHaveBeenCalledOnce()
           expect(flushWriteToFile.mock.invocationCallOrder[0]).toBeLessThan(
             renameSpy.mock.invocationCallOrder[0]
           )
           expect(renameSpy).toHaveBeenCalledWith(oldPath, newPath)
           expect(executingPathSignal.value).toBe(newPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
+        }
+      })
+      it('cancels an active rename when the editor cannot be flushed', async () => {
+        const oldPath = '/Test Project/main.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(false)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+        const renameSpy = vi.spyOn(fsZds, 'rename')
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await expect(
+            renameFileForSystemIO({
+              context: {
+                projectDirectoryPath: '/',
+              } as SystemIOContext,
+              requestedFileNameWithExtension: 'renamed.kcl',
+              fileNameWithExtension: 'main.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+              app: appInstanceInThisFile,
+            })
+          ).rejects.toThrow(
+            'File has unsaved changes that could not be written. Rename canceled.'
+          )
+
+          expect(renameSpy).not.toHaveBeenCalled()
+          expect(executingPathSignal.value).toBe(oldPath)
         } finally {
           appInstanceInThisFile.project = previousProject
           joinSpy.mockRestore()

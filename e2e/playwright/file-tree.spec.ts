@@ -1,4 +1,5 @@
 import {
+  PLAYWRIGHT_TEST_SCOPE_KEY,
   createProject,
   executorInputPath,
   getUtils,
@@ -27,6 +28,29 @@ const exists = async (
     return false
   }
 }
+
+test.describe('desktop fixture isolation', { tag: ['@desktop'] }, () => {
+  test('does not run init scripts outside the test that registered them', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('persistCode', 'current test code')
+    })
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem('persistCode')))
+      .toBe('current test code')
+
+    await page.evaluate((testScopeKey) => {
+      sessionStorage.setItem(testScopeKey, 'another test')
+      localStorage.removeItem('persistCode')
+    }, PLAYWRIGHT_TEST_SCOPE_KEY)
+    await page.reload()
+
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem('persistCode')))
+      .toBeNull()
+  })
+})
 
 test.describe('integrations tests', { tag: ['@desktop'] }, () => {
   test('Creating a new file or switching file while in sketchMode should exit sketchMode', async ({

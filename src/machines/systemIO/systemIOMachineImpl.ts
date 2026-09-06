@@ -111,7 +111,16 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
     executingPathSignal?.value === oldPath
       ? project?.editors.get(executingPathSignal)
       : undefined
-  await executingEditor?.flushWriteToFile({ suppressConflictToast: true })
+  if (executingEditor) {
+    const didFlush = await executingEditor.flushWriteToFile()
+    if (!didFlush) {
+      return Promise.reject(
+        new ExpectedSystemIOError(
+          'File has unsaved changes that could not be written. Rename canceled.'
+        )
+      )
+    }
+  }
 
   await fsZds.rename(oldPath, newPath)
 

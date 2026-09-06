@@ -1151,6 +1151,26 @@ describe('KclManager diagnostics', () => {
     expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
   })
 
+  it('reports when a flush cannot persist unsaved changes', async () => {
+    const path = '/tmp/kcl-manager-flush-conflict-test.kcl'
+    const { kclManager } = createKclManagerTestHarness('disk base')
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external newer')
+
+    kclManager.updateCodeEditor('local newer', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await expect(kclManager.flushWriteToFile()).resolves.toBe(false)
+    expect(writeSpy).not.toHaveBeenCalled()
+    expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
+  })
+
   it('reports KCL autosave failures without including source or path', async () => {
     const path = '/tmp/kcl-manager-reporting-test.kcl'
     const newCode = 'local edits'

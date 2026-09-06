@@ -33,6 +33,7 @@ import {
 } from '@e2e/playwright/storageStates'
 import {
   PLAYWRIGHT_LAYOUT_SETTINGS,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
   getUtils,
   settingsToToml,
   setup,
@@ -46,6 +47,42 @@ const TEST_PROJECT_SETTINGS =
   !isArray(TEST_SETTINGS.project)
     ? TEST_SETTINGS.project
     : undefined
+
+function scopedInitScript(script: unknown, arg: unknown, testScope: string) {
+  const serializedArg = arg === undefined ? 'undefined' : JSON.stringify(arg)
+  if (serializedArg === undefined) {
+    throw new Error('Unable to serialize Playwright init-script argument')
+  }
+
+  let invocation: string
+  if (typeof script === 'function') {
+    invocation = `(${script.toString()})(${serializedArg})`
+  } else if (typeof script === 'string') {
+    invocation = script
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'content' in script &&
+    typeof script.content === 'string'
+  ) {
+    invocation = script.content
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'path' in script &&
+    typeof script.path === 'string'
+  ) {
+    invocation = fs.readFileSync(script.path, 'utf8')
+  } else {
+    throw new Error('Unsupported Playwright init script')
+  }
+
+  return {
+    content: `if (sessionStorage.getItem(${JSON.stringify(
+      PLAYWRIGHT_TEST_SCOPE_KEY
+    )}) === ${JSON.stringify(testScope)}) { ${invocation} }`,
+  }
+}
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -223,9 +260,10 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldContextAddInitScript.apply(this, [a, b])
+        const disposable = await oldContextAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
         await that.page.reload()
         return disposable
       }
@@ -234,15 +272,24 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldPageAddInitScript = this.page.addInitScript
       this.page.addInitScript = async function (a: any, b: any) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldPageAddInitScript.apply(this, [a, b])
+        const disposable = await oldPageAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
         await that.page.reload()
         return disposable
       }
     }
 
     await this.context.tracing.startChunk()
+
+    await this.page.evaluate(
+      ({ key, testScope }) => sessionStorage.setItem(key, testScope),
+      {
+        key: PLAYWRIGHT_TEST_SCOPE_KEY,
+        testScope: this.projectDirName,
+      }
+    )
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
@@ -301,14 +348,6 @@ export class ElectronZoo {
 
     // Force a hard reload, destroying the stream and other state
     await this.page.reload()
-
-    // Electron reuses this page and context for every test in the worker, and
-    // Playwright does not provide a way to remove an init script. Tests that
-    // set persistCode therefore leave a script which can repopulate the key on
-    // later navigations, even though setup() clears localStorage. Remove the
-    // stale value after setup's final navigation; the current test can still
-    // opt in by installing its own persistCode script afterward.
-    await this.page.evaluate(() => localStorage.removeItem('persistCode'))
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {

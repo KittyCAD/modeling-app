@@ -3782,9 +3782,11 @@ export class KclManager extends File {
     }
   }
 
-  async flushWriteToFile(options: { suppressConflictToast?: boolean } = {}) {
+  async flushWriteToFile(
+    options: { suppressConflictToast?: boolean } = {}
+  ): Promise<boolean> {
     if (!this.path) {
-      return
+      return true
     }
 
     clearTimeout(this.timeoutWriter)
@@ -3804,13 +3806,15 @@ export class KclManager extends File {
     if (this.timeoutWriter !== undefined) {
       clearTimeout(this.timeoutWriter)
       this.timeoutWriter = undefined
-      return this.performDelayedWriteToFile({
+      await this.performDelayedWriteToFile({
         newCode: this.code,
         requestedDocumentVersion: this._documentVersion,
         requestedPath: this.path,
         options,
       })
     }
+
+    return !this.hasUnsavedLocalChanges()
   }
 
   /**
