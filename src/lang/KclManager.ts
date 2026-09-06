@@ -3789,6 +3789,11 @@ export class KclManager extends File {
       return true
     }
 
+    const hasPendingWrite = this.timeoutWriter !== undefined
+    if (!hasPendingWrite && !this.hasUnsavedLocalChanges()) {
+      return true
+    }
+
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.timeoutWriter = undefined

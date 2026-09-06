@@ -1171,6 +1171,20 @@ describe('KclManager diagnostics', () => {
     expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
   })
 
+  it('does not recreate a missing empty file when there is nothing to flush', async () => {
+    const path = '/tmp/renamed-empty-file.kcl'
+    const { kclManager } = createKclManagerTestHarness('')
+    const readSpy = vi.spyOn(File.ioImplementations, 'read')
+    const writeSpy = vi.spyOn(File.ioImplementations, 'write')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('')
+
+    await expect(kclManager.flushWriteToFile()).resolves.toBe(true)
+    expect(readSpy).not.toHaveBeenCalled()
+    expect(writeSpy).not.toHaveBeenCalled()
+  })
+
   it('reports KCL autosave failures without including source or path', async () => {
     const path = '/tmp/kcl-manager-reporting-test.kcl'
     const newCode = 'local edits'
