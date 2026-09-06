@@ -14,6 +14,8 @@ import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
+import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
@@ -23,7 +25,6 @@ import {
   engineSceneViewExtensionsValueSpec,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
-import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -54,7 +55,10 @@ function ModelingArea() {
   )
 
   return (
-    <div className="relative z-0 min-w-64 min-h-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div
+      id={MODELING_AREA_CONTAINER_ID}
+      className="relative z-0 min-w-64 min-h-64 flex flex-col flex-1 items-center overflow-hidden"
+    >
       <ConnectionStream
         authToken={authToken}
         sketchSolveStreamDimming={sketchSolveStreamDimming}

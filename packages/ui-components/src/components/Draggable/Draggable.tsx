@@ -49,6 +49,20 @@ export function Draggable({
     undefined
   )
 
+  const parseMargins = useCallback((computedStyles: CSSStyleDeclaration) => {
+    const pxStyleToNumber = (property: keyof CSSStyleDeclaration) =>
+      Number(
+        typeof computedStyles[property] === 'string' &&
+          computedStyles[property].replace('px', '')
+      ) || 0
+    return {
+      blockStart: pxStyleToNumber('marginBlockStart'),
+      blockEnd: pxStyleToNumber('marginBlockEnd'),
+      inlineStart: pxStyleToNumber('marginInlineStart'),
+      inlineEnd: pxStyleToNumber('marginInlineEnd'),
+    }
+  }, [])
+
   const onContainerResize = useCallback((entries: ResizeObserverEntry[]) => {
     if (!targetRef.current || !offsetRef.current || entries.length !== 1) {
       return
@@ -62,7 +76,8 @@ export function Draggable({
     }
 
     const targetRect = targetRef.current.getBoundingClientRect()
-    const containerRect = entries[0].contentRect
+    // Fixed positioning needs viewport coordinates, unlike contentRect.
+    const containerRect = entries[0].target.getBoundingClientRect()
 
     const top = clamp(
       targetRect.top,
@@ -149,17 +164,7 @@ export function Draggable({
       const { width, height, top, left } =
         targetRef.current.getBoundingClientRect()
       const computedStyles = getComputedStyle(targetRef.current)
-      const pxStyleToNumber = (property: keyof CSSStyleDeclaration) =>
-        Number(
-          typeof computedStyles[property] === 'string' &&
-            computedStyles[property].replace('px', '')
-        ) ?? 0
-      const margin = {
-        blockStart: pxStyleToNumber('marginBlockStart'),
-        blockEnd: pxStyleToNumber('marginBlockEnd'),
-        inlineStart: pxStyleToNumber('marginInlineStart'),
-        inlineEnd: pxStyleToNumber('marginInlineEnd'),
-      }
+      const margin = parseMargins(computedStyles)
 
       targetRef.current.style.position = 'fixed'
       targetRef.current.style.top = `${top - margin.blockStart}px`
@@ -185,11 +190,12 @@ export function Draggable({
       document.addEventListener('visibilitychange', dragRemoveCallback.current)
       document.addEventListener('mouseleave', dragRemoveCallback.current)
     },
-    [closeDragElement, elementDrag]
+    [closeDragElement, elementDrag, parseMargins]
   )
 
   return Handle ? (
     <div {...props} style={style} ref={targetRef}>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: the supplied handle owns its semantics while this wrapper tracks pointer dragging. */}
       <div // eslint-disable-line jsx-a11y/no-static-element-interactions
         onMouseDown={dragMouseDown}
         style={{ cursor: 'move', display: 'contents' }}
@@ -199,13 +205,15 @@ export function Draggable({
       {children}
     </div>
   ) : (
+    // biome-ignore lint/a11y/noStaticElementInteractions: this generic container preserves the caller's semantics while adding pointer dragging.
     <div // eslint-disable-line jsx-a11y/no-static-element-interactions
       ref={targetRef}
-      children={children}
       {...props}
       onMouseDown={dragMouseDown}
       style={style}
-    />
+    >
+      {children}
+    </div>
   )
 }
 

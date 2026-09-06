@@ -1,8 +1,8 @@
 import type {
   StdLibCommandArgShape,
   StdLibCommandShape,
-} from '@rust/kcl-lib/bindings/StdLibCommandTypes'
-import stdLibCommands from '@rust/kcl-lib/bindings/StdLibCommands'
+} from '@rust/kcl-lib/expected-bindings/ts-rs/StdLibCommandTypes'
+import stdLibCommands from '@rust/kcl-lib/expected-bindings/ts-rs/StdLibCommands'
 
 type ReadonlyStdLibCommandShape = Omit<StdLibCommandShape, 'args'> & {
   readonly args: readonly StdLibCommandArgShape[]

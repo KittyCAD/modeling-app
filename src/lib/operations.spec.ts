@@ -795,6 +795,67 @@ describe('operations.test.ts', () => {
     })
   })
 
+  describe('Revolve edit flow', () => {
+    it.each([undefined, '90deg'])(
+      'preserves the authored angle %s without filling an omitted angle',
+      async (angle) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code = `revolve001 = revolve(profile001, axis = X${angle ? `, angle = ${angle}` : ''})`
+        const operation = stdlib('revolve')
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        operation.unlabeledArg = {
+          value: { type: 'Sketch', value: { artifactId: 'path-id' } },
+          sourceRange: rangeOfText(code, 'profile001'),
+        }
+        operation.labeledArgs = {
+          axis: {
+            value: {
+              type: 'Object',
+              value: {
+                direction: {
+                  type: 'Array',
+                  value: [1, 0, 0].map((value) => ({
+                    type: 'Number',
+                    value,
+                    ty: { type: 'Any' },
+                  })),
+                },
+              },
+            },
+            sourceRange: rangeOfText(code, 'X'),
+          },
+        }
+        if (angle) {
+          operation.labeledArgs.angle = {
+            value: { type: 'Number', value: 90, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, angle),
+          }
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifact: sweepArtifact('revolve-id', 'path-id'),
+          artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
+          rustContext,
+        })
+        if (result instanceof Error) throw result
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+
+        expect(result.data.name).toBe('Revolve')
+        expect(result.data.argDefaultValues).toMatchObject({
+          axisOrEdge: 'Axis',
+          axis: 'X',
+          angle: angle ? { valueText: angle } : undefined,
+        })
+      }
+    )
+  })
+
   describe('Sweep edit flow', () => {
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()

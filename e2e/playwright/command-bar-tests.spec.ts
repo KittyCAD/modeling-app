@@ -1,12 +1,11 @@
-import path, { join } from 'path'
+import * as fsp from 'node:fs/promises'
+import path, { join } from 'node:path'
+import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 import {
   KCL_DEFAULT_LENGTH,
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
 } from '@src/lib/constants'
-import * as fsp from 'fs/promises'
-
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
-import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
@@ -190,7 +189,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('ControlOrMeta+K')
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
@@ -247,7 +246,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await homePage.goToModelingScene()
     await scene.settled()
 
-    let cmdSearchBar = page.getByPlaceholder('Search commands')
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('ControlOrMeta+K')
     await expect(cmdSearchBar).toBeVisible()
 
@@ -266,6 +265,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       },
       highlightedHeaderArg: 'Profiles',
     })
+    await expect(page.getByTestId('modeling-dialog')).not.toBeAttached()
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()

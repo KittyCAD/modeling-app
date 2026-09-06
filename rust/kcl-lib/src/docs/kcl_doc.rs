@@ -912,6 +912,11 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// The KCL source for an explicit literal default value.
+    ///
+    /// Optional parameters without an explicit default evaluate to `none` and
+    /// are represented by `None` here.
+    pub default_value: Option<String>,
     /// Constraint on the KCL version in which this argument was added.
     pub added_in: Option<VersionConstraint>,
     /// Whether this argument is deprecated regardless of the KCL version.
@@ -940,7 +945,6 @@ impl fmt::Display for ArgData {
 pub enum ArgKind {
     Special,
     // Parameter is whether the arg is optional.
-    // TODO should store default value if present
     Labelled(bool),
 }
 
@@ -953,6 +957,10 @@ impl ArgData {
             ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
+            default_value: match &arg.default_value {
+                Some(crate::parsing::ast::types::DefaultParamVal::Literal(literal)) => Some(literal.raw.clone()),
+                Some(crate::parsing::ast::types::DefaultParamVal::KclNone(_)) | None => None,
+            },
             kind: if arg.labeled {
                 ArgKind::Labelled(arg.optional())
             } else {
