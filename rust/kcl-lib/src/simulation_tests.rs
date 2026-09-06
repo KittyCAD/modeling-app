@@ -355,18 +355,20 @@ fn physical_properties_mismatch(
     }
 }
 
-fn assert_physical_properties_snapshot(test: &Test, mut actual: serde_json::Value) {
-    if !is_writing() {
-        let expected = insta::Snapshot::from_file(&test.output_dir.join("physical_properties.snap"))
-            .ok()
-            .and_then(|snapshot| serde_json::from_str(&snapshot.as_text()?.to_string()).ok());
-        if let Some(expected) = expected
-            && physical_properties_mismatch(&expected, &actual, "physical_properties").is_none()
-        {
-            // Keep the stored values for harmless numeric noise. Still invoke Insta
-            // below so it tracks this snapshot as referenced by the test.
-            actual = expected;
-        }
+fn assert_physical_properties_snapshot(test: &Test, actual: serde_json::Value) {
+    if !is_writing()
+        && let Ok(snapshot) = insta::Snapshot::from_file(&test.output_dir.join("physical_properties.snap"))
+        && let Some(text) = snapshot.as_text()
+        && let Ok(expected) = serde_json::from_str(&text.to_string())
+        && physical_properties_mismatch(&expected, &actual, "physical_properties").is_none()
+    {
+        // Keep the original text after accepting numeric noise. Parsing and
+        // serializing it again can change a float's last digit. Still invoke
+        // Insta so it tracks the snapshot and applies its normal update policy.
+        assert_snapshot(test, "Physical properties", || {
+            insta::assert_snapshot!("physical_properties", text.to_string())
+        });
+        return;
     }
 
     // Missing, unreadable, or materially different snapshots use Insta's normal
@@ -475,6 +477,25 @@ fn physical_properties_snapshot_preserves_insta_workflow() {
             assert_eq!(std::fs::read_to_string(&snapshot_path).ok(), original);
         }
     }
+}
+
+#[test]
+fn physical_properties_snapshot_preserves_stored_decimal_text() {
+    let directory = tempfile::tempdir().unwrap();
+    let mut test = Test::new("holes_cube");
+    test.output_dir = directory.path().to_owned();
+    let snapshot_path = test.output_dir.join("physical_properties.snap");
+    let original = include_str!("../tests/holes_cube/physical_properties.snap");
+    std::fs::write(&snapshot_path, original).unwrap();
+    let snapshot = insta::Snapshot::from_file(&snapshot_path).unwrap();
+    let actual = serde_json::from_str(&snapshot.as_text().unwrap().to_string()).unwrap();
+
+    // Parsing this snapshot and serializing its numbers again changes the last
+    // digit of bounding_box.center.z despite an exact numeric comparison.
+    assert_physical_properties_snapshot(&test, actual);
+
+    assert_eq!(std::fs::read_to_string(&snapshot_path).unwrap(), original);
+    assert!(!test.output_dir.join("physical_properties.snap.new").exists());
 }
 
 fn parse(test_name: &str) {
