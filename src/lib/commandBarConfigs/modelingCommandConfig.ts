@@ -45,6 +45,7 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_PRELUDE_BODY_TYPE_VALUES,
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
@@ -119,6 +120,9 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
 }))
+const kclSurfaceBodyTypeOptions = kclBodyTypeOptions.filter(
+  ({ value }) => value === KCL_PRELUDE_BODY_TYPE_SURFACE
+)
 
 function isSelections(value: unknown): value is Selections {
   return (
@@ -688,7 +692,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           bodyType: {
             inputType: 'options',
             required: extrudeSelectionRequiresBodyType,
-            options: kclBodyTypeOptions,
+            options: ({ argumentsToSubmit }) =>
+              profileSelectionRequiresBodyType({ argumentsToSubmit })
+                ? kclSurfaceBodyTypeOptions
+                : kclBodyTypeOptions,
           },
         },
       }
