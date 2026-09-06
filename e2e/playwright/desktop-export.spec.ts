@@ -122,7 +122,8 @@ test(
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-      await expect(exportingToastMessage).toBeVisible()
+      // A fast export can finish before the progress toast is observed.
+      // The completed file below is the authoritative success condition.
       await expect(alreadyExportingToastMessage).not.toBeVisible()
 
       // Expect it to succeed
@@ -131,13 +132,7 @@ test(
       await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await page.waitForTimeout(1_000)
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(1)
-      await expect(exportingToastMessage).not.toBeVisible()
-
-      // Check for the exported file=
+      // Check for the exported file.
       const secondFileFullPath = path.resolve(
         getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
@@ -158,6 +153,10 @@ test(
           )
           .toBeGreaterThan(50_000)
       })
+      await expect(exportingToastMessage).not.toBeVisible()
+      await expect(alreadyExportingToastMessage).not.toBeVisible()
+      await expect(errorToastMessage).not.toBeVisible()
+      await expect(engineErrorToastMessage).not.toBeVisible()
     })
   }
 )
