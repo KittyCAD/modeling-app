@@ -3,6 +3,7 @@ import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
+  getDefaultKclFileForDir,
   getProjectInfo,
   listProjects,
   readEnvironmentConfigurationFile,
@@ -202,6 +203,42 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('preserves main.kcl created after discovery observed an empty project', async () => {
+      const { instance } = await buildTheWorldNode()
+      const projectPath = '/test/projects/project-without-kcl-files'
+      const mainPath = `${projectPath}/main.kcl`
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path === mainPath ? Promise.reject('ENOENT') : originalStat(path)
+      )
+
+      // An import can publish its source after discovery's stat but before
+      // the default-file write. Model the filesystem's exclusive-create rule.
+      const importedCode = 'part = fillet(solid, radius = 2)\n'
+      let diskCode = importedCode
+      mockElectron.writeFile.mockImplementation(
+        async (path: string, data: Uint8Array, options?: { flag?: string }) => {
+          if (path !== mainPath) return
+          if (options?.flag === 'wx') return Promise.reject('EEXIST')
+          diskCode = new TextDecoder().decode(data)
+        }
+      )
+
+      await expect(
+        getDefaultKclFileForDir(
+          projectPath,
+          {
+            name: 'project-without-kcl-files',
+            path: projectPath,
+            children: [],
+            metadata: null,
+          },
+          await instance
+        )
+      ).resolves.toBe(mainPath)
+      expect(diskCode).toBe(importedCode)
+    })
+
     it('does not list .git directories', async () => {
       const { instance } = await buildTheWorldNode()
       const projects = await listProjects(instance, mockConfig)
