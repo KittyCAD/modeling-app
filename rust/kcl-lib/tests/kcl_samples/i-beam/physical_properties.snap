@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties i-beam.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.000000000000007105427357601002,
+      "y": 0.0,
+      "z": -0.000000000000007105427357601002
+    },
+    "dimensions": {
+      "x": 81.16824000000007,
+      "y": 1828.8,
+      "z": 121.92000000000002
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 814299.7917148023
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2849.8868384000766
+  }
+}

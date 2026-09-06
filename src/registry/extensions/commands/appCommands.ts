@@ -9,6 +9,13 @@ import { selectAllInCurrentSketch } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import {
+  FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+  FILE_COMMAND_SCOPES,
+  HOME_COMMAND_SCOPE,
+  SETTINGS_COMMAND_SCOPE,
+  SKETCH_COMMAND_SCOPES,
+} from '@src/registry/contracts/commands'
 import toast from 'react-hot-toast'
 
 const APP_COMMAND_GROUP_ID = 'zds'
@@ -73,6 +80,7 @@ function createAppCommand({
   description,
   icon,
   hideFromSearch = true,
+  scopes,
   onSubmit,
 }: {
   id: string
@@ -80,6 +88,7 @@ function createAppCommand({
   description?: Command['description']
   icon?: Command['icon']
   hideFromSearch?: boolean
+  scopes: Command['scopes']
   onSubmit: Command['onSubmit']
 }): Command {
   return {
@@ -90,6 +99,7 @@ function createAppCommand({
     description,
     icon,
     hideFromSearch,
+    scopes,
     needsReview: false,
     onSubmit,
   }
@@ -198,31 +208,37 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.editor.undo,
     displayName: 'Undo',
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     onSubmit: (input) => getKclManager(input)?.undo(),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.redo,
     displayName: 'Redo',
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     onSubmit: (input) => getKclManager(input)?.redo(),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.format,
     displayName: 'Format code',
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     onSubmit: (input) => getKclManager(input)?.format().catch(reportRejection),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.convertToVariable,
     displayName: 'Convert to variable',
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     onSubmit: (input) => getKclManager(input)?.convertToVariable(),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.render,
     displayName: 'Render code',
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     onSubmit: reexecuteOrToastAutosaveBehavior,
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.modeling.deleteSelection,
     displayName: 'Delete selection',
+    scopes: FILE_COMMAND_SCOPES,
     onSubmit: deleteSelection,
   }),
   createAppCommand({
@@ -231,17 +247,20 @@ export const appCommands: readonly Command[] = [
     description: 'Center the camera on the current selection.',
     icon: 'camera',
     hideFromSearch: false,
+    scopes: FILE_COMMAND_SCOPES,
     onSubmit: (input) =>
       sendModelingEvent(input, { type: 'Center camera on selection' }),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.modeling.selectAllInCurrentSketch,
     displayName: 'Select all in current sketch',
+    scopes: SKETCH_COMMAND_SCOPES,
     onSubmit: selectAllInCurrentSketchCommand,
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.modeling.toggleSnapToGrid,
     displayName: 'Toggle snap to grid',
+    scopes: FILE_COMMAND_SCOPES,
     onSubmit: toggleSnapToGrid,
   }),
   createAppCommand({
@@ -250,11 +269,13 @@ export const appCommands: readonly Command[] = [
     description: 'Restore the default camera position and view.',
     icon: 'refresh',
     hideFromSearch: false,
+    scopes: FILE_COMMAND_SCOPES,
     onSubmit: resetView,
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.search.focusProjects,
     displayName: 'Focus project search',
+    scopes: [HOME_COMMAND_SCOPE],
     onSubmit: () => {
       projectSearchFocusRequest.value += 1
     },
@@ -262,6 +283,7 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.search.focusSettings,
     displayName: 'Focus settings search',
+    scopes: [SETTINGS_COMMAND_SCOPE],
     onSubmit: () => {
       settingsSearchFocusRequest.value += 1
     },

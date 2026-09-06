@@ -27,7 +27,7 @@ use crate::parsing::token::Token;
 use crate::parsing::token::TokenType;
 
 lazy_static! {
-    pub(crate) static ref RESERVED_WORDS: AHashMap<&'static str, TokenType> = {
+    pub static ref RESERVED_WORDS: AHashMap<&'static str, TokenType> = {
         let mut set = AHashMap::default();
         set.insert("if", TokenType::Keyword);
         set.insert("else", TokenType::Keyword);

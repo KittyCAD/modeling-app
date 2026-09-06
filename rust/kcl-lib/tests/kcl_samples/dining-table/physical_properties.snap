@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties dining-table.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 375.0,
+      "y": 1025.0,
+      "z": 375.0
+    },
+    "dimensions": {
+      "x": 850.0,
+      "y": 2150.0,
+      "z": 750.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 5375199.896283448
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 50271.912021950506
+  }
+}

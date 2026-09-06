@@ -392,6 +392,10 @@ const DIMENSION_CONSTRAINT_TYPES = new Set<ApiConstraint['type']>([
   'Angle',
 ])
 
+export function isDimensionConstraintType(type: ApiConstraint['type']) {
+  return DIMENSION_CONSTRAINT_TYPES.has(type)
+}
+
 export function selectionMatcherMatchesKind(
   matcher: ConstraintSelectionMatcher,
   kind: ConstraintSelectionKind
@@ -518,7 +522,7 @@ export function classifyConstraintSelection(
   if (object.kind.type === 'Constraint') {
     return {
       selectionId,
-      kind: DIMENSION_CONSTRAINT_TYPES.has(object.kind.constraint.type)
+      kind: isDimensionConstraintType(object.kind.constraint.type)
         ? 'dimension'
         : 'constraint',
       object,

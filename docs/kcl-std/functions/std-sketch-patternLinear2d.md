@@ -17,7 +17,12 @@ patternLinear2d(
 ): [Sketch; 1+]
 ```
 
-
+Currently, KCL's type system limitations make the type signature here misleading.
+This function works with Regions from the new sketch blocks (that use constraint solvers),
+or the old, deprecated, imperative sketch/profile syntax from older versions of KCL.
+It does _not_ work as expected with sketch blocks, only with the regions that can be
+created from sketch blocks. In the following examples, a region is passed into the pattern
+function, which creates new regions in a pattern. You should _not_ pass a sketch block in.
 
 ### Arguments
 
@@ -37,13 +42,21 @@ patternLinear2d(
 ### Examples
 
 ```kcl
-// / Pattern using a named axis.
+// Example of pattern using a named axis.
 
-exampleSketch = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 1)
-  |> patternLinear2d(axis = X, instances = 7, distance = 4)
+@settings(kclVersion = 2.0)
 
-example = extrude(exampleSketch, length = 1)
+exampleSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  fixed([circle1.center, ORIGIN])
+  radius(circle1) == 1mm
+}
+
+exampleProfiles = region(segments = [exampleSketch.circle1])
+  |> patternLinear2d(axis = X, instances = 7, distance = 4mm)
+
+example = extrude(exampleProfiles, length = 1mm)
+hide(exampleSketch)
 
 ```
 
@@ -62,13 +75,21 @@ example = extrude(exampleSketch, length = 1)
 </model-viewer>
 
 ```kcl
-// / Pattern using a raw axis.
+// Example of pattern using a raw axis.
 
-exampleSketch = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 1)
-  |> patternLinear2d(axis = [1, 0], instances = 7, distance = 4)
+@settings(kclVersion = 2.0)
 
-example = extrude(exampleSketch, length = 1)
+exampleSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  fixed([circle1.center, ORIGIN])
+  radius(circle1) == 1mm
+}
+
+exampleProfiles = region(segments = [exampleSketch.circle1])
+  |> patternLinear2d(axis = [1, 0], instances = 7, distance = 4mm)
+
+example = extrude(exampleProfiles, length = 1mm)
+hide(exampleSketch)
 
 ```
 

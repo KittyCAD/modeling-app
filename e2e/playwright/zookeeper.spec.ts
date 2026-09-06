@@ -20,14 +20,16 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
     await scene.settled()
 
     await test.step('Submit basic prompt', async () => {
+      const prompt = `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
+
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await copilot.setMode('fast')
-      await copilot.conversationInput.fill(
-        `make a 10x10x10cm cube centered on the origin, name the last variable "cube" [${ZK_MOCK_REPLY_MARKER}]`
-      )
+      await copilot.conversationInput.fill(prompt)
       await copilot.submitButton.click()
-      await expect(copilot.placeHolderResponse).toBeVisible()
+      await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
+        prompt
+      )
       await expect(copilot.placeHolderResponse).not.toBeVisible({
         timeout: 30_000,
       })

@@ -27,10 +27,8 @@ import {
   isCloudSyncExcludedPath,
 } from '@src/lib/cloudSync/paths'
 import {
-  getProjectArchiveEntrypointPath,
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
-  withRemoteProjectMetadataInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import {
   PROJECT_FOLDER,
@@ -263,27 +261,15 @@ describe('cloudSync sync helpers', () => {
     ])
   })
 
-  it('adds a project.toml upload file without default_file when local project settings are missing', () => {
-    const payload = prepareProjectFilesForCloudUpload('/projects/bracket', [
-      projectFile('main.kcl'),
-    ])
-    const projectToml = new TextDecoder().decode(
-      payload.files.find(
-        (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-      )?.data
-    )
-
-    expect(payload.body.entrypoint_path).toBe('main.kcl')
-    expect(payload.body.project_toml_path).toBe(PROJECT_SETTINGS_FILE_NAME)
-    expect(payload.files.map((file) => file.relativePath)).toEqual([
-      'main.kcl',
-      PROJECT_SETTINGS_FILE_NAME,
-    ])
-    expect(projectToml).toContain('title = "bracket"')
-    expect(projectToml).not.toContain('default_file')
+  it('rejects uploads without project.toml instead of synthesizing one', () => {
+    expect(() =>
+      prepareProjectFilesForCloudUpload('/projects/bracket', [
+        projectFile('main.kcl'),
+      ])
+    ).toThrow('Cloud project uploads require an existing project.toml.')
   })
 
-  it('adds the upload title to project.toml when local project settings have no title', () => {
+  it('does not add an upload title when project.toml has no title', () => {
     const payload = prepareProjectFilesForCloudUpload('/projects/bracket', [
       projectFile('main.kcl'),
       projectFile(PROJECT_SETTINGS_FILE_NAME, 'default_file = "main.kcl"\n'),
@@ -295,8 +281,7 @@ describe('cloudSync sync helpers', () => {
     )
 
     expect(payload.body.title).toBe('bracket')
-    expect(projectToml).toContain('default_file = "main.kcl"')
-    expect(projectToml).toContain('title = "bracket"')
+    expect(projectToml).toBe('default_file = "main.kcl"\n')
   })
 
   it('uses API entrypoint metadata for uploads without writing default_file into project.toml', () => {
@@ -350,47 +335,6 @@ describe('cloudSync sync helpers', () => {
         await projectManifestFromFiles(cloudOrderFiles)
       )
     ).toBe(false)
-  })
-
-  it('adds an Untitled project.toml title when remote project metadata has no title', () => {
-    const files = withRemoteProjectMetadataInArchiveFiles(
-      [projectFile('main.kcl')],
-      undefined,
-      'remote-project-123',
-      'dev.zoo.dev'
-    )
-    const projectToml = new TextDecoder().decode(
-      files.find((file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME)
-        ?.data
-    )
-
-    expect(projectToml).toContain('title = "Untitled"')
-    expect(projectToml).not.toContain('default_file')
-    expect(projectToml).toContain('project_id = "remote-project-123"')
-  })
-
-  it('does not write project.toml default_file from remote entrypoint metadata', () => {
-    const files = withRemoteProjectMetadataInArchiveFiles(
-      [
-        projectFile('main.kcl'),
-        projectFile('nested/part.kcl'),
-        projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Bracket"\n'),
-      ],
-      'Bracket',
-      'remote-project-123',
-      'dev.zoo.dev'
-    )
-    const projectToml = new TextDecoder().decode(
-      files.find((file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME)
-        ?.data
-    )
-
-    expect(getProjectArchiveEntrypointPath(files, 'nested/part.kcl')).toBe(
-      'nested/part.kcl'
-    )
-    expect(projectToml).toContain('title = "Bracket"')
-    expect(projectToml).not.toContain('default_file')
-    expect(projectToml).toContain('project_id = "remote-project-123"')
   })
 
   it('excludes files ignored by project .gitignore from cloud sync manifests and uploads', () => {
@@ -449,7 +393,10 @@ describe('cloudSync sync helpers', () => {
   it('includes expected revisions in guarded project update uploads', () => {
     const payload = prepareProjectFilesForCloudUpload(
       '/projects/bracket',
-      [projectFile('main.kcl')],
+      [
+        projectFile('main.kcl'),
+        projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Bracket"\n'),
+      ],
       'revision-123'
     )
 
@@ -640,6 +587,20 @@ describe('cloudSync sync helpers', () => {
         localChanged: true,
         remoteChanged: true,
         hasRemoteRevision: true,
+      })
+    ).toBe('compare-remote-archive')
+  })
+
+  it('compares the remote archive when adopting an upload without a known revision', () => {
+    expect(
+      getCloudSyncProjectSyncPreflightAction({
+        latestKind: 'upsert',
+        localProjectExists: true,
+        tombstone: false,
+        hasRemoteProjectId: true,
+        localChanged: false,
+        remoteChanged: false,
+        hasRemoteRevision: false,
       })
     ).toBe('compare-remote-archive')
   })
