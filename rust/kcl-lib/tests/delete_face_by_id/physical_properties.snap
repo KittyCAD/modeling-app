@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties delete_face_by_id.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.09999999999998188,
+      "y": 0.0,
+      "z": 2.75
+    },
+    "dimensions": {
+      "x": 8.798000000000037,
+      "y": 9.816,
+      "z": 5.5
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 236.1797382085529
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.1547076829792419
+  }
+}

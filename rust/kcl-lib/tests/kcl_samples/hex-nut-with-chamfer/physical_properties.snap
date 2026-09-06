@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties hex-nut-with-chamfer.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.00000000009874590034542051,
+      "y": -0.000000000029817925906172604,
+      "z": 5.0
+    },
+    "dimensions": {
+      "x": 25.177132043733184,
+      "y": 25.177132043733188,
+      "z": 10.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1152.8855416003123
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.966513939734756
+  }
+}

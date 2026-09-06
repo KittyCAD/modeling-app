@@ -114,11 +114,13 @@ export type SpawnToolActor = <K extends EquipTool>(
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
+  | { type: 'pick hovered tool' }
   | { type: 'unequip tool' }
   | {
       type: 'equip tool'
       data: { tool: EquipTool }
       keepSelection?: boolean
+      forceEquip?: boolean
     }
   | {
       type: 'Dimension' | 'construction'

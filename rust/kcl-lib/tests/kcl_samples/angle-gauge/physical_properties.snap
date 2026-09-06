@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties angle-gauge.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 19.05,
+      "y": 15.87499999999998,
+      "z": 0.635
+    },
+    "dimensions": {
+      "x": 45.720000000000006,
+      "y": 38.10000000000004,
+      "z": 1.27
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2098.8876412957325
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.1824607829188
+  }
+}

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties hand-trolley.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 24.645733327151845,
+      "z": 651.8889858986249
+    },
+    "dimensions": {
+      "x": 703.5799999999999,
+      "y": 515.6172333456961,
+      "z": 1312.4266717972496
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2721802.9303733455
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 16899.95394042961
+  }
+}

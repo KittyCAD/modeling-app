@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties washer.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.000000000025400126446584178,
+      "y": 0.0,
+      "z": 0.4064
+    },
+    "dimensions": {
+      "x": 13.35024000006096,
+      "y": 13.35024000006096,
+      "z": 0.8128
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 194.0664596560282
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.06197704148502847
+  }
+}

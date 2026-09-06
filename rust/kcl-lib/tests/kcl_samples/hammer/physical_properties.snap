@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties hammer.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 15.661859926766924,
+      "y": 0.0,
+      "z": 167.68833334115158
+    },
+    "dimensions": {
+      "x": 131.65371985344976,
+      "y": 100.0,
+      "z": 335.40567113206964
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 45429.890502199254
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 257.9901420573804
+  }
+}
