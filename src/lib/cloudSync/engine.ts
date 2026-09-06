@@ -3778,6 +3778,7 @@ export async function syncCloudSyncProjectNow(
       }
       if (
         metadata?.remoteProjectId &&
+        metadata.remoteRevision &&
         metadata.baseManifest &&
         remainingEntries.length === 0
       ) {
@@ -4037,7 +4038,10 @@ async function registerProjectMutation(
       tombstone: true,
     }
     await putProjectMetadata(metadata)
-  } else if (!metadata.tombstone) {
+  } else if (!metadata.tombstone && !existingMetadata) {
+    // Existing metadata may have advanced while the filesystem checks above
+    // were in flight. An ordinary write-like notification only needs to queue
+    // work, so do not overwrite sync-owned fields with that stale snapshot.
     await putProjectMetadata(metadata)
   }
 
