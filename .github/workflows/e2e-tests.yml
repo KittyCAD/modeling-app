@@ -384,8 +384,9 @@ jobs:
       - name: Build app
         run: npm run tronb:vite:dev
 
-      - uses: actions/download-artifact@v8
-        if: ${{ !cancelled() && (success() || failure()) }}
+      - name: Download test results from a previous workflow attempt
+        if: ${{ github.run_attempt > 1 && !cancelled() && (success() || failure()) }}
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}

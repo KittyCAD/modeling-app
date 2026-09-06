@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties t-slot-shelf.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 419.1,
+      "y": 266.7000000000002,
+      "z": 1219.1999999999996
+    },
+    "dimensions": {
+      "x": 922.0200000000002,
+      "y": 617.2200000000008,
+      "z": 2446.019999999999
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 6073327.6577569
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 11048.02090942203
+  }
+}

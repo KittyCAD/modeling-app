@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties named_views_hide_sweep.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 13.5,
+      "y": 6.0,
+      "z": 7.5
+    },
+    "dimensions": {
+      "x": 33.0,
+      "y": 18.0,
+      "z": 15.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 599.9999848427251
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.999999883788405
+  }
+}

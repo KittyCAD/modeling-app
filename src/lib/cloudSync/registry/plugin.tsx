@@ -44,6 +44,7 @@ import {
   getCloudProjectLibraryMaterializationDirectoryPath,
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
+import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import {
   type CloudProjectLocalManifestComparison,
   classifyCloudProjectDuplicateRisk,
@@ -108,7 +109,6 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { useEffect, useState } from 'react'
 
-const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 const CLOUD_SYNC_STALLED_AFTER_MS = 5 * 60_000
 
 function cloudSyncProjectIsStalled(

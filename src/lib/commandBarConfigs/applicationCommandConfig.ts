@@ -33,6 +33,11 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+  GLOBAL_COMMAND_SCOPES,
+  HOME_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 
@@ -113,6 +118,7 @@ export function createApplicationCommands({
   wasmInstance: ModuleType
 }) {
   const addKCLFileToProject: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'add-kcl-file-to-project',
     displayName: 'Add file to project',
     description:
@@ -343,6 +349,7 @@ export function createApplicationCommands({
    * Desktop only command for now!
    */
   const createASampleDesktopOnly: Command = {
+    scopes: [HOME_COMMAND_SCOPE],
     name: 'create-a-sample',
     displayName: 'Create a sample',
     description: 'Create a new project from a Zoo Sample',
@@ -410,6 +417,7 @@ export function createApplicationCommands({
   }
 
   const switchEnvironmentsCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'switch-environments',
     displayName: 'Switch Environments',
     description: 'Connect the application runtime to a different environment',
@@ -439,6 +447,7 @@ export function createApplicationCommands({
   }
 
   const overrideEngineCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'override-engine',
     displayName: 'Override Engine',
     description: 'Connect the scene to a custom Engine WebSocket URL',
@@ -485,6 +494,7 @@ export function createApplicationCommands({
   }
 
   const overrideZookeeperCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'override-zookeeper',
     displayName: 'Override Zookeeper',
     description: 'Connect to a custom Zookeeper WebSocket URL',
@@ -529,6 +539,7 @@ export function createApplicationCommands({
   }
 
   const resetLayoutCommand: Command = {
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'reset-layout',
     displayName: 'Reset layout',
     description: 'Reset layout to the default configuration',
@@ -539,6 +550,7 @@ export function createApplicationCommands({
   }
 
   const setLayoutCommand: Command = {
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'set-layout',
     hideFromSearch: true,
     displayName: 'Set layout',
@@ -582,6 +594,7 @@ export function createApplicationCommands({
   }
 
   const checkForUpdatesCommand: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'check-for-updates',
     displayName: 'Check for updates',
     description: 'Check for a newer desktop app version.',
@@ -600,6 +613,7 @@ export function createApplicationCommands({
   }
 
   const exportProjectZipCommand: Command = {
+    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
     name: 'export-project-zip',
     displayName: 'Download project files',
     description: 'Download every file in the current project as a ZIP archive.',

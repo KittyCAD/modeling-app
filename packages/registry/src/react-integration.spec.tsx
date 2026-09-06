@@ -47,7 +47,13 @@ function WorkspaceToggle({ registry }: { registry: Registry }) {
       <span data-testid="workspace-active">
         {workspaceToggle.active.value ? 'active' : 'inactive'}
       </span>
-      <button onClick={() => workspaceToggle.toggle()}>Toggle Workspace</button>
+      <button
+        onClick={() => {
+          void workspaceToggle.toggle()
+        }}
+      >
+        Toggle Workspace
+      </button>
     </div>
   )
 }
@@ -61,7 +67,13 @@ function AnalyticsToggle({ registry }: { registry: Registry }) {
       <span data-testid="analytics-active">
         {analyticsToggle.active.value ? 'active' : 'inactive'}
       </span>
-      <button onClick={() => analyticsToggle.toggle()}>Toggle Analytics</button>
+      <button
+        onClick={() => {
+          void analyticsToggle.toggle()
+        }}
+      >
+        Toggle Analytics
+      </button>
     </div>
   )
 }

@@ -912,10 +912,14 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Constraint on the KCL version in which this argument was added.
+    pub added_in: Option<VersionConstraint>,
     /// Whether this argument is deprecated regardless of the KCL version.
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
+    /// Constraint on the KCL version at or after which this argument is removed.
+    pub removed_since: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -954,8 +958,10 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            added_in: arg.added_in.clone(),
             deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
+            removed_since: arg.removed_since.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -1724,6 +1730,54 @@ mod test {
     }
 
     #[test]
+    fn stdlib_parameters_removed_in_kcl_3_are_marked() {
+        let stdlib = walk_stdlib();
+        for (func, param) in [
+            ("chamfer", "legacyMethod"),
+            ("fillet", "legacyMethod"),
+            ("union", "legacyMethod"),
+            ("intersect", "legacyMethod"),
+            ("subtract", "legacyMethod"),
+            ("split", "legacyMethod"),
+            ("sweep", "relativeTo"),
+        ] {
+            let Some(DocData::Fn(f)) = stdlib.find_by_name(func) else {
+                panic!("{func} should be a documented function");
+            };
+            let arg = f
+                .args
+                .iter()
+                .find(|a| a.name == param)
+                .unwrap_or_else(|| panic!("{func} should declare {param}"));
+            assert_eq!(arg.removed_since, VersionConstraint::parse("3.0"), "{func}({param})");
+        }
+    }
+
+    #[test]
+    fn arg_data_carries_added_in() {
+        let program = crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+        let crate::parsing::ast::types::BodyItem::VariableDeclaration(decl) = &program.body[0] else {
+            panic!("expected a function declaration");
+        };
+        let Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected a function expression");
+        };
+
+        let arg = ArgData::from_ast(&func.params[0]);
+
+        assert_eq!(arg.added_in, VersionConstraint::parse("3.0"));
+        assert_eq!(arg.kind, ArgKind::Labelled(true));
+    }
+
+    #[test]
     fn test_remove_md_links() {
         assert_eq!(
             remove_md_links("sdf dsf sd fj sdk fasdfs. asad[sdfs] dfsdf(dsfs, dsf)"),
@@ -1807,7 +1861,7 @@ mod test {
             }
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
-            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None, !eg.1.no3d).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!(
                         "Error testing example {NAME} for {owner_name} in {}: {}",
@@ -1837,8 +1891,8 @@ mod test {
                     source_path.display()
                 );
             }
-            // Doc generation omits the model viewer for a `no3d` example, so
-            // writing its glTF would produce a file no page can ever link to.
+            // Doc generation omits the model viewer for a `no3d` example. Its
+            // glTF export was already skipped by `execute_and_snapshot_3d`.
             // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
             if !eg.1.no3d {
                 for gltf_file in result.gltf {

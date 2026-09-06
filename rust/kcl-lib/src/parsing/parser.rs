@@ -39,9 +39,11 @@ use crate::TypedPath;
 use crate::errors::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Tag;
+use crate::execution::annotations::ADDED_IN;
 use crate::execution::annotations::DEPRECATED;
 use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::REMOVED_SINCE;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
@@ -597,17 +599,6 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
         end,
         at.module_id,
     );
-
-    if let Some(property) = value.properties.as_deref().and_then(|properties| {
-        properties
-            .iter()
-            .find(|property| property.key.name == annotations::IMPORT_TARGET_REPRESENTATION)
-    }) {
-        ParseContext::experimental(
-            "the `targetRepresentation` import annotation",
-            property.as_source_range(),
-        );
-    }
 
     ParseContext::handle_attribute(&value);
 
@@ -4081,13 +4072,48 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.pre_comments = comments.inner;
                 }
                 let mut experimental = false;
+                let mut added_in = None;
                 let mut deprecated = false;
                 let mut deprecated_since = None;
+                let mut removed_since = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
                     {
                         experimental = value;
+                    }
+                    if let Some(property) = attr.property(ADDED_IN) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            added_in = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{ADDED_IN}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{ADDED_IN}` cannot be used on the unlabeled parameter; only labeled parameters can be added in a later version"
+                                ),
+                            ));
+                        } else if default_value.is_none() {
+                            // A caller on an older version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{ADDED_IN}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
+                        }
                     }
                     if let Some(property) = attr.property(DEPRECATED)
                         && let Some(value) = property.value.literal_bool()
@@ -4114,13 +4140,74 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                             format!("A parameter cannot set both `{DEPRECATED}` and `{DEPRECATED_SINCE}`; only one may be specified"),
                         ));
                     }
+                    if let Some(property) = attr.property(REMOVED_SINCE) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            removed_since = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{REMOVED_SINCE}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{REMOVED_SINCE}` cannot be used on the unlabeled parameter; only labeled parameters can be removed"
+                                ),
+                            ));
+                        } else if default_value.is_none() {
+                            // A caller on the removed version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{REMOVED_SINCE}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
+                        }
+                    }
+                    // A parameter cannot be deprecated before it exists, nor
+                    // removed in the version that added it. These are mistakes
+                    // in the declaration's metadata that do not prevent the
+                    // program from running, so they are not fatal.
+                    if let Some(added) = &added_in {
+                        if let Some(since) = &deprecated_since
+                            && since.is_before(added)
+                            && let Some(property) = attr.property(DEPRECATED_SINCE)
+                        {
+                            ParseContext::err(CompilationIssue::err(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "`{DEPRECATED_SINCE}` (KCL {since}) must not be earlier than `{ADDED_IN}` (KCL {added})"
+                                ),
+                            ));
+                        }
+                        if let Some(since) = &removed_since
+                            && !added.is_before(since)
+                            && let Some(property) = attr.property(REMOVED_SINCE)
+                        {
+                            ParseContext::err(CompilationIssue::err(
+                                SourceRange::from(&property.value),
+                                format!("`{REMOVED_SINCE}` (KCL {since}) must be later than `{ADDED_IN}` (KCL {added})"),
+                            ));
+                        }
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
                     experimental,
+                    added_in,
                     deprecated,
                     deprecated_since,
+                    removed_since,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -5925,6 +6012,204 @@ height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_param_removed_since_annotation() {
+        let tokens = crate::parsing::token::lex(
+            r#"fn foo(
+  @(deprecated_since = "2.0", removed_since = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+            ModuleId::default(),
+        )
+        .unwrap();
+        let mut body = in_ctx(|| program.parse(tokens.as_slice())).unwrap().inner.body;
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        let param = &func.params[0];
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_since, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_removed_since_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_since = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `removed_since`",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`removed_since` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `removed_since` must be optional; add `?` after `x`",
+            [37, 38],
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_allows_optional_param_with_default() {
+        crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+    }
+
+    /// The first parameter of the function declared by the program's first
+    /// statement.
+    fn first_fn_param(mut program: Node<Program>) -> Parameter {
+        let BodyItem::VariableDeclaration(item) = program.inner.body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        func.params[0].clone()
+    }
+
+    #[test]
+    fn test_param_added_in_annotation() {
+        // `added_in` may equal `deprecated_since`: a parameter can arrive
+        // already deprecated.
+        let (program, _) = assert_no_err(
+            r#"fn foo(
+  @(added_in = "2.0", deprecated_since = "2.0", removed_since = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let param = first_fn_param(program);
+        assert_eq!(param.added_in, VersionConstraint::parse("2.0"));
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_since, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_added_in_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(added_in = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `added_in`",
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(added_in = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`added_in` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `added_in` must be optional; add `?` after `x`",
+            [32, 33],
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_allows_optional_param_with_default() {
+        assert_no_err(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        );
+    }
+
+    #[test]
+    fn test_param_added_in_later_than_deprecated_since_is_nonfatal_error() {
+        // The declaration's metadata is inconsistent, but the program can
+        // still run, so the error is not fatal and the AST is kept.
+        let (program, issues) = assert_no_fatal(
+            r#"fn foo(
+  @(added_in = "3.0", deprecated_since = "2.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let errors: Vec<_> = issues.iter().filter(|e| e.severity == Severity::Error).collect();
+        assert_eq!(errors.len(), 1, "found: {issues:#?}");
+        assert_eq!(
+            errors[0].message,
+            "`deprecated_since` (KCL 2.0) must not be earlier than `added_in` (KCL 3.0)"
+        );
+        assert_eq!(first_fn_param(program).added_in, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_added_in_not_before_removed_since_is_nonfatal_error() {
+        let (_, issues) = assert_no_fatal(
+            r#"fn foo(
+  @(added_in = "3.0", removed_since = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        );
+        let errors: Vec<_> = issues.iter().filter(|e| e.severity == Severity::Error).collect();
+        assert_eq!(errors.len(), 1, "found: {issues:#?}");
+        assert_eq!(
+            errors[0].message,
+            "`removed_since` (KCL 3.0) must be later than `added_in` (KCL 3.0)"
+        );
+    }
+
+    #[test]
     fn test_anon_fn_no_fn() {
         assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
@@ -6045,8 +6330,10 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    added_in: None,
                     deprecated: false,
                     deprecated_since: None,
+                    removed_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6061,8 +6348,10 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    added_in: None,
                     deprecated: false,
                     deprecated_since: None,
+                    removed_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6078,8 +6367,10 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6091,8 +6382,10 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6109,8 +6402,10 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6122,8 +6417,10 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
