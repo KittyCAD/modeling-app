@@ -707,7 +707,9 @@ describe('systemIOMachine - XState', () => {
             app: appInstanceInThisFile,
           })
 
-          expect(flushWriteToFile).toHaveBeenCalledOnce()
+          expect(flushWriteToFile).toHaveBeenCalledWith({
+            suppressConflictToast: true,
+          })
           expect(flushWriteToFile.mock.invocationCallOrder[0]).toBeLessThan(
             renameSpy.mock.invocationCallOrder[0]
           )

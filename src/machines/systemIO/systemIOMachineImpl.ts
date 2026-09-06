@@ -112,7 +112,9 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
       ? project?.editors.get(executingPathSignal)
       : undefined
   if (executingEditor) {
-    const didFlush = await executingEditor.flushWriteToFile()
+    const didFlush = await executingEditor.flushWriteToFile({
+      suppressConflictToast: true,
+    })
     if (!didFlush) {
       return Promise.reject(
         new ExpectedSystemIOError(
