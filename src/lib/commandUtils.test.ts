@@ -1,5 +1,6 @@
 import type { CommandWithDisabledState } from '@src/lib/commandUtils'
 import { commandKey, sortCommands } from '@src/lib/commandUtils'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import { describe, expect, it } from 'vitest'
 
 function commandWithDisabled(
@@ -9,6 +10,7 @@ function commandWithDisabled(
 ): CommandWithDisabledState {
   return {
     command: {
+      scopes: GLOBAL_COMMAND_SCOPES,
       name,
       groupId,
       needsReview: false,

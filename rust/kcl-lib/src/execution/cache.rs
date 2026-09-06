@@ -9,11 +9,13 @@ use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
+use crate::SourceRange;
 use crate::errors::KclError;
 use crate::execution::ConstraintKey;
 use crate::execution::ConstraintState;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecutorSettings;
+use crate::execution::KclValue;
 use crate::execution::KclValueView;
 use crate::execution::annotations;
 use crate::execution::memory::Stack;
@@ -181,6 +183,13 @@ pub(crate) struct SketchModeState {
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
     pub scene_objects: Vec<Object>,
+}
+
+/// Read a named value from the previous sketch-mode execution.
+#[doc(hidden)]
+pub async fn read_old_memory_var(name: &str) -> Option<KclValue> {
+    let memory = read_old_memory().await?;
+    memory.stack.get(name, SourceRange::default()).ok()
 }
 
 #[cfg(test)]

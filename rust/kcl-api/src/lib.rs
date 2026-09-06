@@ -6,6 +6,7 @@ pub use cad_op::*;
 pub use front::*;
 use indexmap::IndexMap;
 use kcl_error::ModuleId;
+pub use kcl_version::*;
 pub use numeric_type::*;
 use serde::Serialize;
 pub use units::*;
@@ -15,6 +16,7 @@ mod artifact_id;
 pub mod ast;
 mod cad_op;
 mod front;
+mod kcl_version;
 mod numeric_type;
 mod units;
 

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties gridfinity-baseplate-magnets.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 17.1425,
+      "y": 38.1425,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 134.285,
+      "y": 176.285,
+      "z": 100.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 41430.50258758496
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 29.51844961649682
+  }
+}
