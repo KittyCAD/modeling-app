@@ -471,6 +471,53 @@ describe('KclManager diagnostics', () => {
     expect(flushCompleted).toBe(true)
   })
 
+  it('waits for a direct editor execution queued behind an active render', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    const activeRender = createDeferred<typeof kclManager.execState>()
+    const queuedRender = createDeferred<typeof kclManager.execState>()
+    const finalExecState = { ...kclManager.execState }
+    const editedAst = await kclManager.safeParse('x = 2')
+
+    if (editedAst === null) {
+      throw new Error('Expected edited KCL to parse')
+    }
+
+    kclManager.engineCommandManager.started = true
+    kclManager.engineCommandManager.connection = { connected: true } as any
+    const rustExecuteSpy = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockReturnValueOnce(activeRender.promise)
+      .mockReturnValueOnce(queuedRender.promise)
+    vi.spyOn(kclManager, 'executeCode').mockImplementation(() =>
+      kclManager.executeAst({ ast: editedAst })
+    )
+
+    const render = kclManager.executeAst({
+      ast: createEmptyAst(),
+      executionId: 101,
+    })
+    await vi.waitFor(() => expect(rustExecuteSpy).toHaveBeenCalledTimes(1))
+
+    kclManager.editorView.dispatch({
+      changes: { from: 4, to: 5, insert: '2' },
+    })
+
+    let flushCompleted = false
+    const flush = kclManager.flushPendingEditorExecution().then(() => {
+      flushCompleted = true
+    })
+    await vi.waitFor(() => expect(kclManager.executeIsStale).not.toBeNull())
+    expect(flushCompleted).toBe(false)
+
+    activeRender.resolve(finalExecState)
+    await vi.waitFor(() => expect(rustExecuteSpy).toHaveBeenCalledTimes(2))
+    expect(flushCompleted).toBe(false)
+
+    queuedRender.resolve(finalExecState)
+    await Promise.all([render, flush])
+    expect(flushCompleted).toBe(true)
+  })
+
   it('tracks whether the editor differs from the last execution', () => {
     const { kclManager } = createKclManagerTestHarness('a')
     ;(kclManager as any).markCodeAsExecuted('a')

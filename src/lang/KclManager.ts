@@ -1324,6 +1324,13 @@ export class KclManager extends File {
     })
   }
 
+  private async waitForExecutionQueueToIdle(): Promise<void> {
+    while (this.isExecuting || this.executeIsStale) {
+      const generationBeforeWait = this._executionGeneration
+      await this.waitForExecutionGenerationAfter(generationBeforeWait)
+    }
+  }
+
   private notifyExecutionCompletion(status: ExecutionCompletionStatus): void {
     this._executionGeneration += 1
     const generation = this._executionGeneration
@@ -1802,6 +1809,7 @@ export class KclManager extends File {
    */
   async flushPendingEditorExecution(): Promise<void> {
     await this.deferredExecution.flush()
+    await this.waitForExecutionQueueToIdle()
   }
 
   /**
