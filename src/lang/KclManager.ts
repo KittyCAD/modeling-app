@@ -1361,6 +1361,13 @@ export class KclManager extends File {
     })
   }
 
+  private async waitForExecutionQueueToIdle(): Promise<void> {
+    while (this.isExecuting || this.executeIsStale) {
+      const generationBeforeWait = this._executionGeneration
+      await this.waitForExecutionGenerationAfter(generationBeforeWait)
+    }
+  }
+
   private notifyExecutionCompletion(status: ExecutionCompletionStatus): void {
     this._executionGeneration += 1
     const generation = this._executionGeneration
@@ -1837,6 +1844,22 @@ export class KclManager extends File {
     },
     1000
   )
+
+  /**
+   * Finish the latest direct editor execution before a workflow consumes the
+   * current AST or Rust scene graph.
+   */
+  async flushPendingEditorExecution(): Promise<void> {
+    while (true) {
+      const userDocumentVersion = this._userDocumentVersion
+      await this.deferredExecution.flush()
+      await this.waitForExecutionQueueToIdle()
+
+      if (userDocumentVersion === this._userDocumentVersion) {
+        return
+      }
+    }
+  }
 
   /**
    * `EditorView.setState` bypasses the usual editor update effects. After
