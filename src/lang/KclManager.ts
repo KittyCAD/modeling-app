@@ -1808,8 +1808,15 @@ export class KclManager extends File {
    * current AST or Rust scene graph.
    */
   async flushPendingEditorExecution(): Promise<void> {
-    await this.deferredExecution.flush()
-    await this.waitForExecutionQueueToIdle()
+    while (true) {
+      const userDocumentVersion = this._userDocumentVersion
+      await this.deferredExecution.flush()
+      await this.waitForExecutionQueueToIdle()
+
+      if (userDocumentVersion === this._userDocumentVersion) {
+        return
+      }
+    }
   }
 
   /**
