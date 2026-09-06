@@ -301,6 +301,14 @@ export class ElectronZoo {
 
     // Force a hard reload, destroying the stream and other state
     await this.page.reload()
+
+    // Electron reuses this page and context for every test in the worker, and
+    // Playwright does not provide a way to remove an init script. Tests that
+    // set persistCode therefore leave a script which can repopulate the key on
+    // later navigations, even though setup() clears localStorage. Remove the
+    // stale value after setup's final navigation; the current test can still
+    // opt in by installing its own persistCode script afterward.
+    await this.page.evaluate(() => localStorage.removeItem('persistCode'))
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
