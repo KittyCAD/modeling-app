@@ -5,6 +5,7 @@ import { RouteProvider } from '@src/components/RouteProvider'
 import { SystemIOMachineLogicListener } from '@src/components/SystemIOMachineLogicListener'
 import { useApp } from '@src/lib/boot'
 import { routerService } from '@src/registry/contracts/router'
+import { NavigationRouterBridge } from '@src/registry/extensions/navigation/NavigationRouterBridge'
 import { RouterServiceSync } from '@src/registry/extensions/router/RouterServiceSync'
 import { Outlet } from 'react-router-dom'
 
@@ -17,6 +18,8 @@ function RootLayout() {
   return (
     <>
       <RouterServiceSync router={router} />
+      {/* Alongside the sync, not instead of it: this only observes. */}
+      <NavigationRouterBridge />
       <OpenInDesktopAppHandler>
         <RouteProvider>
           <Auth>

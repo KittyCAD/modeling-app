@@ -11,6 +11,7 @@ import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { openProjectFile } from '@src/lib/openFile'
+import { createNavigationContributions } from '@src/registry/extensions/navigation/contributions'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -781,6 +782,20 @@ export class App implements AppSubsystems {
     })
 
     this.registry.reconfigure(appRegistryServicesSlot, [
+      /**
+       * Where the app is, derived from app state.
+       *
+       * TEMPORARY, and deliberately one line to delete. `App` registering
+       * things into the registry is itself something this migration is meant to
+       * remove — features should contribute themselves. It is here only because
+       * the project source reads signals that live on `App` rather than in the
+       * registry, so there is nothing else to read yet.
+       *
+       * The exit: once `projectSession` is a registry service, the navigation
+       * extension resolves it through `ctx.services` and contributes its own
+       * sources, and this line and its import go away.
+       */
+      createNavigationContributions(this),
       defineRegistryItem({
         id: 'app.runtime-services',
         providesServices: [

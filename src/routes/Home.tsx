@@ -1,3 +1,4 @@
+import { useOwnedSearchParams } from '@src/hooks/useOwnedSearchParams'
 import { BillingDialog } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
@@ -94,12 +95,7 @@ import {
 import type { HTMLProps } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 const HOME_PROJECT_CARD_DRAG_MIME = 'application/x-zoo-home-project'
 const HOME_PROJECT_CARD_DRAG_PREVIEW_ID = 'home-project-card-drag-preview'
@@ -364,7 +360,7 @@ const Home = () => {
     : libraryId
       ? []
       : homeProjectEntries
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useOwnedSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(
     scopedHomeProjectEntries
   )
