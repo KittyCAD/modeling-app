@@ -269,10 +269,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     page,
     homePage,
     scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }, testInfo) => {
+  }) => {
     const projectName = 'cube'
     const mainFile = 'main.kcl'
     const secondFile = 'cylinder.kcl'
@@ -304,7 +301,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     })
 
     const utils = await getUtils(page, test)
-    const { openFilePanel, renameFile, selectFile } = utils
+    const { editorTextMatches, locatorFile, openFilePanel, selectFile } = utils
 
     await test.step(`Setup: Open project and navigate to ${secondFile}`, async () => {
       await homePage.expectState({
@@ -325,28 +322,37 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     })
 
     await test.step(`Attempt to rename ${secondFile} to ${mainFile}`, async () => {
-      await renameFile(secondFile, mainFile)
+      await locatorFile(secondFile).click({ button: 'right' })
+      await page.getByTestId('context-menu-rename').click()
+      await page.getByTestId('file-rename-field').fill(mainFile)
+      await page.keyboard.press('Enter')
+      await expect(page.getByTestId('file-rename-field')).not.toBeAttached()
       await scene.settled()
     })
 
-    await test.step(`Postcondition: ${mainFile} still has the original content`, async () => {
+    await test.step('Postcondition: the source file remains active', async () => {
+      await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
+        secondFile
+      )
+      await expect(locatorFile(secondFile)).toBeVisible()
+      await expect(locatorFile(mainFile)).toBeVisible()
+      await editorTextMatches(kclCylinder)
+    })
+
+    await test.step(`Postcondition: ${mainFile} is byte-for-byte unchanged`, async () => {
       const mainFileText = (await fs.readFile(
         await fs.join(dir, projectName, mainFile),
         { encoding: 'utf-8' }
       )) as unknown as string
-      expect(utils.toNormalizedCode(mainFileText)).toBe(
-        utils.toNormalizedCode(kclCube)
-      )
+      expect(mainFileText).toBe(kclCube)
     })
 
-    await test.step(`Postcondition: ${secondFile} still exists with the original content`, async () => {
+    await test.step(`Postcondition: ${secondFile} is byte-for-byte unchanged`, async () => {
       const secondFileText = (await fs.readFile(
         await fs.join(dir, projectName, secondFile),
         { encoding: 'utf-8' }
       )) as unknown as string
-      expect(utils.toNormalizedCode(secondFileText)).toBe(
-        utils.toNormalizedCode(kclCylinder)
-      )
+      expect(secondFileText).toBe(kclCylinder)
     })
   })
 

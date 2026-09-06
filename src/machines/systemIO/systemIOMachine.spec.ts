@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { signal } from '@preact/signals-core'
 import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -6,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  renameFileForSystemIO,
   sharedBulkDeleteWorkflow,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
@@ -627,6 +629,98 @@ describe('systemIOMachine - XState', () => {
           )
         } finally {
           actor.stop()
+        }
+      })
+      it('rejects a rename collision without flushing or mutating either path', async () => {
+        const oldPath = '/Test Project/cylinder.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(undefined)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi
+          .spyOn(fsZds, 'readdir')
+          .mockResolvedValue(['cylinder.kcl', 'main.kcl'])
+        const renameSpy = vi.spyOn(fsZds, 'rename')
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await expect(
+            renameFileForSystemIO({
+              context: {
+                projectDirectoryPath: '/',
+              } as SystemIOContext,
+              requestedFileNameWithExtension: 'main.kcl',
+              fileNameWithExtension: 'cylinder.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+              app: appInstanceInThisFile,
+            })
+          ).rejects.toThrow('Filename already exists.')
+
+          expect(flushWriteToFile).not.toHaveBeenCalled()
+          expect(renameSpy).not.toHaveBeenCalled()
+          expect(executingPathSignal.value).toBe(oldPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
+        }
+      })
+      it('flushes the active editor before a successful rename', async () => {
+        const oldPath = '/Test Project/main.kcl'
+        const newPath = '/Test Project/renamed.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(undefined)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+        const renameSpy = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await renameFileForSystemIO({
+            context: {
+              projectDirectoryPath: '/',
+            } as SystemIOContext,
+            requestedFileNameWithExtension: 'renamed.kcl',
+            fileNameWithExtension: 'main.kcl',
+            absolutePathToParentDirectory: '/Test Project',
+            app: appInstanceInThisFile,
+          })
+
+          expect(flushWriteToFile).toHaveBeenCalledWith({
+            suppressConflictToast: true,
+          })
+          expect(flushWriteToFile.mock.invocationCallOrder[0]).toBeLessThan(
+            renameSpy.mock.invocationCallOrder[0]
+          )
+          expect(renameSpy).toHaveBeenCalledWith(oldPath, newPath)
+          expect(executingPathSignal.value).toBe(newPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
         }
       })
       it('should accept file-tree mutations while reading folders', async () => {
