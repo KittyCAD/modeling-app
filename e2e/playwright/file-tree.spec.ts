@@ -964,13 +964,17 @@ test.describe(
       `delete file when main.kcl exists, navigate to main.kcl`,
       { tag: '@windows' },
       async ({ page, folderSetupFn, scene, cmdBar, fs }, testInfo) => {
+        let mainPath = ''
+        let originalMainBytes = new Uint8Array()
         await folderSetupFn(async (dir) => {
           const testDir = await fs.join(dir, 'testProject')
           await fs.mkdir(testDir, { recursive: true })
           const testData = await nodeFsP.readFile(
             executorInputPath('cylinder.kcl')
           )
-          await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
+          mainPath = await fs.join(testDir, 'main.kcl')
+          originalMainBytes = Uint8Array.from(testData)
+          await fs.writeFile(mainPath, originalMainBytes)
 
           const testData2 = await nodeFsP.readFile(
             executorInputPath('basic_fillet_cube_end.kcl')
@@ -1014,9 +1018,40 @@ test.describe(
 
         await test.step('Check deletion and navigation', async () => {
           await expect(fileToDelete).not.toBeVisible()
+          await expect
+            .poll(async () => {
+              return page.evaluate(
+                ({ expectedPath, expectedCode }) => ({
+                  executingPath: window.app.project?.executingPath,
+                  editorPath: window.app.singletons.kclManager.path,
+                  editorCode: window.app.singletons.kclManager.code,
+                  expectedPath,
+                  expectedCode,
+                }),
+                {
+                  expectedPath: mainPath,
+                  expectedCode: new TextDecoder().decode(originalMainBytes),
+                }
+              )
+            })
+            .toEqual({
+              executingPath: mainPath,
+              editorPath: mainPath,
+              editorCode: new TextDecoder().decode(originalMainBytes),
+              expectedPath: mainPath,
+              expectedCode: new TextDecoder().decode(originalMainBytes),
+            })
+          expect(
+            decodeURIComponent(new URL(page.url()).pathname.split('/file/')[1])
+          ).toBe(mainPath)
+          expect(Array.from(await fs.readFile(mainPath))).toEqual(
+            Array.from(originalMainBytes)
+          )
           await u.closeFilePanel()
           await u.openKclCodePanel()
-          await expect(u.codeLocator).toContainText('circle(')
+          await expect(u.codeLocator).toHaveText(
+            new TextDecoder().decode(originalMainBytes)
+          )
           await expect(projectMenuButton).toContainText('main.kcl')
         })
       }

@@ -939,6 +939,65 @@ describe('project system', () => {
     }
   })
 
+  it('does not let a superseded route load replace the active editor', async () => {
+    const projectPath = `/tmp/app-stale-route-load-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+    const app = createAppForTest()
+    const originalRead = File.ioImplementations.read
+    let resolveAlternateRead: (code: string) => void = () => {}
+    const alternateRead = new Promise<string>((resolve) => {
+      resolveAlternateRead = resolve
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      await writeText(alternatePath, 'alternate = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 2,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          { name: 'main.kcl', path: mainPath, children: null },
+          { name: 'alternate.kcl', path: alternatePath, children: null },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(mainPath)
+      File.ioImplementations.read = (path) =>
+        path === alternatePath ? alternateRead : originalRead(path)
+
+      const firstController = new AbortController()
+      const assertFirstLoadCurrent = app.beginFileRouteLoad(
+        firstController.signal
+      )
+      const staleOpen = openedProject.openEditor(
+        alternatePath,
+        kclManager,
+        undefined,
+        true,
+        assertFirstLoadCurrent
+      )
+      await Promise.resolve()
+
+      app.beginFileRouteLoad(new AbortController().signal)
+      resolveAlternateRead('alternate = true\n')
+
+      await expect(staleOpen).rejects.toMatchObject({ name: 'AbortError' })
+      expect(kclManager.path).toBe(mainPath)
+      expect(kclManager.code).toBe('main = true\n')
+      expect(openedProject.executingPath).toBe(mainPath)
+    } finally {
+      File.ioImplementations.read = originalRead
+      app.dispose()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('can open, close project', async () => {
     // Stub out File read and write implementations
     File.ioImplementations.read = () => Promise.resolve('')

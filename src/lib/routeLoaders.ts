@@ -183,6 +183,7 @@ export const baseLoader =
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
+    const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
     const {
       settings: { actor: settingsActor },
     } = app
@@ -198,11 +199,13 @@ export const fileLoader =
     }
 
     const wasmInstance = await kclManager.wasmInstancePromise
+    assertCurrent()
 
     // Resolve the project root before loading project settings. Loading project
     // settings from a selected file's parent folder creates project.toml in
     // nested folders and makes them look like project roots.
     const appSettings = await loadRouteSettings(app, wasmInstance)
+    assertCurrent()
     const currentProjectPath = app.project?.projectIORefSignal.value.path
     const targetLibraryPath = params.id
       ? (
@@ -228,6 +231,7 @@ export const fileLoader =
     }
 
     await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
+    assertCurrent()
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
@@ -286,19 +290,22 @@ export const fileLoader =
     }
 
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
+    assertCurrent()
 
     const project = maybeProjectInfo ?? defaultProjectData
 
     // Fire off the event to load the project settings
     // once we know it's idle.
     await waitFor(settingsActor, (state) => state.matches('idle'))
+    assertCurrent()
     settingsActor.send({
       type: 'load.project',
       project,
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
+    assertCurrent()
 
-    const projectRef = await app.openProject(project)
+    const projectRef = await app.openProject(project, assertCurrent)
     const editor = await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
@@ -306,8 +313,11 @@ export const fileLoader =
       // through *anything*. INTENDED FOR TESTS.
       window.electron?.process.env.NODE_ENV === 'test'
         ? kclManager.localStoragePersistCode()
-        : undefined
+        : undefined,
+      true,
+      assertCurrent
     )
+    assertCurrent()
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName

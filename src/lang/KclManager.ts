@@ -215,6 +215,7 @@ type UpdateCodeEditorAdditionalSpec = {
 
 type FromFileOptions = {
   shouldSyncRustOnOpen: boolean
+  assertCurrent?: () => void
 }
 
 const requestSkipRustUpdate = StateEffect.define<boolean>()
@@ -427,7 +428,8 @@ export class ZDSProject {
      * editor state through localstorage.
      */
     providedCode?: string,
-    isExecuting = true
+    isExecuting = true,
+    assertCurrent: () => void = () => {}
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
@@ -475,8 +477,12 @@ export class ZDSProject {
       // Project-level file opens refresh Rust with the full project snapshot
       // below. Do not let the reused editor send update_file for a new file ID
       // before that snapshot has registered the file.
-      { shouldSyncRustOnOpen: !providedEditor }
+      {
+        shouldSyncRustOnOpen: !providedEditor,
+        assertCurrent,
+      }
     )
+    assertCurrent()
 
     // Splice our new editor into our files array
     if (foundFileIndex > -1) {
@@ -512,12 +518,14 @@ export class ZDSProject {
     markOnce('project/startCollectFiles')
     const apiFiles = await this.getAllKclFiles()
     markOnce('project/endCollectFiles')
+    assertCurrent()
 
     markOnce('project/startSendProjectToWasm')
     await newEditor.rustContext
       .sendOpenProject(path, apiFiles)
       .catch(reportRejection)
     markOnce('project/endSendProjectToWasm')
+    assertCurrent()
 
     if (
       isExecuting &&
@@ -525,6 +533,7 @@ export class ZDSProject {
       newEditor.engineCommandManager.connection?.connected
     ) {
       await newEditor.executeCode(newEditor.code)
+      assertCurrent()
       await resetCameraPosition({
         sceneInfra: newEditor.sceneInfra,
         engineCommandManager: newEditor.engineCommandManager,
@@ -2149,6 +2158,7 @@ export class KclManager extends File {
     options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
     const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
+    options.assertCurrent?.()
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
