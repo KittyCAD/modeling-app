@@ -98,7 +98,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect()
+    useTryConnect(() => {
+      if (!videoRef.current || !canvasRef.current) return
+      showLiveVideoOnNextFrame(videoRef.current, canvasRef.current)
+    })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -651,15 +654,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
-        onPlaying={() => {
-          if (!videoRef.current || !canvasRef.current) return
-          showLiveVideoOnNextFrame(videoRef.current, canvasRef.current)
-        }}
       />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="hidden h-full w-full cursor-pointer"
+        className="absolute inset-0 hidden h-full w-full cursor-pointer"
         id="freeze-frame"
       >
         No canvas support
