@@ -24,6 +24,7 @@ const projectActions = {
   canDelete: vi.fn(() => false),
   canMoveToLibrary: vi.fn(() => false),
   canReviewDuplicateRealizations: vi.fn(() => false),
+  canSeparateProjectCopies: vi.fn(() => false),
   open: vi.fn(async () => undefined),
   duplicate: vi.fn(async () => undefined),
   rename: vi.fn(async () => undefined),
@@ -31,6 +32,7 @@ const projectActions = {
   getMoveToLibraryTargets: vi.fn(() => []),
   moveToLibrary: vi.fn(async () => undefined),
   deleteDuplicateRealizations: vi.fn(async () => undefined),
+  separateProjectCopies: vi.fn(async () => undefined),
 } satisfies HomeProjectActionsService
 
 function renderHomeHeader({
