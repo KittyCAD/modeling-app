@@ -41,7 +41,6 @@ import {
 } from '@src/lib/selections'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
-import { showFreezeFrame, showLiveVideoOnNextFrame } from '@src/lib/videoStream'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
@@ -397,10 +396,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageIdleParams = useMemo(
     () => ({
       startCallback: onPageIdleStartCb,
-      beforeIdleTeardown: () => {
-        if (!videoRef.current || !canvasRef.current) return
-        showFreezeFrame(videoRef.current, canvasRef.current)
-      },
       idleCallback: () => {
         isIdle.current = true
       },
@@ -605,15 +600,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
-        onPlaying={() => {
-          if (!videoRef.current || !canvasRef.current) return
-          showLiveVideoOnNextFrame(videoRef.current, canvasRef.current)
-        }}
       />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="hidden h-full w-full cursor-pointer"
+        className="cursor-pointer"
         id="freeze-frame"
       >
         No canvas support
