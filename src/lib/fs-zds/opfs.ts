@@ -370,13 +370,47 @@ const rm = async (targetPath: string, options?: { recursive: boolean }) => {
 const writeFile = async (
   targetPath: string,
   data: Uint8Array<ArrayBuffer>,
-  options?: any
+  options?: { flag?: 'w' | 'wx' }
+) => {
+  const write = () => writeFileUnlocked(targetPath, data, options)
+  if (navigator.locks) {
+    // All writers share the lock so checking for existence and creating a file
+    // is exclusive across tabs, including when a normal write races creation.
+    return navigator.locks.request(
+      `zds-opfs-write:${path.resolve(targetPath)}`,
+      write
+    )
+  }
+  if (options?.flag === 'wx') {
+    return Promise.reject(
+      new Error('Exclusive OPFS file creation requires Web Locks')
+    )
+  }
+  return write()
+}
+
+const writeFileUnlocked = async (
+  targetPath: string,
+  data: Uint8Array<ArrayBuffer>,
+  options?: { flag?: 'w' | 'wx' }
 ) => {
   const parts = targetPath.split(path.sep)
   const parent = parts.slice(0, -1).join(path.sep)
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
+  if (options?.flag === 'wx') {
+    let exists = false
+    try {
+      await handle.getFileHandle(parts.slice(-1)[0])
+      exists = true
+    } catch (error: unknown) {
+      if (!(error instanceof DOMException) || error.name !== 'NotFoundError') {
+        return Promise.reject(error)
+      }
+    }
+    if (exists) return Promise.reject('EEXIST')
+  }
   const fileHandle = await handle.getFileHandle(parts.slice(-1)[0], {
     create: true,
   })
