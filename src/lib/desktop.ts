@@ -538,7 +538,7 @@ export async function getDefaultKclFileForDir(
   try {
     await fsZds.stat(defaultFilePath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       // Find a kcl file in the directory.
       if (file.children) {
         for (const entry of file.children) {
@@ -563,10 +563,25 @@ export async function getDefaultKclFileForDir(
         if (err(codeToWrite)) {
           return Promise.reject(codeToWrite)
         }
-        await fsZds.writeFile(
-          defaultFilePath,
-          new TextEncoder().encode(codeToWrite)
-        )
+        try {
+          // Discovery can race an import populating a new project directory.
+          // Only create a missing default file; never replace newly added code.
+          await fsZds.writeFile(
+            defaultFilePath,
+            new TextEncoder().encode(codeToWrite),
+            { flag: 'wx' }
+          )
+        } catch (error: unknown) {
+          const alreadyExists =
+            error === 'EEXIST' ||
+            (typeof error === 'object' &&
+              error !== null &&
+              (('code' in error && error.code === 'EEXIST') ||
+                ('message' in error &&
+                  typeof error.message === 'string' &&
+                  error.message.startsWith('EEXIST'))))
+          if (!alreadyExists) return Promise.reject(error)
+        }
         return defaultFilePath
       }
     }
