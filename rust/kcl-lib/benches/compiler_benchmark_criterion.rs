@@ -10,7 +10,6 @@ pub fn bench_parse(c: &mut Criterion) {
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
-        ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("koch snowflake", LSYSTEM_KOCH_SNOWFLAKE_PROGRAM),
         ("nested function calls", NESTED_FN_CALLS),
         ("big_sketch_block", BIG_SKETCH_BLOCK),
@@ -27,10 +26,7 @@ pub fn bench_parse(c: &mut Criterion) {
 /// drag a point/line around in sketch mode. This benchmark should correlate with
 /// user-perceived latency in sketch mode.
 pub fn bench_mock_warmed_up(c: &mut Criterion) {
-    for (name, file) in [
-        ("medium_sketch", MEDIUM_SKETCH),
-        ("mike_stress_test_program", MIKE_STRESS_TEST_PROGRAM),
-    ] {
+    for (name, file) in [("medium_sketch", MEDIUM_SKETCH)] {
         let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
         c.bench_function(&format!("mock_execute_{name}"), move |b| {
             let rt = tokio::runtime::Runtime::new().unwrap();
