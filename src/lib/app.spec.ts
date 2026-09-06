@@ -973,7 +973,18 @@ describe('project system', () => {
         ],
       }
       const openedProject = await app.openProject(project)
-      const kclManager = await openedProject.openEditor(mainPath)
+      const kclManager = await openedProject.openEditor(
+        mainPath,
+        undefined,
+        'main = true\n'
+      )
+      kclManager.updateCodeEditor('main = true\n', {
+        shouldExecute: false,
+        shouldSyncRust: false,
+        shouldWriteToDisk: false,
+        shouldClearHistory: true,
+        shouldAddToHistory: false,
+      })
       File.ioImplementations.read = (path) =>
         path === alternatePath ? alternateRead : originalRead(path)
 
