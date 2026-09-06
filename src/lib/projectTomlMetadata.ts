@@ -136,6 +136,40 @@ export function getProjectTitleFromProjectTomlContents(contents: string) {
   return getNonEmptyString(table.title)
 }
 
+export function getProjectIdFromProjectTomlContents(contents: string) {
+  const table = parseProjectToml(contents)
+  if (
+    !table ||
+    !isTomlTable(table.settings) ||
+    !isTomlTable(table.settings.meta)
+  ) {
+    return undefined
+  }
+
+  return getNonEmptyString(table.settings.meta.id)
+}
+
+export function setProjectIdInProjectTomlContents(
+  contents: string,
+  projectId: string
+) {
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error('Unable to parse project.toml while updating project ID')
+  }
+
+  if (!isTomlTable(table.settings)) {
+    table.settings = {}
+  }
+  const settings = table.settings
+  if (!isTomlTable(settings.meta)) {
+    settings.meta = {}
+  }
+  settings.meta.id = projectId
+
+  return stringifyProjectToml(table)
+}
+
 export function setProjectTitleInProjectTomlContents(
   contents: string,
   title: string
