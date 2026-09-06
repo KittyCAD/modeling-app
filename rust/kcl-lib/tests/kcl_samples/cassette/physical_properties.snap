@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties cassette.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -0.000000000000007105427357601002,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 100.0,
+      "y": 76.43873379874411,
+      "z": 100.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 29787.412085660493
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 15.894615541069705
+  }
+}

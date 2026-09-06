@@ -20,6 +20,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import type { PathValue } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>
@@ -114,6 +115,7 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
   const valueArg = buildCommandArgument(valueArgConfig, context, actor)
 
   const command: Command = {
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: type,
     displayName: `Settings · ${type
       .split('.')

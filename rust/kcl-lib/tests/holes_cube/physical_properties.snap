@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties holes_cube.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 5.0000000000963105,
+      "y": 10.049870986601306,
+      "z": -0.0000000000006217248937900878
+    },
+    "dimensions": {
+      "x": 23.297056274643843,
+      "y": 23.396798248091063,
+      "z": 23.297056275249993
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2902.8240501098867
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 6.134260243173127
+  }
+}

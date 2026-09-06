@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties stylized-car.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0000023000006876827683,
+      "y": 14.749998059999823,
+      "z": 989.9999999737332
+    },
+    "dimensions": {
+      "x": 4439.9999959199995,
+      "y": 2110.4999961199997,
+      "z": 2120.000000052534
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 61370069.6666009
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 7938106.735624994
+  }
+}

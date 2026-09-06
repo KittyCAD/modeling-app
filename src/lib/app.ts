@@ -74,6 +74,10 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
+  projectSession,
+  type ProjectSessionService,
+} from '@src/registry/contracts/projectSession'
+import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
@@ -173,15 +177,21 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
-  public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
-  public currentProjectLibraryIdSignal: Signal<string | undefined> =
-    signal(undefined)
+  private get projectSession(): ProjectSessionService {
+    return this.registry.get(projectSession)
+  }
+  public get projectSignal(): Signal<ZDSProject | undefined> {
+    return this.projectSession.project
+  }
+  public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
+    return this.projectSession.currentProjectLibraryId
+  }
   public debug: AppDebug = {}
   get project() {
-    return this.projectSignal.value
+    return this.projectSession.getProject()
   }
   set project(newProject: ZDSProject | undefined) {
-    this.projectSignal.value = newProject
+    this.projectSession.setProject(newProject)
   }
   singletons: ReturnType<typeof this.buildSingletons>
   /**
@@ -443,7 +453,11 @@ export class App implements AppSubsystems {
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
-  dispose() {
+  private hasStoppedSubsystems = false
+
+  private stopSubsystems() {
+    if (this.hasStoppedSubsystems) return
+    this.hasStoppedSubsystems = true
     this.closeProject()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
@@ -453,7 +467,17 @@ export class App implements AppSubsystems {
     this.auth.actor.stop()
     this.billing.actor.stop()
     this.userFeatures.actor.stop()
+  }
+
+  dispose() {
+    this.stopSubsystems()
     this.registry[Symbol.dispose]()
+  }
+
+  /** Stop the app and await registry-owned runtime resources. */
+  async disposeAsync() {
+    this.stopSubsystems()
+    await this.registry.disposeAsync()
   }
 
   closeProject() {
@@ -711,11 +735,11 @@ export class App implements AppSubsystems {
       }
 
       if (desiredActive) {
-        toggle.enable()
+        void toggle.enable().catch(reportRejection)
         continue
       }
 
-      toggle.disable()
+      void toggle.disable().catch(reportRejection)
     }
 
     const syncActivePlugins =

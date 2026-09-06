@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties clone_dodecahedron.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 1.1103823831654154,
+      "y": -1.0369446806798803,
+      "z": 2.192155805812945
+    },
+    "dimensions": {
+      "x": 43134.37232586624,
+      "y": 42938.08584581372,
+      "z": 41679.8654791392
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 956017100.8110046
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 526924338.69838715
+  }
+}

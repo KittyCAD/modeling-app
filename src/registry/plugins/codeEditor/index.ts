@@ -36,7 +36,7 @@ const codeEditorKeymap: KeymapDocument = {
     {
       id: 'code-editor.render',
       title: 'Render code',
-      scopes: [
+      when: [
         MODE_MODELING_KEYMAP_SCOPE,
         MODE_SKETCHING_KEYMAP_SCOPE,
         MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
