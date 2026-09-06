@@ -63,25 +63,8 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
 
       isFirstRun = false
 
-      try {
-        await use(electronZooInstance)
-        if (testInfo.status === testInfo.expectedStatus) {
-          await electronZooInstance.makeAvailableAgain()
-        }
-      } catch (error) {
-        try {
-          await electronZooInstance.dispose()
-        } catch (cleanupError) {
-          throw new AggregateError(
-            [error, cleanupError],
-            'Electron fixture and cleanup failed'
-          )
-        }
-        throw error
-      }
-      if (testInfo.status !== testInfo.expectedStatus) {
-        await electronZooInstance.dispose()
-      }
+      await use(electronZooInstance)
+      await electronZooInstance.makeAvailableAgain()
     },
     { timeout: 120_000 }, // Keep the global timeout as fallback
   ],

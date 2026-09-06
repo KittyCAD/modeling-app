@@ -22,7 +22,6 @@ import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
-import { closeElectronApplication } from '@e2e/playwright/fixtures/electronLifecycle'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
@@ -152,9 +151,7 @@ export class ElectronZoo {
   async dispose() {
     this.disposed = true
     this.available = false
-    this.disposal ??= this.electron
-      ? closeElectronApplication(this.electron)
-      : Promise.resolve()
+    this.disposal ??= this.electron?.close()
     await this.disposal
   }
 
@@ -249,7 +246,7 @@ export class ElectronZoo {
       // A launch can finish after the setup deadline. Dispose that late process
       // instead of configuring a fixture whose test has already failed.
       if (this.disposed) {
-        await closeElectronApplication(this.electron)
+        await this.dispose()
         throw new Error('Electron fixture setup was cancelled')
       }
 

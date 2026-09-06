@@ -1,35 +1,10 @@
-import {
-  closeElectronApplication,
-  runElectronSetup,
-} from '@e2e/playwright/fixtures/electronLifecycle'
-import type { ElectronApplication } from '@playwright/test'
+import { runElectronSetup } from '@e2e/playwright/fixtures/electronLifecycle'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { execFileMock } = vi.hoisted(() => ({ execFileMock: vi.fn() }))
-vi.mock('node:child_process', () => ({
-  execFile: execFileMock,
-  default: { execFile: execFileMock },
-}))
-
-const killMock = vi.fn(() => true as const)
-const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform')
-if (!platformDescriptor) {
-  throw new Error('Missing Node.js platform property')
-}
-
-beforeEach(() => {
-  vi.useFakeTimers()
-  killMock.mockClear()
-  vi.spyOn(process, 'kill').mockImplementation(killMock)
-  vi.spyOn(console, 'warn').mockImplementation(() => {})
-})
-
+beforeEach(() => vi.useFakeTimers())
 afterEach(() => {
   vi.clearAllTimers()
   vi.useRealTimers()
-  vi.restoreAllMocks()
-  execFileMock.mockReset()
-  Object.defineProperty(process, 'platform', platformDescriptor)
 })
 
 describe('Electron fixture setup cleanup', () => {
@@ -45,7 +20,13 @@ describe('Electron fixture setup cleanup', () => {
     const navigation = new Promise<void>((_, reject) => {
       rejectNavigation = reject
     })
+    let finishDisposal!: () => void
+    const disposal = new Promise<void>((resolve) => {
+      finishDisposal = resolve
+    })
+    const reportFailure = vi.fn((error: unknown) => error)
     const dispose = vi.fn(async () => {
+      await disposal
       rejectNavigation(new Error('Navigation cancelled by context close'))
     })
     const outcome = runElectronSetup(
@@ -53,9 +34,12 @@ describe('Electron fixture setup cleanup', () => {
       dispose,
       30_000,
       'setup deadline'
-    ).catch((error: unknown) => error)
+    ).catch(reportFailure)
 
     await vi.advanceTimersByTimeAsync(30_000)
+    expect(dispose).toHaveBeenCalledOnce()
+    expect(reportFailure).not.toHaveBeenCalled()
+    finishDisposal()
     expect(await outcome).toEqual(new Error('setup deadline'))
     expect(dispose).toHaveBeenCalledOnce()
     expect(vi.getTimerCount()).toBe(0)
@@ -90,116 +74,5 @@ describe('Electron fixture setup cleanup', () => {
       setupError,
       cleanupError,
     ])
-  })
-})
-
-function application(close: () => Promise<void>, exited = false) {
-  return {
-    close,
-    process: () => ({
-      pid: 123456,
-      exitCode: exited ? 0 : null,
-      signalCode: null,
-    }),
-  } as unknown as ElectronApplication
-}
-
-describe('closing the owned Electron application', () => {
-  it('allows a graceful close without terminating any process', async () => {
-    await closeElectronApplication(application(async () => {}))
-    expect(killMock).not.toHaveBeenCalled()
-    expect(execFileMock).not.toHaveBeenCalled()
-    expect(vi.getTimerCount()).toBe(0)
-  })
-
-  it('bounds a stuck close and terminates only the owned Unix process group', async () => {
-    Object.defineProperty(process, 'platform', { value: 'darwin' })
-    const close = closeElectronApplication(
-      application(() => new Promise(() => {}))
-    )
-    await vi.advanceTimersByTimeAsync(4_999)
-    expect(killMock).not.toHaveBeenCalled()
-    await vi.advanceTimersByTimeAsync(1)
-    await close
-    expect(killMock).toHaveBeenCalledExactlyOnceWith(-123456, 'SIGKILL')
-    expect(execFileMock).not.toHaveBeenCalled()
-  })
-
-  it('uses a bounded taskkill for only the owned Windows process tree', async () => {
-    Object.defineProperty(process, 'platform', { value: 'win32' })
-    execFileMock.mockImplementation(
-      (
-        _command: string,
-        _args: string[],
-        _options: unknown,
-        done: (error: null) => void
-      ) => done(null)
-    )
-    const close = closeElectronApplication(
-      application(() => new Promise(() => {}))
-    )
-    await vi.advanceTimersByTimeAsync(5_000)
-    await close
-    expect(execFileMock).toHaveBeenCalledExactlyOnceWith(
-      'taskkill',
-      ['/pid', '123456', '/T', '/F'],
-      { timeout: 5_000 },
-      expect.any(Function)
-    )
-    expect(killMock).not.toHaveBeenCalled()
-  })
-
-  it('accepts a Windows process exiting while taskkill starts', async () => {
-    Object.defineProperty(process, 'platform', { value: 'win32' })
-    const ownedProcess = {
-      pid: 123456,
-      exitCode: null as number | null,
-      signalCode: null,
-    }
-    const app = {
-      close: () => new Promise<void>(() => {}),
-      process: () => ownedProcess,
-    } as unknown as ElectronApplication
-    execFileMock.mockImplementation(
-      (
-        _command: string,
-        _args: string[],
-        _options: unknown,
-        done: (error: Error) => void
-      ) => {
-        ownedProcess.exitCode = 0
-        done(new Error('Process not found'))
-      }
-    )
-    const close = closeElectronApplication(app)
-    await vi.advanceTimersByTimeAsync(5_000)
-    await expect(close).resolves.toBeUndefined()
-    expect(killMock).not.toHaveBeenCalled()
-  })
-
-  it('refuses to terminate a process without a valid owned PID', async () => {
-    const app = {
-      close: () => new Promise<void>(() => {}),
-      process: () => ({ pid: 0, exitCode: null, signalCode: null }),
-    } as unknown as ElectronApplication
-    const result = closeElectronApplication(app).catch(
-      (error: unknown) => error
-    )
-    await vi.advanceTimersByTimeAsync(5_000)
-    expect(await result).toEqual(
-      new Error('Cannot terminate an Electron fixture without its PID')
-    )
-    expect(killMock).not.toHaveBeenCalled()
-    expect(execFileMock).not.toHaveBeenCalled()
-  })
-
-  it('does not signal a process that has already exited', async () => {
-    const close = closeElectronApplication(
-      application(() => new Promise(() => {}), true)
-    )
-    await vi.advanceTimersByTimeAsync(5_000)
-    await close
-    expect(killMock).not.toHaveBeenCalled()
-    expect(execFileMock).not.toHaveBeenCalled()
   })
 })

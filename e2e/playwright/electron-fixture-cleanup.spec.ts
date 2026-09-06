@@ -1,10 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
-import {
-  closeElectronApplication,
-  runElectronSetup,
-} from '@e2e/playwright/fixtures/electronLifecycle'
+import { runElectronSetup } from '@e2e/playwright/fixtures/electronLifecycle'
 import type { TestInfo } from '@playwright/test'
 import { _electron as electron, expect, test } from '@playwright/test'
 
@@ -73,52 +70,23 @@ test.describe(
                 throw result.error
               }
             },
-            () => closeElectronApplication(ownedApplication),
+            () => ownedApplication.close(),
             100,
             'fixture regression setup deadline'
           )
         ).rejects.toThrow('fixture regression setup deadline')
-        await expect
-          .poll(() => {
-            return (
-              ownedProcess.exitCode !== null || ownedProcess.signalCode !== null
-            )
-          })
-          .toBe(true)
+        // close() must finish before the original setup failure is reported.
+        expect(ownedProcess.exitCode).toBe(0)
+        expect(ownedProcess.signalCode).toBeNull()
         expect((await navigation).succeeded).toBe(false)
       } finally {
         if (application) {
-          await closeElectronApplication(application)
+          await application.close()
         }
         server.closeAllConnections()
         await new Promise<void>((resolve, reject) => {
           server.close((error) => (error ? reject(error) : resolve()))
         })
-      }
-    })
-
-    // biome-ignore lint/correctness/noEmptyPattern: Playwright requires a fixture pattern.
-    test('a refused quit cannot leave the fixture process running', async ({}, testInfo) => {
-      const application = await launchFixtureApplication(
-        testInfo,
-        'data:text/html,<html><body>Refused quit regression</body></html>'
-      )
-      const ownedProcess = application.process()
-      try {
-        await application.firstWindow()
-        await application.evaluate(({ app }) => {
-          app.on('before-quit', (event) => event.preventDefault())
-        })
-        await closeElectronApplication(application)
-        await expect
-          .poll(() => {
-            return (
-              ownedProcess.exitCode !== null || ownedProcess.signalCode !== null
-            )
-          })
-          .toBe(true)
-      } finally {
-        await closeElectronApplication(application)
       }
     })
   }
