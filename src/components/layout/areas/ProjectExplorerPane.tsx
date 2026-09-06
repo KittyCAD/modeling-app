@@ -150,11 +150,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         }
         const navigateAfterFlush = () => {
           void kclManager
-            .flushWriteToFile(kclManager.code, undefined, {
-              suppressConflictToast: true,
+            .flushWriteToFile()
+            .then((saved) => {
+              if (saved) navigateHelper()
             })
             .catch(reportRejection)
-            .finally(navigateHelper)
         }
 
         if (modelingMachineState.matches('Sketch')) {

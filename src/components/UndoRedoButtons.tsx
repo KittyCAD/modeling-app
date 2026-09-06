@@ -75,13 +75,12 @@ export function UndoRedoButtons({
         iconName="arrowRotateFullRight"
         onClick={() => {
           kclManager
-            .flushWriteToFile(kclManager.code, undefined, {
-              suppressConflictToast: true,
-            })
-            .catch(reportRejection)
-            .finally(() => {
+            .flushWriteToFile()
+            .then((saved) => {
+              if (!saved) return
               refreshPage('Top app bar').catch(reportRejection)
             })
+            .catch(reportRejection)
         }}
         className="rounded-l-none"
         disabled={false}

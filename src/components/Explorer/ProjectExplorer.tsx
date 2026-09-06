@@ -1070,6 +1070,10 @@ export const ProjectExplorer = ({
                       target,
                       successMessage: 'Archived successfully',
                       requestedProjectName: project.name,
+                      requestedFileName: parentPathRelativeToProject(
+                        project.default_file,
+                        applicationProjectDirectory
+                      ),
                     },
                   })
                   kclManager.addGlobalHistoryEvent(
@@ -1307,11 +1311,9 @@ export const ProjectExplorer = ({
                   applicationProjectDirectory
                 )
                 void kclManager
-                  .flushWriteToFile(kclManager.code, undefined, {
-                    suppressConflictToast: true,
-                  })
-                  .catch(reportRejection)
-                  .finally(() => {
+                  .flushWriteToFile()
+                  .then((saved) => {
+                    if (!saved) return
                     sendFileTreeMutationEvent({
                       type: SystemIOMachineEvents.importFileFromURL,
                       data: {
@@ -1321,6 +1323,7 @@ export const ProjectExplorer = ({
                       },
                     })
                   })
+                  .catch(reportRejection)
               } else {
                 // Create a blank file. The actor seeds default KCL content only
                 // for .kcl files and writes an empty file for everything else,
