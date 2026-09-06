@@ -803,6 +803,11 @@ export exported = 2`,
     { tag: '@web' },
     async ({ page, cmdBar }) => {
       await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await expect(page).toHaveURL(
+        (url) =>
+          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
+        { timeout: 15_000 }
+      )
       await cmdBar.expectCommandName('Settings · app · theme')
     }
   )
