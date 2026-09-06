@@ -1054,41 +1054,50 @@ test.describe(
         })
 
         await test.step('Check deletion and navigation', async () => {
+          const normalizeFilePath = (value: string) =>
+            value.replaceAll('\\', '/')
+          const expectedPath = normalizeFilePath(mainPath)
+          // CodeMirror uses LF internally even when the disk file uses CRLF.
+          const expectedEditorCode = new TextDecoder()
+            .decode(originalMainBytes)
+            .replace(/\r\n?/g, '\n')
           await expect(fileToDelete).not.toBeVisible()
           await expect
             .poll(async () => {
-              return page.evaluate(
-                ({ expectedPath, expectedCode }) => ({
-                  executingPath: window.app.project?.executingPath,
-                  editorPath: window.app.singletons.kclManager.path,
-                  editorCode: window.app.singletons.kclManager.code,
-                  expectedPath,
-                  expectedCode,
-                }),
-                {
-                  expectedPath: mainPath,
-                  expectedCode: new TextDecoder().decode(originalMainBytes),
-                }
-              )
+              const state = await page.evaluate(() => ({
+                executingPath: window.app.project?.executingPath,
+                editorPath: window.app.singletons.kclManager.path,
+                editorCode: window.app.singletons.kclManager.code,
+              }))
+              return {
+                ...state,
+                executingPath: state.executingPath
+                  ? normalizeFilePath(state.executingPath)
+                  : undefined,
+                editorPath: normalizeFilePath(state.editorPath),
+              }
             })
             .toEqual({
-              executingPath: mainPath,
-              editorPath: mainPath,
-              editorCode: new TextDecoder().decode(originalMainBytes),
-              expectedPath: mainPath,
-              expectedCode: new TextDecoder().decode(originalMainBytes),
+              executingPath: expectedPath,
+              editorPath: expectedPath,
+              editorCode: expectedEditorCode,
             })
-          expect(
-            decodeURIComponent(new URL(page.url()).pathname.split('/file/')[1])
-          ).toBe(mainPath)
+          await expect(page).toHaveURL((url) => {
+            const route =
+              url.protocol === 'file:' ? url.hash.slice(1) : url.pathname
+            if (!route.startsWith('/file/')) return false
+            return (
+              normalizeFilePath(
+                decodeURIComponent(route.split('?')[0].slice('/file/'.length))
+              ) === expectedPath
+            )
+          })
           expect(Array.from(await fs.readFile(mainPath))).toEqual(
             Array.from(originalMainBytes)
           )
           await u.closeFilePanel()
           await u.openKclCodePanel()
-          await expect(u.codeLocator).toHaveText(
-            new TextDecoder().decode(originalMainBytes)
-          )
+          await expect(u.codeLocator).toHaveText(expectedEditorCode)
           await expect(projectMenuButton).toContainText('main.kcl')
         })
       }
