@@ -231,7 +231,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
         shouldAddToHistory: false,
         shouldClearHistory: false,
         shouldExecute: true,
-        shouldResetCamera: true,
+        shouldResetCamera: false,
         shouldWriteToDisk: false,
       }
     )

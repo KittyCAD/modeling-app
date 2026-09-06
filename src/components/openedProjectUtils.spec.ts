@@ -19,11 +19,11 @@ describe('getZookeeperProjectReloadBehavior', () => {
     ).toBe('execute-without-camera-reset')
   })
 
-  it('keeps the current behavior outside sketch mode', () => {
+  it('preserves the camera outside sketch mode', () => {
     expect(
       getZookeeperProjectReloadBehavior({
         matches: () => false,
       })
-    ).toBe('execute-and-reset-camera')
+    ).toBe('execute-without-camera-reset')
   })
 })
