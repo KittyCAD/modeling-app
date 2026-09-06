@@ -3270,6 +3270,7 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        await kclManager.flushPendingEditorExecution()
         if (kclManager.hasParseErrors()) {
           return reject(
             new Error('Unable to enter sketch while KCL has parse errors.')
