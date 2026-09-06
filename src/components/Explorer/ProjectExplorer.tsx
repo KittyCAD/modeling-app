@@ -1069,6 +1069,10 @@ export const ProjectExplorer = ({
                       target,
                       successMessage: 'Archived successfully',
                       requestedProjectName: project.name,
+                      requestedFileName: parentPathRelativeToProject(
+                        project.default_file,
+                        applicationProjectDirectory
+                      ),
                     },
                   })
                   kclManager.addGlobalHistoryEvent(

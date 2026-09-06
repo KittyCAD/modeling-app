@@ -325,12 +325,17 @@ export const systemIOMachine = setup({
             src: string
             target: string
             requestedProjectName: string
+            requestedFileName?: string
             successMessage?: string
           }
         }
       | {
           type: SystemIOMachineEvents.done_moveRecursiveAndNavigate
-          output: { requestedProjectName: string; target: string }
+          output: {
+            requestedProjectName: string
+            requestedFileName?: string
+            target: string
+          }
         },
   },
   guards: {
@@ -839,12 +844,14 @@ export const systemIOMachine = setup({
           target: string
           successMessage?: string
           requestedProjectName?: string | undefined
+          requestedFileName?: string | undefined
         }
       }) => {
         return {
           message: '',
           requestedAbsolutePath: '',
           requestedProjectName: '',
+          requestedFileName: input.requestedFileName,
           target: input.target,
         }
       }
@@ -1112,15 +1119,23 @@ export const systemIOMachine = setup({
             SystemIOMachineActions.setFolders,
             assign({
               hasListedProjects: true,
-              requestedProjectName: ({ context }) => {
-                // If we just finished renaming, navigate to the renamed project
-                if (context.pendingRenamedProjectName) {
-                  const newName = context.pendingRenamedProjectName
-                  return { name: newName }
-                }
-                return context.requestedProjectName
-              },
               pendingRenamedProjectName: () => undefined, // clear after redirect
+              requestedProjectName: ({ context }) => {
+                if (context.pendingRenamedProjectName) {
+                  return { name: context.pendingRenamedProjectName }
+                }
+                const pending = context.pendingNavigationAfterFolderRefresh
+                return pending && !pending.file
+                  ? { name: pending.project }
+                  : context.requestedProjectName
+              },
+              requestedFileName: ({ context }) => {
+                const pending = context.pendingNavigationAfterFolderRefresh
+                return pending?.file
+                  ? { project: pending.project, file: pending.file }
+                  : context.requestedFileName
+              },
+              pendingNavigationAfterFolderRefresh: () => undefined,
             }),
           ],
         },
@@ -2104,6 +2119,7 @@ export const systemIOMachine = setup({
             src: event.data.src,
             target: event.data.target,
             requestedProjectName: event.data.requestedProjectName,
+            requestedFileName: event.data.requestedFileName,
             successMessage: event.data.successMessage,
           }
         },
@@ -2114,14 +2130,18 @@ export const systemIOMachine = setup({
               lastRecursiveMoveTarget: ({ event }) => {
                 return (event as { output: { target?: string } }).output.target
               },
-              requestedProjectName: ({ event }) => {
-                assertEvent(
-                  event,
-                  SystemIOMachineEvents.done_moveRecursiveAndNavigate
-                )
+              pendingNavigationAfterFolderRefresh: ({ event }) => {
+                const output = (
+                  event as unknown as {
+                    output: {
+                      requestedProjectName: string
+                      requestedFileName?: string
+                    }
+                  }
+                ).output
                 return {
-                  name: (event as { output: { requestedProjectName: string } })
-                    .output.requestedProjectName,
+                  project: output.requestedProjectName,
+                  file: output.requestedFileName,
                 }
               },
             }),

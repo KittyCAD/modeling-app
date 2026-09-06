@@ -1065,6 +1065,83 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('publishes post-move file navigation only after refreshing folders', async () => {
+        const move = deferred<{
+          message: string
+          requestedAbsolutePath: string
+          requestedProjectName: string
+          requestedFileName: string | undefined
+          target: string
+        }>()
+        const readFolders = deferred<Project[]>()
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.moveRecursive]: fromPromise(
+                async () => move.promise
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => readFolders.promise),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+            data: {
+              src: '/projects/demo-project/delete-me.kcl',
+              target: '/archive/delete-me.kcl',
+              requestedProjectName: 'demo-project',
+              requestedFileName: 'main.kcl',
+            },
+          })
+          move.resolve({
+            message: 'Archived successfully',
+            requestedAbsolutePath: '',
+            requestedProjectName: 'demo-project',
+            requestedFileName: 'main.kcl',
+            target: '/archive/delete-me.kcl',
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: NO_PROJECT_DIRECTORY,
+            file: NO_PROJECT_DIRECTORY,
+          })
+          expect(
+            actor.getSnapshot().context.pendingNavigationAfterFolderRefresh
+          ).toStrictEqual({
+            project: 'demo-project',
+            file: 'main.kcl',
+          })
+
+          readFolders.resolve([mockProject('demo-project')])
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+          expect(actor.getSnapshot().context.folders).toStrictEqual([
+            mockProject('demo-project'),
+          ])
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: 'demo-project',
+            file: 'main.kcl',
+          })
+          expect(
+            actor.getSnapshot().context.pendingNavigationAfterFolderRefresh
+          ).toBeUndefined()
+        } finally {
+          actor.stop()
+        }
+      })
       it('should prefer opening the imported entry file over navigating to the project', async () => {
         const actor = createActor(
           systemIOMachine.provide({

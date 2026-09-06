@@ -1000,6 +1000,11 @@ export async function setup(
       PLAYWRIGHT_TEST_SCOPE_KEY,
       PLAYWRIGHT_STORAGE_SCOPE_KEY,
     }) => {
+      // Init scripts also run on opaque startup documents, which cannot use
+      // web storage. Electron's file documents still need initialization.
+      if (window.origin === 'null' && location.protocol !== 'file:') {
+        return
+      }
       const testScope = sessionStorage.getItem(PLAYWRIGHT_TEST_SCOPE_KEY)
       const initializedScope = sessionStorage.getItem(
         PLAYWRIGHT_STORAGE_SCOPE_KEY

@@ -1176,6 +1176,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           target: string
           successMessage?: string
           requestedProjectName?: string
+          requestedFileName?: string
         }
       }) => {
         // TODO: this force deletion behavior assumes this move is only
@@ -1190,6 +1191,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           message: input.successMessage || 'Moved successfully',
           requestedAbsolutePath: '',
           requestedProjectName: input.requestedProjectName || '',
+          requestedFileName: input.requestedFileName,
           target: input.target,
         }
       }
