@@ -584,6 +584,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           projectName: string
           projectPath: string
           requestedProjectName: string
+          currentFilePath?: string | null
+          currentFileContents?: string
         }
       }) => {
         const projectDirectoryPath = fsZds.dirname(input.projectPath)
@@ -595,6 +597,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           },
           projectDirectoryPath,
           requestedProjectTitle: input.requestedProjectName,
+          currentFilePath: input.currentFilePath,
+          currentFileContents: input.currentFileContents,
           wasmInstance: await input.context.wasmInstancePromise,
         })
         return {
