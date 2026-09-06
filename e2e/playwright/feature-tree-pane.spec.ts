@@ -553,8 +553,9 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     await test.step('Edit the parameter value in the editor', async () => {
       await editor.replaceCode('23 * 2', '42')
       await editor.expectEditor.toContain('= 42')
-      // Wait for the code to be executed.
-      await page.waitForTimeout(2000)
+      await page.evaluate(() =>
+        window.app.singletons.kclManager.flushPendingEditorExecution()
+      )
       // The parameter value should be updated in the feature tree.
       const operationButton = await toolbar.getFeatureTreeOperation(
         'length001',
