@@ -21,6 +21,7 @@ import { kclCommands } from '@src/lib/kclCommands'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
+import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 function isNumberArray(value: unknown): value is number[] {
   return isArray(value) && value.every((item) => typeof item === 'number')
@@ -166,7 +167,12 @@ export const ModelingPageProvider = ({
     }
 
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
+      createRouteCommands(
+        navigate,
+        location,
+        filePath,
+        FILE_AND_CODE_EDITOR_COMMAND_SCOPES
+      )
     commands.send({
       type: 'Add commands',
       data: {

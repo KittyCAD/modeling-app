@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sketch_on_face_union.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 25.4,
+      "y": 0.0,
+      "z": -51.1009209344802
+    },
+    "dimensions": {
+      "x": 50.8,
+      "y": 3657.6,
+      "z": 2336.1981581310392
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2831540.5481189373
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 46232.46998630748
+  }
+}

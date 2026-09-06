@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties cold-plate.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 6.858000001747712,
+      "y": -0.000000000055990767577895895,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 397.3870567926017,
+      "y": 287.3202848991133,
+      "z": 100.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 428772.49386481254
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1895.032607496516
+  }
+}

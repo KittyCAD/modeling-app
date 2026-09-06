@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties fun-stacker-toy.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 76.20000001828356,
+      "z": 139.69999999999993
+    },
+    "dimensions": {
+      "x": 304.79999999999995,
+      "y": 457.2000000365671,
+      "z": 330.1999999999998
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 790389.1122993798
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 11433.16219861982
+  }
+}
