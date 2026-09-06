@@ -3,6 +3,11 @@
 # bash strict mode
 set -euo pipefail
 
+if [[ -f "test-results/.last-run.json" ]]; then
+    # An outer retry must not accept a saved passed status with global errors.
+    node scripts/check-playwright-run.mjs
+fi
+
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # If no last run artifact, than run Playwright normally
     echo "run playwright normally"
@@ -18,6 +23,7 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     fi
     # Log failures for Axiom to pick up
     node playwrightProcess.mjs > /tmp/github-actions.log
+    node scripts/check-playwright-run.mjs
 fi
 
 retry=1
@@ -42,6 +48,7 @@ while [[ $retry -le $max_retries ]]; do
             fi
             # Log failures for Axiom to pick up
             node playwrightProcess.mjs > /tmp/github-actions.log
+            node scripts/check-playwright-run.mjs
             retry=$((retry + 1))
         else
             echo "retried=false" >>$GITHUB_OUTPUT
