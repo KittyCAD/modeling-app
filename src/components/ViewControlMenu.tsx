@@ -21,6 +21,7 @@ import {
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { selectSketchPlane } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
+import { shouldLockViewControls } from '@src/components/viewControlMenuUtils'
 import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
@@ -33,11 +34,14 @@ export function useViewControlMenuItems() {
   )
 
   const settingsValues = settings.useSettings()
-  const shouldLockView =
-    modelingState.matches('Sketch') &&
-    !settingsValues.app.allowOrbitInSketchMode.current
+  const shouldLockView = shouldLockViewControls(
+    modelingState,
+    settingsValues.app.allowOrbitInSketchMode.current
+  )
 
-  const sketching = modelingState.matches('Sketch')
+  const sketching =
+    modelingState.matches('Sketch') || modelingState.matches('sketchSolveMode')
+  const showSketchGrid = settingsValues.modeling.showSketchGrid.current
   const snapToGrid = settingsValues.modeling.snapToGrid.current
   const gizmoType = settingsValues.modeling.gizmoType.current
 
@@ -161,8 +165,24 @@ export function useViewControlMenuItems() {
       </ContextMenuItem>,
       ...(sketching
         ? [
-            <ContextMenuDivider />,
+            <ContextMenuDivider key="sketch-grid-divider" />,
             <ContextMenuItem
+              key="show-sketch-grid"
+              icon={showSketchGrid ? 'checkmark' : undefined}
+              onClick={() => {
+                settings.send({
+                  type: 'set.modeling.showSketchGrid',
+                  data: {
+                    level: 'project',
+                    value: !showSketchGrid,
+                  },
+                })
+              }}
+            >
+              Show Sketch Grid
+            </ContextMenuItem>,
+            <ContextMenuItem
+              key="snap-to-grid"
               icon={snapToGrid ? 'checkmark' : undefined}
               hotkey={SNAP_TO_GRID_HOTKEY}
               onClick={() => {
@@ -187,6 +207,7 @@ export function useViewControlMenuItems() {
       modelingSend,
       modelingState.context.store.useSketchSolveMode,
       sketching,
+      showSketchGrid,
       snapToGrid,
       gizmoType,
       layout.signal.value,

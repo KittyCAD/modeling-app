@@ -11,7 +11,8 @@ permissions:
 
 jobs:
   build-wasm:
-    runs-on: namespace-profile-ubuntu-8-cores
+    # Keep host-user Cargo outputs separate from the root-run MUSL build.
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -25,6 +26,7 @@ jobs:
           filters: |
             rust:
               - 'rust/**'
+              - '.github/workflows/build-wasm.yml'
 
       - uses: actions/setup-node@v7.0.0
         with:
@@ -37,7 +39,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v23
+        uses: dawidd6/action-download-artifact@v24
         continue-on-error: true
         with:
           name: prepared-wasm
@@ -48,31 +50,16 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
-      - name: Validate Wasm cache
-        id: validate-wasm
-        if: ${{ steps.download-wasm.outcome == 'success' }}
-        shell: bash
-        run: |
-          expected_rust_tree=$(git rev-parse HEAD:rust)
-          cached_rust_tree=$(cat rust/kcl-wasm-lib/pkg/kcl_wasm_lib.rust-tree 2>/dev/null || true)
-
-          if [[ "${cached_rust_tree}" == "${expected_rust_tree}" ]]; then
-            echo "valid=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "valid=false" >> "$GITHUB_OUTPUT"
-            echo "Cached Wasm was built from a different Rust tree; rebuilding."
-          fi
-
-      - name: Build Wasm condition
+      - name: Determine Wasm rebuild
         id: wasm
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
-          CACHE_VALID: ${{ steps.validate-wasm.outputs.valid || 'false' }}
+          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
           RUST_CHANGES: ${{ steps.filter.outputs.rust || 'false' }}
         run: |
-          # Build Wasm with Rust changes, stale/missing caches, or for stacked PRs
+          # Build Wasm with Rust changes, cache misses, or for stacked PRs
           if [[ "${RUST_CHANGES}" == 'true' || \
-                "${CACHE_VALID}" != 'true' || \
+                "${DOWNLOAD_OUTCOME}" == 'failure' || \
                 ( -n "${BASE_REF}" && "${BASE_REF}" != 'main' ) ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
@@ -92,12 +79,13 @@ jobs:
           cache: false # configured below
           rustflags: '' # use .cargo/config.toml
 
-      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+      - name: Install Wasm pack
+        uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
 
-      - name: Rust cache on the Namespace volume
+      - name: Cache Rust artifacts
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: namespacelabs/nscloud-cache-action@v1
         with:
@@ -105,6 +93,10 @@ jobs:
             rust/target
             ~/.cargo/registry
             ~/.cargo/git
+
+      - name: Verify Rust cache is writable
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
 
       - name: Build Wasm
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
@@ -116,10 +108,6 @@ jobs:
         shell: bash
         run: |
           cp -R rust/kcl-lib/expected-bindings/ts-rs rust/kcl-lib/bindings
-
-      - name: Record Wasm Rust tree
-        shell: bash
-        run: git rev-parse HEAD:rust > rust/kcl-wasm-lib/pkg/kcl_wasm_lib.rust-tree
 
       - name: Copy Wasm to public
         run: |

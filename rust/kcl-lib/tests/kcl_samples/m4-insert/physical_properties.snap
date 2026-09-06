@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties m4-insert.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -4.0500000000000105,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 6.300000000000001,
+      "y": 8.100000000000003,
+      "z": 6.300000000000001
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 304.2139690343504
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.1520419672940143
+  }
+}

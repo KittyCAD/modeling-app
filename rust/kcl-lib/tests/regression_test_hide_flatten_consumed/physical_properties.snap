@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties regression_test_hide_flatten_consumed.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 2.152614782083611,
+      "y": 2.7521973774374686,
+      "z": 0.5500000000000005
+    },
+    "dimensions": {
+      "x": 3.2452295641672215,
+      "y": 2.9043947548749376,
+      "z": 1.100000000000001
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 22.024155674316148
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.005323669139601442
+  }
+}

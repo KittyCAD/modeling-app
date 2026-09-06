@@ -65,7 +65,7 @@ jobs:
   npm-lint:
     # 8 cores for the extra memory: the type-aware lint needs more heap
     # (--max-old-space-size=4096) than the 2-core profile's RAM can hold.
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     needs: build-wasm
 
     steps:

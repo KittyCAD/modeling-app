@@ -56,9 +56,9 @@ import {
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
+import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
   findKeymapItemForCommand,
-  HOME_KEYMAP_SCOPE,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
@@ -69,6 +69,7 @@ import {
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -299,10 +300,10 @@ const Home = () => {
       return
     }
 
-    keymap.applyScope(HOME_KEYMAP_SCOPE)
+    keymap.applyScope(HOME_COMMAND_SCOPE)
 
     return () => {
-      keymap.removeScope(HOME_KEYMAP_SCOPE)
+      keymap.removeScope(HOME_COMMAND_SCOPE)
     }
   }, [keymap])
 
@@ -339,6 +340,7 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const session = registry.get(projectSession)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
@@ -371,7 +373,7 @@ const Home = () => {
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusProjects,
-          [HOME_KEYMAP_SCOPE],
+          [HOME_COMMAND_SCOPE],
           registry.signal(keymapScopesValueSpec).value
         )?.keystrokes
       : undefined,
@@ -415,22 +417,21 @@ const Home = () => {
   }, [projectLibraryRealizations, projectLibraryWatchKey])
 
   useEffect(() => {
-    app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
+    session.setCurrentProjectLibraryId(selectedProjectLibraryId)
 
     return () => {
-      if (
-        app.currentProjectLibraryIdSignal.value === selectedProjectLibraryId
-      ) {
-        app.currentProjectLibraryIdSignal.value = undefined
+      if (session.getCurrentProjectLibraryId() === selectedProjectLibraryId) {
+        session.setCurrentProjectLibraryId(undefined)
       }
     }
-  }, [app, selectedProjectLibraryId])
+  }, [session, selectedProjectLibraryId])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
       navigate,
       location,
-      ''
+      '',
+      [HOME_COMMAND_SCOPE]
     )
 
     commands.send({

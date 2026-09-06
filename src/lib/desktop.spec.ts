@@ -1,5 +1,3 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
@@ -11,11 +9,12 @@ import {
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
 } from '@src/lib/desktop'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
 import { buildTheWorldNode } from '@src/unitTestUtils'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { mockElectron } = vi.hoisted(() => {
   // Mock the electron window global
@@ -278,13 +277,13 @@ describe('desktop utilities', () => {
       ])
     })
 
-    it('reads project title and cloud id from project.toml metadata', async () => {
+    it('reads project title and ids from project.toml metadata', async () => {
       mockElectron.readFile.mockImplementation(async (path: string) => {
         if (path === '/test/projects/valid-project/.gitignore') {
           return 'dist\nnotes.txt\n'
         }
         if (path === '/test/projects/valid-project/project.toml') {
-          return 'title = "Some demo"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+          return 'title = "Some demo"\n\n[settings.meta]\nid = "local-project-123"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
         }
 
         return ''
@@ -299,6 +298,7 @@ describe('desktop utilities', () => {
       })
 
       expect(project.title).toBe('Some demo')
+      expect(project.projectId).toBe('local-project-123')
       expect(project.cloudProjectId).toBe('project-123')
     })
 

@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build-and-stub:
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     defaults:
       run:
         shell: bash -eux {0}

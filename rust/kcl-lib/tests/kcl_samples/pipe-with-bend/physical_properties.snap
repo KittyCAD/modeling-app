@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties pipe-with-bend.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 508.0,
+      "y": 381.0,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 1016.0,
+      "y": 1270.0,
+      "z": 508.00000000000006
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 3169036.1191685954
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 181866.20379242412
+  }
+}

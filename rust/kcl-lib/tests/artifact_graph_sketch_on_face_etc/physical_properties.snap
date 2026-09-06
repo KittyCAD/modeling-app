@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties artifact_graph_sketch_on_face_etc.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 6.488050371381701,
+      "y": -3.0,
+      "z": 5.131064892933411
+    },
+    "dimensions": {
+      "x": 14.776100742763402,
+      "y": 6.0,
+      "z": 11.862129785866824
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 347.0930811602102
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.2742500005287196
+  }
+}

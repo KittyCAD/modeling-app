@@ -74,7 +74,7 @@ jobs:
           fi
   linux-x86_64:
     name: kcl-python-bindings (linux-x86_64)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     # The hourly schedule exists to observe flaky tests. It runs the test job
     # and nothing else.
     if: github.event_name != 'schedule'
@@ -249,7 +249,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   test:
     name: kcl-python-bindings (test)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Track setup
@@ -292,7 +292,7 @@ jobs:
           CI_SUITE: integration:kcl
   sdist:
     name: kcl-python-bindings (sdist)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
@@ -317,7 +317,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   release:
     name: Release
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     permissions:
       contents: write
     if: startsWith(github.ref, 'refs/tags/')
