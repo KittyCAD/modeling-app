@@ -32,7 +32,7 @@ import {
   projectManifestFromFiles,
   projectManifestsEqual,
   toArrayBuffer,
-  withRemoteProjectMetadataInArchiveFiles,
+  withProjectTitleInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import {
@@ -51,6 +51,7 @@ import type {
   CloudSyncLocalProject,
   CloudSyncOpenedProject,
   CloudSyncProjectMetadataIndexEntry,
+  CloudSyncProjectNowResult,
   CloudSyncStatus,
   OutboxEntry,
   ProjectArchiveFile,
@@ -138,6 +139,9 @@ const SYNC_RETRY_MAX_MS = 5 * 60 * 1000
 const PROJECT_API_THROTTLE_MS = 250
 const PROJECT_API_THROTTLE_JITTER_MS = 250
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
+// A new project needs one upload pass and one API-archive reconciliation pass.
+// Leave room for an outbox mutation arriving between those operations.
+const SYNC_NOW_MAX_PASSES = 4
 const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =
   'Cloud sync cannot upload local changes because this account does not have edit access to the linked cloud project. Local changes are safe on this device.'
 
@@ -148,6 +152,7 @@ let config: CloudSyncConfig = {
 }
 let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
+const syncIdleWaiters = new Set<() => void>()
 let syncRetryAttempt = 0
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
@@ -166,6 +171,21 @@ type CloudSyncProjectApiRequestThrottle = () => Promise<void>
 
 const unthrottledCloudSyncProjectApiRequest: CloudSyncProjectApiRequestThrottle =
   async () => undefined
+
+async function acquireCloudSyncOperation() {
+  while (syncInProgress) {
+    await new Promise<void>((resolve) => syncIdleWaiters.add(resolve))
+  }
+  syncInProgress = true
+}
+
+function releaseCloudSyncOperation() {
+  syncInProgress = false
+  for (const resolve of syncIdleWaiters) {
+    resolve()
+  }
+  syncIdleWaiters.clear()
+}
 
 export const cloudSyncStatus = signal<CloudSyncStatus>({
   enabled: false,
@@ -846,13 +866,7 @@ async function downloadRemoteProjectSnapshot({
   const parsedArchive = await parseProjectArchive(
     await downloadRemoteProjectArchive(config, projectId)
   )
-  const filesWithMetadata = withRemoteProjectMetadataInArchiveFiles(
-    parsedArchive,
-    project.title,
-    projectId,
-    getEnvironmentName()
-  )
-  const files = filterCloudSyncProjectFilesForSync(filesWithMetadata)
+  const files = filterCloudSyncProjectFilesForSync(parsedArchive)
 
   if (!verifyStableRevision) {
     return {
@@ -936,18 +950,6 @@ export function getCloudSyncMissingRemoteProjectAction({
 async function writeLocalProjectTitle(projectPath: string, title: string) {
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getProjectTitleFromProjectTomlContents(projectToml) === title
-      ? projectToml
-      : setProjectTitleInProjectTomlContents(projectToml, title)
-  )
-}
-
-async function ensureLocalProjectTitle(projectPath: string, title?: string) {
-  if (!title?.trim()) {
-    return false
-  }
-
-  return updateLocalProjectToml(projectPath, (projectToml) =>
-    getProjectTitleFromProjectTomlContents(projectToml)
       ? projectToml
       : setProjectTitleInProjectTomlContents(projectToml, title)
   )
@@ -1330,13 +1332,28 @@ async function replaceLocalProjectWithFiles(
   projectPath: string,
   files: ProjectArchiveFile[]
 ) {
-  if (await exists(projectPath)) {
-    await localFs.rm(projectPath, { recursive: true })
+  const existingFiles = (await exists(projectPath))
+    ? await collectLocalProjectFiles(projectPath)
+    : []
+  const existingFilesByPath = projectArchiveFileMap(existingFiles)
+  const remotePaths = new Set(files.map((file) => file.relativePath))
+
+  // Keep the project root continuously available while applying a remote
+  // snapshot. File routes and editor watchers treat a missing root as a
+  // deleted project and otherwise race a safe cloud hydration back to Home.
+  for (const existingFile of existingFiles) {
+    if (!remotePaths.has(existingFile.relativePath)) {
+      await localFs.rm(localFs.join(projectPath, existingFile.relativePath))
+    }
   }
 
   await localFs.mkdir(projectPath, { recursive: true })
   for (const file of files) {
     if (!file.relativePath) {
+      continue
+    }
+    const existingFile = existingFilesByPath.get(file.relativePath)
+    if (existingFile && archiveFileContentsEqual(existingFile, file)) {
       continue
     }
     const targetPath = localFs.join(projectPath, file.relativePath)
@@ -1346,6 +1363,16 @@ async function replaceLocalProjectWithFiles(
       new Uint8Array(toArrayBuffer(file.data))
     )
   }
+}
+
+function archiveFileContentsEqual(
+  left: ProjectArchiveFile,
+  right: ProjectArchiveFile
+) {
+  if (left.data.byteLength !== right.data.byteLength) {
+    return false
+  }
+  return left.data.every((byte, index) => byte === right.data[index])
 }
 
 async function uniqueProjectPath(
@@ -1715,12 +1742,7 @@ async function cloneRemoteProjectToLocal(
       : await uniqueProjectPath(projectDirectory, projectName)
   const archive = await downloadRemoteProjectArchive(config, remoteProject.id)
   const files = filterCloudSyncProjectFilesForSync(
-    withRemoteProjectMetadataInArchiveFiles(
-      await parseProjectArchive(archive),
-      remoteProject.title,
-      remoteProject.id,
-      getEnvironmentName()
-    )
+    await parseProjectArchive(archive)
   )
   const nextMetadata = {
     ...metadataForProject(projectPath),
@@ -1830,10 +1852,6 @@ export async function ensureCloudProjectLocallySynced(
       remoteProjectId: projectId,
       tombstone: false,
     }
-    await ensureLocalProjectTitle(
-      existingProjectPath,
-      getRemoteProjectTitleForProjectToml(remoteProject.title)
-    )
     await putProjectMetadata(nextMetadata)
     nextMetadata = await syncCloudProjectDirectoryNameFromTitle({
       metadata: nextMetadata,
@@ -1880,15 +1898,13 @@ export async function renameRemoteCloudProject(
   }
 
   const remoteProject = await getRemoteProject(config, projectId)
-  const files = withRemoteProjectMetadataInArchiveFiles(
+  const files = withProjectTitleInArchiveFiles(
     filterCloudSyncProjectFilesForSync(
       await parseProjectArchive(
         await downloadRemoteProjectArchive(config, projectId)
       )
     ),
-    title,
-    projectId,
-    getEnvironmentName()
+    title
   )
   const updated = await updateRemoteProject({
     config,
@@ -2616,7 +2632,7 @@ export function getCloudSyncProjectSyncPreflightAction({
   if (!hasRemoteProjectId) {
     return 'create-remote'
   }
-  if (!localChanged && !remoteChanged) {
+  if (!localChanged && !remoteChanged && hasRemoteRevision) {
     return 'mark-synced'
   }
   if (localChanged && !remoteChanged && hasRemoteRevision) {
@@ -2860,13 +2876,6 @@ async function syncProject(
       return
     }
 
-    if (metadata.remoteProjectId) {
-      await writeLocalProjectCloudProjectId(
-        metadata.localProjectPath,
-        metadata.remoteProjectId
-      )
-    }
-
     let remoteProject: RemoteProject | undefined
     let remoteRevision: Revision | undefined
     let remoteChanged = false
@@ -2892,12 +2901,6 @@ async function syncProject(
       remoteRevision = getRevision(remoteProject)
     }
 
-    await ensureLocalProjectTitle(
-      metadata.localProjectPath,
-      remoteProject
-        ? getRemoteProjectTitleForProjectToml(remoteProject.title)
-        : metadata.projectName
-    )
     if (entries.length === 0) {
       metadata = await syncCloudProjectDirectoryNameFromTitle({
         metadata,
@@ -2946,22 +2949,25 @@ async function syncProject(
         throttleProjectApiRequest,
         () => createRemoteProject(config, metadata.localProjectPath, localFiles)
       )
-      await writeLocalProjectCloudProjectId(
-        metadata.localProjectPath,
-        created.id
-      )
-      const nextLocalFiles = await collectLocalProjectFiles(
-        metadata.localProjectPath
-      )
       await clearOutboxEntriesForProject(metadata.localProjectPath)
-      await markProjectSynced(
-        {
-          ...metadata,
-          remoteProjectId: created.id,
-        },
-        await projectManifestFromFiles(nextLocalFiles),
-        remoteSyncMetadata(created, { useNowAsUpdatedAtFallback: true })
-      )
+      const uploadedMetadata: ProjectMetadata = {
+        ...metadata,
+        remoteProjectId: created.id,
+        remoteRevision: undefined,
+        remoteUpdatedAt: undefined,
+        baseManifest: localManifest,
+        conflict: undefined,
+        lastFailure: undefined,
+      }
+      await putProjectMetadata(uploadedMetadata)
+      publishScopedProjectCloudProjectId(uploadedMetadata)
+      await appendOutboxEntry({
+        projectPath: metadata.localProjectPath,
+        kind: 'upsert',
+        targetPath: metadata.localProjectPath,
+        createdAt: nowIso(),
+      })
+      scheduleSync(0)
       return
     }
 
@@ -3017,12 +3023,7 @@ async function syncProject(
       () => downloadRemoteProjectArchive(config, remoteProjectId)
     )
     const remoteFiles = filterCloudSyncProjectFilesForSync(
-      withRemoteProjectMetadataInArchiveFiles(
-        await parseProjectArchive(remoteArchive),
-        remoteProject.title,
-        remoteProjectId,
-        getEnvironmentName()
-      )
+      await parseProjectArchive(remoteArchive)
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
 
@@ -3368,10 +3369,6 @@ async function syncRemoteIndex(
           remoteProjectId: remoteProject.id,
           remoteUpdatedAt: getRemoteUpdatedAt(remoteProject),
         }
-        await ensureLocalProjectTitle(
-          existingProjectPath,
-          getRemoteProjectTitleForProjectToml(remoteProject.title)
-        )
         await putProjectMetadata(nextMetadata)
         nextMetadata = await syncCloudProjectDirectoryNameFromTitle({
           metadata: nextMetadata,
@@ -3596,7 +3593,6 @@ async function runCloudSync() {
     scheduleSyncFailureRetry(error)
     failureRetryScheduled = true
   } finally {
-    syncInProgress = false
     pendingStatusSyncedAt = undefined
     if (
       shouldScheduleCloudSyncPendingWork({
@@ -3607,6 +3603,7 @@ async function runCloudSync() {
     ) {
       scheduleSync(SYNC_DEBOUNCE_MS)
     }
+    releaseCloudSyncOperation()
   }
 }
 
@@ -3720,6 +3717,92 @@ export async function startCloudSyncProject(projectPath: string) {
     lastFailureAt: undefined,
   })
   scheduleSync(0)
+}
+
+/** Synchronize one explicitly enrolled project before returning. */
+export async function syncCloudSyncProjectNow(
+  projectPath: string
+): Promise<CloudSyncProjectNowResult> {
+  if (!isConfiguredForCloud()) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync is not enabled.')
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const stat = await localFs.stat(normalizedProjectPath)
+  if (!statIsDirectory(stat)) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync can only run for a project directory.')
+  }
+
+  if (syncTimer) {
+    clearTimeout(syncTimer)
+    syncTimer = undefined
+  }
+  await acquireCloudSyncOperation()
+  pendingStatusSyncedAt = undefined
+  updateStatus({
+    enabled: true,
+    state: 'syncing',
+    activeProjectPath: normalizedProjectPath,
+    lastFailure: undefined,
+    lastFailureAt: undefined,
+  })
+
+  try {
+    for (let pass = 0; pass < SYNC_NOW_MAX_PASSES; pass += 1) {
+      if (syncTimer) {
+        clearTimeout(syncTimer)
+        syncTimer = undefined
+      }
+      const entries = outboxEntriesForProject(
+        await getAllOutboxEntries(),
+        normalizedProjectPath
+      )
+      await syncProject(normalizedProjectPath, entries)
+
+      const metadata = await getProjectMetadata(normalizedProjectPath)
+      const remainingEntries = outboxEntriesForProject(
+        await getAllOutboxEntries(),
+        normalizedProjectPath
+      )
+      if (metadata?.conflict) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new Error(
+          'Cloud sync found conflicting local and remote changes.'
+        )
+      }
+      if (metadata?.lastFailure) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new Error(metadata.lastFailure.message)
+      }
+      if (
+        metadata?.remoteProjectId &&
+        metadata.baseManifest &&
+        remainingEntries.length === 0
+      ) {
+        await refreshPendingCount()
+        updateStatus({
+          state: 'idle',
+          activeProjectPath: undefined,
+          lastFailure: undefined,
+          lastFailureAt: undefined,
+          lastSyncedAt: metadata.lastSyncedAt,
+        })
+        return { remoteProjectId: metadata.remoteProjectId }
+      }
+    }
+
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync did not converge for this project.')
+  } finally {
+    if (syncTimer) {
+      clearTimeout(syncTimer)
+      syncTimer = undefined
+    }
+    pendingStatusSyncedAt = undefined
+    releaseCloudSyncOperation()
+  }
 }
 
 /**

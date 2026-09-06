@@ -42,6 +42,7 @@ vi.mock('@src/lib/cloudSync', () => ({
   deleteRemoteCloudProject: vi.fn(),
   ensureCloudProjectLocallySynced: vi.fn(),
   startCloudSyncProject: vi.fn(),
+  syncCloudSyncProjectNow: vi.fn(),
   disconnectCloudSyncProject: vi.fn(),
   getCloudSyncProjectMetadata: vi.fn(),
   getCloudSyncProjectMetadataIndex: vi.fn(),

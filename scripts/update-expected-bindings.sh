@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Copies the generated (gitignored) TypeScript-facing bindings into the
-# committed rust/kcl-lib/expected-bindings/ directory so that changes to the
-# TypeScript API surface show up as diffs of tracked files.
+# Copies the merged, generated (gitignored) TypeScript-facing bindings from
+# kcl-lib and kcl-language-server into the committed
+# rust/kcl-lib/expected-bindings/ directory so that changes to the TypeScript
+# API surface show up as diffs of tracked files.
 #
 # Prerequisite: the bindings must already be generated
 # (`npm run bindings:generate`). Use `npm run bindings:update` to regenerate
