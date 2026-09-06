@@ -1,4 +1,4 @@
-import path from 'path'
+const OPFS_PATH_SEPARATOR = '/'
 
 type WriteFileRequest = {
   id: number
@@ -19,17 +19,17 @@ const walk = async (
   let looped = true
   let currentChanged = true
 
-  if (targetPath.split(path.sep).length === 2) {
+  if (targetPath.split(OPFS_PATH_SEPARATOR).length === 2) {
     return current
   }
 
   while (looped && currentChanged) {
-    let entries = current.entries()
+    const entries = current.entries()
     looped = false
     currentChanged = false
-    for await (let [name, handle] of entries) {
+    for await (const [name, handle] of entries) {
       looped = true
-      const currentPath = path.resolve(cwd, name)
+      const currentPath = `${cwd}${OPFS_PATH_SEPARATOR}${name}`
 
       if (targetPath.startsWith(currentPath) === false) {
         continue
@@ -106,11 +106,15 @@ const writeFile = async (
   targetPath: string,
   data: Uint8Array<ArrayBuffer>
 ): Promise<void> => {
-  const parts = targetPath.split(path.sep)
-  const parent = parts.slice(0, -1).join(path.sep)
+  const parts = targetPath.split(OPFS_PATH_SEPARATOR)
+  const parent = parts.slice(0, -1).join(OPFS_PATH_SEPARATOR)
   const handle = await walk(parent)
-  if (handle === undefined) return Promise.reject('ENOENT')
-  if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
+  if (handle === undefined) {
+    return Promise.reject('ENOENT')
+  }
+  if (handle instanceof FileSystemFileHandle) {
+    return Promise.reject('EISFILE')
+  }
 
   const fileHandle = await handle.getFileHandle(parts.slice(-1)[0], {
     create: true,
@@ -119,9 +123,11 @@ const writeFile = async (
   await writeWithHandle(fileHandle, data)
 }
 
-onmessage = (event: MessageEvent<WriteFileRequest>) => {
+self.onmessage = (event: MessageEvent<WriteFileRequest>) => {
   const { id, type, targetPath, data } = event.data
-  if (type !== 'write-file') return
+  if (type !== 'write-file') {
+    return
+  }
 
   void writeFile(targetPath, data)
     .then(() => {
