@@ -45,17 +45,17 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
         "objectId": 0,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -173,17 +173,17 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
         "objectId": 0,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -221,7 +221,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "profile002": {
@@ -266,17 +267,17 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 1,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -394,17 +395,17 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 1,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -442,7 +443,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch001": {
@@ -450,8 +452,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XZ",
       "objectId": 0,
+      "kind": "XZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -483,8 +485,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
       "objectId": 1,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,

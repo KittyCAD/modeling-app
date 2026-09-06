@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { signal } from '@preact/signals-core'
 import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -6,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  renameFileForSystemIO,
   sharedBulkDeleteWorkflow,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
@@ -629,6 +631,142 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('rejects a rename collision without flushing or mutating either path', async () => {
+        const oldPath = '/Test Project/cylinder.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(true)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi
+          .spyOn(fsZds, 'readdir')
+          .mockResolvedValue(['cylinder.kcl', 'main.kcl'])
+        const renameSpy = vi.spyOn(fsZds, 'rename')
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await expect(
+            renameFileForSystemIO({
+              context: {
+                projectDirectoryPath: '/',
+              } as SystemIOContext,
+              requestedFileNameWithExtension: 'main.kcl',
+              fileNameWithExtension: 'cylinder.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+              app: appInstanceInThisFile,
+            })
+          ).rejects.toThrow('Filename already exists.')
+
+          expect(flushWriteToFile).not.toHaveBeenCalled()
+          expect(renameSpy).not.toHaveBeenCalled()
+          expect(executingPathSignal.value).toBe(oldPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
+        }
+      })
+      it('flushes the active editor before a successful rename', async () => {
+        const oldPath = '/Test Project/main.kcl'
+        const newPath = '/Test Project/renamed.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(true)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+        const renameSpy = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await renameFileForSystemIO({
+            context: {
+              projectDirectoryPath: '/',
+            } as SystemIOContext,
+            requestedFileNameWithExtension: 'renamed.kcl',
+            fileNameWithExtension: 'main.kcl',
+            absolutePathToParentDirectory: '/Test Project',
+            app: appInstanceInThisFile,
+          })
+
+          expect(flushWriteToFile).toHaveBeenCalledWith({
+            suppressConflictToast: true,
+          })
+          expect(flushWriteToFile.mock.invocationCallOrder[0]).toBeLessThan(
+            renameSpy.mock.invocationCallOrder[0]
+          )
+          expect(renameSpy).toHaveBeenCalledWith(oldPath, newPath)
+          expect(executingPathSignal.value).toBe(newPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
+        }
+      })
+      it('cancels an active rename when the editor cannot be flushed', async () => {
+        const oldPath = '/Test Project/main.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(false)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+        const renameSpy = vi.spyOn(fsZds, 'rename')
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await expect(
+            renameFileForSystemIO({
+              context: {
+                projectDirectoryPath: '/',
+              } as SystemIOContext,
+              requestedFileNameWithExtension: 'renamed.kcl',
+              fileNameWithExtension: 'main.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+              app: appInstanceInThisFile,
+            })
+          ).rejects.toThrow(
+            'File has unsaved changes that could not be written. Rename canceled.'
+          )
+
+          expect(renameSpy).not.toHaveBeenCalled()
+          expect(executingPathSignal.value).toBe(oldPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
+        }
+      })
       it('should accept file-tree mutations while reading folders', async () => {
         for (const testCase of fileTreeMutationCases) {
           const actor = createActor(
@@ -923,6 +1061,83 @@ describe('systemIOMachine - XState', () => {
           expect(actor.getSnapshot()).toMatchObject({
             value: SystemIOMachineStates.readingFolders,
           })
+        } finally {
+          actor.stop()
+        }
+      })
+      it('publishes post-move file navigation only after refreshing folders', async () => {
+        const move = deferred<{
+          message: string
+          requestedAbsolutePath: string
+          requestedProjectName: string
+          requestedFileName: string | undefined
+          target: string
+        }>()
+        const readFolders = deferred<Project[]>()
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.moveRecursive]: fromPromise(
+                async () => move.promise
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => readFolders.promise),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+            data: {
+              src: '/projects/demo-project/delete-me.kcl',
+              target: '/archive/delete-me.kcl',
+              requestedProjectName: 'demo-project',
+              requestedFileName: 'main.kcl',
+            },
+          })
+          move.resolve({
+            message: 'Archived successfully',
+            requestedAbsolutePath: '',
+            requestedProjectName: 'demo-project',
+            requestedFileName: 'main.kcl',
+            target: '/archive/delete-me.kcl',
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: NO_PROJECT_DIRECTORY,
+            file: NO_PROJECT_DIRECTORY,
+          })
+          expect(
+            actor.getSnapshot().context.pendingNavigationAfterFolderRefresh
+          ).toStrictEqual({
+            project: 'demo-project',
+            file: 'main.kcl',
+          })
+
+          readFolders.resolve([mockProject('demo-project')])
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+          expect(actor.getSnapshot().context.folders).toStrictEqual([
+            mockProject('demo-project'),
+          ])
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: 'demo-project',
+            file: 'main.kcl',
+          })
+          expect(
+            actor.getSnapshot().context.pendingNavigationAfterFolderRefresh
+          ).toBeUndefined()
         } finally {
           actor.stop()
         }

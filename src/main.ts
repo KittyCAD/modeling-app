@@ -10,7 +10,6 @@ import {
   BrowserWindow,
   Menu,
   app,
-  autoUpdater,
   dialog,
   ipcMain,
   nativeTheme,
@@ -56,6 +55,7 @@ import {
 } from '@src/lib/electronLifecycle'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { prepareMacUpdateInstall } from '@src/lib/macUpdateInstall'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -337,11 +337,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   }
 
   newWindow.on('close', () => {
-    const bounds = newWindow.getBounds()
-    saveLocalDeviceState({
-      version: '0.1', // Version of the config file, so we add migrations if we break it later
-      windowBounds: bounds,
-    })
+    saveWindowBounds(newWindow)
   })
   newWindow.on('closed', () => {
     // BrowserWindow-scoped resources must die with that exact window.
@@ -590,6 +586,13 @@ const loadLocalDeviceState = (): LocalDeviceState | null => {
 const saveLocalDeviceState = (state: LocalDeviceState) => {
   fs.writeFileSync(localDeviceStatePath, JSON.stringify(state), {
     encoding: 'utf8',
+  })
+}
+
+function saveWindowBounds(browserWindow: BrowserWindow) {
+  saveLocalDeviceState({
+    version: '0.1', // Version of the config file, so we add migrations if we break it later
+    windowBounds: browserWindow.getBounds(),
   })
 }
 
@@ -1005,44 +1008,19 @@ app.on('ready', () => {
     })
   })
 
-  // Based on https://github.com/electron-userland/electron-builder/issues/8997#issuecomment-2846114257
-  const prepareMacUpdateInstall = () => {
-    const beforeQuitListeners = app.listeners('before-quit')
-    app.removeAllListeners('before-quit')
-    for (const browserWindow of BrowserWindow.getAllWindows()) {
-      browserWindow.removeAllListeners('close')
-    }
-
-    autoUpdater.once('before-quit-for-update', () => {
-      // Do any before-quit cleanup here
-      for (const listener of beforeQuitListeners) {
-        try {
-          listener.call(app, {
-            preventDefault: () => {
-              // `preventDefault` during update install causes quit+install to hang.
-            },
-          })
-        } catch (error) {
-          console.error(
-            'Failed to run before-quit listener during update install',
-            error
-          )
-        }
-      }
-
-      // Force app to exit
-      app.exit()
-    })
-  }
-
-  ipcMain.handle('app.restart', () => {
+  ipcMain.handle('app.restart', (event) => {
     if (isInstallingUpdate) {
       return
     }
 
     isInstallingUpdate = true
     if (process.platform === 'darwin') {
-      prepareMacUpdateInstall()
+      const requestingWindow = BrowserWindow.fromWebContents(event.sender)
+      prepareMacUpdateInstall(
+        app,
+        requestingWindow ? [requestingWindow] : BrowserWindow.getAllWindows(),
+        saveWindowBounds
+      )
     }
 
     try {

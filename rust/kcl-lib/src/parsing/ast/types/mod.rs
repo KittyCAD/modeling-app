@@ -619,15 +619,16 @@ impl Node<Program> {
 
     /// Get the annotations for the meta settings from the kcl file.
     pub fn meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+        let mut meta_settings = None;
         for annotation in &self.inner_attrs {
             if annotation.name() == Some(annotations::SETTINGS) {
-                let mut meta_settings = crate::execution::MetaSettings::default();
-                meta_settings.update_from_annotation(annotation)?;
-                return Ok(Some(meta_settings));
+                meta_settings
+                    .get_or_insert_with(crate::execution::MetaSettings::default)
+                    .update_from_annotation(annotation)?;
             }
         }
 
-        Ok(None)
+        Ok(meta_settings)
     }
 
     pub fn change_default_units(
@@ -5347,6 +5348,19 @@ cylinder = startSketchOn(-XZ)
         };
 
         assert_eq!(l.raw, "false");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_multiple_annotations() {
+        let program = crate::parsing::top_level_parse(
+            r#"@settings(defaultLengthUnit = in)
+@settings(kclVersion = "3.0-preview")
+"#,
+        )
+        .unwrap();
+        let settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(settings.default_length_units, UnitLength::Inches);
+        assert_eq!(settings.kcl_version, crate::KclVersion::V3Preview);
     }
 
     #[tokio::test(flavor = "multi_thread")]
