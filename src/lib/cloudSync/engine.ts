@@ -4305,6 +4305,9 @@ export async function disableCloudSyncEngineForTest() {
       resolve()
     }
   })
+  // The drained cycle may have updated refresh timestamps or status after the
+  // first disable. Reset that state only after it has released the operation.
+  configureCloudSyncEngine({ enabled: false })
 }
 
 export function retryCloudSyncEngine() {
