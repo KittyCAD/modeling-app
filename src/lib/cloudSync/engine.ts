@@ -4255,6 +4255,28 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   scheduleSync(0)
 }
 
+/**
+ * Test-only teardown boundary. Cancel future work, then wait for an already
+ * running sync cycle to stop using shared filesystem and IndexedDB state.
+ */
+export async function disableCloudSyncEngineForTest() {
+  configureCloudSyncEngine({ enabled: false })
+  if (!syncInProgress) {
+    return
+  }
+
+  await new Promise<void>((resolve) => {
+    syncIdleWaiters.add(resolve)
+    if (!syncInProgress) {
+      syncIdleWaiters.delete(resolve)
+      resolve()
+    }
+  })
+  // The drained cycle may have updated refresh timestamps or status after the
+  // first disable. Reset that state only after it has released the operation.
+  configureCloudSyncEngine({ enabled: false })
+}
+
 export function retryCloudSyncEngine() {
   resetSyncRetryBackoff()
   if (syncScopeProjectPath) {

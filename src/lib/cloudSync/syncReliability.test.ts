@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto'
 import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   filterCloudSyncProjectFilesForSync,
   notifyCloudSyncWriteLikeMutation,
   type ProjectArchiveFile,
@@ -101,7 +102,7 @@ describe('cloud sync reliability', () => {
 
   afterEach(async () => {
     setCloudSyncOpenedProject(undefined)
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })
