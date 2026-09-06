@@ -4,6 +4,7 @@ import {
   reportCloudSyncConflict,
   reportCloudSyncFailure,
   reportCloudSyncUntrackedLocalChanges,
+  setCloudSyncFailureContext,
 } from '@src/lib/cloudSync/clientErrorReporting'
 import {
   CloudApiError,
@@ -687,6 +688,12 @@ function outboxEntriesForProject(entries: OutboxEntry[], projectPath: string) {
   return entries.filter(
     (entry) => normalizePathForSync(entry.projectPath) === normalizedProjectPath
   )
+}
+
+async function readOutboxEntriesForProject(projectPath: string) {
+  return getAllOutboxEntries()
+    .then((entries) => outboxEntriesForProject(entries, projectPath))
+    .catch(() => undefined)
 }
 
 function outboxProjectPaths(entries: OutboxEntry[]) {
@@ -2141,16 +2148,19 @@ async function markProjectFailure(
       kind,
     },
   }
-  await putProjectMetadata(next)
-  publishScopedProjectCloudProjectId(next)
-  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
-    updateStatus({
-      state: 'failed',
-      activeProjectPath: metadata.localProjectPath,
-      lastFailure: message,
-      lastFailureKind: kind,
-      lastFailureAt: next.lastFailure.at,
-    })
+  try {
+    await putProjectMetadata(next)
+    publishScopedProjectCloudProjectId(next)
+  } finally {
+    if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+      updateStatus({
+        state: 'failed',
+        activeProjectPath: metadata.localProjectPath,
+        lastFailure: message,
+        lastFailureKind: kind,
+        lastFailureAt: next.lastFailure.at,
+      })
+    }
   }
 }
 
@@ -2282,15 +2292,38 @@ async function applyLocalDataForConflict(
       await downloadRemoteProjectArchive(config, metadata.remoteProjectId)
     )
   )
-  const updated = await updateRemoteProject({
-    config,
-    projectPath: metadata.localProjectPath,
-    project: remoteProject,
-    files: localFiles,
-    expectedRevision,
-    entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-    deletedPaths: getRemovedProjectFilePaths(remoteFiles, localFiles),
-  }).catch(rejectRemoteUploadFailure)
+  const deletedPaths = getRemovedProjectFilePaths(remoteFiles, localFiles)
+  const attemptOutboxEntries = await readOutboxEntriesForProject(
+    metadata.localProjectPath
+  )
+  let updated: RemoteProject
+  try {
+    updated = await updateRemoteProject({
+      config,
+      projectPath: metadata.localProjectPath,
+      project: remoteProject,
+      files: localFiles,
+      expectedRevision,
+      entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+      deletedPaths,
+    }).catch(rejectRemoteUploadFailure)
+  } catch (error) {
+    const contextualError = setCloudSyncFailureContext(error, {
+      remoteProjectId: metadata.remoteProjectId,
+      syncBaseRemoteRevision: expectedRevision,
+      observedRemoteRevision: getRevision(remoteProject),
+      baseManifest: metadata.baseManifest,
+      localManifest,
+      attemptOutboxEntries,
+      currentOutboxEntries: await readOutboxEntriesForProject(
+        metadata.localProjectPath
+      ),
+      replacementUploadFileCount: localFiles.length,
+      replacementUploadDeletedPathCount: deletedPaths.length,
+    })
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw contextualError
+  }
   await clearOutboxEntriesForProject(metadata.localProjectPath)
   await deleteLegacyConflictCopy(conflict)
   await markProjectSynced(
@@ -2371,7 +2404,9 @@ export async function resolveCloudSyncProjectConflict(
   } catch (error) {
     if (!isCloudSyncConflictRevisionChangedError(error)) {
       reportCloudSyncFailure('conflict-resolution', error)
-      await markProjectFailure(metadata, error)
+      await markProjectFailure(metadata, error).catch((persistenceError) => {
+        reportCloudSyncFailure('mutation', persistenceError)
+      })
     }
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw error
@@ -2831,6 +2866,10 @@ async function syncProject(
   throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle = unthrottledCloudSyncProjectApiRequest
 ) {
   let metadata = await getOrCreateProjectMetadata(projectPath)
+  let observedRemoteRevision: Revision | undefined
+  let localManifest: ProjectManifest | undefined
+  let replacementUploadFileCount: number | undefined
+  let replacementUploadDeletedPathCount: number | undefined
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(metadata.localProjectPath)
     return
@@ -2877,7 +2916,6 @@ async function syncProject(
     }
 
     let remoteProject: RemoteProject | undefined
-    let remoteRevision: Revision | undefined
     let remoteChanged = false
     let localChanged = true
     if (metadata.remoteProjectId) {
@@ -2898,7 +2936,7 @@ async function syncProject(
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
         throw error
       }
-      remoteRevision = getRevision(remoteProject)
+      observedRemoteRevision = getRevision(remoteProject)
     }
 
     if (entries.length === 0) {
@@ -2909,12 +2947,12 @@ async function syncProject(
       })
     }
     const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
-    const localManifest = await projectManifestFromFiles(localFiles)
+    localManifest = await projectManifestFromFiles(localFiles)
 
     if (metadata.remoteProjectId) {
       remoteChanged =
-        Boolean(metadata.remoteRevision && remoteRevision) &&
-        metadata.remoteRevision !== remoteRevision
+        Boolean(metadata.remoteRevision && observedRemoteRevision) &&
+        metadata.remoteRevision !== observedRemoteRevision
       localChanged = metadata.baseManifest
         ? !projectManifestsEqual(localManifest, metadata.baseManifest)
         : true
@@ -2992,6 +3030,13 @@ async function syncProject(
     }
 
     if (preflightAction === 'push-local-with-expected-revision') {
+      const deletedPaths = getOutboxDeletedPaths(
+        entries,
+        localFiles,
+        Object.keys(metadata.baseManifest?.files ?? {})
+      )
+      replacementUploadFileCount = localFiles.length
+      replacementUploadDeletedPathCount = deletedPaths.length
       const updated = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
         () =>
@@ -3002,11 +3047,7 @@ async function syncProject(
             files: localFiles,
             expectedRevision: metadata.remoteRevision,
             entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-            deletedPaths: getOutboxDeletedPaths(
-              entries,
-              localFiles,
-              Object.keys(metadata.baseManifest?.files ?? {})
-            ),
+            deletedPaths,
           })
       ).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
@@ -3037,7 +3078,7 @@ async function syncProject(
     )
     const autoReconciledFiles =
       metadata.baseManifest &&
-      remoteRevision &&
+      observedRemoteRevision &&
       !localMatchesRemote &&
       !localClean
         ? getCloudSyncAutoReconciledProjectFiles({
@@ -3079,6 +3120,13 @@ async function syncProject(
     if (reconciliationAction === 'auto-reconcile' && autoReconciledFiles) {
       const autoReconciledManifest =
         await projectManifestFromFiles(autoReconciledFiles)
+      const deletedPaths = getOutboxDeletedPaths(
+        entries,
+        autoReconciledFiles,
+        remoteFiles.map((file) => file.relativePath)
+      )
+      replacementUploadFileCount = autoReconciledFiles.length
+      replacementUploadDeletedPathCount = deletedPaths.length
       const updated = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
         () =>
@@ -3087,12 +3135,8 @@ async function syncProject(
             projectPath: metadata.localProjectPath,
             project: remoteProject,
             files: autoReconciledFiles,
-            expectedRevision: remoteRevision,
-            deletedPaths: getOutboxDeletedPaths(
-              entries,
-              autoReconciledFiles,
-              remoteFiles.map((file) => file.relativePath)
-            ),
+            expectedRevision: observedRemoteRevision,
+            deletedPaths,
           })
       ).catch(rejectRemoteUploadFailure)
       await replaceLocalProjectWithFiles(
@@ -3110,7 +3154,7 @@ async function syncProject(
 
     await markProjectConflict(
       metadata,
-      remoteRevision,
+      observedRemoteRevision,
       getRemoteUpdatedAt(remoteProject),
       {
         localManifest,
@@ -3118,9 +3162,27 @@ async function syncProject(
       }
     )
   } catch (error) {
-    await markProjectFailure(metadata, error)
+    const currentOutboxEntries = await readOutboxEntriesForProject(
+      metadata.localProjectPath
+    )
+    const contextualError = setCloudSyncFailureContext(error, {
+      remoteProjectId: metadata.remoteProjectId,
+      syncBaseRemoteRevision: metadata.remoteRevision,
+      observedRemoteRevision,
+      baseManifest: metadata.baseManifest,
+      localManifest,
+      attemptOutboxEntries: entries,
+      currentOutboxEntries,
+      replacementUploadFileCount,
+      replacementUploadDeletedPathCount,
+    })
+    await markProjectFailure(metadata, contextualError).catch(
+      (persistenceError) => {
+        reportCloudSyncFailure('mutation', persistenceError)
+      }
+    )
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw error
+    throw contextualError
   }
 }
 
@@ -3759,7 +3821,13 @@ export async function syncCloudSyncProjectNow(
         await getAllOutboxEntries(),
         normalizedProjectPath
       )
-      await syncProject(normalizedProjectPath, entries)
+      try {
+        await syncProject(normalizedProjectPath, entries)
+      } catch (error) {
+        reportCloudSyncFailure('sync', error)
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw error
+      }
 
       const metadata = await getProjectMetadata(normalizedProjectPath)
       const remainingEntries = outboxEntriesForProject(

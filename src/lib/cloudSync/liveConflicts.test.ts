@@ -276,6 +276,9 @@ describe('cloud sync live conflicts', () => {
       autoEnrollCloudLibraryProjects: false,
     })
 
+    await expect(syncCloudSyncProjectNow(projectPath)).rejects.toThrow(
+      'Cloud sync found conflicting local and remote changes.'
+    )
     await vi.waitFor(async () => {
       await expect(
         getCloudSyncProjectMetadata(projectPath)
@@ -320,6 +323,9 @@ describe('cloud sync live conflicts', () => {
       expect.objectContaining({
         code: 'cloud_sync_conflict_copy_detected',
       })
+    )
+    expect(clientErrorsMock.reportClientError).not.toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'cloud_sync_failure' })
     )
     const metadata = await getCloudSyncProjectMetadata(projectPath)
     expect(metadata?.conflict?.conflictProjectPath).toBeUndefined()
