@@ -81,11 +81,13 @@ describe('useOnPageIdle', () => {
     hookMocks.state.kclManager.isExecuting = true
 
     const startCallback = vi.fn()
+    const beforeIdleTeardown = vi.fn()
     const idleCallback = vi.fn()
 
     const { unmount } = renderHook(() =>
       useOnPageIdle({
         startCallback,
+        beforeIdleTeardown,
         idleCallback,
       })
     )
@@ -98,6 +100,7 @@ describe('useOnPageIdle', () => {
     expect(
       hookMocks.state.kclManager.engineCommandManager.tearDown
     ).not.toHaveBeenCalled()
+    expect(beforeIdleTeardown).not.toHaveBeenCalled()
     expect(idleCallback).not.toHaveBeenCalled()
 
     unmount()
@@ -105,11 +108,13 @@ describe('useOnPageIdle', () => {
 
   test('starts the idle countdown only after KCL finishes executing', async () => {
     const startCallback = vi.fn()
+    const beforeIdleTeardown = vi.fn()
     const idleCallback = vi.fn()
 
     const { unmount } = renderHook(() =>
       useOnPageIdle({
         startCallback,
+        beforeIdleTeardown,
         idleCallback,
       })
     )
@@ -139,7 +144,16 @@ describe('useOnPageIdle', () => {
     expect(
       hookMocks.state.kclManager.engineCommandManager.tearDown
     ).toHaveBeenCalledTimes(1)
+    expect(beforeIdleTeardown).toHaveBeenCalledTimes(1)
     expect(idleCallback).toHaveBeenCalledTimes(1)
+    expect(beforeIdleTeardown.mock.invocationCallOrder[0]).toBeLessThan(
+      hookMocks.state.kclManager.engineCommandManager.tearDown.mock
+        .invocationCallOrder[0]
+    )
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown.mock
+        .invocationCallOrder[0]
+    ).toBeLessThan(idleCallback.mock.invocationCallOrder[0])
 
     unmount()
   })
@@ -151,6 +165,7 @@ describe('useOnPageIdle', () => {
     const { unmount } = renderHook(() =>
       useOnPageIdle({
         startCallback: vi.fn(),
+        beforeIdleTeardown: vi.fn(),
         idleCallback,
       })
     )
@@ -191,9 +206,11 @@ describe('useOnPageIdle', () => {
       )
 
     const idleCallback = vi.fn()
+    const beforeIdleTeardown = vi.fn()
     const { unmount } = renderHook(() =>
       useOnPageIdle({
         startCallback: vi.fn(),
+        beforeIdleTeardown,
         idleCallback,
       })
     )
@@ -212,6 +229,7 @@ describe('useOnPageIdle', () => {
     expect(
       hookMocks.state.kclManager.engineCommandManager.tearDown
     ).not.toHaveBeenCalled()
+    expect(beforeIdleTeardown).not.toHaveBeenCalled()
     expect(idleCallback).not.toHaveBeenCalled()
 
     unmount()

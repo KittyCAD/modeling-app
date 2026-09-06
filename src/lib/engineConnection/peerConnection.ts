@@ -16,6 +16,8 @@ import {
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
 
+export const PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS = 10_000
+
 export function createOnIceCandidate({
   initiateConnectionExclusive,
   send,
@@ -156,48 +158,83 @@ export function createOnConnectionStateChange({
   tearDownManager,
 }: {
   dispatchEvent: (event: Event) => boolean
-  connection: Connection
+  connection: Pick<Connection, 'mediaStream'>
   tearDownManager: (options?: ManagerTearDown) => void
 }) {
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...
-  const onConnectionStateChange = (event: any) => {
+  let disconnectedTimeout: ReturnType<typeof setTimeout> | undefined
+
+  const clearDisconnectedTimeout = () => {
+    clearTimeout(disconnectedTimeout)
+    disconnectedTimeout = undefined
+  }
+
+  const onConnectionStateChange = (event: Event) => {
+    const peerConnection = event.target
+    const connectionState =
+      peerConnection && 'connectionState' in peerConnection
+        ? peerConnection.connectionState
+        : undefined
     EngineDebugger.addLog({
       label: 'onConnectionStateChange',
       message: 'connectionstatechange',
-      metadata: { event, connectionState: event.target?.connectionState },
+      metadata: { event, connectionState },
     })
 
-    switch (event.target?.connectionState) {
+    /**
+     * `disconnected` can be transient, so give this peer connection one grace
+     * period to recover. Each subsequent concrete state owns canceling that
+     * timer, and the owning Connection cancels it during any other teardown.
+     * If neither occurs, the timeout tears the peer down.
+     */
+    switch (connectionState) {
       // From what I understand, only after have we done the ICE song and
       // dance is it safest to connect the video tracks / stream
       case 'connected':
+        clearDisconnectedTimeout()
         dispatchEvent(
           new CustomEvent(EngineConnectionEvents.NewTrack, {
             detail: { conn: connection, mediaStream: connection.mediaStream },
           })
         )
         break
+      case 'new':
       case 'connecting':
+        clearDisconnectedTimeout()
         break
       case 'failed':
+        clearDisconnectedTimeout()
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
         tearDownManager({ peerConnectionFailed: true })
         break
       case 'disconnected':
-        dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionDisconnected: true })
+        disconnectedTimeout = setTimeout(() => {
+          disconnectedTimeout = undefined
+          dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
+          tearDownManager({ peerConnectionDisconnected: true })
+        }, PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
         break
       case 'closed':
+        clearDisconnectedTimeout()
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
         tearDownManager({ peerConnectionClosed: true })
         break
       default:
+        EngineDebugger.addLog({
+          label: 'onConnectionStateChange',
+          message: 'connectionstatechange',
+          metadata: {
+            event,
+            connectionState,
+            unknown: true,
+          },
+        })
         break
     }
   }
 
-  return onConnectionStateChange
+  return { onConnectionStateChange, clearDisconnectedTimeout }
 }
 
 export function createOnTrack({
