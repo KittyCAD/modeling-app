@@ -162,6 +162,7 @@ let openedProjectContext: CloudSyncOpenedProject | undefined
 let syncScopeProjectPath: string | undefined
 let syncScopeSyncable = false
 const scheduledProjectDirectoryNameSyncs = new Set<string>()
+const disconnectingProjectPaths = new Set<string>()
 
 /**
  * Per-run throttle for automatic full-library syncs. It spaces project API
@@ -2830,7 +2831,17 @@ async function syncProject(
   entries: OutboxEntry[],
   throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle = unthrottledCloudSyncProjectApiRequest
 ) {
+  if (disconnectingProjectPaths.has(normalizePathForSync(projectPath))) {
+    return
+  }
   let metadata = await getOrCreateProjectMetadata(projectPath)
+  if (
+    disconnectingProjectPaths.has(
+      normalizePathForSync(metadata.localProjectPath)
+    )
+  ) {
+    return
+  }
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(metadata.localProjectPath)
     return
@@ -3474,6 +3485,9 @@ async function runCloudSync() {
   if (!isConfiguredForCloud()) {
     return
   }
+  if (disconnectingProjectPaths.size > 0) {
+    return
+  }
   if (syncInProgress) {
     scheduleSync(SYNC_DEBOUNCE_MS)
     return
@@ -3818,6 +3832,18 @@ export async function disconnectCloudSyncProject(projectPath: string) {
   }
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
+  disconnectingProjectPaths.add(normalizedProjectPath)
+  try {
+    await disconnectCloudSyncProjectInternal(normalizedProjectPath)
+  } finally {
+    disconnectingProjectPaths.delete(normalizedProjectPath)
+    scheduleSync(0)
+  }
+}
+
+async function disconnectCloudSyncProjectInternal(
+  normalizedProjectPath: string
+) {
   const metadata = await bindRemoteProjectIdFromToml(
     await getOrCreateProjectMetadata(normalizedProjectPath)
   )
@@ -3977,6 +4003,9 @@ async function registerProjectMutation(
   }
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
+  if (disconnectingProjectPaths.has(normalizedProjectPath)) {
+    return
+  }
   if (
     projectNameFromPath(normalizedProjectPath).startsWith(
       DUPLICATE_PROJECT_TEMPORARY_PREFIX
@@ -4257,6 +4286,25 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   )
   void refreshPendingCount()
   scheduleSync(0)
+}
+
+/**
+ * Test-only teardown boundary. Cancel future work, then wait for an already
+ * running sync cycle to stop using shared filesystem and IndexedDB state.
+ */
+export async function disableCloudSyncEngineForTest() {
+  configureCloudSyncEngine({ enabled: false })
+  if (!syncInProgress) {
+    return
+  }
+
+  await new Promise<void>((resolve) => {
+    syncIdleWaiters.add(resolve)
+    if (!syncInProgress) {
+      syncIdleWaiters.delete(resolve)
+      resolve()
+    }
+  })
 }
 
 export function retryCloudSyncEngine() {
