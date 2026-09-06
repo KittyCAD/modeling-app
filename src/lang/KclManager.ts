@@ -1160,12 +1160,16 @@ export class KclManager extends File {
     this._switchedFiles = switchedFiles
 
     // These belonged to the previous file
-    this.lastSuccessfulOperations = emptyOperationsByModule()
+    const emptyState = emptyExecState()
+    this.execState = emptyState
+    this.lastSuccessfulOperations = emptyState.operations
     this.endLiveOperationUpdates()
+    this.dispatchUpdateOperations([])
+    this.setArtifactGraphState(emptyState.artifactGraph)
     this.lastExecutedCode = ''
     this.lastSuccessfulCode = ''
     this._hasEditsSinceLastExecution.value = false
-    this.lastSuccessfulVariables = {}
+    this.lastSuccessfulVariables = emptyState.variables
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
     // you'd see the errors from the previous project for a short time until the new code is executed.
@@ -2359,20 +2363,8 @@ export class KclManager extends File {
   private async updateArtifactGraph(
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
-    this.artifactGraph = execStateArtifactGraph
-    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+    this.setArtifactGraphState(execStateArtifactGraph)
 
-    // Push the artifact graph into the editor state so annotations/decorations update
-    const editorView = this.editorView
-    if (editorView) {
-      editorView.dispatch({
-        effects: [setArtifactGraphEffect.of(this.artifactGraph)],
-        annotations: [
-          artifactAnnotationsEvent,
-          Transaction.addToHistory.of(false),
-        ],
-      })
-    }
     if (this.artifactGraph.size) {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
@@ -2398,6 +2390,25 @@ export class KclManager extends File {
         })
       }
     }, 200)(null)
+  }
+
+  private setArtifactGraphState(
+    execStateArtifactGraph: ExecState['artifactGraph']
+  ) {
+    this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+
+    // Push the artifact graph into the editor state so annotations/decorations update
+    const editorView = this.editorView
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setArtifactGraphEffect.of(this.artifactGraph)],
+        annotations: [
+          artifactAnnotationsEvent,
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
   }
 
   async safeParse(
