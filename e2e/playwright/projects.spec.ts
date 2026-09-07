@@ -197,7 +197,7 @@ test(
           // error text on hover
           await page.hover('.cm-lint-marker-error')
           const crypticErrorText =
-            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
+            'tag requires a value with type TagDecl, but found a value with type string.'
           await expect(page.getByText(crypticErrorText).first()).toBeVisible()
         })
       },
@@ -365,7 +365,7 @@ test(
           // error text on hover
           await page.hover('.cm-lint-marker-error')
           const crypticErrorText =
-            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
+            'tag requires a value with type TagDecl, but found a value with type string.'
           await expect(page.getByText(crypticErrorText).first()).toBeVisible()
         })
       },
@@ -414,7 +414,7 @@ test(
     // error text on hover
     await page.locator('.cm-lint-marker-error').hover()
     const crypticErrorText =
-      'tag requires a value with type `TagDecl`, but found a value with type `string`.'
+      'tag requires a value with type TagDecl, but found a value with type string.'
     await expect(
       page.locator('.cm-tooltip-lint').getByText(crypticErrorText)
     ).toBeVisible({ timeout: 15_000 })

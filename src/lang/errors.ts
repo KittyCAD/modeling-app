@@ -102,6 +102,31 @@ export function sourceRangeToUtf16(
 // When a backtrace has more than twice this many lines, elide the middle,
 // keeping this many innermost and outermost frames.
 const BACKTRACE_EDGE_LINES = 15
+const INLINE_CODE_PATTERN = /`([^`\n]+)`/g
+
+export function renderDiagnosticMessage(message: string): Node {
+  const fragment = document.createDocumentFragment()
+  let lastIndex = 0
+
+  for (const match of message.matchAll(INLINE_CODE_PATTERN)) {
+    const index = match.index
+    fragment.append(document.createTextNode(message.slice(lastIndex, index)))
+
+    const code = document.createElement('code')
+    code.textContent = match[1]
+    fragment.append(code)
+    lastIndex = index + match[0].length
+  }
+
+  fragment.append(document.createTextNode(message.slice(lastIndex)))
+  return fragment
+}
+
+function diagnosticMessageRenderer(message: string): (() => Node) | undefined {
+  return /`[^`\n]+`/.test(message)
+    ? () => renderDiagnosticMessage(message)
+    : undefined
+}
 
 /**
  * Maps the KCL errors to an array of CodeMirror diagnostics.
@@ -190,10 +215,12 @@ export function kclErrorsToDiagnostics(
           compilationIssuesToDiagnostics(err.nonFatal, sourceCode)
         )
       }
+      const renderMessage = diagnosticMessageRenderer(message)
       diagnostics.push({
         from: toUtf16(err.sourceRange[0], sourceCode),
         to: toUtf16(err.sourceRange[1], sourceCode),
         message,
+        ...(renderMessage && { renderMessage }),
         severity: 'error',
       })
       return diagnostics
@@ -231,10 +258,12 @@ export function compilationIssuesToDiagnostics(
           },
         ]
       }
+      const renderMessage = diagnosticMessageRenderer(issue.message)
       return {
         from: toUtf16(issue.sourceRange[0], sourceCode),
         to: toUtf16(issue.sourceRange[1], sourceCode),
         message: issue.message,
+        ...(renderMessage && { renderMessage }),
         severity,
         actions,
       }
