@@ -58,6 +58,74 @@ test.afterEach(async ({ page }) => {
   await page.context().setOffline(false)
 })
 
+for (const failure of ['websocket', 'data-channel']) {
+  test(
+    `${failure} close preserves the scene throughout automatic reconnect`,
+    { tag: ['@web', '@skipLocalEngine'] },
+    async ({ page, editor }, testInfo) => {
+      await setIdleTimeout(page, 0)
+      const code = await editor.getCurrentCode()
+      const state = await page.evaluateHandle(() => {
+        const manager = window.engineCommandManager
+        const connection = manager.connection!
+        const start = manager.start.bind(manager)
+        let held = false
+        let resume = () => {}
+        const pending = new Promise<void>((resolve) => {
+          resume = resolve
+        })
+        // Delay the replacement so its video cannot hide a black reconnect gap.
+        manager.start = async (...args) => {
+          held = true
+          await pending
+          return start(...args)
+        }
+        return {
+          close: (failure: string) => {
+            if (failure === 'websocket') connection.websocket!.close(1000)
+            else connection.unreliableDataChannel!.close()
+          },
+          held: () => held,
+          peerState: () => connection.peerConnection?.connectionState,
+          resume: () => {
+            manager.start = start
+            resume()
+          },
+        }
+      })
+      try {
+        await state.evaluate((state, failure) => state.close(failure), failure)
+        await expect
+          .poll(() => state.evaluate((state) => state.held()))
+          .toBe(true)
+        await expect
+          .poll(() => state.evaluate((state) => state.peerState()))
+          .toBe('closed')
+        expect(await page.evaluate(() => navigator.onLine)).toBe(true)
+        const freeze = page.locator('canvas#freeze-frame')
+        await expect(freeze).toBeVisible()
+        const background = await freeze.evaluate(
+          (canvas: HTMLCanvasElement) => {
+            const pixel = canvas.getContext('2d')?.getImageData(0, 0, 1, 1).data
+            return pixel ? pixel[0] + pixel[1] + pixel[2] : 0
+          }
+        )
+        expect(background).toBeGreaterThan(24)
+        await page.screenshot({
+          path: testInfo.outputPath(`${failure}-reconnecting.png`),
+        })
+        await expectRecovered(page, testInfo, () =>
+          state.evaluate((state) => state.resume())
+        )
+        expect(await editor.getCurrentCode()).toBe(code)
+      } finally {
+        await state.evaluate((state) => state.resume())
+        await state.dispose()
+      }
+    }
+  )
+}
+
 test(
   'browser offline and online preserves the active scene without idling',
   { tag: ['@web', '@skipLocalEngine'] },

@@ -49,7 +49,7 @@ import type {
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
@@ -113,6 +113,23 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     return isSafari ? ' object-fill' : ''
   }, [])
+
+  useEffect(() => {
+    const preserveFrame = () => {
+      if (!videoRef.current || !canvasRef.current) return
+      showFreezeFrame(videoRef.current, canvasRef.current)
+    }
+    engineCommandManager.addEventListener(
+      EngineConnectionManagerEvents.BeforeTeardown,
+      preserveFrame
+    )
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineConnectionManagerEvents.BeforeTeardown,
+        preserveFrame
+      )
+    }
+  }, [engineCommandManager])
 
   const reportEngineDisconnect = useCallback(
     (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
@@ -413,10 +430,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageIdleParams = useMemo(
     () => ({
       startCallback: onPageIdleStartCb,
-      beforeIdleTeardown: () => {
-        if (!videoRef.current || !canvasRef.current) return
-        showFreezeFrame(videoRef.current, canvasRef.current)
-      },
       idleCallback: () => {
         isIdle.current = true
         setIsWakingFromIdle(false)
@@ -578,10 +591,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
-        // Browser-offline also closes the live track, even when we never idled.
-        if (videoRef.current && canvasRef.current) {
-          showFreezeFrame(videoRef.current, canvasRef.current)
-        }
         setIsWakingFromIdle(false)
         setShowManualConnect(true)
         EngineDebugger.addLog({

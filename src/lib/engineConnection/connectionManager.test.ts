@@ -132,6 +132,48 @@ describe('ConnectionManager', () => {
     }
   )
 
+  it('notifies before closing the connection or requesting a reconnect', () => {
+    const manager = createConnectionManager()
+    const connection = new Connection({
+      url: 'ws://localhost',
+      token: '',
+      handleOnDataChannelMessage: vi.fn(),
+      tearDownManager: manager.tearDown.bind(manager),
+      rejectPendingCommand: vi.fn(),
+      handleMessage: vi.fn(),
+      getCloudProjectId: () => undefined,
+    })
+    manager.connection = connection
+    manager.started = true
+    const disconnect = vi.spyOn(connection, 'disconnectAll')
+    const preserveFrame = vi.fn(() => {
+      expect(manager.connection).toBe(connection)
+      expect(disconnect).not.toHaveBeenCalled()
+    })
+    const reconnect = vi.fn()
+    manager.addEventListener(
+      EngineConnectionManagerEvents.BeforeTeardown,
+      preserveFrame
+    )
+    manager.addEventListener(
+      EngineConnectionManagerEvents.WebsocketClosed,
+      reconnect
+    )
+
+    manager.tearDown({ websocketClosed: true })
+
+    expect(preserveFrame).toHaveBeenCalledTimes(1)
+    expect(reconnect).toHaveBeenCalledTimes(1)
+    expect(preserveFrame.mock.invocationCallOrder[0]).toBeLessThan(
+      reconnect.mock.invocationCallOrder[0]
+    )
+    expect(disconnect).toHaveBeenCalledTimes(1)
+    expect(manager.connection).toBeUndefined()
+    // Repeated cleanup must not try to capture an already-ended stream.
+    manager.tearDown()
+    expect(preserveFrame).toHaveBeenCalledTimes(1)
+  })
+
   it.each([
     [{ width: 240, height: 256 }, 'width must be between 256 and 2160, 240'],
     [{ width: 256, height: 240 }, 'height must be between 256 and 2160, 240'],
