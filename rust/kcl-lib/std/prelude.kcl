@@ -318,6 +318,12 @@ export fn offsetPlane(
 /// Really only use this function if YOU ARE SURE you need it. In most cases you
 /// do not need clone and using a pattern with `instance = 2` is more appropriate.
 ///
+/// A clone inherits all transforms already applied to the source geometry.
+/// Because of [a known rotation-origin bug](https://github.com/KittyCAD/modeling-app/issues/9983),
+/// rotating a clone of an already-translated body can also move its inherited
+/// placement. Until that bug is fixed, clone an untransformed seed, rotate it
+/// first, and then apply that instance's complete translation.
+///
 /// ```kcl,legacySketch
 /// // Clone a basic sketch and move it and extrude it.
 /// exampleSketch = startSketchOn(XY)
@@ -597,6 +603,27 @@ export fn offsetPlane(
 /// outputArray[0]
 /// |> translate(xyz = [10, 10, 10])
 /// |> extrude(length = 5)
+/// ```
+///
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+///
+/// // Work around #9983 by rotating an untransformed seed before placing it.
+/// seedSketch = sketch(on = XY) {
+///   bottom = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
+///   right = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
+///   top = line(start = [var 5mm, var 5mm], end = [var -5mm, var 5mm])
+///   left = line(start = [var -5mm, var 5mm], end = [var -5mm, var -5mm])
+/// }
+/// seedRegion = region(segments = [seedSketch.bottom, seedSketch.right])
+/// seed = extrude(seedRegion, length = 10mm)
+///
+/// leftPart = clone(seed)
+///   |> translate(x = -20mm, y = 20mm, global = true)
+///
+/// rightPart = clone(seed)
+///   |> rotate(axis = Z, angle = 90deg, global = true)
+///   |> translate(x = 20mm, y = 20mm, global = true)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn clone(
