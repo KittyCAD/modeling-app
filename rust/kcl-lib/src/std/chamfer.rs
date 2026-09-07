@@ -239,7 +239,7 @@ async fn inner_chamfer(
         for edge_id in edge_ids {
             let id = exec_state.next_uuid();
             exec_state
-                .batch_end_cmd(
+                .batch_edge_cut_cmd(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(
                         mcmd::Solid3dCutEdges::builder()
@@ -399,7 +399,7 @@ async fn inner_chamfer_v2(
         extra_face_ids.push(exec_state.next_uuid());
     }
     exec_state
-        .batch_end_cmd(
+        .batch_edge_cut_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dCutEdges::builder()
@@ -499,7 +499,7 @@ async fn inner_chamfer_with_engine_refs(
 
     let mut solid = solid.clone();
     exec_state
-        .batch_end_cmd(
+        .batch_edge_cut_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dCutEdgeReferences::builder()

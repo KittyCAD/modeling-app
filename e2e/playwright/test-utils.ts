@@ -49,6 +49,9 @@ import { PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE } from '@src/lib/projectLibraries'
 
 export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 
+export const PLAYWRIGHT_TEST_SCOPE_KEY = 'playwrightTestScope'
+export const PLAYWRIGHT_STORAGE_SCOPE_KEY = 'playwrightStorageScope'
+
 export const PLAYWRIGHT_LAYOUT_SETTINGS = {
   layout: {
     configs: {
@@ -964,7 +967,8 @@ export async function setup(
   context: BrowserContext,
   page: Page,
   testInfo?: TestInfo,
-  userFeatures: readonly Feature[] = []
+  userFeatures: readonly Feature[] = [],
+  { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
 ) {
   const testProjectSettings =
     TEST_SETTINGS.project &&
@@ -993,8 +997,24 @@ export async function setup(
       settings,
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
+      PLAYWRIGHT_TEST_SCOPE_KEY,
+      PLAYWRIGHT_STORAGE_SCOPE_KEY,
     }) => {
-      localStorage.clear()
+      // Init scripts also run on opaque startup documents, which cannot use
+      // web storage. Electron's file documents still need initialization.
+      if (window.origin === 'null' && location.protocol !== 'file:') {
+        return
+      }
+      const testScope = sessionStorage.getItem(PLAYWRIGHT_TEST_SCOPE_KEY)
+      const initializedScope = sessionStorage.getItem(
+        PLAYWRIGHT_STORAGE_SCOPE_KEY
+      )
+      if (testScope === null || initializedScope !== testScope) {
+        localStorage.clear()
+        if (testScope !== null) {
+          sessionStorage.setItem(PLAYWRIGHT_STORAGE_SCOPE_KEY, testScope)
+        }
+      }
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
@@ -1009,7 +1029,7 @@ export async function setup(
         settings: {
           ...TEST_SETTINGS,
           plugins: playwrightPluginSettings({
-            cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+            cloudSyncEnabled,
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
@@ -1028,6 +1048,8 @@ export async function setup(
       }),
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
+      PLAYWRIGHT_TEST_SCOPE_KEY,
+      PLAYWRIGHT_STORAGE_SCOPE_KEY,
     }
   )
 

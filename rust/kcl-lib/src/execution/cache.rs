@@ -120,10 +120,10 @@ impl GlobalState {
     pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        let variables = self
-            .main
-            .exec_state
-            .variables(self.main.result_env)?
+        let variables = self.main.exec_state.variables(self.main.result_env)?;
+        #[cfg(test)]
+        let test_program_memory = variables.clone();
+        let variables = variables
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
@@ -139,6 +139,8 @@ impl GlobalState {
             issues: self.exec_state.issues,
             source_files: self.exec_state.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
+            #[cfg(test)]
+            test_program_memory,
         })
     }
 
