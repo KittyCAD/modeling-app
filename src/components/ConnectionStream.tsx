@@ -578,6 +578,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
+        // Browser-offline also closes the live track, even when we never idled.
+        if (videoRef.current && canvasRef.current) {
+          showFreezeFrame(videoRef.current, canvasRef.current)
+        }
         setIsWakingFromIdle(false)
         setShowManualConnect(true)
         EngineDebugger.addLog({

@@ -59,6 +59,59 @@ test.afterEach(async ({ page }) => {
 })
 
 test(
+  'browser offline and online preserves the active scene without idling',
+  { tag: ['@web', '@skipLocalEngine'] },
+  async ({ page, scene, editor }, testInfo) => {
+    test.setTimeout(180_000)
+    await setIdleTimeout(page, 0)
+    const code = await editor.getCurrentCode()
+    const freeze = page.locator('canvas#freeze-frame')
+
+    for (let cycle = 1; cycle <= 3; cycle++) {
+      const peer = await page.evaluateHandle(
+        () => window.engineCommandManager.connection?.peerConnection
+      )
+      await page.context().setOffline(true)
+      await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(false)
+      await expect(recovery(page)).toBeVisible()
+      await expect
+        .poll(() => peer.evaluate((value) => value?.connectionState))
+        .toBe('closed')
+      await peer.dispose()
+      // No idle snapshot exists: browser-offline must preserve the active video
+      // before closing its peer, including after a previous reconnect.
+      await expect(freeze).toBeVisible()
+      const background = await freeze.evaluate((canvas: HTMLCanvasElement) => {
+        const pixel = canvas.getContext('2d')?.getImageData(0, 0, 1, 1).data
+        return pixel ? pixel[0] + pixel[1] + pixel[2] : 0
+      })
+      expect(background).toBeGreaterThan(24)
+      await page.screenshot({
+        path: testInfo.outputPath(`offline-${cycle}.png`),
+      })
+
+      await expectRecovered(
+        page,
+        testInfo,
+        async () => {
+          await page.context().setOffline(false)
+          await expect
+            .poll(() => page.evaluate(() => navigator.onLine))
+            .toBe(true)
+          await expect(freeze).toBeVisible()
+          await page.screenshot({
+            path: testInfo.outputPath(`reconnecting-${cycle}.png`),
+          })
+        },
+        `online-${cycle}.png`
+      )
+      await scene.settled()
+      expect(await editor.getCurrentCode()).toBe(code)
+    }
+  }
+)
+
+test(
   'input while idle and browser-offline keeps recovery visible',
   { tag: ['@web', '@skipLocalEngine'] },
   async ({ page, scene, editor }, testInfo) => {
