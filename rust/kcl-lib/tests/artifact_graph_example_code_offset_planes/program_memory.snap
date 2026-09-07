@@ -8,8 +8,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -41,8 +41,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 1,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 50.0,
@@ -74,8 +74,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 2,
+      "kind": "Custom",
       "origin": {
         "x": 10.0,
         "y": 0.0,
@@ -127,17 +127,17 @@ description: Variables in memory after executing artifact_graph_example_code_off
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 20.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

@@ -20,6 +20,7 @@ import {
   layoutActionLibraryValueSpec,
   layoutContributionsValueSpec,
 } from '@src/lib/layout/registry/contract'
+import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,
@@ -78,6 +79,7 @@ function createExportToSlicerCommand({
   getKclManager: () => KclManager | undefined
 }): Command {
   return {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     id: EXPORT_TO_SLICER_COMMAND_ID,
     name: EXPORT_TO_SLICER_COMMAND_NAME,
     displayName: EXPORT_TO_SLICER_COMMAND_NAME,

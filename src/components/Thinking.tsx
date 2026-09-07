@@ -877,20 +877,30 @@ export const Thinking = (props: {
     componentThoughts.push(<End key={reasoningThoughts.length} />)
   }
 
-  const lastTextualThought = reasoningThoughts.findLast(
-    (thought) => 'reasoning' in thought && thought.reasoning.type === 'text'
+  const lastImmediateThought = reasoningThoughts.findLast(
+    (thought) =>
+      'reasoning' in thought &&
+      (thought.reasoning.type === 'text' ||
+        thought.reasoning.type === 'markdown')
   )
 
-  const componentLastGenericThought = (
-    <Generic
-      content={
-        lastTextualThought !== undefined &&
-        'reasoning' in lastTextualThought &&
-        lastTextualThought.reasoning.type === 'text'
-          ? lastTextualThought.reasoning.content
-          : ''
-      }
-    />
+  const isImmediateThinking =
+    lastImmediateThought !== undefined &&
+    'reasoning' in lastImmediateThought &&
+    lastImmediateThought.reasoning.type === 'markdown'
+  const immediateThoughtContent =
+    lastImmediateThought !== undefined &&
+    'reasoning' in lastImmediateThought &&
+    lastImmediateThought.reasoning.type === 'text'
+      ? lastImmediateThought.reasoning.content
+      : ''
+  const componentLastGenericThought = isImmediateThinking ? (
+    <div className="flex flex-row items-center gap-2">
+      <CustomIcon name="brain" className="w-6 h-6" />
+      <Generic content="Thinking" />
+    </div>
+  ) : (
+    <Generic content={immediateThoughtContent} />
   )
 
   const ViewFull = (

@@ -1,21 +1,21 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
+  getDefaultKclFileForDir,
   getProjectInfo,
   listProjects,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
 } from '@src/lib/desktop'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
 import { buildTheWorldNode } from '@src/unitTestUtils'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { mockElectron } = vi.hoisted(() => {
   // Mock the electron window global
@@ -203,6 +203,42 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('preserves main.kcl created after discovery observed an empty project', async () => {
+      const { instance } = await buildTheWorldNode()
+      const projectPath = '/test/projects/project-without-kcl-files'
+      const mainPath = `${projectPath}/main.kcl`
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path === mainPath ? Promise.reject('ENOENT') : originalStat(path)
+      )
+
+      // An import can publish its source after discovery's stat but before
+      // the default-file write. Model the filesystem's exclusive-create rule.
+      const importedCode = 'part = fillet(solid, radius = 2)\n'
+      let diskCode = importedCode
+      mockElectron.writeFile.mockImplementation(
+        async (path: string, data: Uint8Array, options?: { flag?: string }) => {
+          if (path !== mainPath) return
+          if (options?.flag === 'wx') return Promise.reject('EEXIST')
+          diskCode = new TextDecoder().decode(data)
+        }
+      )
+
+      await expect(
+        getDefaultKclFileForDir(
+          projectPath,
+          {
+            name: 'project-without-kcl-files',
+            path: projectPath,
+            children: [],
+            metadata: null,
+          },
+          await instance
+        )
+      ).resolves.toBe(mainPath)
+      expect(diskCode).toBe(importedCode)
+    })
+
     it('does not list .git directories', async () => {
       const { instance } = await buildTheWorldNode()
       const projects = await listProjects(instance, mockConfig)
@@ -278,13 +314,13 @@ describe('desktop utilities', () => {
       ])
     })
 
-    it('reads project title and cloud id from project.toml metadata', async () => {
+    it('reads project title and ids from project.toml metadata', async () => {
       mockElectron.readFile.mockImplementation(async (path: string) => {
         if (path === '/test/projects/valid-project/.gitignore') {
           return 'dist\nnotes.txt\n'
         }
         if (path === '/test/projects/valid-project/project.toml') {
-          return 'title = "Some demo"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+          return 'title = "Some demo"\n\n[settings.meta]\nid = "local-project-123"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
         }
 
         return ''
@@ -299,6 +335,7 @@ describe('desktop utilities', () => {
       })
 
       expect(project.title).toBe('Some demo')
+      expect(project.projectId).toBe('local-project-123')
       expect(project.cloudProjectId).toBe('project-123')
     })
 

@@ -144,6 +144,12 @@ export function SystemIOMachineLogicListener() {
         return
       }
 
+      // Active-file archive navigation is published by requestedFileName only
+      // after the machine has committed its refreshed project snapshot.
+      if (lastOperation === SystemIOMachineStates.movingRecursiveAndNavigate) {
+        return
+      }
+
       const fileNavigationOperations = [
         SystemIOMachineStates.importFileFromURL,
         SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
