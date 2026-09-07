@@ -119,6 +119,113 @@ test.describe(
   'when file tree creation navigates within the same project',
   { tag: ['@web'] },
   () => {
+    test('reloads the visibly active file after a pending file-tree switch', async ({
+      page,
+      folderSetupFn,
+      fs,
+      toolbar,
+      editor,
+      scene,
+    }) => {
+      const mainCode =
+        '@settings(defaultLengthUnit = mm, kclVersion = 2.0)\nmainMarker = 7mm\n'
+      const { dir } = await folderSetupFn(async (dir) => {
+        const projectPath = await fs.join(dir, 'file-switch-reload')
+        await fs.mkdir(projectPath, { recursive: true })
+        await fs.writeFile(
+          await fs.join(projectPath, 'main.kcl'),
+          new TextEncoder().encode(mainCode)
+        )
+      })
+      const mainPath = await fs.join(dir, 'file-switch-reload', 'main.kcl')
+      const mainRoute = `/file/${encodeURIComponent(mainPath)}`
+      await page.goto(mainRoute)
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
+      // The initial project load can still be discovering folders even after
+      // the scene settles. File creation needs that SystemIO context.
+      await expect
+        .poll(
+          () =>
+            page.evaluate(() => {
+              const snapshot = window.app.systemIOActor.getSnapshot()
+              return {
+                hasFolders: snapshot.context.folders !== undefined,
+                state: snapshot.value,
+              }
+            }),
+          {
+            timeout: 30_000,
+            message: 'SystemIO should finish initial browser folder load',
+          }
+        )
+        .toMatchObject({ hasFolders: true, state: 'idle' })
+      await toolbar.createFile({
+        fileName: 'adjacent.kcl',
+        waitForToastToDisappear: false,
+      })
+      await expect(toolbar.fileName).toBeVisible()
+      await expect(toolbar.fileName).toHaveText('adjacent.kcl')
+      await scene.settled()
+      const adjacentUrl = page.url()
+
+      // Hold the real loader after it changes the shared editor. This makes
+      // the old-URL/new-editor interval deterministic without timing sleeps.
+      const loadGate = await page.evaluateHandle(() => {
+        const rustContext = window.app.singletons.kclManager.rustContext
+        const original = rustContext.sendOpenProject.bind(rustContext)
+        let release = () => {}
+        const gate = new Promise<void>((resolve) => {
+          release = resolve
+        })
+        rustContext.sendOpenProject = async (...args) => {
+          await gate
+          return original(...args)
+        }
+        return {
+          release: () => {
+            rustContext.sendOpenProject = original
+            release()
+          },
+        }
+      })
+
+      try {
+        await toolbar.openFile('main.kcl')
+        await expect
+          .poll(() =>
+            page.evaluate(() => window.app.singletons.kclManager.path)
+          )
+          .toBe(mainPath)
+        expect(page.url()).toBe(adjacentUrl)
+        await expect(
+          page.getByRole('status').filter({ hasText: 'Loading file...' })
+        ).toBeVisible()
+        await expect(toolbar.fileName).not.toBeVisible()
+        await expect(page.locator('.cm-content')).not.toBeVisible()
+      } finally {
+        await loadGate.evaluate((gate) => gate.release())
+        await loadGate.dispose()
+      }
+
+      await expect(toolbar.fileName).toBeVisible()
+      await expect(toolbar.fileName).toHaveText('main.kcl')
+      // Do not wait for URL convergence: it must already match the visible UI.
+      expect(new URL(page.url()).pathname).toBe(mainRoute)
+      await page.reload()
+      await expect(toolbar.fileName).toHaveText('main.kcl')
+      await expect(toolbar.fileName).toBeVisible()
+      await editor.expectEditor.toContain('mainMarker = 7mm')
+
+      await page.goBack()
+      await expect(toolbar.fileName).toHaveText('adjacent.kcl')
+      await expect(toolbar.fileName).toBeVisible()
+      await page.goForward()
+      await expect(toolbar.fileName).toHaveText('main.kcl')
+      await expect(toolbar.fileName).toBeVisible()
+      expect(new URL(page.url()).pathname).toBe(mainRoute)
+    })
+
     test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
       page,
       folderSetupFn,
