@@ -3335,7 +3335,9 @@ describe('createOnDragCallback', () => {
       sketchId: 0,
       sketchExecOutcome: { sceneGraphDelta },
     }))
-    const editSegments = vi.fn(() =>
+    const editSegments = vi.fn<
+      Parameters<typeof createOnDragCallback>[0]['editSegments']
+    >(() =>
       Promise.resolve({
         kclSource: { text: '' },
         sceneGraphDelta,
