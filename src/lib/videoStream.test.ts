@@ -59,16 +59,21 @@ describe('engine video stream visibility', () => {
       return 1
     })
     canvas.style.display = 'block'
+    const onLive = vi.fn(() => {
+      expect(canvas.style.display).toBe('none')
+    })
 
-    showLiveVideoOnNextFrame(video, canvas)
+    showLiveVideoOnNextFrame(video, canvas, onLive)
 
     expect(video.style.display).not.toBe('none')
     expect(canvas.style.display).toBe('block')
+    expect(onLive).not.toHaveBeenCalled()
 
     frameCallbacks[0](0, {} as VideoFrameCallbackMetadata)
 
     expect(video.style.display).not.toBe('none')
     expect(canvas.style.display).toBe('none')
+    expect(onLive).toHaveBeenCalledTimes(1)
   })
 
   it('preserves an existing freeze frame if another idle interrupts wake-up', () => {
@@ -89,8 +94,9 @@ describe('engine video stream visibility', () => {
   })
 
   it('cancels a pending reveal when idle begins again', () => {
+    const onLive = vi.fn()
     showFreezeFrame(video, canvas)
-    showLiveVideoOnNextFrame(video, canvas)
+    showLiveVideoOnNextFrame(video, canvas, onLive)
     const staleFrame = fireFrame
 
     showFreezeFrame(video, canvas)
@@ -98,14 +104,17 @@ describe('engine video stream visibility', () => {
     // A callback already queued before cancellation must also be harmless.
     staleFrame()
     expect(canvas.style.display).toBe('block')
+    expect(onLive).not.toHaveBeenCalled()
   })
 
   it('does not reveal a replacement stream using an older stream callback', () => {
+    const onLive = vi.fn()
     showFreezeFrame(video, canvas)
-    showLiveVideoOnNextFrame(video, canvas)
+    showLiveVideoOnNextFrame(video, canvas, onLive)
     Object.defineProperty(video, 'srcObject', { value: {}, configurable: true })
     fireFrame()
     expect(canvas.style.display).toBe('block')
+    expect(onLive).not.toHaveBeenCalled()
   })
 
   it('only the latest reveal request can reveal the video', () => {

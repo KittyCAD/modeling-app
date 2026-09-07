@@ -43,6 +43,10 @@ test(
     const originalCode = await editor.getCurrentCode()
     const video = page.locator('video#video-stream')
     const freeze = page.locator('canvas#freeze-frame')
+    const waking = page.getByRole('status').filter({
+      hasText: 'Waking from idle...',
+    })
+    await expect(waking).not.toBeVisible()
     await expect
       .poll(() =>
         video.evaluate(
@@ -68,6 +72,7 @@ test(
           })
         )
         await expect(freeze).toBeVisible({ timeout: 15_000 })
+        await expect(waking).not.toBeVisible()
         await expect
           .poll(() => oldPeer.evaluate((peer) => peer?.connectionState))
           .toBe('closed')
@@ -93,8 +98,14 @@ test(
         await scene.makeMouseHelpers(0.76, 0.72 + cycle * 0.01, {
           format: 'ratio',
         })[1]()
+        await expect(waking).toBeVisible()
+        await expect(freeze).toBeVisible()
+        await page.screenshot({
+          path: testInfo.outputPath(`waking-${cycle}.png`),
+        })
         // A green network indicator or a visible frozen canvas is not recovery.
         await expect(freeze).not.toBeVisible({ timeout: 30_000 })
+        await expect(waking).not.toBeVisible()
         await expect(video).toBeVisible()
         // A fresh frame must contain the model, not the empty Engine startup
         // background (249 in this default light-theme scene).

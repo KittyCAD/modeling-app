@@ -37,7 +37,8 @@ export function showFreezeFrame(
 
 export function showLiveVideoOnNextFrame(
   video: HTMLVideoElement,
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  onLive?: () => void
 ) {
   pendingReveals.get(video)?.()
   const stream = video.srcObject
@@ -56,6 +57,7 @@ export function showLiveVideoOnNextFrame(
     }
     pendingReveals.delete(video)
     canvas.style.display = 'none'
+    onLive?.()
   }
   pendingReveals.set(video, cancel)
 
