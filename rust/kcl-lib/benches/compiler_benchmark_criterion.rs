@@ -25,8 +25,33 @@ pub fn bench_parse(c: &mut Criterion) {
 /// This benchmarks the same sort of code that the ZDS app uses when users
 /// drag a point/line around in sketch mode. This benchmark should correlate with
 /// user-perceived latency in sketch mode.
+pub fn bench_mock(c: &mut Criterion) {
+    for (name, file) in [("mike_stress_test", MIKE_STRESS_TEST_PROGRAM)] {
+        let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
+        c.bench_function(&format!("no_engine_mock_execute_{name}"), move |b| {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
+            b.iter(|| {
+                if let Err(err) = rt.block_on(async {
+                    // Subsequent runs set use_previous_memory to true, because that's what the app
+                    // uses in production.
+                    ctx.run_mock(black_box(&program), &Default::default()).await?;
+                    ctx.close().await;
+                    Ok::<(), anyhow::Error>(())
+                }) {
+                    panic!("Failed to execute program: {err}");
+                }
+            })
+        });
+    }
+}
+
+/// This benchmarks the same sort of code that the ZDS app uses when users
+/// drag a point/line around in sketch mode. This benchmark should correlate with
+/// user-perceived latency in sketch mode.
 pub fn bench_mock_warmed_up(c: &mut Criterion) {
-    for (name, file) in [("medium_sketch", MEDIUM_SKETCH)] {
+    {
+        let (name, file) = ("medium_sketch", MEDIUM_SKETCH);
         let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
         c.bench_function(&format!("mock_execute_{name}"), move |b| {
             let rt = tokio::runtime::Runtime::new().unwrap();
@@ -68,7 +93,7 @@ pub fn recast(c: &mut Criterion) {
     }
 }
 
-criterion_group!(benches, bench_parse, bench_mock_warmed_up, recast);
+criterion_group!(benches, bench_parse, bench_mock, bench_mock_warmed_up, recast);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
