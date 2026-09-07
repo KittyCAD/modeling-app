@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
+import { signal } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
+import { useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
   type useLocation,
@@ -322,30 +324,11 @@ export interface OnboardingUtilDeps {
   navigate: NavigateFunction
 }
 
-let pendingOnboardingStart: Promise<void> | undefined
-const onboardingStartListeners = new Set<() => void>()
-
-function emitOnboardingStartPendingChange() {
-  for (const listener of onboardingStartListeners) {
-    listener()
-  }
-}
-
-function subscribeToOnboardingStartPending(listener: () => void) {
-  onboardingStartListeners.add(listener)
-  return () => onboardingStartListeners.delete(listener)
-}
-
-function getOnboardingStartPendingSnapshot() {
-  return pendingOnboardingStart !== undefined
-}
+const pendingOnboardingStart = signal<Promise<void> | undefined>(undefined)
 
 export function useOnboardingStartPending() {
-  return useSyncExternalStore(
-    subscribeToOnboardingStartPending,
-    getOnboardingStartPendingSnapshot,
-    () => false
-  )
+  useSignals()
+  return pendingOnboardingStart.value !== undefined
 }
 
 async function createOnboardingProject(
@@ -419,19 +402,18 @@ export function acceptOnboarding(deps: OnboardingUtilDeps): Promise<void> {
     ? onboardingStartPath
     : deps.onboardingStatus
 
-  if (pendingOnboardingStart) {
-    return pendingOnboardingStart
+  const pendingStart = pendingOnboardingStart.peek()
+  if (pendingStart) {
+    return pendingStart
   }
 
   const start = createOnboardingProject(deps, onboardingStatus)
   const trackedStart = start.finally(() => {
-    if (pendingOnboardingStart === trackedStart) {
-      pendingOnboardingStart = undefined
-      emitOnboardingStartPendingChange()
+    if (pendingOnboardingStart.peek() === trackedStart) {
+      pendingOnboardingStart.value = undefined
     }
   })
-  pendingOnboardingStart = trackedStart
-  emitOnboardingStartPendingChange()
+  pendingOnboardingStart.value = trackedStart
   return trackedStart
 }
 
