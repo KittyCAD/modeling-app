@@ -5,6 +5,7 @@ import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
   SEGMENTS_BASED_REGIONS_FEATURE_FLAG,
 } from '@src/lib/constants'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 
 test.use({
   userFeatures: [
@@ -86,7 +87,11 @@ async function enterIdle(page: Page) {
   await peer.dispose()
 }
 
-async function expectRecovered(page: Page, testInfo: TestInfo) {
+async function expectRecovered(
+  page: Page,
+  testInfo: TestInfo,
+  screenshotName = 'recovered.png'
+) {
   const video = page.locator('video#video-stream')
   await expect(page.locator('canvas#freeze-frame')).not.toBeVisible({
     timeout: 40_000,
@@ -129,7 +134,7 @@ async function expectRecovered(page: Page, testInfo: TestInfo) {
   })
   expect(mean).toBeGreaterThan(10)
   expect(mean).toBeLessThan(248)
-  await page.screenshot({ path: testInfo.outputPath('recovered.png') })
+  await page.screenshot({ path: testInfo.outputPath(screenshotName) })
 }
 
 // Hold the first Engine-start attempt and reject all five retries on demand.
@@ -210,6 +215,66 @@ test(
     await setIdleTimeout(page, 0)
     await page.context().setOffline(false)
     await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(true)
+    await expectRecovered(page, testInfo)
+    await scene.settled()
+    expect(await editor.getCurrentCode()).toBe(code)
+  }
+)
+
+test(
+  'online recovery clears idle state before an unrelated connection failure',
+  { tag: ['@web', '@skipLocalEngine'] },
+  async ({ page, scene, editor }, testInfo) => {
+    const code = await editor.getCurrentCode()
+    await enterIdle(page)
+    // Keep input-driven idle handling enabled, but prevent a second idle
+    // teardown from changing the cause of the disconnect under test.
+    await setIdleTimeout(page, 120_000)
+    await page.context().setOffline(true)
+    await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(false)
+    await expect(recovery(page)).toBeVisible()
+    await scene.makeMouseHelpers(0.76, 0.73, { format: 'ratio' })[1]()
+    await expect(wakingStatus(page)).not.toBeVisible()
+    await page.context().setOffline(false)
+    await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(true)
+    await expectRecovered(page, testInfo, 'online-recovered.png')
+    await scene.makeMouseHelpers(0.76, 0.74, { format: 'ratio' })[1]()
+
+    const starts = await holdFailingStarts(page)
+    try {
+      // Inject a separate, non-idle close and fail its ordinary reconnects.
+      await page.evaluate((eventName) => {
+        window.engineCommandManager.tearDown()
+        window.engineCommandManager.dispatchEvent(
+          new CustomEvent(eventName, { detail: { code: '1001' } })
+        )
+      }, EngineConnectionManagerEvents.WebsocketClosed)
+      await expect
+        .poll(() => starts.evaluate((state) => state.attempts()))
+        .toBe(1)
+      await starts.evaluate((state) => state.reject())
+      await expect
+        .poll(() => starts.evaluate((state) => state.attempts()))
+        .toBe(5)
+      await expect(recovery(page)).toBeVisible()
+      await expect(wakingStatus(page)).not.toBeVisible()
+
+      await scene.makeMouseHelpers(0.76, 0.75, { format: 'ratio' })[1]()
+      await page.screenshot({
+        path: testInfo.outputPath('unrelated-failure-after-input.png'),
+      })
+      // Count attempts too: a false wake could exhaust retries so quickly
+      // that the final screenshot alone would miss it.
+      expect(await starts.evaluate((state) => state.attempts())).toBe(5)
+      await expect(recovery(page)).toBeVisible()
+      await expect(wakingStatus(page)).not.toBeVisible()
+    } finally {
+      await starts.evaluate((state) => state.restore())
+      await starts.dispose()
+    }
+    await recovery(page)
+      .getByRole('button', { name: /Reconnect/ })
+      .click()
     await expectRecovered(page, testInfo)
     await scene.settled()
     expect(await editor.getCurrentCode()).toBe(code)

@@ -103,6 +103,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     useTryConnect(() => {
       if (!videoRef.current || !canvasRef.current) return
       showLiveVideoOnNextFrame(videoRef.current, canvasRef.current, () => {
+        // A normal reconnect can also recover a previously idled session.
+        isIdle.current = false
         setIsWakingFromIdle(false)
       })
     })
