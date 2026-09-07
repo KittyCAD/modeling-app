@@ -205,6 +205,44 @@ profile002 = rectangle(
 }`
 
   describe('Testing addExtrude', () => {
+    it('edits scalar arguments when selection reconstruction is unavailable', async () => {
+      const code =
+        'extrude001 = extrude(profile001, to = cap, direction = axis)'
+      const ast = assertParse(code, instanceInThisFile)
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const unavailableSelection = {
+        graphSelections: [],
+        otherSelections: [],
+      }
+
+      const result = addExtrude({
+        ast,
+        artifactGraph: new Map() as ArtifactGraph,
+        sketches: unavailableSelection,
+        to: unavailableSelection,
+        direction: unavailableSelection,
+        length,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode.trim()).toBe(
+        `extrude001 = extrude(
+  profile001,
+  to = cap,
+  direction = axis,
+  length = 2,
+)`
+      )
+    })
+
     it('should add a basic extrude call', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
