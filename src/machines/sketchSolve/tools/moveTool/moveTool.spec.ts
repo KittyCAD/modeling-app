@@ -6,7 +6,9 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
+import type { GridSnapOptions } from '@src/clientSideScene/gridUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { emptyOperationsByModule } from '@src/lang/wasm'
@@ -180,6 +182,9 @@ function createDragSnappingDeps() {
     setLastGoodPreview: vi.fn(),
     getDragStartOutcome: vi.fn(() => null),
     onClearDragSnapping: vi.fn(),
+    getGridSnapOptions: vi.fn<() => GridSnapOptions | undefined>(
+      () => undefined
+    ),
   }
 }
 
@@ -191,6 +196,7 @@ function setUpMoveToolCallbacks({
   sketchId = 0,
   showNonVisualConstraints = false,
   constraintHoverPopups = [],
+  snapToGrid = false,
   getSceneObjectByName,
 }: {
   apiObjects?: ApiObject[]
@@ -203,11 +209,18 @@ function setUpMoveToolCallbacks({
     segmentId: number
     position: [number, number]
   }>
+  snapToGrid?: boolean
   getSceneObjectByName?: (name: string) => unknown
 }) {
   let callbacks: Record<string, unknown> = {}
+  const gridRenderer = snapToGrid ? new InfiniteGridRenderer() : null
+  if (gridRenderer) {
+    vi.spyOn(gridRenderer, 'getPixelsPerBaseUnit').mockReturnValue(100)
+  }
   const getObjectByName = vi.fn(
-    (name: string) => getSceneObjectByName?.(name) ?? null
+    (name: string) =>
+      getSceneObjectByName?.(name) ??
+      (name === 'InfiniteGridRenderer' ? gridRenderer : null)
   )
   let planeIntersectPoint = {
     twoD: new Vector2(0, 0),
@@ -232,6 +245,7 @@ function setUpMoveToolCallbacks({
         clientWidth: 100,
         clientHeight: 100,
       },
+      getDrawingBufferSize: vi.fn((target: Vector2) => target.set(1_000, 800)),
     },
     getPlaneIntersectPoint: vi.fn(() => planeIntersectPoint),
     getClientSceneScaleFactor: vi.fn(() => 1),
@@ -303,6 +317,13 @@ function setUpMoveToolCallbacks({
         getSnapshot: vi.fn(() => ({
           context: {
             app: {},
+            modeling: {
+              snapToGrid: { current: snapToGrid },
+              fixedSizeGrid: { current: true },
+              majorGridSpacing: { current: 2 },
+              minorGridsPerMajor: { current: 4 },
+              snapsPerMinor: { current: 2 },
+            },
           },
         })),
       },
@@ -2299,6 +2320,78 @@ describe('createOnDragCallback', () => {
     )
   })
 
+  it('commits a dragged point at the snapped grid position without adding a constraint', async () => {
+    const draggedPoint = createPointApiObject({
+      id: 4,
+      x: 20,
+      y: 10,
+      owner: 11,
+    })
+    const draggedStart = createPointApiObject({
+      id: 3,
+      x: 10,
+      y: 0,
+      owner: 11,
+    })
+    const draggedLine = createLineApiObject({ id: 11, start: 3, end: 4 })
+
+    const { onMouseDownSelection, onDragStart, onDragEnd, rustContext } =
+      setUpMoveToolCallbacks({
+        apiObjects: [draggedStart, draggedPoint, draggedLine],
+        hoveredId: 4,
+        selectedIds: [4],
+        snapToGrid: true,
+      })
+
+    const editResult = {
+      kclSource: { text: 'grid snapped' },
+      sceneGraphDelta: createSceneGraphDelta([
+        draggedStart,
+        draggedPoint,
+        draggedLine,
+      ]),
+      checkpointId: 123,
+    }
+    ;(rustContext.editSegments as any).mockResolvedValue(editResult)
+
+    expect(onMouseDownSelection()).toBe(true)
+
+    onDragStart({
+      intersectionPoint: {
+        twoD: new Vector2(20, 10),
+        threeD: new Vector3(20, 10, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    await onDragEnd({
+      intersectionPoint: {
+        twoD: new Vector2(20.37, 10.62),
+        threeD: new Vector3(20.37, 10.62, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(rustContext.editSegments).toHaveBeenCalledTimes(1)
+    expect(rustContext.editSegments.mock.calls[0]?.[2]).toEqual([
+      {
+        id: 4,
+        ctor: {
+          type: 'Point',
+          position: {
+            x: { type: 'Var', value: 20.25, units: 'Mm' },
+            y: { type: 'Var', value: 10.5, units: 'Mm' },
+          },
+        },
+      },
+    ])
+    expect(rustContext.addConstraint).not.toHaveBeenCalled()
+  })
+
   it('adds a horizontal point-alignment constraint when snapping a dragged point to the x axis', async () => {
     const draggedPoint = createPointApiObject({
       id: 4,
@@ -3224,6 +3317,84 @@ describe('createOnDragCallback', () => {
     // Verify it's a clone
     const callArg = setLastSuccessfulDragFromPoint.mock.calls[0][0]
     expect(callArg).not.toBe(newPosition)
+  })
+
+  it('should preview a dragged point at the snapped grid position', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
+    const pointObject = createPointApiObject({ id: 5 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      pointObject,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [5],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const dragSnappingDeps = createDragSnappingDeps()
+    dragSnappingDeps.getGridSnapOptions.mockReturnValue({
+      fixedSizeGrid: true,
+      majorGridSpacing: 2,
+      minorGridsPerMajor: 4,
+      snapsPerMinor: 2,
+      pixelsPerBaseUnit: 100,
+    })
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome: vi.fn(),
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(10.37, 20.62),
+        threeD: new Vector3(10.37, 20.62, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { type: 'grid' },
+        position: [10.25, 20.5],
+      })
+    )
+    expect(editSegments.mock.calls[0]?.[2]).toEqual([
+      {
+        id: 5,
+        ctor: {
+          type: 'Point',
+          position: {
+            x: { type: 'Var', value: 10.25, units: 'Mm' },
+            y: { type: 'Var', value: 20.5, units: 'Mm' },
+          },
+        },
+      },
+    ])
+    expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledWith(
+      expect.objectContaining({ x: 10.25, y: 20.5 })
+    )
   })
 
   it('should allow drag snapping for an arc child point when its owner arc remains selected', async () => {
