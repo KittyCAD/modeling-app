@@ -24,6 +24,7 @@ import {
   getNodeFromPath,
   getSettingsAnnotation,
   getSketchSegmentName,
+  getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
   isNodeSafeToReplace,
@@ -86,6 +87,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
   ExtrudeFacePlane,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
@@ -1270,6 +1272,35 @@ export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
     expr = createArrayExpression(exprs)
   }
   return expr
+}
+
+export function getSelectionVarsForCall({
+  selection,
+  artifactGraph,
+  modifiedAst,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selection: Selections
+  artifactGraph: ArtifactGraph
+  modifiedAst: Node<Program>
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}) {
+  // Edit codemods preserve the existing selection argument, so only rebuild
+  // selection expressions when creating a new call.
+  if (nodeToEdit) {
+    return { exprs: [] }
+  }
+
+  return getVariableExprsFromSelection(
+    selection,
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    undefined,
+    { lastChildLookup: true }
+  )
 }
 
 // Create a path to node to the last variable declaroator of an ast

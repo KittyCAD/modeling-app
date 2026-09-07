@@ -9,13 +9,11 @@ import {
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  getSelectionVarsForCall,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import {
-  getVariableExprsFromSelection,
-  valueOrVariable,
-} from '@src/lang/queryAst'
+import { valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -24,33 +22,6 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-
-function getPatternSelectionVars({
-  solids,
-  artifactGraph,
-  modifiedAst,
-  wasmInstance,
-  nodeToEdit,
-}: {
-  solids: Selections
-  artifactGraph: ArtifactGraph
-  modifiedAst: Node<Program>
-  wasmInstance: ModuleType
-  nodeToEdit?: PathToNode
-}) {
-  if (nodeToEdit) {
-    return { exprs: [] }
-  }
-
-  return getVariableExprsFromSelection(
-    solids,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    undefined,
-    { lastChildLookup: true }
-  )
-}
 
 export function addPatternCircular3D({
   ast,
@@ -82,8 +53,8 @@ export function addPatternCircular3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
-  const vars = getPatternSelectionVars({
-    solids,
+  const vars = getSelectionVarsForCall({
+    selection: solids,
     artifactGraph,
     modifiedAst,
     wasmInstance,
@@ -250,8 +221,8 @@ export function addPatternLinear3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
-  const vars = getPatternSelectionVars({
-    solids,
+  const vars = getSelectionVarsForCall({
+    selection: solids,
     artifactGraph,
     modifiedAst,
     wasmInstance,

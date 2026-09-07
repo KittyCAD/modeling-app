@@ -10,6 +10,7 @@ import {
 import {
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
+  getSelectionVarsForCall,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
@@ -32,33 +33,6 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-
-function getTransformSelectionVars({
-  objects,
-  artifactGraph,
-  modifiedAst,
-  wasmInstance,
-  nodeToEdit,
-}: {
-  objects: Selections
-  artifactGraph: ArtifactGraph
-  modifiedAst: Node<Program>
-  wasmInstance: ModuleType
-  nodeToEdit?: PathToNode
-}) {
-  if (nodeToEdit) {
-    return { exprs: [] }
-  }
-
-  return getVariableExprsFromSelection(
-    objects,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    undefined,
-    { lastChildLookup: true }
-  )
-}
 
 export function addTranslate({
   ast,
@@ -89,8 +63,8 @@ export function addTranslate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getTransformSelectionVars({
-    objects,
+  const vars = getSelectionVarsForCall({
+    selection: objects,
     artifactGraph,
     modifiedAst,
     wasmInstance,
@@ -181,8 +155,8 @@ export function addRotate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getTransformSelectionVars({
-    objects,
+  const vars = getSelectionVarsForCall({
+    selection: objects,
     artifactGraph,
     modifiedAst,
     wasmInstance,
@@ -283,8 +257,8 @@ export function addScale({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getTransformSelectionVars({
-    objects,
+  const vars = getSelectionVarsForCall({
+    selection: objects,
     artifactGraph,
     modifiedAst,
     wasmInstance,
@@ -431,8 +405,8 @@ export function addAppearance({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getTransformSelectionVars({
-    objects,
+  const vars = getSelectionVarsForCall({
+    selection: objects,
     artifactGraph,
     modifiedAst,
     wasmInstance,
