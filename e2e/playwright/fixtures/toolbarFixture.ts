@@ -280,6 +280,7 @@ export class ToolbarFixture {
   }
   selectSurface = async (
     operation:
+      | 'planar-surface'
       | 'blend-surface'
       | 'flip-surface'
       | 'join-surfaces'

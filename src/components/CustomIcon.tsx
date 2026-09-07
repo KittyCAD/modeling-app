@@ -899,6 +899,21 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  planarSurface: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="planar surface"
+    >
+      <path d="M3 10L10 6L17 10L10 14Z" fill="currentColor" fillOpacity="0.3" />
+      <path
+        d="M3 10L10 6L17 10L10 14Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
   flipSurface: (
     <svg
       viewBox="0 0 20 20"

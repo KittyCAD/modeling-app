@@ -7244,8 +7244,10 @@ export default {
         "required": true,
         "special": true,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -7254,8 +7256,10 @@ export default {
         "required": false,
         "special": false,
         "experimental": false,
+        "addedIn": null,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },

@@ -178,8 +178,8 @@ export function getViewUniverse(
 /**
  * Returns the engine object id of a swept body.
  *
- * - `loft` and `blend`: the artifact id. Both override the base sketch's id with
- *   their own command id.
+ * - `loft`, `blend`, and `planarSurface`: the artifact id. These create bodies
+ *   with their own engine id.
  * - Any other subtype whose base path points back through `Path.sweepId`:
  *   `pathId`. The body answers to the path's id.
  * - Any other subtype without that back-link: the artifact id. `mirror3d` copied
@@ -205,6 +205,7 @@ function engineIdForSweep(
     }
     case 'loft':
     case 'blend':
+    case 'planarSurface':
       return sweep.id
     default: {
       const _exhaustiveCheck: never = sweep.subType

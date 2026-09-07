@@ -1953,6 +1953,43 @@ fn artifacts_to_update(
             };
             return Ok(return_arr);
         }
+        ModelingCmd::CreatePlanarSurface(cmd) => {
+            let surface_id = match response {
+                Some(OkModelingCmdResponse::CreatePlanarSurface(response)) => {
+                    let [surface_id] = response.surfaces.as_slice() else {
+                        return Ok(Vec::new());
+                    };
+                    ArtifactId::new(*surface_id)
+                }
+                // Mock execution assigns the command ID to the created surface.
+                None => id,
+                Some(_) => return Ok(Vec::new()),
+            };
+            let Some(first_curve_id) = cmd.curve_ids.first().copied().map(ArtifactId::new) else {
+                return Ok(Vec::new());
+            };
+            let path_id = match artifacts.get(&first_curve_id) {
+                Some(Artifact::Segment(segment)) => segment.path_id,
+                Some(Artifact::SweepEdge(edge)) => match artifacts.get(&edge.sweep_id) {
+                    Some(Artifact::Sweep(sweep)) => sweep.path_id,
+                    _ => first_curve_id,
+                },
+                _ => first_curve_id,
+            };
+            return Ok(vec![Artifact::Sweep(Sweep {
+                id: surface_id,
+                sub_type: SweepSubType::PlanarSurface,
+                path_id,
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref,
+                source_sweep_id: None,
+                trajectory_id: None,
+                method: ArtifactSweepMethod::New,
+                consumed: false,
+                pattern_ids: Vec::new(),
+            })]);
+        }
         ModelingCmd::SurfaceBlend(surface_blend_cmd) => {
             let surface_id_to_path_id = |surface_id: ArtifactId| -> Option<ArtifactId> {
                 match artifacts.get(&surface_id) {

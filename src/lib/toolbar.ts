@@ -934,6 +934,27 @@ export function buildToolbarConfig(
           id: 'surface',
           array: [
             {
+              id: 'planar-surface',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Planar Surface', groupId: 'modeling' },
+                }),
+              icon: 'planarSurface',
+              status: 'experimental',
+              title: 'Planar Surface',
+              description:
+                'Fill a closed planar region or curve loop with a surface.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-sketch-planarSurface'
+                  ),
+                },
+              ],
+            },
+            {
               id: 'blend-surface',
               onClick: () =>
                 commands.send({

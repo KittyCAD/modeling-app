@@ -305,6 +305,7 @@ export type StdLibModelingCommandSchema = {
   'Boolean Intersect': BooleanIntersectCommandArgs
   'Boolean Split': BooleanSplitCommandArgs
   'Flip Surface': FlipSurfaceCommandArgs
+  'Planar Surface': StdLibCommandArgs<'planarSurface'>
   'Delete Face': DeleteFaceCommandArgs
   Blend: BlendCommandArgs
   'Join Surfaces': JoinSurfacesCommandArgs

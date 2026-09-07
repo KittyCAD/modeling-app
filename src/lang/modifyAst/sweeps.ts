@@ -963,7 +963,7 @@ export function addRevolve({
 
 // Utilities
 
-function addHideCallsForRegionSketches({
+export function addHideCallsForRegionSketches({
   engineRegions,
   modifiedAst,
   artifactGraph,
@@ -1221,24 +1221,28 @@ export function retrieveBodyTypeFromOpArg(
   return new Error("Couldn't retrieve bodyType argument")
 }
 
-function getEdgeProfileExprsFromSelection({
+export function getEdgeProfileExprsFromSelection({
   selections,
   modifiedAst,
   artifactGraph,
   wasmInstance,
   nodeToEdit,
+  includeSegments = false,
 }: {
   selections: Selections
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
+  includeSegments?: boolean
 }): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
   const exprs: Expr[] = []
   const primitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
   const unresolvedPrimitiveEdgeSelections: EnginePrimitiveSelection[] = []
   const edgeSelections = selections.graphSelections.filter(
-    (selection) => selection.artifact?.type === 'sweepEdge'
+    (selection) =>
+      selection.artifact?.type === 'sweepEdge' ||
+      (includeSegments && selection.artifact?.type === 'segment')
   )
   for (const primitiveEdgeSelection of primitiveEdgeSelections) {
     const artifact = artifactGraph.get(primitiveEdgeSelection.entityId)
@@ -1262,9 +1266,16 @@ function getEdgeProfileExprsFromSelection({
 
   for (const selection of edgeSelections) {
     const edgeArtifact = selection.artifact
-    if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
-      return new Error('Extrude edge profiles must be sweep edge selections.')
+    if (
+      !edgeArtifact ||
+      (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
+    ) {
+      return new Error(
+        'Edge profiles must be segment or sweep edge selections.'
+      )
     }
+    const segmentId =
+      edgeArtifact.type === 'segment' ? edgeArtifact.id : edgeArtifact.segId
 
     const edgeContext = resolveEdgeSelectionContext(
       modifiedAst,
@@ -1337,19 +1348,16 @@ function getEdgeProfileExprsFromSelection({
     if (!sketchSegmentName) {
       sketchSegmentName = getSketchSegmentName(
         modifiedAst,
-        edgeArtifact.segId,
+        segmentId,
         artifactGraph,
         wasmInstance
       )
     }
-    const originalSegment = getOriginalSegmentArtifact(
-      edgeArtifact.segId,
-      artifactGraph
-    )
+    const originalSegment = getOriginalSegmentArtifact(segmentId, artifactGraph)
     if (
       !sketchSegmentName &&
       originalSegment &&
-      originalSegment.id !== edgeArtifact.segId
+      originalSegment.id !== segmentId
     ) {
       sketchSegmentName = getSketchSegmentName(
         modifiedAst,
