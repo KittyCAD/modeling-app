@@ -168,8 +168,11 @@ export class Connection extends EventTarget {
     callback: (message: string) => void,
     geometryOnly = false
   ) {
+    const renderParams = geometryOnly
+      ? '&geometry_only=true&webrtc=false'
+      : '&post_effect=ssao'
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnly ? '&webrtc=false' : ''}`
+      `?video_res_width=${256}&video_res_height=${256}${renderParams}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
