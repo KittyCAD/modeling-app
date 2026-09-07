@@ -44,8 +44,23 @@ those cross-repository jobs is tracked by
 The stale-cache repair remains
 [Engine #5010](https://github.com/KittyCAD/engine/issues/5010) /
 [PR #5044](https://github.com/KittyCAD/engine/pull/5044). This regression must pass
-against that repair before landing. Keep the original screw-and-gear snapshot
-review separate: the historical 100 mm plane-inclusive box and the intermittent
-box missing the screw are both stale. Re-record and inspect the snapshot using
-the repaired Engine and a recorded KCL source revision before restoring TAB
-blocking for Engine test 4884 and Modeling App test 1881.
+against that repair before landing.
+
+The screw-and-gear snapshot uses recomputed bounds of approximately
+`46.229 x 96.511 x 13.635` mm. Neither historical result was correct: the
+`100 x 113.5 x 13.635` box included a stale 100 mm plane and the screw's old
+position, while `100 x 100 x 7` also missed the screw. Its STL coordinates run
+from `(-6.635,-8,-6.635)` to `(6.635,63.5,6.635)` mm; the final `translate(y=10)`
+moves the top Y extent to 73.5 mm. The recomputed scene bounds retain that extent
+and the lofted gear while excluding hidden planes.
+
+On 2026-09-07, forcing a bounds recomputation after the original program
+completed produced exactly the four changed snapshot values, with identical
+mass, surface area, and Z bounds. These also match Engine #5044's original
+workflow attempt 1 (`33928086336`, shard 9, tested merge
+`d519dbd9c1aa09fd52ceabec7b2a4668d71c0b5d`). The local diagnostic created and
+removed a disposable hidden plane to trigger recomputation without changing
+the model; that workaround is not part of either regression.
+
+Verify both tests using the repaired Engine and a recorded KCL source revision
+before restoring TAB blocking for Engine test 4884 and Modeling App test 1881.
