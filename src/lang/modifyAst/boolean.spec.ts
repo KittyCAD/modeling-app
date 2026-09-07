@@ -1,11 +1,12 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
   addIntersect,
   addSplit,
   addSubtract,
   addUnion,
 } from '@src/lang/modifyAst/boolean'
-import { recast } from '@src/lang/wasm'
+import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -495,6 +496,39 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
   // The detailed addIntersect and addUnion behavior remains covered by the existing e2e tests.
 
   describe('Testing addSplit', () => {
+    it('preserves unavailable tools while editing keepTools', () => {
+      const code =
+        'split001 = split(target, tools = tool, merge = false, keepTools = true)'
+      const ast = assertParse(code, instanceInThisFile)
+      const unavailableSelection = {
+        graphSelections: [],
+        otherSelections: [],
+      }
+
+      const result = addSplit({
+        ast,
+        artifactGraph: new Map() as ArtifactGraph,
+        targets: unavailableSelection,
+        tools: unavailableSelection,
+        merge: true,
+        keepTools: false,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode.trim()).toBe(
+        `split001 = split(
+  target,
+  tools = tool,
+  merge = true,
+  keepTools = false,
+)`
+      )
+    })
+
     async function runAddSplitTest({
       code,
       targetIds,
