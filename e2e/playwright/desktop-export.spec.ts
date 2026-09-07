@@ -1,6 +1,7 @@
 import path from 'path'
 import fsp from 'fs/promises'
 
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   executorInputPath,
   getPlaywrightDownloadDir,
@@ -15,7 +16,7 @@ test(
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
   ) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -177,7 +178,7 @@ test(
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
   ) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'sketch-project')
@@ -272,7 +273,7 @@ test(
     { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
     testInfo
   ) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'second-sketch-project')

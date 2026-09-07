@@ -6,6 +6,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   doAndWaitForImageDiff,
   executorInputPath,
@@ -103,7 +104,7 @@ test.describe(
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
@@ -598,7 +599,7 @@ test.describe(
       tronApp,
       folderSetupFn,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
       test.slow()
 
       const projectName = 'assembly'
@@ -663,7 +664,7 @@ test.describe(
       tronApp,
       folderSetupFn,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
       test.slow()
       await testBracketInsertionThenTransformsThenDeletion(
         context,
@@ -688,7 +689,7 @@ test.describe(
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
       const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
@@ -788,7 +789,7 @@ test.describe(
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       const projectName = 'assembly'
 
@@ -870,7 +871,7 @@ foreign
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) throwTronAppMissing()
 
       const projectName = 'assembly'
       const cloneLine = `clone001 = clone(washer)`

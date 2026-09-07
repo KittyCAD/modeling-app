@@ -1,4 +1,5 @@
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
@@ -10,10 +11,6 @@ type NativeMenuItemSnapshot = {
 }
 
 type NativeMenuActionResult = boolean | NativeMenuItemSnapshot | null
-
-function throwTronAppMissing(): never {
-  throw new Error('tronApp is missing.')
-}
 
 export class NativeMenuFixture {
   constructor(private readonly tronApp: ElectronZoo | undefined) {}

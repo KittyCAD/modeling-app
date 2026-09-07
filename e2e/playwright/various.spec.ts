@@ -1,3 +1,4 @@
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   doExport,
   expectKeybindingsSettingsVisible,
@@ -87,7 +88,7 @@ part001 = startSketchOn(-XZ)
     await page.waitForTimeout(1000)
     await u.clearAndCloseDebugPanel()
 
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await doExport(
       {

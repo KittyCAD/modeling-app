@@ -5,6 +5,7 @@ import {
   cloudProjectResponse,
   routeCloudProjects,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { playwrightPluginSettings } from '@e2e/playwright/storageStates'
 import { mockClientErrorReports } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -48,7 +49,7 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     tronApp,
   }, testInfo) => {
     if (!tronApp) {
-      throw new Error('tronApp is required for this desktop test.')
+      throwTronAppMissing()
     }
 
     const directoryLibraryPath = testInfo.outputPath(
