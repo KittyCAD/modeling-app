@@ -146,6 +146,22 @@ export class ElectronZoo {
 
   constructor() {}
 
+  async dispose() {
+    this.available = false
+    if (!this.electron) {
+      return
+    }
+
+    // A timed-out renderer may not run unload handlers. Close only this
+    // fixture's windows before asking the owned Electron process to quit.
+    await Promise.all(
+      this.electron
+        .windows()
+        .map((page) => page.close({ runBeforeUnload: false }))
+    )
+    await this.electron.close()
+  }
+
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
   async makeAvailableAgain() {
@@ -547,8 +563,19 @@ const fixturesBasedOnProcessEnvPlatform = {
     await use(ret)
   },
   _globalAfterEach: [
-    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+    async (
+      { page, tronApp }: { page: Page; tronApp?: ElectronZoo },
+      use: FnUse,
+      testInfo: TestInfo
+    ) => {
       await use() // <-- runs the actual test
+
+      if (testInfo.status === 'timedOut' && tronApp) {
+        // Renderer diagnostics can hang for the same reason as the test.
+        // Preserve its timeout and release the app before worker cleanup.
+        await tronApp.dispose()
+        return
+      }
 
       const engineLogs: ILog[] = await page.evaluate(
         () => window.engineDebugger.logs || []
