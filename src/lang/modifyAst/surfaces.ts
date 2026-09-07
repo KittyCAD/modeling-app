@@ -3,12 +3,14 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
+  createLiteral,
   createLocalName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
+  pathsReferToSamePipe,
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
@@ -19,8 +21,10 @@ import {
   getSketchVariableNameForSegment,
   getNodeFromPath,
   getVariableExprsFromSelection,
+  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
@@ -34,12 +38,16 @@ import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCo
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
+  getBodySelectionFromPrimitiveParentEntityId,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
 } from '@src/lib/selections'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 /**
  * Adds a flipSurface call to the AST.
@@ -216,6 +224,19 @@ export function addPlanarSurface({
   const mNodeToEdit = structuredClone(nodeToEdit)
   let curvesExpr: Expr | null = null
   let pathIfPipe: PathToNode | undefined
+  const recordCurvePipe = (curvePath?: PathToNode): Error | undefined => {
+    if (!curvePath) return
+    if (
+      pathIfPipe &&
+      stringifyPathToNode(pathIfPipe) !== stringifyPathToNode(curvePath) &&
+      !pathsReferToSamePipe(pathIfPipe, curvePath)
+    ) {
+      return new Error(
+        'Assign variables to the selected bodies before combining their edges.'
+      )
+    }
+    pathIfPipe = structuredClone(curvePath)
+  }
 
   // Curves are hidden in the edit command. Keep the original expression,
   // including its loop order and any inline region or edge calls.
@@ -243,7 +264,7 @@ export function addPlanarSurface({
     let sketchCount = engineRegions.length
     let solvedSegmentCount = 0
     const primitiveEdges = curves.otherSelections.filter(
-      (selection) =>
+      (selection): selection is EnginePrimitiveSelection =>
         isEnginePrimitiveSelection(selection) &&
         selection.primitiveType === 'edge'
     )
@@ -337,9 +358,12 @@ export function addPlanarSurface({
           artifactGraph,
           wasmInstance,
           includeSegments: true,
+          preserveBodyContext: true,
         })
         if (isErr(result)) return result
         modifiedAst = result.modifiedAst
+        const pipeResult = recordCurvePipe(result.pathIfPipe)
+        if (isErr(pipeResult)) return pipeResult
         exprs.push(...result.exprs)
       } else {
         if (isSolvedSegment) solvedSegmentCount++
@@ -371,14 +395,56 @@ export function addPlanarSurface({
     }
 
     for (const primitiveEdge of primitiveEdges) {
+      const bodySelection =
+        primitiveEdge.parentEntityId &&
+        getBodySelectionFromPrimitiveParentEntityId(
+          primitiveEdge.parentEntityId,
+          artifactGraph
+        )
+      if (bodySelection) {
+        const body = getVariableExprsFromSelection(
+          { graphSelections: [bodySelection], otherSelections: [] },
+          artifactGraph,
+          modifiedAst,
+          wasmInstance,
+          undefined,
+          {
+            lastChildLookup: true,
+            artifactTypeFilter: ['compositeSolid', 'sweep'],
+          }
+        )
+        if (isErr(body)) return body
+        if (
+          body.exprs.length === 1 &&
+          body.exprs[0].type === 'PipeSubstitution' &&
+          body.pathIfPipe
+        ) {
+          const pipeResult = recordCurvePipe(body.pathIfPipe)
+          if (isErr(pipeResult)) return pipeResult
+          // Keep the reference inside the anonymous body's pipe, where % is
+          // available, instead of declaring an edgeId variable outside it.
+          exprs.push(
+            createCallExpressionStdLibKw('edgeId', body.exprs[0], [
+              createLabeledArg(
+                'index',
+                createLiteral(primitiveEdge.primitiveIndex, wasmInstance)
+              ),
+            ])
+          )
+          continue
+        }
+      }
       const primitiveResult = getEdgeProfileExprsFromSelection({
         selections: { graphSelections: [], otherSelections: [primitiveEdge] },
         modifiedAst,
         artifactGraph,
         wasmInstance,
+        preserveBodyContext: true,
       })
       if (isErr(primitiveResult)) return primitiveResult
       modifiedAst = primitiveResult.modifiedAst
+      const pipeResult = recordCurvePipe(primitiveResult.pathIfPipe)
+      if (isErr(pipeResult)) return pipeResult
       exprs.push(...primitiveResult.exprs)
     }
 
@@ -424,6 +490,15 @@ export function addPlanarSurface({
       typeof targetIndex === 'number' && tolerance.insertIndex <= targetIndex
         ? targetPath
         : undefined
+    )
+  }
+  const pipeIndex = pathIfPipe?.[1]?.[0]
+  if (
+    typeof pipeIndex === 'number' &&
+    getSafeInsertIndex(call, modifiedAst) > pipeIndex + 1
+  ) {
+    return new Error(
+      'Assign a variable to the anonymous body before using values defined later in the file.'
     )
   }
   const pathToNode = setCallInAst({

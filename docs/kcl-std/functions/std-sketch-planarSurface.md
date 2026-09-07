@@ -100,6 +100,8 @@ hidden001 = hide(sketch001)
 region001 = region(point = [-3.5682909mm, 5.3681754mm], sketch = sketch001)
 extrude001 = extrude(region001, length = -5, bodyType = SURFACE)
 cap = planarSurface([extrude001.sketch.tags.circle1])
+// Demonstrate that this created a surface.
+assertIs(isSurface(cap))
 
 ```
 

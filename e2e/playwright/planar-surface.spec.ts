@@ -174,6 +174,28 @@ test.describe('Planar Surface point-and-click', { tag: '@desktop' }, () => {
         await toolbar.getFeatureTreeOperation('surface001', 0)
       ).toBeVisible()
 
+      await test.step('Edit tolerance and preserve the original curve order', async () => {
+        await (
+          await toolbar.getFeatureTreeOperation('surface001', 0)
+        ).dblclick()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {},
+          commandName: 'Planar Surface',
+        })
+        await cmdBar.clickOptionalArgument('tolerance')
+        await page.keyboard.insertText('0.01mm')
+        await cmdBar.progressCmdBar()
+        await cmdBar.submit()
+        await scene.settled()
+        await editor.expectEditor.toContain(
+          profile.declaration.replace(/\)$/, ', tolerance = 0.01mm)')
+        )
+        await editor.expectEditor.toContain(profile.code, {
+          shouldNormalise: true,
+        })
+      })
+
       await test.step('Use the created surface in another operation', async () => {
         await toolbar.selectSurface('flip-surface')
         await (await toolbar.getFeatureTreeOperation('surface001', 0)).click()
