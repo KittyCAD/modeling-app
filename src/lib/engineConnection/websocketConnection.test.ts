@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const reportClientError = vi.hoisted(() => vi.fn())
+const notifySessionExpired = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/lib/clientErrors', () => ({
   ClientErrorCode: {
@@ -9,7 +10,12 @@ vi.mock('@src/lib/clientErrors', () => ({
   reportClientError,
 }))
 
-import { EngineConnectionErrorKind } from '@src/lib/engineConnection/utils'
+vi.mock('@src/lib/sessionExpired', () => ({ notifySessionExpired }))
+
+import {
+  type EngineConnectionError,
+  EngineConnectionErrorKind,
+} from '@src/lib/engineConnection/utils'
 import { createOnWebSocketMessage } from '@src/lib/engineConnection/websocketConnection'
 
 const disconnectAll = vi.fn()
@@ -47,6 +53,30 @@ const dispatchFailureMessage = (message: string, cloudProjectId?: string) => {
       data: JSON.stringify({
         success: false,
         errors: [{ error_code: 'internal_api', message }],
+      }),
+    })
+  )
+}
+
+const dispatchConnectionError = ({
+  code,
+  retryable = false,
+  cloudProjectId,
+}: {
+  code: 'auth_token_invalid' | 'insufficient_scope' | 'backend_disconnected'
+  retryable?: boolean
+  cloudProjectId?: string
+}) => {
+  createMessageHandler(cloudProjectId)(
+    new MessageEvent('message', {
+      data: JSON.stringify({
+        success: false,
+        request_id: 'request-123',
+        connection_error: {
+          code,
+          detail: 'connection denied',
+          retryable,
+        },
       }),
     })
   )
@@ -186,6 +216,56 @@ describe('createOnWebSocketMessage', () => {
     )
 
     expect(tearDownManager).not.toHaveBeenCalled()
+    expect(notifySessionExpired).not.toHaveBeenCalled()
     expect(disconnectAll).not.toHaveBeenCalled()
+  })
+
+  it('handles a typed backend disconnect and reports its connection identity', () => {
+    dispatchConnectionError({
+      code: 'backend_disconnected',
+      cloudProjectId: 'cloud-project-123',
+    })
+
+    const connectionError: EngineConnectionError = {
+      kind: EngineConnectionErrorKind.BackendDisconnect,
+      message: 'connection denied',
+      terminal: true,
+    }
+    expect(reportClientError).toHaveBeenCalledWith({
+      code: 'engine_backend_disconnect',
+      message: 'connection denied',
+      extra: {
+        connectionId: 'local-attempt',
+        modelingApiCallId: 'server-session',
+        source: 'EngineWebSocket',
+        errorCode: 'backend_disconnected',
+        requestId: 'request-123',
+        cloudProjectId: 'cloud-project-123',
+      },
+    })
+    expect(tearDownManager).toHaveBeenCalledWith({
+      websocketClosed: true,
+      connectionError,
+    })
+  })
+
+  it('handles a typed invalid authorization token as terminal', () => {
+    dispatchConnectionError({ code: 'auth_token_invalid' })
+
+    expect(notifySessionExpired).toHaveBeenCalledWith('engine-websocket')
+    expect(tearDownManager).toHaveBeenCalledWith({
+      websocketClosed: true,
+      connectionError: {
+        kind: EngineConnectionErrorKind.AuthTokenInvalid,
+        message: 'connection denied',
+        terminal: true,
+      },
+    })
+  })
+
+  it('does not tear down for a typed retryable connection error', () => {
+    dispatchConnectionError({ code: 'insufficient_scope', retryable: true })
+
+    expect(tearDownManager).not.toHaveBeenCalled()
   })
 })
