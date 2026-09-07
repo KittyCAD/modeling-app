@@ -659,6 +659,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             clearSelectionFirst: true,
             multiple: false,
             description: 'Only parallel faces are supported for now.',
+            hidden: isEditingNodeSelection,
           },
           tagStart: {
             // TODO: add validation like for Clone command
@@ -676,6 +677,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ],
             multiple: false,
             clearSelectionFirst: true,
+            hidden: isEditingNodeSelection,
           },
           method: {
             inputType: 'options',
