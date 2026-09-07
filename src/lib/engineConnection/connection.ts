@@ -923,8 +923,9 @@ export class Connection extends EventTarget {
   }
 
   cleanUpTimeouts() {
+    // This also runs after setting the remote description. Keep the callback
+    // available to cancel disconnect timers created later in the connection.
     this.clearDisconnectedTimeout?.()
-    this.clearDisconnectedTimeout = undefined
     clearTimeout(this.timeoutToForceConnectId)
     this.timeoutToForceConnectId = undefined
   }

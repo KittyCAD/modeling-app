@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { Connection } from '@src/lib/engineConnection/connection'
+import { PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS } from '@src/lib/engineConnection/peerConnection'
 import {
   PING_INTERVAL_MS,
   PONG_TIMEOUT_MS,
@@ -141,5 +142,68 @@ describe('unit testing engine connection', () => {
 
     expect(callbackOnUnitTestingConnection).toHaveBeenCalledWith('auth success')
     expect(connection.handleMessage).toHaveBeenCalledOnce()
+  })
+})
+
+describe('peer connection cleanup', () => {
+  class TestPeerConnection extends EventTarget {
+    connectionState: RTCPeerConnectionState = 'new'
+    createDataChannel = vi.fn()
+    setRemoteDescription = vi.fn().mockResolvedValue(undefined)
+    close() {
+      // Native close updates state without dispatching connectionstatechange.
+      this.connectionState = 'closed'
+    }
+    transition(state: RTCPeerConnectionState) {
+      this.connectionState = state
+      this.dispatchEvent(new Event('connectionstatechange'))
+    }
+  }
+
+  afterEach(() => {
+    vi.clearAllTimers()
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
+
+  it('cancels a disconnected timer on teardown after normal connection setup', async () => {
+    vi.useFakeTimers()
+    const peer = new TestPeerConnection()
+    vi.stubGlobal(
+      'RTCPeerConnection',
+      vi.fn(function () {
+        return peer
+      })
+    )
+    const tearDownManager = vi.fn()
+    const connection = new Connection({
+      url: 'ws://localhost',
+      token: '',
+      handleOnDataChannelMessage: vi.fn(),
+      tearDownManager,
+      rejectPendingCommand: vi.fn(),
+      handleMessage: vi.fn(),
+      getCloudProjectId: () => undefined,
+    })
+    const deferred = () => ({
+      promise: Promise.resolve(),
+      resolve: vi.fn(),
+      reject: vi.fn(),
+    })
+    connection.deferredConnection = deferred()
+    connection.deferredPeerConnection = deferred()
+    connection.deferredMediaStreamAndWebrtcStatsCollector = deferred()
+    connection.createPeerConnection()
+    connection.sdpAnswer = { type: 'answer', sdp: '' }
+    await connection.initiateConnectionExclusive()
+    peer.transition('connected')
+    peer.transition('disconnected')
+    vi.advanceTimersByTime(1_000)
+    // Simulate a websocket close/idle teardown during the grace period.
+    connection.disconnectAll()
+    expect(peer.connectionState).toBe('closed')
+    // Manager can have a new active connection before the old grace period ends.
+    vi.advanceTimersByTime(PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
+    expect(tearDownManager).not.toHaveBeenCalled()
   })
 })
