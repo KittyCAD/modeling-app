@@ -26,6 +26,7 @@ pub fn bench_parse(c: &mut Criterion) {
 /// drag a point/line around in sketch mode. This benchmark should correlate with
 /// user-perceived latency in sketch mode.
 pub fn bench_mock(c: &mut Criterion) {
+    #[expect(clippy::single_element_loop)]
     for (name, file) in [("mike_stress_test", MIKE_STRESS_TEST_PROGRAM)] {
         let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
         c.bench_function(&format!("no_engine_mock_execute_{name}"), move |b| {
