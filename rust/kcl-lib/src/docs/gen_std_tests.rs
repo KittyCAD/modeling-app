@@ -5,7 +5,6 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use serde_json::json;
-use tokio::task::JoinSet;
 
 use super::kcl_doc::ConstData;
 use super::kcl_doc::DocCategory;
@@ -800,7 +799,7 @@ fn test_generate_stdlib_markdown_docs() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_code_in_topics() {
-    let mut join_set = JoinSet::new();
+    let mut failures = Vec::new();
     for entry in fs::read_dir("../../docs/kcl-lang").unwrap() {
         let entry = entry.unwrap();
         if entry.file_type().unwrap().is_dir() {
@@ -814,17 +813,15 @@ async fn test_code_in_topics() {
                 continue;
             }
 
-            let f = path.display().to_string();
-            join_set.spawn(async move { (format!("{f}, example {i}"), run_example_with_retries(&eg).await) });
+            // This is one scheduled test, so keep at most one engine connection
+            // active instead of opening a connection for every example at once.
+            // run_example closes each connection before the next example starts.
+            if let Err(error) = run_example_with_retries(&eg).await {
+                failures.push(format!("{}, example {i}: {error}", path.display()));
+            }
         }
     }
-    let results: Vec<_> = join_set
-        .join_all()
-        .await
-        .into_iter()
-        .filter_map(|a| a.1.err().map(|e| format!("{}: {}", a.0, e)))
-        .collect();
-    assert!(results.is_empty(), "Failures: {}", results.join(", "))
+    assert!(failures.is_empty(), "Failures: {}", failures.join(", "))
 }
 
 fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
