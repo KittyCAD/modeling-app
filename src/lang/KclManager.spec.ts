@@ -38,7 +38,7 @@ import {
   getLatestDispatchedDiagnostics,
 } from '@src/lang/testHelpers/kclManagerTestHarness'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
-import { defaultNodePath, emptyExecState } from '@src/lang/wasm'
+import { assertParse, defaultNodePath, emptyExecState } from '@src/lang/wasm'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -510,6 +510,44 @@ describe('KclManager diagnostics', () => {
     expect(executeCodeSpy).toHaveBeenCalledTimes(1)
     expect(executeCodeSpy).toHaveBeenCalledWith('abc')
   })
+
+  it.each([
+    { code: '@settings(kclVersion = 2.0)\n// New part\n', fitsModel: false },
+    { code: 'part = 1\n', fitsModel: true },
+  ])(
+    'fits deferred file loads only when they have statements: $fitsModel',
+    async ({ code, fitsModel }) => {
+      vi.useFakeTimers()
+      const { app, kclManager } = createKclManagerTestHarness('previous = 1')
+      const wasm = await kclManager.wasmInstancePromise
+      kclManager.engineCommandManager.connection = { connected: true } as any
+      vi.spyOn(kclManager, 'executeCode').mockImplementation(async (source) => {
+        kclManager.ast = assertParse(source ?? kclManager.code, wasm)
+      })
+      const sendCommand = vi
+        .spyOn(kclManager.engineCommandManager, 'sendSceneCommand')
+        .mockResolvedValue({} as never)
+
+      try {
+        kclManager.updateCodeEditor(code, {
+          shouldExecute: true,
+          shouldResetCamera: true,
+          shouldSyncRust: false,
+          shouldWriteToDisk: false,
+        })
+        await kclManager.flushPendingEditorExecution()
+        const cameraCommands = sendCommand.mock.calls.filter(
+          ([request]) =>
+            request.type === 'modeling_cmd_req' &&
+            (request.cmd.type === 'view_isometric' ||
+              request.cmd.type === 'zoom_to_fit')
+        )
+        expect(cameraCommands).toHaveLength(fitsModel ? 1 : 0)
+      } finally {
+        app.dispose()
+      }
+    }
+  )
 
   it('flushes a pending direct editor execution before starting a sketch', async () => {
     vi.useFakeTimers()

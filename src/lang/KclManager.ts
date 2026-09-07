@@ -534,11 +534,15 @@ export class ZDSProject {
     ) {
       await newEditor.executeCode(newEditor.code)
       assertCurrent()
-      await resetCameraPosition({
-        sceneInfra: newEditor.sceneInfra,
-        engineCommandManager: newEditor.engineCommandManager,
-        settingsActor: this.app.settings.actor,
-      })
+      // Fitting an empty scene can collapse the camera to sub-millimeter scale,
+      // where normal sketch clicks fall below the rectangle tool's minimum size.
+      if (newEditor.ast.body.length > 0) {
+        await resetCameraPosition({
+          sceneInfra: newEditor.sceneInfra,
+          engineCommandManager: newEditor.engineCommandManager,
+          settingsActor: this.app.settings.actor,
+        })
+      }
     }
     return newEditor
   }
@@ -1830,7 +1834,7 @@ export class KclManager extends File {
           }
         } else {
           await this.executeCode(newCode)
-          if (shouldResetCamera) {
+          if (shouldResetCamera && this.ast.body.length > 0) {
             await resetCameraPosition({
               sceneInfra: this.sceneInfra,
               engineCommandManager: this.engineCommandManager,

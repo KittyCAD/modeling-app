@@ -2,6 +2,7 @@ import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
+import { assertParse } from '@src/lang/wasm'
 import { App } from '@src/lib/app'
 import {
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
@@ -945,6 +946,71 @@ describe('project system', () => {
     }
   })
 
+  it.each([
+    { name: 'empty', code: '', fitsModel: false },
+    {
+      name: 'settings and comments only',
+      code: '@settings(kclVersion = 2.0)\n// A new part\n',
+      fitsModel: false,
+    },
+    { name: 'model statements', code: 'part = 1\n', fitsModel: true },
+  ])(
+    'fits file loads only when they have statements: $name',
+    async ({ code, fitsModel }) => {
+      const projectPath = `/tmp/app-file-switch-camera-${crypto.randomUUID()}`
+      const mainPath = fsZds.join(projectPath, 'main.kcl')
+      const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+      const app = createAppForTest()
+
+      try {
+        await writeText(mainPath, 'main = true\n')
+        await writeText(alternatePath, code)
+        const project = await app.openProject({
+          ...mockProject,
+          name: fsZds.basename(projectPath),
+          path: projectPath,
+          default_file: mainPath,
+          kcl_file_count: 2,
+          children: [
+            { name: 'main.kcl', path: mainPath, children: null },
+            { name: 'alternate.kcl', path: alternatePath, children: null },
+          ],
+        })
+        const editor = await project.openEditor(mainPath)
+        const wasm = await editor.wasmInstancePromise
+        const execute = vi
+          .spyOn(editor, 'executeCode')
+          .mockImplementation(async (code) => {
+            editor.ast = assertParse(code ?? editor.code, wasm)
+          })
+        vi.spyOn(editor.rustContext, 'sendOpenProject').mockResolvedValue()
+        const sendCommand = vi
+          .spyOn(editor.engineCommandManager, 'sendSceneCommand')
+          .mockResolvedValue({} as never)
+        editor.engineCommandManager.connection = {
+          connected: true,
+        } as typeof editor.engineCommandManager.connection
+
+        await project.openEditor(alternatePath, editor)
+
+        expect(execute).toHaveBeenCalledWith(code)
+        expect(editor.path).toBe(alternatePath)
+        expect(editor.code).toBe(code)
+        const cameraCommands = sendCommand.mock.calls.filter(
+          ([request]) =>
+            request.type === 'modeling_cmd_req' &&
+            (request.cmd.type === 'view_isometric' ||
+              request.cmd.type === 'zoom_to_fit')
+        )
+        expect(cameraCommands).toHaveLength(fitsModel ? 1 : 0)
+        expect(await fsZds.readFile(mainPath, 'utf8')).toBe('main = true\n')
+      } finally {
+        app.dispose()
+        await fsZds.rm(projectPath, { recursive: true, force: true })
+      }
+    }
+  )
+
   it('does not let a superseded route load replace the active editor', async () => {
     const projectPath = `/tmp/app-stale-route-load-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')
@@ -1125,6 +1191,7 @@ describe('project system', () => {
 
   it('can open, close project', async () => {
     // Stub out File read and write implementations
+    const originalFileIO = { ...File.ioImplementations }
     File.ioImplementations.read = () => Promise.resolve('')
     File.ioImplementations.write = () => Promise.resolve()
 
@@ -1151,6 +1218,7 @@ describe('project system', () => {
 
       expect(app.project).toBeUndefined()
     } finally {
+      File.ioImplementations = originalFileIO
       app.dispose()
     }
   })
