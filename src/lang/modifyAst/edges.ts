@@ -147,7 +147,7 @@ export function addFillet({
   ]
 
   if (mNodeToEdit) {
-    insertKclVariables([radius, tolerance, version], modifiedAst, mNodeToEdit)
+    insertKclVariables([radius, version, tolerance], modifiedAst, mNodeToEdit)
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call: createCallExpressionStdLibKw(
@@ -170,8 +170,7 @@ export function addFillet({
     selection,
     artifactGraph,
     modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
   if (err(bodyData)) return bodyData
   let bodies = bodyData.bodies
@@ -186,7 +185,6 @@ export function addFillet({
         modifiedAst,
         artifactGraph,
         wasmInstance,
-        nodeToEdit: mNodeToEdit,
       }
     )
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
@@ -297,8 +295,7 @@ export function addChamfer({
     selection,
     artifactGraph,
     modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
   if (err(bodyData)) return bodyData
   let bodies = bodyData.bodies
@@ -313,7 +310,6 @@ export function addChamfer({
         modifiedAst,
         artifactGraph,
         wasmInstance,
-        nodeToEdit: mNodeToEdit,
       }
     )
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
@@ -324,11 +320,7 @@ export function addChamfer({
   }
 
   // Insert variables for labeled arguments if provided
-  insertKclVariables(
-    [length, secondLength, angle, version],
-    modifiedAst,
-    mNodeToEdit
-  )
+  insertKclVariables([length, secondLength, angle, version], modifiedAst)
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
@@ -345,7 +337,6 @@ export function addChamfer({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call,
-      pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
       labeledSelectionArgNames: ['tags', 'edges', 'edgeRefs'],
