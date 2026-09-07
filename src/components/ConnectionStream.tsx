@@ -434,6 +434,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
         setShowManualConnect(true)
       },
+      terminalErrorCallback: () => {
+        setShowManualConnect(true)
+      },
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

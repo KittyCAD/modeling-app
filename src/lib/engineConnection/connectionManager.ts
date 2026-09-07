@@ -30,6 +30,7 @@ import {
   createOnEngineOffline,
 } from '@src/lib/engineConnection/connectionManagerEvents'
 import type {
+  EngineConnectionError,
   IEventListenerTracked,
   ManagerTearDown,
   ModelTypes,
@@ -103,6 +104,7 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  lastConnectionError: EngineConnectionError | undefined
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
@@ -162,6 +164,7 @@ export class ConnectionManager extends EventTarget {
     this.allEventListeners = new Map()
     this.id = uuidv4()
     this.callbackOnUnitTestingConnection = null
+    this.lastConnectionError = undefined
   }
 
   setInSequence(sequence: number) {
@@ -210,6 +213,7 @@ export class ConnectionManager extends EventTarget {
       return Promise.reject(invalidStreamDimensions)
     }
 
+    this.lastConnectionError = undefined
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -1066,11 +1070,18 @@ export class ConnectionManager extends EventTarget {
       })
     }
 
+    if (options?.connectionError) {
+      this.lastConnectionError = options.connectionError
+    }
+
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
-          detail: { code: options.code },
+          detail: {
+            code: options.code,
+            connectionError: options.connectionError,
+          },
         })
       )
     } else if (options?.peerConnectionClosed) {
