@@ -213,18 +213,52 @@ test.describe(
         const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
         await expect(actual).toBeVisible()
       })
-      await test.step('Home.Help.KCL code samples', async () => {
-        await page.reload()
-        await homePage.projectsLoaded()
-        await homePage.isNativeFileMenuCreated()
-        await nativeMenu.click('Help.KCL code samples')
-      })
-      await test.step('Home.Help.Report a bug', async () => {
-        await page.reload()
-        await homePage.projectsLoaded()
-        await homePage.isNativeFileMenuCreated()
-        await nativeMenu.click('Help.Report a bug')
-        await homePage.projectsLoaded()
+      await test.step('Home.Help external links', async () => {
+        // Verify the OS handoff without launching an unmanaged system browser.
+        const externalLinks = await tronApp.electron.evaluateHandle(
+          ({ shell }) => {
+            // Preserve the exact method for restoration, without rebinding it.
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            const originalOpenExternal = shell.openExternal
+            const urls: string[] = []
+            shell.openExternal = async (url) => {
+              urls.push(url)
+            }
+            return {
+              urls,
+              restore: () => {
+                shell.openExternal = originalOpenExternal
+              },
+            }
+          }
+        )
+        try {
+          await test.step('Home.Help.KCL code samples', async () => {
+            await page.reload()
+            await homePage.projectsLoaded()
+            await homePage.isNativeFileMenuCreated()
+            await nativeMenu.click('Help.KCL code samples')
+            await expect
+              .poll(() => externalLinks.evaluate(({ urls }) => urls))
+              .toEqual([expect.stringMatching(/\/docs\/kcl-samples$/)])
+          })
+          await test.step('Home.Help.Report a bug', async () => {
+            await page.reload()
+            await homePage.projectsLoaded()
+            await homePage.isNativeFileMenuCreated()
+            await nativeMenu.click('Help.Report a bug')
+            await expect
+              .poll(() => externalLinks.evaluate(({ urls }) => urls))
+              .toEqual([
+                expect.stringMatching(/\/docs\/kcl-samples$/),
+                'https://github.com/KittyCAD/modeling-app/issues/new?template=bug_report.yml',
+              ])
+            await homePage.projectsLoaded()
+          })
+        } finally {
+          await externalLinks.evaluate(({ restore }) => restore())
+          await externalLinks.dispose()
+        }
       })
       await test.step('Home.Help.Replay onboarding tutorial', async () => {
         await page.reload()

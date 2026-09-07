@@ -35,6 +35,7 @@ import {
   toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { reportRejection } from '@src/lib/trap'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
@@ -1069,6 +1070,10 @@ export const ProjectExplorer = ({
                       target,
                       successMessage: 'Archived successfully',
                       requestedProjectName: project.name,
+                      requestedFileName: parentPathRelativeToProject(
+                        project.default_file,
+                        applicationProjectDirectory
+                      ),
                     },
                   })
                   kclManager.addGlobalHistoryEvent(
@@ -1305,14 +1310,20 @@ export const ProjectExplorer = ({
                   requestedAbsolutePath,
                   applicationProjectDirectory
                 )
-                sendFileTreeMutationEvent({
-                  type: SystemIOMachineEvents.importFileFromURL,
-                  data: {
-                    requestedCode: '',
-                    requestedProjectName: project.name,
-                    requestedFileNameWithExtension: pathRelativeToParent,
-                  },
-                })
+                void kclManager
+                  .flushWriteToFile()
+                  .then((saved) => {
+                    if (!saved) return
+                    sendFileTreeMutationEvent({
+                      type: SystemIOMachineEvents.importFileFromURL,
+                      data: {
+                        requestedCode: '',
+                        requestedProjectName: project.name,
+                        requestedFileNameWithExtension: pathRelativeToParent,
+                      },
+                    })
+                  })
+                  .catch(reportRejection)
               } else {
                 // Create a blank file. The actor seeds default KCL content only
                 // for .kcl files and writes an empty file for everything else,

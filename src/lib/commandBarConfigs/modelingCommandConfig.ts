@@ -443,7 +443,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: (c) => {
           switch (c.argumentsToSubmit.type) {
             case 'gltf':
-              return 'embedded'
+              return 'binary'
             case 'stl':
               return 'ascii'
             case 'ply':
@@ -469,8 +469,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           switch (type) {
             case 'gltf':
               return [
-                { name: 'embedded', isCurrent: true, value: 'embedded' },
-                { name: 'binary', isCurrent: false, value: 'binary' },
+                { name: 'binary', isCurrent: true, value: 'binary' },
+                { name: 'embedded', isCurrent: false, value: 'embedded' },
                 { name: 'standard', isCurrent: false, value: 'standard' },
               ]
             case 'stl':

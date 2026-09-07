@@ -626,6 +626,16 @@ test.describe(
         page
       )
 
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `
+          import "bracket.kcl" as bracket
+        `,
+        { shouldNormalise: true }
+      )
+      await scene.settled()
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('bracket', 0)
       await op.click({ button: 'right' })
