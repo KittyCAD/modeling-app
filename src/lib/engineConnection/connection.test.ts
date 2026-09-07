@@ -52,13 +52,16 @@ describe('unit testing engine connection', () => {
     expect(websocketUrl.searchParams.has('post_effect')).toBe(false)
   })
 
-  it.each([false, undefined])('keeps SSAO when geometryOnly=%s', (geometryOnly) => {
-    createUnitTestConnection({ geometryOnly })
+  it.each([false, undefined])(
+    'keeps SSAO when geometryOnly=%s',
+    (geometryOnly) => {
+      createUnitTestConnection({ geometryOnly })
 
-    const websocketUrl = new URL(TestWebSocket.instances[0].url)
-    expect(websocketUrl.searchParams.has('geometry_only')).toBe(false)
-    expect(websocketUrl.searchParams.get('post_effect')).toBe('ssao')
-  })
+      const websocketUrl = new URL(TestWebSocket.instances[0].url)
+      expect(websocketUrl.searchParams.has('geometry_only')).toBe(false)
+      expect(websocketUrl.searchParams.get('post_effect')).toBe('ssao')
+    }
+  )
 
   it('treats session data as the successful geometry-only handshake', () => {
     const { callbackOnUnitTestingConnection, connection } =
