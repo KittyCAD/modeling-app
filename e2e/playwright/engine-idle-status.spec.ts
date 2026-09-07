@@ -1,4 +1,5 @@
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
+import { installVideoRecoveryProbe } from '@e2e/playwright/lib/videoRecovery'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page, TestInfo } from '@playwright/test'
 import {
@@ -90,51 +91,72 @@ async function enterIdle(page: Page) {
 async function expectRecovered(
   page: Page,
   testInfo: TestInfo,
+  reconnect: () => Promise<unknown>,
   screenshotName = 'recovered.png'
 ) {
-  const video = page.locator('video#video-stream')
-  await expect(page.locator('canvas#freeze-frame')).not.toBeVisible({
-    timeout: 40_000,
-  })
-  await expect(recovery(page)).not.toBeVisible()
-  await expect(wakingStatus(page)).not.toBeVisible()
-  await expect(video).toBeVisible()
-  await expect(
-    page.locator('#bodies-list-pane').getByRole('button', {
-      name: 'Body 1',
-      exact: true,
+  // Capture the old source before the trigger; the reconnect UI can disappear
+  // while that old source is still attached to this same video element.
+  const probe = await page.evaluateHandle(installVideoRecoveryProbe)
+  try {
+    const recoveryDeadline = Date.now() + 40_000
+    await reconnect()
+    await expect
+      .poll(() => probe.evaluate((probe) => probe.ready()), {
+        timeout: Math.max(1, recoveryDeadline - Date.now()),
+        message: 'Replacement video source and scene setup complete',
+      })
+      .toBe(true)
+    const video = page.locator('video#video-stream')
+    // Source setup and freeze removal share the existing recovery deadline.
+    await expect(page.locator('canvas#freeze-frame')).not.toBeVisible({
+      timeout: Math.max(1, recoveryDeadline - Date.now()),
     })
-  ).toHaveCount(1)
-  const frames = await video.evaluate(
-    (element: HTMLVideoElement) =>
-      element.getVideoPlaybackQuality().totalVideoFrames
-  )
-  await expect
-    .poll(() =>
-      video.evaluate(
-        (element: HTMLVideoElement) =>
-          element.getVideoPlaybackQuality().totalVideoFrames
-      )
-    )
-    .toBeGreaterThan(frames + 3)
-  // The decoded frame must contain the model, not the blank startup background.
-  const mean = await video.evaluate((element: HTMLVideoElement) => {
-    const sampler = document.createElement('canvas')
-    sampler.width = 32
-    sampler.height = 18
-    const context = sampler.getContext('2d')
-    if (!context) throw new Error('No video sampler context')
-    context.drawImage(element, 0, 0, 32, 18)
-    const pixels = context.getImageData(0, 0, 32, 18).data
-    let total = 0
-    for (let i = 0; i < pixels.length; i += 4) {
-      total += pixels[i] + pixels[i + 1] + pixels[i + 2]
-    }
-    return total / (32 * 18 * 3)
-  })
-  expect(mean).toBeGreaterThan(10)
-  expect(mean).toBeLessThan(248)
-  await page.screenshot({ path: testInfo.outputPath(screenshotName) })
+    await expect(recovery(page)).not.toBeVisible()
+    await expect(wakingStatus(page)).not.toBeVisible()
+    await expect(video).toBeVisible()
+    await expect(
+      page.locator('#bodies-list-pane').getByRole('button', {
+        name: 'Body 1',
+        exact: true,
+      })
+    ).toHaveCount(1)
+    await probe.evaluate((probe) => probe.beginPlayback())
+    await expect
+      .poll(() => probe.evaluate((probe) => probe.playback()), {
+        timeout: 5000,
+        message: 'Fresh presented frames from the same recovered stream',
+      })
+      .toBe('advancing')
+    // The decoded frame must contain the model, not the blank startup background.
+    const mean = await video.evaluate((element: HTMLVideoElement) => {
+      const sampler = document.createElement('canvas')
+      sampler.width = 32
+      sampler.height = 18
+      const context = sampler.getContext('2d')
+      if (!context) throw new Error('No video sampler context')
+      context.drawImage(element, 0, 0, 32, 18)
+      const pixels = context.getImageData(0, 0, 32, 18).data
+      let total = 0
+      for (let i = 0; i < pixels.length; i += 4) {
+        total += pixels[i] + pixels[i + 1] + pixels[i + 2]
+      }
+      return total / (32 * 18 * 3)
+    })
+    expect(mean).toBeGreaterThan(10)
+    expect(mean).toBeLessThan(248)
+    await page.screenshot({ path: testInfo.outputPath(screenshotName) })
+  } finally {
+    const diagnostics = await probe
+      .evaluate((probe) => probe.stop())
+      .catch(() => ({
+        collectionError: 'Recovery page was unavailable during cleanup',
+      }))
+    await testInfo.attach(`video-${screenshotName}.json`, {
+      contentType: 'application/json',
+      body: JSON.stringify(diagnostics),
+    })
+    await probe.dispose()
+  }
 }
 
 // Hold the first Engine-start attempt and reject all five retries on demand.
@@ -213,9 +235,10 @@ test(
       await starts.dispose()
     }
     await setIdleTimeout(page, 0)
-    await page.context().setOffline(false)
-    await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(true)
-    await expectRecovered(page, testInfo)
+    await expectRecovered(page, testInfo, async () => {
+      await page.context().setOffline(false)
+      await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(true)
+    })
     await scene.settled()
     expect(await editor.getCurrentCode()).toBe(code)
   }
@@ -235,9 +258,17 @@ test(
     await expect(recovery(page)).toBeVisible()
     await scene.makeMouseHelpers(0.76, 0.73, { format: 'ratio' })[1]()
     await expect(wakingStatus(page)).not.toBeVisible()
-    await page.context().setOffline(false)
-    await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(true)
-    await expectRecovered(page, testInfo, 'online-recovered.png')
+    await expectRecovered(
+      page,
+      testInfo,
+      async () => {
+        await page.context().setOffline(false)
+        await expect
+          .poll(() => page.evaluate(() => navigator.onLine))
+          .toBe(true)
+      },
+      'online-recovered.png'
+    )
     await scene.makeMouseHelpers(0.76, 0.74, { format: 'ratio' })[1]()
 
     const starts = await holdFailingStarts(page)
@@ -272,10 +303,11 @@ test(
       await starts.evaluate((state) => state.restore())
       await starts.dispose()
     }
-    await recovery(page)
-      .getByRole('button', { name: /Reconnect/ })
-      .click()
-    await expectRecovered(page, testInfo)
+    await expectRecovered(page, testInfo, () =>
+      recovery(page)
+        .getByRole('button', { name: /Reconnect/ })
+        .click()
+    )
     await scene.settled()
     expect(await editor.getCurrentCode()).toBe(code)
   }
@@ -313,8 +345,9 @@ test(
       await starts.evaluate((state) => state.restore())
       await starts.dispose()
     }
-    await page.context().setOffline(false)
-    await expectRecovered(page, testInfo)
+    await expectRecovered(page, testInfo, () =>
+      page.context().setOffline(false)
+    )
     await scene.settled()
     expect(await editor.getCurrentCode()).toBe(code)
   }
@@ -345,11 +378,12 @@ test(
       await starts.evaluate((state) => state.restore())
       await starts.dispose()
     }
-    await recovery(page)
-      .getByRole('button', { name: /Reconnect/ })
-      .click()
-    await expect(wakingStatus(page)).not.toBeVisible()
-    await expectRecovered(page, testInfo)
+    await expectRecovered(page, testInfo, async () => {
+      await recovery(page)
+        .getByRole('button', { name: /Reconnect/ })
+        .click()
+      await expect(wakingStatus(page)).not.toBeVisible()
+    })
     await scene.settled()
     expect(await editor.getCurrentCode()).toBe(code)
   }
