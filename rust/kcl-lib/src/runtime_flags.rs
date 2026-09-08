@@ -31,14 +31,11 @@ pub enum RuntimeFlag {
 #[ts(export)]
 pub struct KclRuntimeFlags {
     #[serde(default)]
-    pub use_cek_executor: RuntimeFlag,
-    #[serde(default)]
     pub use_new_lexer_parser: RuntimeFlag,
 }
 
 impl KclRuntimeFlags {
     pub const DEFAULT: Self = Self {
-        use_cek_executor: RuntimeFlag::Unset,
         use_new_lexer_parser: RuntimeFlag::Unset,
     };
 }
@@ -111,7 +108,6 @@ mod tests {
         assert_eq!(
             flags,
             KclRuntimeFlags {
-                use_cek_executor: RuntimeFlag::Unset,
                 use_new_lexer_parser: RuntimeFlag::On,
             }
         );
