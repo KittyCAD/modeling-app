@@ -1,26 +1,25 @@
-use crate::{
-    ExecState,
-    errors::KclError,
-    exec::KclValue,
-    execution::{
-        ModelingCmdMeta, Solid,
-        types::{NumericTypeExt, PrimitiveType, RuntimeType},
-    },
-    std::{
-        Args,
-        args::TyF64,
-        sketch::{PlaneData, make_sketch_plane_from_orientation},
-    },
-};
 use kcmc::each_cmd as mcmd;
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    ok_response::OkModelingCmdResponse,
-    shared::{PathSegment, Point3d},
-    units::UnitLength,
-    websocket::OkWebSocketResponseData,
-};
-use kittycad_modeling_cmds::{ModelingCmd, websocket::ModelingCmdReq};
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::Point3d;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
+
+use crate::ExecState;
+use crate::errors::KclError;
+use crate::exec::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::types::NumericTypeExt;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::sketch::PlaneData;
+use crate::std::sketch::make_sketch_plane_from_orientation;
 
 #[derive(Debug)]
 pub struct Move {
