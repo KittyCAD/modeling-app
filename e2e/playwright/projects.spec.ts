@@ -398,7 +398,11 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject('broken-code')
-    await scene.settled()
+    await editor.expectEditor.toContain(
+      "|> line(end = [0, wallMountL], tag = 'outerEdge')",
+      { timeout: 15_000 }
+    )
+    await scene.settled({ expectError: true })
 
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
@@ -408,10 +412,12 @@ test(
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
     // error text on hover
-    await page.hover('.cm-lint-marker-error')
+    await page.locator('.cm-lint-marker-error').hover()
     const crypticErrorText =
       'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+    await expect(
+      page.locator('.cm-tooltip-lint').getByText(crypticErrorText)
+    ).toBeVisible({ timeout: 15_000 })
   }
 )
 
@@ -1188,7 +1194,10 @@ test(
   {
     tag: ['@desktop'],
   },
-  async ({ context, page, scene, cmdBar, fs, folderSetupFn }, testInfo) => {
+  async (
+    { context, page, scene, cmdBar, editor, fs, folderSetupFn },
+    testInfo
+  ) => {
     await folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
       await fs.mkdir(routerTemplateDir, { recursive: true })
@@ -1203,15 +1212,14 @@ test(
         new TextEncoder().encode(fileWithCRLF)
       )
     })
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await page.getByText('router-template-slate').click()
+    await editor.expectEditor.toContain('routerDiameter', { timeout: 15_000 })
     await scene.settled()
 
-    await expect(u.codeLocator).toContainText('routerDiameter')
-    await expect(u.codeLocator).toContainText('templateGap')
-    await expect(u.codeLocator).toContainText('minClampingDistance')
+    await editor.expectEditor.toContain('templateGap')
+    await editor.expectEditor.toContain('minClampingDistance')
   }
 )
 
