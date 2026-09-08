@@ -1,3 +1,4 @@
+import { waitForWebKitBillingToSettle } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -6,6 +7,7 @@ async function navigateAndClickOpenInDesktopApp(
   page: Page,
   codeLength: number
 ) {
+  await waitForWebKitBillingToSettle(page)
   const code = Array(codeLength).fill('0').join('')
   const targetURL = `?create-file=true&browser=test&code=${code}&ask-open-desktop=true`
   expect(targetURL.length).toEqual(codeLength + 58)
@@ -61,6 +63,8 @@ test.describe('Share link tests', () => {
     'should prefill demo project name on web',
     { tag: ['@web'] },
     async ({ page }) => {
+      await waitForWebKitBillingToSettle(page)
+
       const code = 'Zm9vYmFyID0gMQ==' // KCL: foobar = 1
       const next = new URL(page.url())
       next.searchParams.set('create-file', 'true')

@@ -1422,6 +1422,39 @@ mod tests {
     use crate::exec::UnitType;
 
     #[test]
+    fn tag_declaration_bindings_do_not_overwrite_each_other() {
+        use kcl_api::TagDeclaratorView;
+        use ts_rs::TS;
+
+        // View dependencies and AST exports share one output directory in CI.
+        // Both definitions must survive regardless of which exporter runs last.
+        for ast_first in [true, false] {
+            let output = tempfile::tempdir().unwrap();
+            let config = ts_rs::Config::default().with_out_dir(output.path());
+            if ast_first {
+                TagDeclarator::export_all(&config).unwrap();
+                kcl_api::BasePathView::export_all(&config).unwrap();
+            } else {
+                kcl_api::BasePathView::export_all(&config).unwrap();
+                TagDeclarator::export_all(&config).unwrap();
+            }
+
+            for (path, expected) in [
+                (
+                    TagDeclarator::output_path().unwrap(),
+                    TagDeclarator::export_to_string(&config).unwrap(),
+                ),
+                (
+                    TagDeclaratorView::output_path().unwrap(),
+                    TagDeclaratorView::export_to_string(&config).unwrap(),
+                ),
+            ] {
+                assert_eq!(std::fs::read_to_string(output.path().join(path)).unwrap(), expected);
+            }
+        }
+    }
+
+    #[test]
     fn test_human_friendly_type() {
         let len = KclValue::Number {
             value: 1.0,
