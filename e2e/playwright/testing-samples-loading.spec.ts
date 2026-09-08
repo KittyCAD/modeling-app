@@ -5,6 +5,7 @@ import { FILE_EXT } from '@src/lib/constants'
 import {
   closeOnboardingModalIfPresent,
   getUtils,
+  waitForWebKitBillingToSettle,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -171,6 +172,10 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     editor,
   }) => {
     await closeOnboardingModalIfPresent(page)
+
+    // Avoid interrupting WebKit's in-flight billing request when the query
+    // command replaces the current document.
+    await waitForWebKitBillingToSettle(page)
 
     const sampleTitle = 'Socket Head Cap Screw'
     const sampleSlug = 'socket-head-cap-screw'
