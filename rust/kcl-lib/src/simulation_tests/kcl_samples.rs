@@ -185,7 +185,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
     let relative_path = parent.strip_prefix(inputs_dir).unwrap();
     let output_dir = std::fs::canonicalize(OUTPUTS_DIR.as_path()).unwrap();
-    let test_config = TestConfig::from_file(&output_dir).unwrap_or_default();
+    let test_config = TestConfig::from_file(&output_dir.join(test_name)).unwrap_or_default();
     let TestConfig { redact_uuids } = test_config;
     let relative_output_dir = output_dir.join(relative_path);
 
