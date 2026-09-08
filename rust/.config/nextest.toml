@@ -30,6 +30,18 @@ threads-required = 2
 # that recovery local to engine-capable KCL tests instead of the workspace.
 retries = { backoff = "exponential", count = 2, delay = "1s", max-delay = "2s", jitter = true }
 
+# LSP execution tests moved out of kcl-lib in #13440. Keep their Engine
+# allocations inside the same budget; the two hover tests predate kcl_test_.
+[[profile.default.overrides]]
+filter = 'package(kcl-language-server) and (test(kcl_test_) or test(/^lsp::tests::test_kcl_lsp_on_hover(_untitled_file_scheme)?$/))'
+test-group = "uses-engine"
+threads-required = 2
+
+[[profile.ci.overrides]]
+filter = 'package(kcl-language-server) and (test(kcl_test_) or test(/^lsp::tests::test_kcl_lsp_on_hover(_untitled_file_scheme)?$/))'
+test-group = "uses-engine"
+threads-required = 2
+
 [[profile.default.overrides]]
 filter = "test(/export_bindings/)"
 test-group = "export-bindings"
