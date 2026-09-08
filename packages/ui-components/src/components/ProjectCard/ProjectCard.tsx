@@ -40,6 +40,7 @@ export interface ProjectCardContextMenuRenderProps {
 
 export interface ProjectCardProps
   extends Omit<HTMLAttributes<HTMLLIElement>, 'title'> {
+  rootRef?: RefObject<HTMLLIElement | null>
   title: ReactNode
   titleText?: string
   canOpen?: boolean
@@ -98,6 +99,7 @@ function defaultRenderOpenLink({
  * component package.
  */
 export function ProjectCard({
+  rootRef: providedRootRef,
   title,
   titleText = typeof title === 'string' ? title : undefined,
   canOpen = true,
@@ -118,7 +120,8 @@ export function ProjectCard({
   renderOpenLink = defaultRenderOpenLink,
   ...props
 }: ProjectCardProps) {
-  const rootRef = useRef<HTMLLIElement>(null)
+  const internalRootRef = useRef<HTMLLIElement>(null)
+  const rootRef = providedRootRef ?? internalRootRef
   const classes = getProjectCardClassNames(classNames)
   const openLinkClassName = joinClassNames(
     classes.openLink,

@@ -120,8 +120,9 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await page.keyboard.press('Escape')
     await expect(cmdSearchBar).not.toBeVisible()
 
-    // Now try the same, but with the keyboard shortcut, check focus
-    await page.keyboard.press('ControlOrMeta+K')
+    // Reopen through the in-app control. The dedicated test below owns the
+    // Mod+K coverage and starts from an explicitly focused editor.
+    await commandBarButton.click()
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
@@ -170,7 +171,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     // Test case for https://github.com/KittyCAD/modeling-app/issues/2881
     await commandThemeArgButton.click()
     await expect(commandThemeArgButton).toBeDisabled()
-    await expect(commandLevelArgButton).toHaveText('level: project')
+    await expect(commandLevelArgButton).toHaveText(/^Level:\s+project$/)
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
@@ -229,10 +230,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     scene,
     editor,
   }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `distance = sqrt(20)
+    const initialCode = `distance = sqrt(20)
     sketch001 = startSketchOn(XZ)
     |> startProfile(at = [-6.95, 10.98])
     |> line(end = [25.1, 0.41])
@@ -240,12 +238,20 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     |> line(end = [-23.44, 0.52])
     |> close()
         `
-      )
-    })
+    const u = await getUtils(page)
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled()
+
+    await u.openDebugPanel()
+    await u.clearCommandLogs()
+    await u.closeDebugPanel()
+    await editor.replaceCode('', initialCode)
+    await editor.expectEditor.toContain('startProfile(at = [-6.95, 10.98])')
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('ControlOrMeta+K')
@@ -344,7 +350,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     })
 
     // Clear optional arg
-    await page.getByRole('button', { name: 'BidirectionalLength' }).click()
+    await page.getByRole('button', { name: 'Bidirectional length' }).click()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
@@ -798,6 +804,11 @@ export exported = 2`,
     { tag: '@web' },
     async ({ page, cmdBar }) => {
       await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await expect(page).toHaveURL(
+        (url) =>
+          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
+        { timeout: 15_000 }
+      )
       await cmdBar.expectCommandName('Settings · app · theme')
     }
   )

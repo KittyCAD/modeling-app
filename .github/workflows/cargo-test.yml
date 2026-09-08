@@ -104,7 +104,7 @@ jobs:
           set -euo pipefail
           cd rust
           cargo nextest run \
-            --workspace --features=artifact-graph --retries=10 --no-fail-fast --profile=ci \
+            --workspace --features=artifact-graph --no-fail-fast --profile=ci \
             simulation_tests::kcl_samples \
             2>&1 | tee /tmp/github-actions.log
         env:
@@ -239,7 +239,7 @@ jobs:
             executor_filter=(-E "package(kcl-lib) and not (test(/^parsing::/) or test(/^unparser::/) or test(/^walk::/) or test(/^settings::/) or test(/^fs::/) or test(/^fmt::/) or test(/^tooling::/) or test(/^errors::/) or test(/export_bindings/))")
           fi
           cargo nextest run \
-            --retries=10 --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
+            --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
             --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
             "${executor_filter[@]}" \
             2>&1 | tee /tmp/github-actions.log || true  # let TAB determine failure

@@ -94,10 +94,11 @@ export default defineConfig({
         },
       },
     },
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    {
+      name: 'webkit',
+      testIgnore: ['*.test.ts', '**/firefox-unsupported-codec.spec.ts'],
+      use: { ...devices['Desktop Safari'] },
+    },
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
