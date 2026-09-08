@@ -3,7 +3,7 @@ import { installVideoRecoveryProbe } from '@e2e/playwright/lib/videoRecovery'
 import { expect, type Page, type TestInfo } from '@playwright/test'
 
 export const wakingStatus = (page: Page) =>
-  page.getByRole('status').filter({ hasText: 'Waking from idle...' })
+  page.getByRole('status').filter({ hasText: 'Reconnecting' })
 export const recovery = (page: Page) =>
   page.getByRole('alert').filter({ hasText: 'Failed to connect.' })
 

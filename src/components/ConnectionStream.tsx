@@ -720,7 +720,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             className="body-bg flex items-center gap-2 rounded-full border border-chalkboard-20 px-4 py-2 text-sm shadow-sm dark:border-chalkboard-80"
           >
             <Spinner className="h-4 w-4" aria-hidden="true" />
-            Waking from idle...
+            Reconnecting...
           </div>
         </div>
       )}
