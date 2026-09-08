@@ -1795,11 +1795,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "a93807f2-bb75-552f-8f69-73c95b73e483"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1829,7 +1829,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "4c9c647a-25a7-5d9d-ba1f-dc4a869deed2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2144,7 +2144,7 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "6d9a0373-f7a3-584f-b633-4d473d048170"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2174,7 +2174,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0d54a27e-9066-5bc4-8d3f-502734e673ab"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2200,7 +2200,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7fc87969-04f4-5bd5-aab8-40f570953914"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2288,7 +2288,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1b7054a0-c731-547d-86fe-1cbeb3e93c05"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2355,7 +2355,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "8380ac65-8170-59e1-a00e-af33c756350e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2511,7 +2511,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "c721008f-cc29-5160-af26-301b442fb211"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2524,31 +2524,31 @@ description: Operations executed car-wheel-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "8380ac65-8170-59e1-a00e-af33c756350e"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "de32056e-9041-5c7b-bd13-4544084541c9"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "0a57579a-35e6-5419-ab40-ecb2a3aea595"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "46da69de-7605-5aa5-9704-7cc9bb032211"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "b0e1ea47-d5de-5f7c-8c71-7e0739b4b727"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -2583,7 +2583,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "90c32c61-2a72-575b-8188-9796ef2da440"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2645,7 +2645,7 @@ description: Operations executed car-wheel-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "5d34903a-7e22-5d31-99cd-94eec059648f"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -3611,11 +3611,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "cc9c1086-d61e-5fb6-9f0a-fed522283716"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "3e0f7d0d-831d-537d-92d2-78a783cfd7c8"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3645,7 +3645,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0238263f-f237-53e4-8f20-998cbc62d61b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3671,7 +3671,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "383a30e4-8963-5b1a-811b-c9cdf89f31f1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3727,7 +3727,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "82cc0eeb-ae80-56ba-8956-86bd4c4096e1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3882,217 +3882,217 @@ description: Operations executed car-wheel-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "82cc0eeb-ae80-56ba-8956-86bd4c4096e1"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e1ef8c7e-b143-59cc-adeb-214e243cdaef"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "58456f2d-3fd8-5c0c-a770-61878dfdcfe9"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1df8b776-5a96-512e-8db6-c5a4388017c8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6d8cebda-8f27-598c-8755-29ae2b03d53b"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "faf4a207-23b3-5101-a5e2-c5e1deb4dfd3"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "f33af2aa-dc35-5282-bac6-6f0581c4cf1f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "aa85962a-d717-59f8-8788-64a4ad043f1a"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "42f95ffd-2f0c-561a-ace5-290c7cbc1b3e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "67a7b9ae-63f2-5b94-b797-6f2634a83a73"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a41d3c22-b8a2-5be9-8c2f-580247942b7f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "0fc3ce64-a544-589e-8040-beab04eace55"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1dd75c5a-4fd4-556b-a80f-d5c396b048d4"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a42dc094-7911-58fd-8e4c-7ad249b9bbd4"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6c4b242d-cc90-508a-8509-90b500a1f8ad"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "566d089c-e29e-5fc2-8f05-259ad127e3fc"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d8ca774e-9420-5997-8802-cf6a954426a5"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c42d7c49-1801-5f23-8b82-762fa6fe0284"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "96ce94dc-c7b0-509a-9394-cacb9c87ae06"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "440d5bb8-0aad-5af2-81f5-33b66d2a089f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9f93bf55-d423-5be6-8d39-aeaba31a079a"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "2d77e329-7371-541c-9879-23ff1c0ceae6"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "54e55dcf-8f1b-5954-8a85-a6938d92231a"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "07013c46-667d-56be-a943-08de9e48b79e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c755fde2-efe4-5f97-9cd1-b7ca806d1ca7"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "19cc830d-fc2e-5827-a55c-4bf96f4489e5"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "372b1cc0-0a95-5dd5-a9c3-2830044a7019"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "eeea694f-7e06-577f-876c-f9561f4b8c79"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "05c18777-75b7-57f1-9110-08cbb7716b45"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "f4337387-6362-5ef3-8141-facfb20a3cf4"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d21774d7-a06f-5ab2-8acf-9b274fabf508"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d9d18319-1501-5b96-bf60-c29f98fa1b09"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b8b24492-b60d-5f76-af3a-0e45b08d4216"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "12c669ef-1f8c-57aa-b6e7-53691256d1c0"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "34eaa414-5415-51ed-a5bb-c5a85fb6aaa7"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "0cdfc812-c149-5cc9-a9fb-c6a9ee9db112"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -4156,7 +4156,7 @@ description: Operations executed car-wheel-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "5d34903a-7e22-5d31-99cd-94eec059648f"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -4586,7 +4586,7 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "332437f3-10c2-5b9f-b424-7a25548ab25f"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4616,7 +4616,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "38008fc4-9b25-5b7f-af4d-747b7fda84cf"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4669,7 +4669,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "4e16395b-5b22-5e64-9d69-63a998c75709"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4732,7 +4732,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7bc3f103-5e33-5d70-bed7-c63fd811baf1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7370,11 +7370,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "37dccfff-51c8-54b8-ad35-58f377eb2c42"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "515e71b6-5068-5314-a362-727be5fd92ee"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7404,7 +7404,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9fd168f9-37cd-555f-9048-c8566ca41d47"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7488,7 +7488,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c891370e-d9d1-56ca-9db7-c6dbc0b67bf8"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7514,7 +7514,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "27a78bd8-f7b0-5037-936e-51a54b4931ff"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7566,7 +7566,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "27a78bd8-f7b0-5037-936e-51a54b4931ff"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8451,11 +8451,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "9adef1b0-205f-5ea6-85ea-a530a6abee69"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "f1634645-3502-580b-a84b-0466ff4d66c4"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -8485,7 +8485,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f20a7800-7fb2-522c-abc3-645eaa4ca76a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8494,7 +8494,7 @@ description: Operations executed car-wheel-assembly.kcl
         "axis": {
           "value": {
             "type": "Segment",
-            "artifact_id": "dbaf38ab-43d1-5434-8f5e-3559688687a0"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -8522,7 +8522,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8e36e81c-0cf1-57b6-aed2-5c0969b16807"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8548,7 +8548,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a0b99353-2b92-5be5-b339-745535fad102"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -9945,11 +9945,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "3e59a8f8-980a-5935-be3c-65e4437cdf26"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "c0754fa6-359c-5cb1-aa3e-91134015b0ed"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -9979,7 +9979,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1edf3e97-cc0d-5442-8700-7debb1169632"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10067,7 +10067,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "6f9a3121-4dd2-5694-8cff-8e6b564c2683"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10080,31 +10080,31 @@ description: Operations executed car-wheel-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "a0b99353-2b92-5be5-b339-745535fad102"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "c5ca1686-3862-5120-aad3-3c58686fe151"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "d75cdf60-ddd9-5ba8-8dc4-43f132476afd"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "a01c2801-353a-5e34-8e57-aea4e6da891b"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "2e97c241-f287-5a28-a6ee-53b759743d2c"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -10139,7 +10139,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "736b26fd-a375-5e68-85cf-347b888357bb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -13338,11 +13338,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "602dfc01-e15e-5e05-af59-b77a397466b1"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "c92b6b10-80c0-515a-a8c7-92a9f3c0454a"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -13372,7 +13372,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "fe295ca0-b410-5328-8da5-220ec2caf40a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -13456,7 +13456,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "528a02fe-dc60-51bd-b1ed-468eda03b4c3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14480,11 +14480,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "de979771-c551-50a1-8a40-3e3c43dcc58d"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "6c7c7c90-4637-54a7-8577-3d9dba3d20a7"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -14514,7 +14514,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bf25acff-f294-5364-bc49-6ff1eea6a876"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14567,7 +14567,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bf25acff-f294-5364-bc49-6ff1eea6a876"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14655,7 +14655,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "87efefb5-23cf-5345-b82f-decf2adb9eaf"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -16437,11 +16437,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "f02372fd-855b-5008-a272-24582a4928ae"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "0c742c15-a877-51b3-ba51-53e66e44a1e9"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -16471,7 +16471,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "4e329317-b62e-5d90-b4c1-edbbe1e5bb38"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -16513,7 +16513,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2e9542a4-2a77-5b3a-bbe6-0503adbf460f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -16542,13 +16542,13 @@ description: Operations executed car-wheel-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "0ca5bc5f-dda4-526d-948c-b2c4b3769d55"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b40dbe1f-160c-5439-898d-81ec3f32a90c"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -16583,7 +16583,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "11d13088-5097-59bb-b2d4-e56cd190b6e0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -16738,43 +16738,43 @@ description: Operations executed car-wheel-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "bc8b45c7-182f-52df-892f-5df2dba1a9aa"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "11d13088-5097-59bb-b2d4-e56cd190b6e0"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "545e58f8-2655-5b1c-a149-d45a7046a915"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "eca8e604-b65a-5f80-bd1d-0680d0d48a99"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "0a566f37-e19a-5808-b356-fb6c9386f995"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d4025fa6-12bc-5c8d-ba15-46a636bc6f7e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "3e19f983-1cff-53f4-a63f-3eb0868964ce"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -17693,11 +17693,11 @@ description: Operations executed car-wheel-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "1dda4566-8b38-5113-91c9-2b6e48fdecd7"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "6de35640-41ab-5381-bda0-d44652f1a175"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -17727,7 +17727,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "81666e5c-6cc1-53d0-b1e8-73cd4c5dacdc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -17811,7 +17811,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0f2b17c5-fdf9-564a-b621-4c8e4ef7ff54"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -17837,7 +17837,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "26fc123e-819a-567f-adde-3646c25e6e00"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -17973,7 +17973,7 @@ description: Operations executed car-wheel-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "26fc123e-819a-567f-adde-3646c25e6e00"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []

@@ -6,8 +6,8 @@ description: Variables in memory after executing tube-manifold.kcl
   "__sketch_121_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing tube-manifold.kcl
   "__sketch_134_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing tube-manifold.kcl
   "__sketch_14_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -102,8 +102,8 @@ description: Variables in memory after executing tube-manifold.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -163,14 +163,14 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "e02115f0-d853-5684-82c8-298aa25e4541",
-      "originalId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-      "topologyId": "e02115f0-d853-5684-82c8-298aa25e4541",
-      "artifactId": "e02115f0-d853-5684-82c8-298aa25e4541",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "d77be279-8026-5289-8e15-5f4a1815b9b0",
-          "id": "01215fa4-ee56-5054-a41e-7b59a7f38930",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2274,
@@ -183,8 +183,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "93d860bd-86a2-5fa8-80fe-57be39b71bc8",
-          "id": "19b80591-b217-553e-b524-394df234e28a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2351,
@@ -197,8 +197,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7ee14956-7275-569b-b940-7fef3f665057",
-          "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2432,
@@ -211,8 +211,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "7835efdb-90ca-569e-9f0b-e9cedd6a3544",
-          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2541,
@@ -225,8 +225,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ea5ce42d-d5fc-51a5-9255-16add0aedda5",
-          "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2625,
@@ -239,8 +239,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "8575c95a-6a64-56fb-b6c0-34483e44ff8d",
-          "id": "9d4bc51b-2be0-5a19-b18a-c2cd353e2e59",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2817,
@@ -253,8 +253,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791",
-          "id": "8f376f82-671f-58e7-bdef-122a7408ee1e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2930,
@@ -270,11 +270,11 @@ description: Variables in memory after executing tube-manifold.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "01215fa4-ee56-5054-a41e-7b59a7f38930",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -298,7 +298,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "19b80591-b217-553e-b524-394df234e28a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -322,7 +322,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -352,7 +352,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -376,7 +376,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -406,7 +406,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "3b3d823b-eb7a-5058-904a-737356c16bf9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -430,7 +430,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d4bc51b-2be0-5a19-b18a-c2cd353e2e59",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -460,7 +460,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "8f376f82-671f-58e7-bdef-122a7408ee1e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -485,8 +485,8 @@ description: Variables in memory after executing tube-manifold.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 13,
           "kind": "Custom",
           "origin": {
@@ -526,7 +526,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -564,8 +564,8 @@ description: Variables in memory after executing tube-manifold.kcl
             "value": "wallRun"
           }
         },
-        "artifactId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-        "originalId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -579,14 +579,14 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-      "originalId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-      "topologyId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-      "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "d77be279-8026-5289-8e15-5f4a1815b9b0",
-          "id": "01215fa4-ee56-5054-a41e-7b59a7f38930",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2274,
@@ -599,8 +599,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "93d860bd-86a2-5fa8-80fe-57be39b71bc8",
-          "id": "19b80591-b217-553e-b524-394df234e28a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2351,
@@ -613,8 +613,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7ee14956-7275-569b-b940-7fef3f665057",
-          "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2432,
@@ -627,8 +627,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "7835efdb-90ca-569e-9f0b-e9cedd6a3544",
-          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2541,
@@ -641,8 +641,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ea5ce42d-d5fc-51a5-9255-16add0aedda5",
-          "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2625,
@@ -655,8 +655,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "8575c95a-6a64-56fb-b6c0-34483e44ff8d",
-          "id": "9d4bc51b-2be0-5a19-b18a-c2cd353e2e59",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2817,
@@ -669,8 +669,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791",
-          "id": "8f376f82-671f-58e7-bdef-122a7408ee1e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2930,
@@ -686,11 +686,11 @@ description: Variables in memory after executing tube-manifold.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "01215fa4-ee56-5054-a41e-7b59a7f38930",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -714,7 +714,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "19b80591-b217-553e-b524-394df234e28a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -738,7 +738,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -768,7 +768,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -792,7 +792,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -822,7 +822,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "3b3d823b-eb7a-5058-904a-737356c16bf9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -846,7 +846,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d4bc51b-2be0-5a19-b18a-c2cd353e2e59",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -876,7 +876,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "8f376f82-671f-58e7-bdef-122a7408ee1e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -901,8 +901,8 @@ description: Variables in memory after executing tube-manifold.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 13,
           "kind": "Custom",
           "origin": {
@@ -942,7 +942,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -980,8 +980,8 @@ description: Variables in memory after executing tube-manifold.kcl
             "value": "wallRun"
           }
         },
-        "artifactId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-        "originalId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -998,14 +998,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "topologyId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "862e1703-4243-5a28-b49c-f5f57082f819",
-              "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 724,
@@ -1021,11 +1021,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1056,8 +1056,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -1097,7 +1097,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1107,13 +1107,13 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "portBore"
               }
             },
-            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-            "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "d665e8b8-04b3-5cae-a881-f3658e472092",
-          "endCapId": "f9950a89-06f3-552c-92f9-7e5a5a21672c",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1122,14 +1122,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "b4bb5869-c4a2-5776-837b-23210d5454b6",
-          "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "topologyId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "artifactId": "b4bb5869-c4a2-5776-837b-23210d5454b6",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "862e1703-4243-5a28-b49c-f5f57082f819",
-              "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 724,
@@ -1145,11 +1145,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "b4bb5869-c4a2-5776-837b-23210d5454b6",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1180,8 +1180,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -1221,7 +1221,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1231,13 +1231,13 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "portBore"
               }
             },
-            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-            "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "d665e8b8-04b3-5cae-a881-f3658e472092",
-          "endCapId": "f9950a89-06f3-552c-92f9-7e5a5a21672c",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1246,14 +1246,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "e87adfa5-4f60-5241-b09f-71a7287871de",
-          "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "topologyId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "artifactId": "e87adfa5-4f60-5241-b09f-71a7287871de",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "862e1703-4243-5a28-b49c-f5f57082f819",
-              "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 724,
@@ -1269,11 +1269,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "e87adfa5-4f60-5241-b09f-71a7287871de",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1304,8 +1304,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -1345,7 +1345,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1355,13 +1355,13 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "portBore"
               }
             },
-            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-            "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "d665e8b8-04b3-5cae-a881-f3658e472092",
-          "endCapId": "f9950a89-06f3-552c-92f9-7e5a5a21672c",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1370,14 +1370,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "e47c670e-da9a-5ef8-bd00-49d4e4cb9f9a",
-          "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "topologyId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "artifactId": "e47c670e-da9a-5ef8-bd00-49d4e4cb9f9a",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "862e1703-4243-5a28-b49c-f5f57082f819",
-              "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 724,
@@ -1393,11 +1393,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "e47c670e-da9a-5ef8-bd00-49d4e4cb9f9a",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1428,8 +1428,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -1469,7 +1469,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1479,13 +1479,13 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "portBore"
               }
             },
-            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-            "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "d665e8b8-04b3-5cae-a881-f3658e472092",
-          "endCapId": "f9950a89-06f3-552c-92f9-7e5a5a21672c",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1496,14 +1496,14 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
-      "originalId": "c0c1140b-284f-50ff-b80d-615b8b938475",
-      "topologyId": "c0c1140b-284f-50ff-b80d-615b8b938475",
-      "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "49e6c52f-889e-5175-95d2-d8c53317bf42",
-          "id": "b9fe2aab-2cb9-5b16-b523-0657711d872f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6501,
@@ -1519,11 +1519,11 @@ description: Variables in memory after executing tube-manifold.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b9fe2aab-2cb9-5b16-b523-0657711d872f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1554,8 +1554,8 @@ description: Variables in memory after executing tube-manifold.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
-          "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 120,
           "kind": "Custom",
           "origin": {
@@ -1595,7 +1595,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1605,13 +1605,13 @@ description: Variables in memory after executing tube-manifold.kcl
             "value": "bodyCutCircle"
           }
         },
-        "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
-        "originalId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "613fe95f-b29e-5d7f-9003-1864942ec350",
-      "endCapId": "ee52df6f-18c3-52cf-bee2-90893e87de18",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -1625,11 +1625,11 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "b9fe2aab-2cb9-5b16-b523-0657711d872f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -1660,8 +1660,8 @@ description: Variables in memory after executing tube-manifold.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
-        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 120,
         "kind": "Custom",
         "origin": {
@@ -1701,7 +1701,7 @@ description: Variables in memory after executing tube-manifold.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1711,8 +1711,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "value": "bodyCutCircle"
         }
       },
-      "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
-      "originalId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -1726,7 +1726,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "93954f29-a246-54bd-ac2a-62572f26d508",
+                "id": "[uuid]",
                 "objectId": 127,
                 "kind": {
                   "circle": {
@@ -1800,8 +1800,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
-                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -1830,7 +1830,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bodyCutCircle"
@@ -1846,7 +1846,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
+                "id": "[uuid]",
                 "objectId": 124,
                 "kind": {
                   "line": {
@@ -1921,8 +1921,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
-                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -1951,7 +1951,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bodyCutRadiusGuide"
@@ -1968,11 +1968,11 @@ description: Variables in memory after executing tube-manifold.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "93954f29-a246-54bd-ac2a-62572f26d508",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2003,8 +2003,8 @@ description: Variables in memory after executing tube-manifold.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
-                "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 120,
                 "kind": "Custom",
                 "origin": {
@@ -2044,7 +2044,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2054,8 +2054,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   "value": "bodyCutCircle"
                 }
               },
-              "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
-              "originalId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -2084,7 +2084,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                "id": "[uuid]",
                 "objectId": 51,
                 "kind": {
                   "arc": {
@@ -2190,8 +2190,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -2220,7 +2220,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "beadArc"
@@ -2236,7 +2236,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "id": "[uuid]",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -2311,8 +2311,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -2341,7 +2341,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "beadRadiusGuide"
@@ -2357,7 +2357,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+                "id": "[uuid]",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -2432,8 +2432,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -2462,7 +2462,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "beadSpanGuide"
@@ -2478,7 +2478,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -2553,8 +2553,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -2583,7 +2583,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "endCapGuide"
@@ -2599,7 +2599,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "line": {
@@ -2674,8 +2674,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -2704,7 +2704,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "frontAxisGuide"
@@ -2720,7 +2720,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                "id": "[uuid]",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -2795,8 +2795,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -2825,7 +2825,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "frontInnerRadiusGuide"
@@ -2841,7 +2841,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "deb86259-17a0-5782-a352-d25992246cc0",
+                "id": "[uuid]",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -2915,8 +2915,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -2945,7 +2945,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "frontOuterRun"
@@ -2961,7 +2961,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "id": "[uuid]",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -3035,8 +3035,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -3065,7 +3065,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "frontWall"
@@ -3081,7 +3081,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+                "id": "[uuid]",
                 "objectId": 65,
                 "kind": {
                   "arc": {
@@ -3187,8 +3187,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -3217,7 +3217,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerEndArc"
@@ -3233,7 +3233,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "id": "[uuid]",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -3308,8 +3308,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -3338,7 +3338,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerSideRadiusGuide"
@@ -3354,7 +3354,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -3429,8 +3429,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -3459,7 +3459,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerTopRadiusGuide"
@@ -3475,7 +3475,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+                "id": "[uuid]",
                 "objectId": 68,
                 "kind": {
                   "line": {
@@ -3549,8 +3549,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -3579,7 +3579,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "mainInnerRun"
@@ -3595,7 +3595,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+                "id": "[uuid]",
                 "objectId": 54,
                 "kind": {
                   "line": {
@@ -3669,8 +3669,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -3699,7 +3699,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "mainOuterRun"
@@ -3716,11 +3716,11 @@ description: Variables in memory after executing tube-manifold.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "d5eaf678-0440-563f-ac19-e473850b9270",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3744,7 +3744,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "deb86259-17a0-5782-a352-d25992246cc0",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3768,7 +3768,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3798,7 +3798,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3822,7 +3822,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3852,7 +3852,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3876,7 +3876,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -3906,7 +3906,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3931,8 +3931,8 @@ description: Variables in memory after executing tube-manifold.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": "Custom",
                 "origin": {
@@ -3972,7 +3972,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4010,8 +4010,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   "value": "wallRun"
                 }
               },
-              "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
-              "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -4025,7 +4025,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+                "id": "[uuid]",
                 "objectId": 58,
                 "kind": {
                   "arc": {
@@ -4131,8 +4131,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -4161,7 +4161,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerEndArc"
@@ -4177,7 +4177,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+                "id": "[uuid]",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -4252,8 +4252,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -4282,7 +4282,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerSideRadiusGuide"
@@ -4298,7 +4298,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "id": "[uuid]",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -4373,8 +4373,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -4403,7 +4403,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerTopRadiusGuide"
@@ -4419,7 +4419,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                "id": "[uuid]",
                 "objectId": 61,
                 "kind": {
                   "line": {
@@ -4493,8 +4493,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -4523,7 +4523,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "wallRun"
@@ -4540,11 +4540,11 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "01215fa4-ee56-5054-a41e-7b59a7f38930",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4568,7 +4568,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "19b80591-b217-553e-b524-394df234e28a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4592,7 +4592,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -4622,7 +4622,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4646,7 +4646,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -4676,7 +4676,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "3b3d823b-eb7a-5058-904a-737356c16bf9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4700,7 +4700,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "9d4bc51b-2be0-5a19-b18a-c2cd353e2e59",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -4730,7 +4730,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "8f376f82-671f-58e7-bdef-122a7408ee1e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4755,8 +4755,8 @@ description: Variables in memory after executing tube-manifold.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-        "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 13,
         "kind": "Custom",
         "origin": {
@@ -4796,7 +4796,7 @@ description: Variables in memory after executing tube-manifold.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -4834,8 +4834,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "value": "wallRun"
         }
       },
-      "artifactId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-      "originalId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -4859,14 +4859,14 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
-      "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
-      "topologyId": "e00e9caf-6e9e-5221-8545-b199546c367f",
-      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
-          "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 724,
@@ -4882,11 +4882,11 @@ description: Variables in memory after executing tube-manifold.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4917,8 +4917,8 @@ description: Variables in memory after executing tube-manifold.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4958,7 +4958,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "7b681387-29ea-57f1-8713-d63280827139",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4968,13 +4968,13 @@ description: Variables in memory after executing tube-manifold.kcl
             "value": "portBore"
           }
         },
-        "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
-        "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
-      "endCapId": "688fd424-1de4-51a2-b455-344b29542d3f",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -5008,14 +5008,14 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "topologyId": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f2a14564-45ad-59a6-ac20-9739859aa26e",
-          "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7372,
@@ -5028,8 +5028,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "639d8cfd-3a68-545f-b375-7815a99a1431",
-          "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7444,
@@ -5042,8 +5042,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "99c2b308-dedf-5689-86e5-cfab3cd98e53",
-          "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7521,
@@ -5056,8 +5056,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "b0a7b744-cb38-5e1d-bbfd-f06622a828c1",
-          "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7630,
@@ -5070,8 +5070,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9782ea68-5dc2-59e7-ae33-0735de37c68b",
-          "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7709,
@@ -5087,11 +5087,11 @@ description: Variables in memory after executing tube-manifold.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5115,7 +5115,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5139,7 +5139,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -5169,7 +5169,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5193,7 +5193,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5217,7 +5217,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5242,8 +5242,8 @@ description: Variables in memory after executing tube-manifold.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-          "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 133,
           "kind": "Custom",
           "origin": {
@@ -5283,7 +5283,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5313,8 +5313,8 @@ description: Variables in memory after executing tube-manifold.kcl
             "value": "upperWall"
           }
         },
-        "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-        "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -5333,11 +5333,11 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -5368,8 +5368,8 @@ description: Variables in memory after executing tube-manifold.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -5409,7 +5409,7 @@ description: Variables in memory after executing tube-manifold.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -5419,8 +5419,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "value": "portBore"
         }
       },
-      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
-      "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -5435,11 +5435,11 @@ description: Variables in memory after executing tube-manifold.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5470,8 +5470,8 @@ description: Variables in memory after executing tube-manifold.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -5511,7 +5511,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "7b681387-29ea-57f1-8713-d63280827139",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5521,8 +5521,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   "value": "portBore"
                 }
               },
-              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
-              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -5536,7 +5536,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "circle": {
@@ -5610,8 +5610,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5640,7 +5640,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "portBore"
@@ -5656,7 +5656,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -5731,8 +5731,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5761,7 +5761,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "portRadiusGuide"
@@ -5810,7 +5810,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c8da3189-2eee-5307-9477-076b12db84a5",
+                "id": "[uuid]",
                 "objectId": 156,
                 "kind": {
                   "line": {
@@ -5884,8 +5884,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -5914,7 +5914,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseLine"
@@ -5930,7 +5930,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
+                "id": "[uuid]",
                 "objectId": 150,
                 "kind": {
                   "arc": {
@@ -6036,8 +6036,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -6066,7 +6066,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "beadArc"
@@ -6082,7 +6082,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
+                "id": "[uuid]",
                 "objectId": 140,
                 "kind": {
                   "line": {
@@ -6157,8 +6157,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -6187,7 +6187,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "beadRadiusGuide"
@@ -6203,7 +6203,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "id": "[uuid]",
                 "objectId": 137,
                 "kind": {
                   "line": {
@@ -6278,8 +6278,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -6308,7 +6308,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "beadSpanGuide"
@@ -6324,7 +6324,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+                "id": "[uuid]",
                 "objectId": 159,
                 "kind": {
                   "line": {
@@ -6398,8 +6398,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -6428,7 +6428,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerAxis"
@@ -6444,7 +6444,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+                "id": "[uuid]",
                 "objectId": 153,
                 "kind": {
                   "line": {
@@ -6518,8 +6518,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -6548,7 +6548,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerWall"
@@ -6565,11 +6565,11 @@ description: Variables in memory after executing tube-manifold.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6593,7 +6593,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6617,7 +6617,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6647,7 +6647,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6671,7 +6671,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c8da3189-2eee-5307-9477-076b12db84a5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6695,7 +6695,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6720,8 +6720,8 @@ description: Variables in memory after executing tube-manifold.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 133,
                 "kind": "Custom",
                 "origin": {
@@ -6761,7 +6761,7 @@ description: Variables in memory after executing tube-manifold.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -6791,8 +6791,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   "value": "upperWall"
                 }
               },
-              "artifactId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
-              "originalId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -6806,7 +6806,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
+                "id": "[uuid]",
                 "objectId": 143,
                 "kind": {
                   "line": {
@@ -6880,8 +6880,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -6910,7 +6910,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topCap"
@@ -6926,7 +6926,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+                "id": "[uuid]",
                 "objectId": 146,
                 "kind": {
                   "line": {
@@ -7000,8 +7000,8 @@ description: Variables in memory after executing tube-manifold.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 133,
                   "origin": {
@@ -7030,7 +7030,7 @@ description: Variables in memory after executing tube-manifold.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperWall"
@@ -7047,11 +7047,11 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -7075,7 +7075,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -7099,7 +7099,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -7129,7 +7129,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -7153,7 +7153,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -7177,7 +7177,7 @@ description: Variables in memory after executing tube-manifold.kcl
         },
         {
           "__geoMeta": {
-            "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -7202,8 +7202,8 @@ description: Variables in memory after executing tube-manifold.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-        "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 133,
         "kind": "Custom",
         "origin": {
@@ -7243,7 +7243,7 @@ description: Variables in memory after executing tube-manifold.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -7273,8 +7273,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "value": "upperWall"
         }
       },
-      "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -7283,14 +7283,14 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
-      "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "topologyId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
-      "artifactId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f2a14564-45ad-59a6-ac20-9739859aa26e",
-          "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7372,
@@ -7303,8 +7303,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "639d8cfd-3a68-545f-b375-7815a99a1431",
-          "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7444,
@@ -7317,8 +7317,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "99c2b308-dedf-5689-86e5-cfab3cd98e53",
-          "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7521,
@@ -7331,8 +7331,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "b0a7b744-cb38-5e1d-bbfd-f06622a828c1",
-          "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7630,
@@ -7345,8 +7345,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9782ea68-5dc2-59e7-ae33-0735de37c68b",
-          "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7709,
@@ -7362,11 +7362,11 @@ description: Variables in memory after executing tube-manifold.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7390,7 +7390,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7414,7 +7414,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -7444,7 +7444,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7468,7 +7468,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7492,7 +7492,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7517,8 +7517,8 @@ description: Variables in memory after executing tube-manifold.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-          "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 133,
           "kind": "Custom",
           "origin": {
@@ -7558,7 +7558,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7588,8 +7588,8 @@ description: Variables in memory after executing tube-manifold.kcl
             "value": "upperWall"
           }
         },
-        "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-        "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -7612,14 +7612,14 @@ description: Variables in memory after executing tube-manifold.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
-      "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "topologyId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
-      "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f2a14564-45ad-59a6-ac20-9739859aa26e",
-          "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7372,
@@ -7632,8 +7632,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "639d8cfd-3a68-545f-b375-7815a99a1431",
-          "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7444,
@@ -7646,8 +7646,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "99c2b308-dedf-5689-86e5-cfab3cd98e53",
-          "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7521,
@@ -7660,8 +7660,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "b0a7b744-cb38-5e1d-bbfd-f06622a828c1",
-          "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7630,
@@ -7674,8 +7674,8 @@ description: Variables in memory after executing tube-manifold.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9782ea68-5dc2-59e7-ae33-0735de37c68b",
-          "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7709,
@@ -7691,11 +7691,11 @@ description: Variables in memory after executing tube-manifold.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7719,7 +7719,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7743,7 +7743,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -7773,7 +7773,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7797,7 +7797,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7821,7 +7821,7 @@ description: Variables in memory after executing tube-manifold.kcl
           },
           {
             "__geoMeta": {
-              "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7846,8 +7846,8 @@ description: Variables in memory after executing tube-manifold.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-          "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 133,
           "kind": "Custom",
           "origin": {
@@ -7887,7 +7887,7 @@ description: Variables in memory after executing tube-manifold.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7917,8 +7917,8 @@ description: Variables in memory after executing tube-manifold.kcl
             "value": "upperWall"
           }
         },
-        "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-        "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -7935,14 +7935,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
-          "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-          "topologyId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
-          "artifactId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "f2a14564-45ad-59a6-ac20-9739859aa26e",
-              "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7372,
@@ -7955,8 +7955,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "639d8cfd-3a68-545f-b375-7815a99a1431",
-              "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7444,
@@ -7969,8 +7969,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "99c2b308-dedf-5689-86e5-cfab3cd98e53",
-              "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7521,
@@ -7983,8 +7983,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "b0a7b744-cb38-5e1d-bbfd-f06622a828c1",
-              "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7630,
@@ -7997,8 +7997,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9782ea68-5dc2-59e7-ae33-0735de37c68b",
-              "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7709,
@@ -8014,11 +8014,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8042,7 +8042,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8066,7 +8066,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -8096,7 +8096,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8120,7 +8120,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8144,7 +8144,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8169,8 +8169,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-              "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 133,
               "kind": "Custom",
               "origin": {
@@ -8210,7 +8210,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8240,8 +8240,8 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "upperWall"
               }
             },
-            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -8255,14 +8255,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "715b6d7c-33c7-5fd7-8bab-a78c72c39c55",
-          "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-          "topologyId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
-          "artifactId": "715b6d7c-33c7-5fd7-8bab-a78c72c39c55",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "f2a14564-45ad-59a6-ac20-9739859aa26e",
-              "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7372,
@@ -8275,8 +8275,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "639d8cfd-3a68-545f-b375-7815a99a1431",
-              "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7444,
@@ -8289,8 +8289,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "99c2b308-dedf-5689-86e5-cfab3cd98e53",
-              "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7521,
@@ -8303,8 +8303,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "b0a7b744-cb38-5e1d-bbfd-f06622a828c1",
-              "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7630,
@@ -8317,8 +8317,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9782ea68-5dc2-59e7-ae33-0735de37c68b",
-              "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7709,
@@ -8334,11 +8334,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "715b6d7c-33c7-5fd7-8bab-a78c72c39c55",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8362,7 +8362,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8386,7 +8386,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -8416,7 +8416,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8440,7 +8440,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8464,7 +8464,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8489,8 +8489,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-              "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 133,
               "kind": "Custom",
               "origin": {
@@ -8530,7 +8530,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8560,8 +8560,8 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "upperWall"
               }
             },
-            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -8575,14 +8575,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "0afcfa2c-067d-5b2c-8882-d097d926be80",
-          "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-          "topologyId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
-          "artifactId": "0afcfa2c-067d-5b2c-8882-d097d926be80",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "f2a14564-45ad-59a6-ac20-9739859aa26e",
-              "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7372,
@@ -8595,8 +8595,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "639d8cfd-3a68-545f-b375-7815a99a1431",
-              "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7444,
@@ -8609,8 +8609,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "99c2b308-dedf-5689-86e5-cfab3cd98e53",
-              "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7521,
@@ -8623,8 +8623,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "b0a7b744-cb38-5e1d-bbfd-f06622a828c1",
-              "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7630,
@@ -8637,8 +8637,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9782ea68-5dc2-59e7-ae33-0735de37c68b",
-              "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7709,
@@ -8654,11 +8654,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "0afcfa2c-067d-5b2c-8882-d097d926be80",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8682,7 +8682,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8706,7 +8706,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -8736,7 +8736,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8760,7 +8760,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8784,7 +8784,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8809,8 +8809,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-              "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 133,
               "kind": "Custom",
               "origin": {
@@ -8850,7 +8850,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8880,8 +8880,8 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "upperWall"
               }
             },
-            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -8895,14 +8895,14 @@ description: Variables in memory after executing tube-manifold.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "2f7be679-e17b-5f23-b78a-db40267576d4",
-          "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-          "topologyId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
-          "artifactId": "2f7be679-e17b-5f23-b78a-db40267576d4",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "f2a14564-45ad-59a6-ac20-9739859aa26e",
-              "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7372,
@@ -8915,8 +8915,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "639d8cfd-3a68-545f-b375-7815a99a1431",
-              "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7444,
@@ -8929,8 +8929,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "99c2b308-dedf-5689-86e5-cfab3cd98e53",
-              "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7521,
@@ -8943,8 +8943,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "b0a7b744-cb38-5e1d-bbfd-f06622a828c1",
-              "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7630,
@@ -8957,8 +8957,8 @@ description: Variables in memory after executing tube-manifold.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9782ea68-5dc2-59e7-ae33-0735de37c68b",
-              "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7709,
@@ -8974,11 +8974,11 @@ description: Variables in memory after executing tube-manifold.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "2f7be679-e17b-5f23-b78a-db40267576d4",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "e8b6cfd9-768f-5bc5-9059-e804091a424d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -9002,7 +9002,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "3ef80d12-1405-587b-b59b-c304c36c9ab7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -9026,7 +9026,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c0fa661b-3b7f-5288-bacd-7b30eda9c377",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -9056,7 +9056,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "1eb90563-129a-53b6-8c21-e3f4e8f04ffb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -9080,7 +9080,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "59ab170e-4346-509f-abf8-88971ba2db03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -9104,7 +9104,7 @@ description: Variables in memory after executing tube-manifold.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "10f07998-fd1d-5ee6-a245-45c95e1e2a03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -9129,8 +9129,8 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-              "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 133,
               "kind": "Custom",
               "origin": {
@@ -9170,7 +9170,7 @@ description: Variables in memory after executing tube-manifold.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -9200,8 +9200,8 @@ description: Variables in memory after executing tube-manifold.kcl
                 "value": "upperWall"
               }
             },
-            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-            "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },

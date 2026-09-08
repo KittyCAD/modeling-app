@@ -10,14 +10,14 @@ description: Variables in memory after executing subtract_regression10.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
-          "originalId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
-          "topologyId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
-          "artifactId": "fa75438f-b2d0-5142-b452-608454e1806a",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "119664b5-e8e4-5e4d-b63b-bdcb4a4ef31d",
-              "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -26,11 +26,11 @@ description: Variables in memory after executing subtract_regression10.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -54,8 +54,8 @@ description: Variables in memory after executing subtract_regression10.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-              "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 8,
               "kind": "Custom",
               "origin": {
@@ -95,17 +95,17 @@ description: Variables in memory after executing subtract_regression10.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
-            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
-            "originalId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "aa1b25b5-1e83-5a53-888f-966b17c71444",
-          "endCapId": "416893e7-1573-5d6a-b0f1-a6c83e022c3f",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -114,19 +114,19 @@ description: Variables in memory after executing subtract_regression10.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "52a25aa3-e52b-5889-bde9-a14fdd98573d",
-          "originalId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
-          "topologyId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
-          "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "52a25aa3-e52b-5889-bde9-a14fdd98573d",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -150,8 +150,8 @@ description: Variables in memory after executing subtract_regression10.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-              "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 8,
               "kind": "Custom",
               "origin": {
@@ -191,17 +191,17 @@ description: Variables in memory after executing subtract_regression10.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
-            "artifactId": "52a25aa3-e52b-5889-bde9-a14fdd98573d",
-            "originalId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "f9a29587-ecd4-534b-a114-f76663a2bacc",
-          "endCapId": "3be51fd1-8306-5a7c-b45d-b57c57213aa6",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -220,8 +220,8 @@ description: Variables in memory after executing subtract_regression10.kcl
   "boreHoles": {
     "type": "Plane",
     "value": {
-      "artifactId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
-      "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 7,
       "kind": "XZ",
       "origin": {
@@ -254,133 +254,133 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "a0df0eb6-009b-594d-815d-31646979be80",
-      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
-      "topologyId": "a0df0eb6-009b-594d-815d-31646979be80",
-      "artifactId": "a0df0eb6-009b-594d-815d-31646979be80",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8c466032-6c9f-5f90-a1ca-af2d7f00d20e",
-          "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c9819706-3469-5d13-b9d0-8574e7e4508c",
-          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "9820c80e-c3cd-5597-bcdb-bb7279b61097",
-          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "40d64c66-ba8f-5a1f-b487-04108cd20308",
-          "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "55ab2e34-b5a2-5313-9404-ab8895992f4a",
-          "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c811be32-3a8a-54a3-8147-0b6ce5f435c7",
-          "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "1d16f4f0-016f-5df0-9d52-0bc833337bd4",
-          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "13d13dff-2ad5-5b95-90ca-397f01143e7f",
-          "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "19ca1f3e-cce7-51be-8e8a-ad4d6cbb9b83",
-          "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "808fa959-d0cf-5b69-9fb9-df21a024f0fe",
-          "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "c7c7bfb0-ae2f-5503-8f28-805cbb753b75",
-          "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "461a1b45-c215-5c87-9334-bb12b99757f4",
-          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "e631aa58-90d8-51d2-a793-bb2f8c70ada3",
-          "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "a9f151b8-bf2b-588c-b514-21018f3e36fe",
-          "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "5c928330-b2c9-569c-917c-bca692bc6085",
-          "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "05004509-d8e0-5b67-b4a3-e670f7d78d82",
-          "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "87e35ebb-0b2e-5552-85e1-3d18f1718967",
-          "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "7bd5b162-3bd7-5717-8b35-5bde7e2ec353",
-          "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -389,11 +389,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "a0df0eb6-009b-594d-815d-31646979be80",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -410,7 +410,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -432,7 +432,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -449,7 +449,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -471,7 +471,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -488,7 +488,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -505,7 +505,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -522,7 +522,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -544,7 +544,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -561,7 +561,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -583,7 +583,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -600,7 +600,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -622,7 +622,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -639,7 +639,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -661,7 +661,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -678,7 +678,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -695,7 +695,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -712,7 +712,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -729,7 +729,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -747,8 +747,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-          "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 5,
           "kind": "XZ",
           "origin": {
@@ -788,17 +788,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
-        "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "5cf24d70-0248-5a8c-afb4-e9a72b00a491",
-      "endCapId": "e8a41d32-f7e2-5b73-b7c5-9d817a9119b9",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -807,133 +807,133 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "93954f29-a246-54bd-ac2a-62572f26d508",
-      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
-      "topologyId": "93954f29-a246-54bd-ac2a-62572f26d508",
-      "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8c466032-6c9f-5f90-a1ca-af2d7f00d20e",
-          "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c9819706-3469-5d13-b9d0-8574e7e4508c",
-          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "9820c80e-c3cd-5597-bcdb-bb7279b61097",
-          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "40d64c66-ba8f-5a1f-b487-04108cd20308",
-          "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "55ab2e34-b5a2-5313-9404-ab8895992f4a",
-          "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c811be32-3a8a-54a3-8147-0b6ce5f435c7",
-          "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "1d16f4f0-016f-5df0-9d52-0bc833337bd4",
-          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "13d13dff-2ad5-5b95-90ca-397f01143e7f",
-          "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "19ca1f3e-cce7-51be-8e8a-ad4d6cbb9b83",
-          "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "808fa959-d0cf-5b69-9fb9-df21a024f0fe",
-          "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "c7c7bfb0-ae2f-5503-8f28-805cbb753b75",
-          "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "461a1b45-c215-5c87-9334-bb12b99757f4",
-          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "e631aa58-90d8-51d2-a793-bb2f8c70ada3",
-          "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "a9f151b8-bf2b-588c-b514-21018f3e36fe",
-          "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "5c928330-b2c9-569c-917c-bca692bc6085",
-          "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "05004509-d8e0-5b67-b4a3-e670f7d78d82",
-          "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "87e35ebb-0b2e-5552-85e1-3d18f1718967",
-          "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "7bd5b162-3bd7-5717-8b35-5bde7e2ec353",
-          "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -942,11 +942,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "93954f29-a246-54bd-ac2a-62572f26d508",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -963,7 +963,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -985,7 +985,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1002,7 +1002,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1024,7 +1024,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1041,7 +1041,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1058,7 +1058,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1075,7 +1075,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1097,7 +1097,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1114,7 +1114,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1136,7 +1136,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1153,7 +1153,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1175,7 +1175,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1192,7 +1192,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1214,7 +1214,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1231,7 +1231,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1248,7 +1248,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1265,7 +1265,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1282,7 +1282,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1300,8 +1300,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-          "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 5,
           "kind": "XZ",
           "origin": {
@@ -1341,17 +1341,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
-        "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "5cf24d70-0248-5a8c-afb4-e9a72b00a491",
-      "endCapId": "e8a41d32-f7e2-5b73-b7c5-9d817a9119b9",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -1462,133 +1462,133 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "d5eaf678-0440-563f-ac19-e473850b9270",
-      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
-      "topologyId": "d5eaf678-0440-563f-ac19-e473850b9270",
-      "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8c466032-6c9f-5f90-a1ca-af2d7f00d20e",
-          "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c9819706-3469-5d13-b9d0-8574e7e4508c",
-          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "9820c80e-c3cd-5597-bcdb-bb7279b61097",
-          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "40d64c66-ba8f-5a1f-b487-04108cd20308",
-          "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "55ab2e34-b5a2-5313-9404-ab8895992f4a",
-          "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c811be32-3a8a-54a3-8147-0b6ce5f435c7",
-          "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "1d16f4f0-016f-5df0-9d52-0bc833337bd4",
-          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "13d13dff-2ad5-5b95-90ca-397f01143e7f",
-          "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "19ca1f3e-cce7-51be-8e8a-ad4d6cbb9b83",
-          "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "808fa959-d0cf-5b69-9fb9-df21a024f0fe",
-          "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "c7c7bfb0-ae2f-5503-8f28-805cbb753b75",
-          "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "461a1b45-c215-5c87-9334-bb12b99757f4",
-          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "e631aa58-90d8-51d2-a793-bb2f8c70ada3",
-          "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "a9f151b8-bf2b-588c-b514-21018f3e36fe",
-          "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "5c928330-b2c9-569c-917c-bca692bc6085",
-          "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "05004509-d8e0-5b67-b4a3-e670f7d78d82",
-          "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "87e35ebb-0b2e-5552-85e1-3d18f1718967",
-          "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "7bd5b162-3bd7-5717-8b35-5bde7e2ec353",
-          "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -1597,11 +1597,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1618,7 +1618,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1640,7 +1640,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1657,7 +1657,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1679,7 +1679,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1696,7 +1696,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1713,7 +1713,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1730,7 +1730,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1752,7 +1752,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1769,7 +1769,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1791,7 +1791,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1808,7 +1808,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1830,7 +1830,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1847,7 +1847,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -1869,7 +1869,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1886,7 +1886,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1903,7 +1903,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1937,7 +1937,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1955,8 +1955,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-          "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 5,
           "kind": "XZ",
           "origin": {
@@ -1996,17 +1996,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
-        "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "5cf24d70-0248-5a8c-afb4-e9a72b00a491",
-      "endCapId": "e8a41d32-f7e2-5b73-b7c5-9d817a9119b9",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2015,42 +2015,42 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
-      "originalId": "5f95e913-96e4-58df-abe6-125bedd61cad",
-      "topologyId": "5f95e913-96e4-58df-abe6-125bedd61cad",
-      "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "45e8e81e-b48b-5bad-9dc4-4a4643fd0fba",
-          "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "5c9da593-2202-52b9-9816-3c4981f54974",
-          "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "6cae5931-7536-5a7c-8e8c-23c0c7f231d5",
-          "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "27f42226-7b1f-58bd-9d2c-a29a4ad53fba",
-          "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "3f578a18-ae14-540e-9203-487c8782080d",
-          "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -2059,11 +2059,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2080,7 +2080,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2102,7 +2102,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2124,7 +2124,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2146,7 +2146,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2163,7 +2163,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2181,8 +2181,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 6,
           "kind": "Custom",
           "origin": {
@@ -2222,17 +2222,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "5f95e913-96e4-58df-abe6-125bedd61cad",
-        "originalId": "5f95e913-96e4-58df-abe6-125bedd61cad",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "10ff3b15-03d6-579b-947c-e8f2a4a664c1",
-      "endCapId": "7e335317-c10f-51f1-aa51-1ac54cabe353",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2241,133 +2241,133 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
-      "topologyId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-      "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8c466032-6c9f-5f90-a1ca-af2d7f00d20e",
-          "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c9819706-3469-5d13-b9d0-8574e7e4508c",
-          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "9820c80e-c3cd-5597-bcdb-bb7279b61097",
-          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "40d64c66-ba8f-5a1f-b487-04108cd20308",
-          "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "55ab2e34-b5a2-5313-9404-ab8895992f4a",
-          "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c811be32-3a8a-54a3-8147-0b6ce5f435c7",
-          "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "1d16f4f0-016f-5df0-9d52-0bc833337bd4",
-          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "13d13dff-2ad5-5b95-90ca-397f01143e7f",
-          "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "19ca1f3e-cce7-51be-8e8a-ad4d6cbb9b83",
-          "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "808fa959-d0cf-5b69-9fb9-df21a024f0fe",
-          "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "c7c7bfb0-ae2f-5503-8f28-805cbb753b75",
-          "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "461a1b45-c215-5c87-9334-bb12b99757f4",
-          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "e631aa58-90d8-51d2-a793-bb2f8c70ada3",
-          "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "a9f151b8-bf2b-588c-b514-21018f3e36fe",
-          "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "5c928330-b2c9-569c-917c-bca692bc6085",
-          "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "05004509-d8e0-5b67-b4a3-e670f7d78d82",
-          "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "87e35ebb-0b2e-5552-85e1-3d18f1718967",
-          "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "7bd5b162-3bd7-5717-8b35-5bde7e2ec353",
-          "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -2376,11 +2376,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2397,7 +2397,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2419,7 +2419,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2436,7 +2436,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2458,7 +2458,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2475,7 +2475,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2492,7 +2492,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2509,7 +2509,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2531,7 +2531,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2548,7 +2548,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2570,7 +2570,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2587,7 +2587,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2609,7 +2609,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2626,7 +2626,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -2648,7 +2648,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2665,7 +2665,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2682,7 +2682,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2699,7 +2699,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2716,7 +2716,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2734,8 +2734,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-          "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 5,
           "kind": "XZ",
           "origin": {
@@ -2775,17 +2775,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
-        "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "5cf24d70-0248-5a8c-afb4-e9a72b00a491",
-      "endCapId": "e8a41d32-f7e2-5b73-b7c5-9d817a9119b9",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2794,14 +2794,14 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
-      "originalId": "44621ebd-5856-5dfd-9426-dda5d969f375",
-      "topologyId": "44621ebd-5856-5dfd-9426-dda5d969f375",
-      "artifactId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "57e660cc-7825-587f-a82c-388b1dd59e8c",
-          "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
@@ -2810,11 +2810,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2838,8 +2838,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
-          "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 7,
           "kind": "XZ",
           "origin": {
@@ -2879,17 +2879,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
-        "originalId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "991df26b-d961-5cb3-bed6-bbff8b2b26dd",
-      "endCapId": "e632893e-733d-51f0-a1c0-14d3ea747e5e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2919,35 +2919,35 @@ description: Variables in memory after executing subtract_regression10.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-          "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-          "topologyId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-          "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "e2d7e3fb-0644-5a31-8768-5625e181bb63",
-              "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
-              "faceId": "c06f4ff3-7b73-5ffe-b6b4-c67512dbdec1",
-              "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
-              "faceId": "33fcb3d8-897c-5465-b0ca-f26eeaebe51c",
-              "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
-              "faceId": "835db4c2-dcae-5fcd-bca8-0cc91f3e573f",
-              "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
@@ -2956,11 +2956,11 @@ description: Variables in memory after executing subtract_regression10.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2977,7 +2977,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2994,7 +2994,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3011,7 +3011,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3029,8 +3029,8 @@ description: Variables in memory after executing subtract_regression10.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
-              "id": "deb86259-17a0-5782-a352-d25992246cc0",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 2,
               "kind": "YZ",
               "origin": {
@@ -3070,17 +3070,17 @@ description: Variables in memory after executing subtract_regression10.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
-            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-            "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
-          "endCapId": "ecac7c9f-ddfe-535a-8cc7-5c43f95bab45",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -3089,35 +3089,35 @@ description: Variables in memory after executing subtract_regression10.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "b7e8e784-1e4f-5f1e-8002-c2efbbc0b4bf",
-          "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-          "topologyId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-          "artifactId": "b7e8e784-1e4f-5f1e-8002-c2efbbc0b4bf",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "e2d7e3fb-0644-5a31-8768-5625e181bb63",
-              "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
-              "faceId": "c06f4ff3-7b73-5ffe-b6b4-c67512dbdec1",
-              "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
-              "faceId": "33fcb3d8-897c-5465-b0ca-f26eeaebe51c",
-              "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
-              "faceId": "835db4c2-dcae-5fcd-bca8-0cc91f3e573f",
-              "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
@@ -3126,11 +3126,11 @@ description: Variables in memory after executing subtract_regression10.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "b7e8e784-1e4f-5f1e-8002-c2efbbc0b4bf",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3147,7 +3147,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3164,7 +3164,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3181,7 +3181,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3199,8 +3199,8 @@ description: Variables in memory after executing subtract_regression10.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
-              "id": "deb86259-17a0-5782-a352-d25992246cc0",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 2,
               "kind": "YZ",
               "origin": {
@@ -3240,17 +3240,17 @@ description: Variables in memory after executing subtract_regression10.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
-            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-            "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
-          "endCapId": "ecac7c9f-ddfe-535a-8cc7-5c43f95bab45",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -3261,35 +3261,35 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-      "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-      "topologyId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "e2d7e3fb-0644-5a31-8768-5625e181bb63",
-          "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c06f4ff3-7b73-5ffe-b6b4-c67512dbdec1",
-          "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "33fcb3d8-897c-5465-b0ca-f26eeaebe51c",
-          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "835db4c2-dcae-5fcd-bca8-0cc91f3e573f",
-          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -3298,11 +3298,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3319,7 +3319,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3336,7 +3336,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3353,7 +3353,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3371,8 +3371,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
-          "id": "deb86259-17a0-5782-a352-d25992246cc0",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 2,
           "kind": "YZ",
           "origin": {
@@ -3412,17 +3412,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
-        "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
-      "endCapId": "ecac7c9f-ddfe-535a-8cc7-5c43f95bab45",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3430,8 +3430,8 @@ description: Variables in memory after executing subtract_regression10.kcl
   "kinematicSketch": {
     "type": "Plane",
     "value": {
-      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "XZ",
       "origin": {
@@ -3473,140 +3473,140 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-      "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-      "topologyId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-      "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "c12693a5-e576-5dbc-81db-786bd8b82c44",
-          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "4a1a7aa8-2792-5be6-b453-ef7d78e2a9bc",
-          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "468833a5-50b9-5a8f-8e65-124b9fba8960",
-          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "04aa906f-e313-519d-a0dc-9ef97289a8da",
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "54c1ddaf-5e86-56ba-b4a0-82e4920d4299",
-          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "98874aee-a3bf-5f93-9828-963b79f54b9d",
-          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "018fbcad-1553-5d31-a93b-88c9370c25ae",
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "bc20b565-1e68-5f3f-8c48-a7ac71e0f1ef",
-          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "0f454e01-bf91-5ece-962f-14761c52b274",
-          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "e617176a-6f2d-52a7-bc3d-81dc5676f4ce",
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "81876192-4616-5f99-b624-86cd7840655a",
-          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "47a01b37-ac5c-50c6-b643-02020b9a01a3",
-          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "cc26031c-82cd-5a7d-8c77-4561b00d20d5",
-          "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "244283ff-177f-58b8-82af-b328241c90d9",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "dda3bdcf-7f3b-5c55-9e71-000723377e97",
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c2ef70aa-319d-5aba-a3b5-fbd72a3f5c37",
-          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "459f2ca4-4340-5a19-b44e-bb45e4c82a9c",
-          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "74cbf2a9-b257-5795-9ca7-9c818d042721",
-          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "fb693ecd-4d25-55f0-a291-b00d226398b0",
-          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -3615,11 +3615,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3636,7 +3636,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3653,7 +3653,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3670,7 +3670,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3687,7 +3687,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3704,7 +3704,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3721,7 +3721,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3738,7 +3738,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3755,7 +3755,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3772,7 +3772,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3789,7 +3789,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3806,7 +3806,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3823,7 +3823,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3840,7 +3840,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3857,7 +3857,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3874,7 +3874,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3891,7 +3891,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3913,7 +3913,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3930,7 +3930,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3948,8 +3948,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
-          "id": "41c630c9-9d44-581b-98af-caee575bea48",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 1,
           "kind": "XZ",
           "origin": {
@@ -3989,12 +3989,12 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-        "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -4008,140 +4008,140 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-      "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-      "topologyId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-      "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "c12693a5-e576-5dbc-81db-786bd8b82c44",
-          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "4a1a7aa8-2792-5be6-b453-ef7d78e2a9bc",
-          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "468833a5-50b9-5a8f-8e65-124b9fba8960",
-          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "04aa906f-e313-519d-a0dc-9ef97289a8da",
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "54c1ddaf-5e86-56ba-b4a0-82e4920d4299",
-          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "98874aee-a3bf-5f93-9828-963b79f54b9d",
-          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "018fbcad-1553-5d31-a93b-88c9370c25ae",
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "bc20b565-1e68-5f3f-8c48-a7ac71e0f1ef",
-          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "0f454e01-bf91-5ece-962f-14761c52b274",
-          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "e617176a-6f2d-52a7-bc3d-81dc5676f4ce",
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "81876192-4616-5f99-b624-86cd7840655a",
-          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "47a01b37-ac5c-50c6-b643-02020b9a01a3",
-          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "cc26031c-82cd-5a7d-8c77-4561b00d20d5",
-          "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "244283ff-177f-58b8-82af-b328241c90d9",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "dda3bdcf-7f3b-5c55-9e71-000723377e97",
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c2ef70aa-319d-5aba-a3b5-fbd72a3f5c37",
-          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "459f2ca4-4340-5a19-b44e-bb45e4c82a9c",
-          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "74cbf2a9-b257-5795-9ca7-9c818d042721",
-          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "fb693ecd-4d25-55f0-a291-b00d226398b0",
-          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -4150,11 +4150,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4171,7 +4171,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4188,7 +4188,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4205,7 +4205,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4222,7 +4222,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4239,7 +4239,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4256,7 +4256,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4273,7 +4273,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4290,7 +4290,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4307,7 +4307,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4324,7 +4324,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4341,7 +4341,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4358,7 +4358,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4375,7 +4375,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4392,7 +4392,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4409,7 +4409,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4426,7 +4426,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4448,7 +4448,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4465,7 +4465,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4483,8 +4483,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
-          "id": "41c630c9-9d44-581b-98af-caee575bea48",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 1,
           "kind": "XZ",
           "origin": {
@@ -4524,12 +4524,12 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-        "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -4543,140 +4543,140 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-      "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "c12693a5-e576-5dbc-81db-786bd8b82c44",
-          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "4a1a7aa8-2792-5be6-b453-ef7d78e2a9bc",
-          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "468833a5-50b9-5a8f-8e65-124b9fba8960",
-          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "04aa906f-e313-519d-a0dc-9ef97289a8da",
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "54c1ddaf-5e86-56ba-b4a0-82e4920d4299",
-          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "98874aee-a3bf-5f93-9828-963b79f54b9d",
-          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "018fbcad-1553-5d31-a93b-88c9370c25ae",
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "bc20b565-1e68-5f3f-8c48-a7ac71e0f1ef",
-          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "0f454e01-bf91-5ece-962f-14761c52b274",
-          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "e617176a-6f2d-52a7-bc3d-81dc5676f4ce",
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "81876192-4616-5f99-b624-86cd7840655a",
-          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "47a01b37-ac5c-50c6-b643-02020b9a01a3",
-          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "cc26031c-82cd-5a7d-8c77-4561b00d20d5",
-          "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "244283ff-177f-58b8-82af-b328241c90d9",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "dda3bdcf-7f3b-5c55-9e71-000723377e97",
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c2ef70aa-319d-5aba-a3b5-fbd72a3f5c37",
-          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "459f2ca4-4340-5a19-b44e-bb45e4c82a9c",
-          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "74cbf2a9-b257-5795-9ca7-9c818d042721",
-          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "fb693ecd-4d25-55f0-a291-b00d226398b0",
-          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -4685,11 +4685,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4706,7 +4706,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4723,7 +4723,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4740,7 +4740,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4757,7 +4757,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4774,7 +4774,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4791,7 +4791,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4808,7 +4808,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4825,7 +4825,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4842,7 +4842,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4859,7 +4859,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4876,7 +4876,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4893,7 +4893,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4910,7 +4910,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4927,7 +4927,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4944,7 +4944,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4961,7 +4961,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4983,7 +4983,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5000,7 +5000,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5018,8 +5018,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
-          "id": "41c630c9-9d44-581b-98af-caee575bea48",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 1,
           "kind": "XZ",
           "origin": {
@@ -5059,12 +5059,12 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
-        "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -5087,35 +5087,35 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-      "originalId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-      "topologyId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-      "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "07157202-3279-5c9a-8911-711c72d44540",
-          "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "c4b01e2f-e12f-5d0f-9a53-eb54d79f7f30",
-          "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "21509edb-7dff-56e5-bce8-b4f9a6c34ea0",
-          "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "1cc18ede-7889-5b25-90cb-772502a888bc",
-          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -5124,11 +5124,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5145,7 +5145,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -5167,7 +5167,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5184,7 +5184,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5201,7 +5201,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           },
           {
             "__geoMeta": {
-              "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5219,8 +5219,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
-          "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 4,
           "kind": "XZ",
           "origin": {
@@ -5260,17 +5260,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "468f6520-a683-5392-9492-de009fdcddef",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-        "originalId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "7f813f3c-9963-5cc7-ac35-ea7b551a660b",
-      "endCapId": "79a7b164-e457-5b5d-ba32-6b85d0f83f56",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -5317,14 +5317,14 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
-      "originalId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
-      "topologyId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
-      "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "70f8df2f-cc94-5bde-91f0-96d71fdc8b2f",
-          "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2995,
@@ -5340,11 +5340,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5375,8 +5375,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
-          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 3,
           "kind": "XZ",
           "origin": {
@@ -5416,7 +5416,7 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "cc312d38-2fa6-5583-a605-44880f646499",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5426,17 +5426,17 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": "seg04"
           }
         },
-        "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
-        "originalId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "abe57c05-98ca-51df-942f-e116822cef48",
-      "endCapId": "5f5408b4-fd60-5b09-b010-2e82410aac7e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 1.875,
             "ty": {
@@ -5445,12 +5445,12 @@ description: Variables in memory after executing subtract_regression10.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e93f2141-a137-5e8c-844b-153fa2f387cb",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 1.875,
             "ty": {
@@ -5459,7 +5459,7 @@ description: Variables in memory after executing subtract_regression10.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -5471,14 +5471,14 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-      "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-      "topologyId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-      "artifactId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "555ae14d-cdb6-5cb0-9660-23a87c64b42c",
-          "id": "020035cf-ab88-50f3-91b0-886b7f399647",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
@@ -5487,11 +5487,11 @@ description: Variables in memory after executing subtract_regression10.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "020035cf-ab88-50f3-91b0-886b7f399647",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5515,8 +5515,8 @@ description: Variables in memory after executing subtract_regression10.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
-          "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 7,
           "kind": "XZ",
           "origin": {
@@ -5556,17 +5556,17 @@ description: Variables in memory after executing subtract_regression10.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-        "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "28568043-1e3a-5271-aac6-0575981f96a1",
-      "endCapId": "02b723ec-ad6b-5f1a-97ea-2050a920a8d0",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

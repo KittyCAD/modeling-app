@@ -6,8 +6,8 @@ description: Variables in memory after executing ball-bearing.kcl
   "__sketch_13_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing ball-bearing.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -71,8 +71,8 @@ description: Variables in memory after executing ball-bearing.kcl
   "__sketch_28_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -103,8 +103,8 @@ description: Variables in memory after executing ball-bearing.kcl
   "__sketch_56_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
-      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -135,8 +135,8 @@ description: Variables in memory after executing ball-bearing.kcl
   "__sketch_75_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
-      "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 74,
       "kind": "Custom",
       "origin": {
@@ -174,14 +174,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
-      "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-      "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1331,
@@ -197,11 +197,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -231,7 +231,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "7f1b023e-084a-585a-8615-9a206829084c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -256,8 +256,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 12,
           "kind": "Custom",
           "origin": {
@@ -297,7 +297,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -311,8 +311,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "line1"
           }
         },
-        "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-        "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -326,11 +326,11 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -360,7 +360,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         {
           "__geoMeta": {
-            "id": "7f1b023e-084a-585a-8615-9a206829084c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -385,8 +385,8 @@ description: Variables in memory after executing ball-bearing.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-        "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 12,
         "kind": "Custom",
         "origin": {
@@ -426,7 +426,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -440,8 +440,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "value": "line1"
         }
       },
-      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-      "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -450,14 +450,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
-      "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-      "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1331,
@@ -473,11 +473,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -507,7 +507,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "7f1b023e-084a-585a-8615-9a206829084c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -532,8 +532,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 12,
           "kind": "Custom",
           "origin": {
@@ -573,7 +573,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -587,8 +587,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "line1"
           }
         },
-        "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-        "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -605,14 +605,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -628,11 +628,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -662,7 +662,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -687,8 +687,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -728,7 +728,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -742,8 +742,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -757,14 +757,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "e916a179-7df2-5cbb-93ea-473efc1e7690",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "e916a179-7df2-5cbb-93ea-473efc1e7690",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -780,11 +780,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "e916a179-7df2-5cbb-93ea-473efc1e7690",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -814,7 +814,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -839,8 +839,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -880,7 +880,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -894,8 +894,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -909,14 +909,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -932,11 +932,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -966,7 +966,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -991,8 +991,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -1032,7 +1032,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1046,8 +1046,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -1061,14 +1061,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c02045dd-0521-5255-8687-be6f9b036127",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "c02045dd-0521-5255-8687-be6f9b036127",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -1084,11 +1084,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c02045dd-0521-5255-8687-be6f9b036127",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1118,7 +1118,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1143,8 +1143,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -1184,7 +1184,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1198,8 +1198,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -1213,14 +1213,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -1236,11 +1236,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1270,7 +1270,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1295,8 +1295,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -1336,7 +1336,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1350,8 +1350,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -1365,14 +1365,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "bf2569f4-8303-5a9a-817c-062b9a00a926",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "bf2569f4-8303-5a9a-817c-062b9a00a926",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -1388,11 +1388,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "bf2569f4-8303-5a9a-817c-062b9a00a926",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1422,7 +1422,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1447,8 +1447,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -1488,7 +1488,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1502,8 +1502,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -1517,14 +1517,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -1540,11 +1540,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1574,7 +1574,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1599,8 +1599,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -1640,7 +1640,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1654,8 +1654,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -1669,14 +1669,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "42630706-77a4-5baf-add0-9dbe87caac75",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "42630706-77a4-5baf-add0-9dbe87caac75",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -1692,11 +1692,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "42630706-77a4-5baf-add0-9dbe87caac75",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1726,7 +1726,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1751,8 +1751,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -1792,7 +1792,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1806,8 +1806,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -1821,14 +1821,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "6aa346c0-96aa-5b25-8fae-25b2e876c642",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "6aa346c0-96aa-5b25-8fae-25b2e876c642",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -1844,11 +1844,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "6aa346c0-96aa-5b25-8fae-25b2e876c642",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1878,7 +1878,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1903,8 +1903,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -1944,7 +1944,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1958,8 +1958,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -1973,14 +1973,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
-          "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "topologyId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "artifactId": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-              "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1331,
@@ -1996,11 +1996,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2030,7 +2030,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7f1b023e-084a-585a-8615-9a206829084c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2055,8 +2055,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 12,
               "kind": "Custom",
               "origin": {
@@ -2096,7 +2096,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2110,8 +2110,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-            "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -2132,7 +2132,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "arc": {
@@ -2238,8 +2238,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 12,
                   "origin": {
@@ -2268,7 +2268,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -2284,7 +2284,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                "id": "[uuid]",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -2358,8 +2358,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 12,
                   "origin": {
@@ -2388,7 +2388,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2405,11 +2405,11 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2439,7 +2439,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2464,8 +2464,8 @@ description: Variables in memory after executing ball-bearing.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 12,
                 "kind": "Custom",
                 "origin": {
@@ -2505,7 +2505,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2519,8 +2519,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
-              "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -2538,14 +2538,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -2558,8 +2558,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -2572,8 +2572,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -2586,8 +2586,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -2603,11 +2603,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2637,7 +2637,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2661,7 +2661,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2685,7 +2685,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2710,8 +2710,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -2751,7 +2751,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2773,8 +2773,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -2788,14 +2788,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "e66b3fa4-5018-5354-8273-60f2574779cb",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "e66b3fa4-5018-5354-8273-60f2574779cb",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -2808,8 +2808,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -2822,8 +2822,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -2836,8 +2836,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -2853,11 +2853,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "e66b3fa4-5018-5354-8273-60f2574779cb",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2887,7 +2887,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2911,7 +2911,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2935,7 +2935,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2960,8 +2960,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -3001,7 +3001,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3023,8 +3023,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -3038,14 +3038,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "66c2c253-d4a4-5428-8762-35d91a712f51",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "66c2c253-d4a4-5428-8762-35d91a712f51",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -3058,8 +3058,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -3072,8 +3072,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -3086,8 +3086,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -3103,11 +3103,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "66c2c253-d4a4-5428-8762-35d91a712f51",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3137,7 +3137,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3161,7 +3161,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3185,7 +3185,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3210,8 +3210,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -3251,7 +3251,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3273,8 +3273,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -3288,14 +3288,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "6dcc4e35-2b6a-5cfe-8768-c865848ad2bd",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "6dcc4e35-2b6a-5cfe-8768-c865848ad2bd",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -3308,8 +3308,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -3322,8 +3322,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -3336,8 +3336,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -3353,11 +3353,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "6dcc4e35-2b6a-5cfe-8768-c865848ad2bd",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3387,7 +3387,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3411,7 +3411,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3435,7 +3435,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3460,8 +3460,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -3501,7 +3501,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3523,8 +3523,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -3538,14 +3538,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "77285eb2-ca28-5331-9b0b-ac801963ca00",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "77285eb2-ca28-5331-9b0b-ac801963ca00",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -3558,8 +3558,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -3572,8 +3572,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -3586,8 +3586,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -3603,11 +3603,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "77285eb2-ca28-5331-9b0b-ac801963ca00",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3637,7 +3637,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3661,7 +3661,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3685,7 +3685,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3710,8 +3710,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -3751,7 +3751,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3773,8 +3773,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -3788,14 +3788,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "27e6e5c8-17e3-548b-8a3a-e1a0ea2349bd",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "27e6e5c8-17e3-548b-8a3a-e1a0ea2349bd",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -3808,8 +3808,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -3822,8 +3822,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -3836,8 +3836,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -3853,11 +3853,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "27e6e5c8-17e3-548b-8a3a-e1a0ea2349bd",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3887,7 +3887,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3911,7 +3911,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3935,7 +3935,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3960,8 +3960,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -4001,7 +4001,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4023,8 +4023,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -4038,14 +4038,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "9d677fb5-b397-5b22-8da6-671530d2af5e",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "9d677fb5-b397-5b22-8da6-671530d2af5e",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -4058,8 +4058,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -4072,8 +4072,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -4086,8 +4086,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -4103,11 +4103,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "9d677fb5-b397-5b22-8da6-671530d2af5e",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4137,7 +4137,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4161,7 +4161,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4185,7 +4185,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4210,8 +4210,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -4251,7 +4251,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4273,8 +4273,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -4288,14 +4288,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "64d7ee6a-7bae-53bb-b23b-18e5ebc64855",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "64d7ee6a-7bae-53bb-b23b-18e5ebc64855",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -4308,8 +4308,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -4322,8 +4322,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -4336,8 +4336,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -4353,11 +4353,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "64d7ee6a-7bae-53bb-b23b-18e5ebc64855",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4387,7 +4387,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4411,7 +4411,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4435,7 +4435,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4460,8 +4460,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -4501,7 +4501,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4523,8 +4523,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -4538,14 +4538,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "5aef7c6e-34c0-55cd-954d-2cc03a99a2ac",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "5aef7c6e-34c0-55cd-954d-2cc03a99a2ac",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -4558,8 +4558,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -4572,8 +4572,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -4586,8 +4586,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -4603,11 +4603,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "5aef7c6e-34c0-55cd-954d-2cc03a99a2ac",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4637,7 +4637,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4661,7 +4661,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4685,7 +4685,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4710,8 +4710,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -4751,7 +4751,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4773,8 +4773,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -4788,14 +4788,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "581aff80-575a-569f-9f7a-16b33dd7d6db",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "581aff80-575a-569f-9f7a-16b33dd7d6db",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2219,
@@ -4808,8 +4808,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2403,
@@ -4822,8 +4822,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2524,
@@ -4836,8 +4836,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2645,
@@ -4853,11 +4853,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "581aff80-575a-569f-9f7a-16b33dd7d6db",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4887,7 +4887,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4911,7 +4911,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "83404203-6665-545a-a917-6f16f2f897e3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4935,7 +4935,7 @@ description: Variables in memory after executing ball-bearing.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4960,8 +4960,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 27,
               "kind": "Custom",
               "origin": {
@@ -5001,7 +5001,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -5023,8 +5023,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "line3"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
@@ -5040,14 +5040,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-          "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2219,
@@ -5060,8 +5060,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-          "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2403,
@@ -5074,8 +5074,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-          "id": "83404203-6665-545a-a917-6f16f2f897e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2524,
@@ -5088,8 +5088,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-          "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2645,
@@ -5105,11 +5105,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5139,7 +5139,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5163,7 +5163,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5187,7 +5187,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5212,8 +5212,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 27,
           "kind": "Custom",
           "origin": {
@@ -5253,7 +5253,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5275,8 +5275,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "line3"
           }
         },
-        "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-        "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -5290,14 +5290,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-          "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2219,
@@ -5310,8 +5310,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "03201107-779c-5a92-b2b2-40adb26ec64d",
-          "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2403,
@@ -5324,8 +5324,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a7afd64a-6740-5a4e-80a4-29acc7fece75",
-          "id": "83404203-6665-545a-a917-6f16f2f897e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2524,
@@ -5338,8 +5338,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
-          "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2645,
@@ -5355,11 +5355,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5389,7 +5389,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5413,7 +5413,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "83404203-6665-545a-a917-6f16f2f897e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5437,7 +5437,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5462,8 +5462,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 27,
           "kind": "Custom",
           "origin": {
@@ -5503,7 +5503,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5525,8 +5525,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "line3"
           }
         },
-        "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-        "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -5540,11 +5540,11 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "b19592fe-ef23-595b-921c-3ea508671a7d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -5574,7 +5574,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         {
           "__geoMeta": {
-            "id": "6fb8ce60-cecb-53d7-a3bb-c6a82ecc92b4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5598,7 +5598,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         {
           "__geoMeta": {
-            "id": "83404203-6665-545a-a917-6f16f2f897e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5622,7 +5622,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         {
           "__geoMeta": {
-            "id": "57ed185e-006f-507c-b6ac-9e7e426e368c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5647,8 +5647,8 @@ description: Variables in memory after executing ball-bearing.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-        "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 27,
         "kind": "Custom",
         "origin": {
@@ -5688,7 +5688,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -5710,8 +5710,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "value": "line3"
         }
       },
-      "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -5725,7 +5725,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+                "id": "[uuid]",
                 "objectId": 32,
                 "kind": {
                   "arc": {
@@ -5831,8 +5831,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-                  "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 27,
                   "origin": {
@@ -5861,7 +5861,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -5877,7 +5877,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc312d38-2fa6-5583-a605-44880f646499",
+                "id": "[uuid]",
                 "objectId": 37,
                 "kind": {
                   "line": {
@@ -5951,8 +5951,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-                  "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 27,
                   "origin": {
@@ -5981,7 +5981,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5997,7 +5997,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+                "id": "[uuid]",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -6071,8 +6071,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-                  "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 27,
                   "origin": {
@@ -6101,7 +6101,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -6117,7 +6117,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
+                "id": "[uuid]",
                 "objectId": 45,
                 "kind": {
                   "line": {
@@ -6191,8 +6191,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-                  "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 27,
                   "origin": {
@@ -6221,7 +6221,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -6238,11 +6238,11 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6272,7 +6272,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "cc312d38-2fa6-5583-a605-44880f646499",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6296,7 +6296,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6320,7 +6320,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6345,8 +6345,8 @@ description: Variables in memory after executing ball-bearing.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
-                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 27,
                 "kind": "Custom",
                 "origin": {
@@ -6386,7 +6386,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -6408,8 +6408,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
-              "originalId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -6442,14 +6442,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
-      "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
-      "topologyId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
-      "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
-          "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 716,
@@ -6462,8 +6462,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "1c8c7308-3a35-5560-adc8-fa0d351181c5",
-          "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 910,
@@ -6479,11 +6479,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -6513,7 +6513,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -6544,8 +6544,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -6585,7 +6585,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "7b681387-29ea-57f1-8713-d63280827139",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -6599,13 +6599,13 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
-        "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
-      "endCapId": "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -6614,11 +6614,11 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -6648,7 +6648,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         {
           "__geoMeta": {
-            "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -6679,8 +6679,8 @@ description: Variables in memory after executing ball-bearing.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -6720,7 +6720,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -6734,8 +6734,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
-      "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -6749,7 +6749,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -6823,8 +6823,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6853,7 +6853,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -6869,7 +6869,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 9,
                 "kind": {
                   "circle": {
@@ -6943,8 +6943,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6973,7 +6973,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -6990,11 +6990,11 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7024,7 +7024,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7041,7 +7041,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7072,8 +7072,8 @@ description: Variables in memory after executing ball-bearing.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -7113,7 +7113,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "7b681387-29ea-57f1-8713-d63280827139",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -7127,8 +7127,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "value": "circle2"
                 }
               },
-              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
-              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -7167,14 +7167,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-      "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-      "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-      "artifactId": "5f95e913-96e4-58df-abe6-125bedd61cad",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-          "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3524,
@@ -7190,11 +7190,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7225,8 +7225,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 55,
           "kind": "Custom",
           "origin": {
@@ -7266,7 +7266,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7276,13 +7276,13 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-        "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-      "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -7291,11 +7291,11 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -7326,8 +7326,8 @@ description: Variables in memory after executing ball-bearing.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-        "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 55,
         "kind": "Custom",
         "origin": {
@@ -7367,7 +7367,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -7377,8 +7377,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-      "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -7387,14 +7387,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-      "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-      "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-      "artifactId": "5f95e913-96e4-58df-abe6-125bedd61cad",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-          "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3524,
@@ -7410,11 +7410,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7445,8 +7445,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 55,
           "kind": "Custom",
           "origin": {
@@ -7486,7 +7486,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7496,13 +7496,13 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-        "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-      "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -7516,7 +7516,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                "id": "[uuid]",
                 "objectId": 59,
                 "kind": {
                   "circle": {
@@ -7590,8 +7590,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-                  "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 55,
                   "origin": {
@@ -7620,7 +7620,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -7636,7 +7636,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
+                "id": "[uuid]",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -7711,8 +7711,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-                  "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 55,
                   "origin": {
@@ -7741,7 +7741,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lineForOffset"
@@ -7757,7 +7757,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+                "id": "[uuid]",
                 "objectId": 69,
                 "kind": {
                   "line": {
@@ -7832,8 +7832,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-                  "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 55,
                   "origin": {
@@ -7862,7 +7862,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lineForRadius"
@@ -7879,11 +7879,11 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7914,8 +7914,8 @@ description: Variables in memory after executing ball-bearing.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-                "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 55,
                 "kind": "Custom",
                 "origin": {
@@ -7955,7 +7955,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -7965,8 +7965,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
-              "originalId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -7984,14 +7984,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "5f95e913-96e4-58df-abe6-125bedd61cad",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8007,11 +8007,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8042,8 +8042,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8083,7 +8083,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8093,13 +8093,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8108,14 +8108,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "08eaee7a-bbb1-5782-a55e-e93f0b6e015f",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "08eaee7a-bbb1-5782-a55e-e93f0b6e015f",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8131,11 +8131,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "08eaee7a-bbb1-5782-a55e-e93f0b6e015f",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8166,8 +8166,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8207,7 +8207,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8217,13 +8217,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8232,14 +8232,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "f443959b-1715-51c5-83ac-43571725c82d",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "f443959b-1715-51c5-83ac-43571725c82d",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8255,11 +8255,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "f443959b-1715-51c5-83ac-43571725c82d",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8290,8 +8290,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8331,7 +8331,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8341,13 +8341,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8356,14 +8356,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "1be31c51-2f18-537c-b8a2-34ea115ff25a",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "1be31c51-2f18-537c-b8a2-34ea115ff25a",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8379,11 +8379,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "1be31c51-2f18-537c-b8a2-34ea115ff25a",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8414,8 +8414,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8455,7 +8455,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8465,13 +8465,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8480,14 +8480,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "4a967eb9-91ab-5507-be53-85ccd60fd523",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "4a967eb9-91ab-5507-be53-85ccd60fd523",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8503,11 +8503,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "4a967eb9-91ab-5507-be53-85ccd60fd523",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8538,8 +8538,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8579,7 +8579,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8589,13 +8589,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8604,14 +8604,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "d4f0536f-fe66-50fb-8c98-10f86fdd3379",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "d4f0536f-fe66-50fb-8c98-10f86fdd3379",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8627,11 +8627,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "d4f0536f-fe66-50fb-8c98-10f86fdd3379",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8662,8 +8662,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8703,7 +8703,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8713,13 +8713,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8728,14 +8728,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "b6d062d9-3ac3-589a-9ec0-603f36babc5e",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "b6d062d9-3ac3-589a-9ec0-603f36babc5e",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8751,11 +8751,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "b6d062d9-3ac3-589a-9ec0-603f36babc5e",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8786,8 +8786,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8827,7 +8827,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8837,13 +8837,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8852,14 +8852,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "303b5129-8457-58f8-a0c5-06b8177b43d5",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "303b5129-8457-58f8-a0c5-06b8177b43d5",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8875,11 +8875,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "303b5129-8457-58f8-a0c5-06b8177b43d5",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -8910,8 +8910,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -8951,7 +8951,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8961,13 +8961,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8976,14 +8976,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "ca83d9de-4b38-5a94-a799-0c1464d941ba",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "ca83d9de-4b38-5a94-a799-0c1464d941ba",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -8999,11 +8999,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "ca83d9de-4b38-5a94-a799-0c1464d941ba",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -9034,8 +9034,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -9075,7 +9075,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -9085,13 +9085,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -9100,14 +9100,14 @@ description: Variables in memory after executing ball-bearing.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "6a53ed1e-2352-5a1f-a4ef-b3b531f371ee",
-          "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "topologyId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-          "artifactId": "6a53ed1e-2352-5a1f-a4ef-b3b531f371ee",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a6d66841-442c-50d6-b48c-624e565ba5a7",
-              "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3524,
@@ -9123,11 +9123,11 @@ description: Variables in memory after executing ball-bearing.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "6a53ed1e-2352-5a1f-a4ef-b3b531f371ee",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "2e9738ed-44bd-5cf3-8275-1fb860a5ed3b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -9158,8 +9158,8 @@ description: Variables in memory after executing ball-bearing.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 55,
               "kind": "Custom",
               "origin": {
@@ -9199,7 +9199,7 @@ description: Variables in memory after executing ball-bearing.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -9209,13 +9209,13 @@ description: Variables in memory after executing ball-bearing.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
-            "originalId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
-          "endCapId": "e84f7df5-d515-532c-a073-9131215eebdd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -9244,11 +9244,11 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "901b2059-03f7-59b0-80a9-3d70c7ecaa65",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9278,7 +9278,7 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         {
           "__geoMeta": {
-            "id": "7974a7d5-b66d-56ab-8d89-970de2e8abb7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9309,8 +9309,8 @@ description: Variables in memory after executing ball-bearing.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
-        "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 74,
         "kind": "Custom",
         "origin": {
@@ -9350,7 +9350,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -9364,8 +9364,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-      "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -9374,14 +9374,14 @@ description: Variables in memory after executing ball-bearing.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-      "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-      "topologyId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-      "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "245e94e9-dead-58c1-b997-17191922a7c5",
-          "id": "901b2059-03f7-59b0-80a9-3d70c7ecaa65",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4722,
@@ -9394,8 +9394,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "ecbff008-b319-54c6-88cc-c210250c307f",
-          "id": "7974a7d5-b66d-56ab-8d89-970de2e8abb7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4907,
@@ -9411,11 +9411,11 @@ description: Variables in memory after executing ball-bearing.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "901b2059-03f7-59b0-80a9-3d70c7ecaa65",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -9445,7 +9445,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           {
             "__geoMeta": {
-              "id": "7974a7d5-b66d-56ab-8d89-970de2e8abb7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -9476,8 +9476,8 @@ description: Variables in memory after executing ball-bearing.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
-          "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 74,
           "kind": "Custom",
           "origin": {
@@ -9517,7 +9517,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -9531,13 +9531,13 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-        "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "fbda49d6-5626-589f-86e0-a03e762bf4a8",
-      "endCapId": "f07f6565-3a08-54b4-85a2-d5a5588ec011",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -9551,7 +9551,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                "id": "[uuid]",
                 "objectId": 78,
                 "kind": {
                   "circle": {
@@ -9625,8 +9625,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
-                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 74,
                   "origin": {
@@ -9655,7 +9655,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -9671,7 +9671,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+                "id": "[uuid]",
                 "objectId": 83,
                 "kind": {
                   "circle": {
@@ -9745,8 +9745,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
-                  "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 74,
                   "origin": {
@@ -9775,7 +9775,7 @@ description: Variables in memory after executing ball-bearing.kcl
                     "units": null
                   }
                 },
-                "sketchId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -9792,11 +9792,11 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -9826,7 +9826,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9843,7 +9843,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -9874,8 +9874,8 @@ description: Variables in memory after executing ball-bearing.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
-                "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 74,
                 "kind": "Custom",
                 "origin": {
@@ -9915,7 +9915,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -9929,8 +9929,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "value": "circle2"
                 }
               },
-              "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-              "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }

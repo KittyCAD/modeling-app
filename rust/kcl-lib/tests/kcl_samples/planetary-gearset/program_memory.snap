@@ -16,14 +16,14 @@ description: Variables in memory after executing planetary-gearset.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-      "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-      "topologyId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "9e0ed656-9eff-594a-82ee-ec9fcdff7d1e",
-          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1163,
@@ -36,22 +36,22 @@ description: Variables in memory after executing planetary-gearset.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c8805e28-c4b7-5f26-a1c1-532f46b01fa1",
-          "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "35f07cb1-18c5-5e81-96cc-3c79ba1ada1a",
-          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "d3ca9cad-ff3e-592a-b71c-f695d514e8d2",
-          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -60,11 +60,11 @@ description: Variables in memory after executing planetary-gearset.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -88,7 +88,7 @@ description: Variables in memory after executing planetary-gearset.kcl
           },
           {
             "__geoMeta": {
-              "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -105,7 +105,7 @@ description: Variables in memory after executing planetary-gearset.kcl
           },
           {
             "__geoMeta": {
-              "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -122,7 +122,7 @@ description: Variables in memory after executing planetary-gearset.kcl
           },
           {
             "__geoMeta": {
-              "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -139,7 +139,7 @@ description: Variables in memory after executing planetary-gearset.kcl
           },
           {
             "__geoMeta": {
-              "id": "cc312d38-2fa6-5583-a605-44880f646499",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -157,8 +157,8 @@ description: Variables in memory after executing planetary-gearset.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
-          "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 3,
           "kind": "Custom",
           "origin": {
@@ -198,7 +198,7 @@ description: Variables in memory after executing planetary-gearset.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -208,13 +208,13 @@ description: Variables in memory after executing planetary-gearset.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-        "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "553d01f6-8177-5ded-afba-eb071e845367",
-      "endCapId": "d312c231-1aa7-56f9-95ed-4506651aa23a",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

@@ -5,7 +5,7 @@ description: Artifact commands camshaft.kcl
 {
   "public/kcl-samples/camshaft/main.kcl": [
     {
-      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -44,20 +44,20 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -69,18 +69,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "path": "[uuid]",
         "to": {
           "x": -14.811713233512,
           "y": 8.3800641458326,
@@ -89,18 +89,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -121,11 +121,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -146,11 +146,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -171,11 +171,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -196,24 +196,24 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
-        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
-        "intersection_segment": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -225,11 +225,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "target": "[uuid]",
         "distance": 13.258799999999999,
         "faces": null,
         "opposite": "None",
@@ -238,44 +238,44 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "53a9149e-1246-5c44-9e3c-558201ff438c"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
-        "edge_id": "de7be92e-614b-5db2-af67-45ab2a0e944d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
-        "edge_id": "de7be92e-614b-5db2-af67-45ab2a0e944d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -297,7 +297,7 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -322,11 +322,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -336,20 +336,20 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -361,18 +361,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "path": "[uuid]",
         "to": {
           "x": -14.955709623293599,
           "y": 8.120287782099599,
@@ -381,18 +381,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -413,11 +413,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -438,11 +438,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -463,11 +463,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -488,24 +488,24 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "7d4c814d-f292-503d-a012-68ab58c77524",
-        "segment": "e383621f-755a-5f2e-ada3-608aff393dab",
-        "intersection_segment": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -517,11 +517,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "target": "[uuid]",
         "distance": 13.258799999999999,
         "faces": null,
         "opposite": "None",
@@ -530,44 +530,44 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-        "edge_id": "9076fac9-8dc4-5a25-8fbf-e3f2c0d70b84"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-        "edge_id": "9076fac9-8dc4-5a25-8fbf-e3f2c0d70b84"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -589,11 +589,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -615,11 +615,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -641,11 +641,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -681,11 +681,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -721,11 +721,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -819,11 +819,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "91c9766d-c483-5cd6-bc6b-8cd723b9b113",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -917,11 +917,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -1015,11 +1015,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "93d860bd-86a2-5fa8-80fe-57be39b71bc8",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -1113,7 +1113,7 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1138,20 +1138,20 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1163,18 +1163,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "path": "[uuid]",
         "to": {
           "x": 12.318999999999999,
           "y": 0.0,
@@ -1183,18 +1183,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1215,24 +1215,24 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
-        "segment": "d5eaf678-0440-563f-ac19-e473850b9270",
-        "intersection_segment": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1244,11 +1244,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "target": "[uuid]",
         "distance": 472.4908,
         "faces": null,
         "opposite": "None",
@@ -1257,40 +1257,40 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
-        "edge_id": "7f42517b-dc07-5b0f-a02f-d6e761b38ad5"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
-        "edge_id": "7f42517b-dc07-5b0f-a02f-d6e761b38ad5"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1315,11 +1315,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1329,20 +1329,20 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1354,18 +1354,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "path": "[uuid]",
         "to": {
           "x": 0.0000000000000016441934416755413,
           "y": 26.851716638957335,
@@ -1374,18 +1374,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "path": "[uuid]",
         "segment": {
           "type": "circular_involute",
           "start_radius": 26.851716638957335,
@@ -1399,11 +1399,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1416,11 +1416,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "path": "[uuid]",
         "segment": {
           "type": "circular_involute",
           "start_radius": 26.851716638957335,
@@ -1434,11 +1434,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1451,11 +1451,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -1472,19 +1472,19 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "close_path",
-        "path_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
+        "path_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1496,11 +1496,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "twist_extrude",
-        "target": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "target": "[uuid]",
         "distance": 11.43,
         "faces": null,
         "center_2d": {
@@ -1520,40 +1520,40 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
-        "edge_id": "3312f826-b323-5332-871a-6a8a59a3ae93"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
-        "edge_id": "3312f826-b323-5332-871a-6a8a59a3ae93"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1578,20 +1578,20 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1603,18 +1603,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "path": "[uuid]",
         "to": {
           "x": 12.318999999999999,
           "y": 0.0,
@@ -1623,18 +1623,18 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1655,24 +1655,24 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "40d8c462-7810-5666-bb09-1db7308cf666",
-        "segment": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
-        "intersection_segment": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1684,11 +1684,11 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+        "target": "[uuid]",
         "distance": 11.43,
         "faces": null,
         "opposite": "None",
@@ -1697,86 +1697,86 @@ description: Artifact commands camshaft.kcl
       }
     },
     {
-      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-        "edge_id": "69b31a2d-6e63-51f8-89f3-679fea249385"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-        "edge_id": "69b31a2d-6e63-51f8-89f3-679fea249385"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "94e50507-a449-5f71-8fce-fd2931e7c6c9"
+          "[uuid]"
         ],
         "tool_ids": [
-          "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "object_id": "[uuid]",
         "hidden": true
       }
     }

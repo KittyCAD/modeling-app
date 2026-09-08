@@ -5,7 +5,7 @@ description: Artifact commands tube-manifold.kcl
 {
   "public/kcl-samples/tube-manifold/main.kcl": [
     {
-      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "523b9fc1-d681-5ef3-b407-128525533bfe",
+        "path": "[uuid]",
         "to": {
           "x": 30.479999999999997,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "523b9fc1-d681-5ef3-b407-128525533bfe",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,24 +107,24 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "523b9fc1-d681-5ef3-b407-128525533bfe",
-        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
-        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -136,11 +136,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "target": "[uuid]",
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
@@ -149,49 +149,49 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "e00e9caf-6e9e-5221-8545-b199546c367f",
-        "edge_id": "28f7791a-5f48-5065-b727-81d4acd6d2f1"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "e00e9caf-6e9e-5221-8545-b199546c367f",
-        "edge_id": "28f7791a-5f48-5065-b727-81d4acd6d2f1"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -216,20 +216,20 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -241,18 +241,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "to": {
           "x": 152.39999999999998,
           "y": 68.58,
@@ -261,18 +261,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -285,11 +285,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -302,11 +302,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -327,11 +327,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -344,11 +344,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -369,11 +369,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -386,11 +386,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -411,11 +411,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -428,24 +428,24 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "d5eaf678-0440-563f-ac19-e473850b9270",
-        "segment": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-        "intersection_segment": "deb86259-17a0-5782-a352-d25992246cc0",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+        "target": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -467,101 +467,101 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "c820e130-6f59-5cd5-8ff1-7228a584ef66"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-        "edge_id": "01215fa4-ee56-5054-a41e-7b59a7f38930"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-        "edge_id": "01215fa4-ee56-5054-a41e-7b59a7f38930"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+        "entity_id": "[uuid]"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
-        "resultArtifactId": "19107e89-bf40-5541-88a5-5106b6de636d",
-        "sourceTopologyId": "e00e9caf-6e9e-5221-8545-b199546c367f"
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
-      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+        "entity_id": "[uuid]"
       }
     },
     {
-      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
+        "entity_id": "[uuid]"
       }
     },
     {
-      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "e00e9caf-6e9e-5221-8545-b199546c367f",
-        "edge_id": "28f7791a-5f48-5065-b727-81d4acd6d2f1"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "e00e9caf-6e9e-5221-8545-b199546c367f",
-        "edge_id": "28f7791a-5f48-5065-b727-81d4acd6d2f1"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -655,25 +655,25 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "c820e130-6f59-5cd5-8ff1-7228a584ef66"
+          "[uuid]"
         ],
         "tool_ids": [
-          "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-          "b4bb5869-c4a2-5776-837b-23210d5454b6",
-          "e87adfa5-4f60-5241-b09f-71a7287871de",
-          "e47c670e-da9a-5ef8-bd00-49d4e4cb9f9a"
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -698,20 +698,20 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -723,18 +723,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "path": "[uuid]",
         "to": {
           "x": 73.66,
           "y": 0.0,
@@ -743,18 +743,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -775,24 +775,24 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
-        "segment": "93954f29-a246-54bd-ac2a-62572f26d508",
-        "intersection_segment": "93954f29-a246-54bd-ac2a-62572f26d508",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -804,11 +804,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "target": "[uuid]",
         "distance": -508.0,
         "faces": null,
         "opposite": {
@@ -819,49 +819,49 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475",
-        "edge_id": "b9fe2aab-2cb9-5b16-b523-0657711d872f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475",
-        "edge_id": "b9fe2aab-2cb9-5b16-b523-0657711d872f"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -886,20 +886,20 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -911,18 +911,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 152.39999999999998,
@@ -931,18 +931,18 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -955,11 +955,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -972,11 +972,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -997,11 +997,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1014,11 +1014,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1031,11 +1031,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1048,11 +1048,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region_from_query_point",
-        "object_id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "object_id": "[uuid]",
         "query_point": {
           "x": 17.779999999999998,
           "y": 76.19999999999999
@@ -1061,11 +1061,11 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "662e081e-0c36-5b97-b2b8-ea0464220525",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "target": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1087,76 +1087,76 @@ description: Artifact commands tube-manifold.kcl
       }
     },
     {
-      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "ff863943-02de-5b48-baf7-471ff32b980f"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "ff863943-02de-5b48-baf7-471ff32b980f",
-        "edge_id": "e8b6cfd9-768f-5bc5-9059-e804091a424d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "ff863943-02de-5b48-baf7-471ff32b980f",
-        "edge_id": "e8b6cfd9-768f-5bc5-9059-e804091a424d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "93fe6743-e0aa-5d65-834b-87a82208c703",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "ff863943-02de-5b48-baf7-471ff32b980f"
+          "[uuid]"
         ],
         "tool_ids": [
-          "c0c1140b-284f-50ff-b80d-615b8b938475"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "03314dc0-0005-55f9-bfa2-d4e07847c4b2"
+          "[uuid]"
         ],
         "tool_ids": [
-          "e00e9caf-6e9e-5221-8545-b199546c367f"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "d4cbda13-cf30-51b5-adde-debccd5ae685",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [

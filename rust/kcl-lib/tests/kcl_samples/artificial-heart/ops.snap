@@ -3704,11 +3704,11 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "63822c13-f07f-5b31-907f-4dd6fa311b4a"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3738,7 +3738,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5ab749ff-2c91-5083-9218-aec1c57ee085"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3764,7 +3764,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "53c3190b-f023-5c4f-be10-10b13db80873"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3864,7 +3864,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "472c4710-fd5c-551b-99c6-0e1aae2760e2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4131,7 +4131,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2e801ba7-a994-5cb8-adbd-21feb4957787"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4161,7 +4161,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "7b60351b-ca82-586d-afaf-9fbbf42bef71"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4191,7 +4191,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d24149d4-c0e8-5147-add1-f3d482e1e26c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5433,7 +5433,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "3ec51f83-616b-535d-884e-c80aeae7d4c0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5463,7 +5463,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -5497,7 +5497,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "a282b968-e08b-5bb9-9f15-cf41fac8f105"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -5530,13 +5530,13 @@ description: Operations executed artificial-heart.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "c20c40fc-0ea8-5640-b267-20ce6af54976"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -5587,13 +5587,13 @@ description: Operations executed artificial-heart.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c3b7ac91-5842-5810-b9f8-261c9c5faca8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "30c62370-252d-530f-a4e4-d5fc50f4557e"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -5650,13 +5650,13 @@ description: Operations executed artificial-heart.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c3b7ac91-5842-5810-b9f8-261c9c5faca8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "30c62370-252d-530f-a4e4-d5fc50f4557e"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -5714,13 +5714,13 @@ description: Operations executed artificial-heart.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c3b7ac91-5842-5810-b9f8-261c9c5faca8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "30c62370-252d-530f-a4e4-d5fc50f4557e"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -5732,7 +5732,7 @@ description: Operations executed artificial-heart.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "7ecb7cc1-b8ea-575f-9a4e-357bdca0ed44"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -5764,7 +5764,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -7878,7 +7878,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "fd717088-1656-59ae-a5f4-67717579432f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7908,7 +7908,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c4a192b6-d98e-5805-a7a4-f954a40467f1"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7938,7 +7938,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "218a8472-acf7-5c93-b30c-244f577f7292"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7984,7 +7984,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "4d39730b-3991-5e1e-9144-46b864ad6974"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -8791,7 +8791,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -9220,7 +9220,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "acb0859c-415e-5fd4-a6fd-c37ec50c024c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -9250,7 +9250,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "b3158a9d-c0ed-5e34-b389-b9e31e972da2"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -9280,7 +9280,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5f73c80f-dde3-5416-b320-d0284248e38e"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -9290,7 +9290,7 @@ description: Operations executed artificial-heart.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -9323,7 +9323,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bfd0b087-16c6-56c6-aa36-bf952f9e3133"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -9375,7 +9375,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bfd0b087-16c6-56c6-aa36-bf952f9e3133"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10444,7 +10444,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -10873,7 +10873,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9c65f474-4b76-53ec-805c-24f2098517cb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10903,7 +10903,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "25b71da7-5201-56f2-b165-e6a23679ab42"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -10933,7 +10933,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -10943,7 +10943,7 @@ description: Operations executed artificial-heart.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "97afdf03-5344-55d3-8a8a-75fd4f9469d8"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -10976,7 +10976,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "563e3922-e782-51ce-a6ca-80f1144b0478"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -11028,7 +11028,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "563e3922-e782-51ce-a6ca-80f1144b0478"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14471,7 +14471,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14501,11 +14501,11 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "6b47b38f-ef39-55ee-86a3-09330b344cbd"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "37dccfff-51c8-54b8-ad35-58f377eb2c42"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -14535,7 +14535,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5bd616e6-6e6d-5179-9d56-7b9dee32e864"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14618,7 +14618,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -16707,7 +16707,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "fb046b13-32ee-5ea3-b65e-342ef954c986"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -16737,11 +16737,11 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "5841eb71-6d1d-5d26-b453-cd3c0e44180f"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "a8420e0e-9816-59be-8c5a-fb7772135f7f"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -16771,7 +16771,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -16817,7 +16817,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "1d40afb6-ee3b-5c59-8b23-d5b3da12b61c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -16979,43 +16979,43 @@ description: Operations executed artificial-heart.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1d40afb6-ee3b-5c59-8b23-d5b3da12b61c"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "f7c949c6-9cfc-5f5d-8fdd-9557c1acfbe7"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "8af253db-1c7e-5aa7-b0cb-986ce29b9a78"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ba469631-95d6-5264-9080-1d0365011d45"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a81cc4a7-fe10-58b4-ad52-ea545e34538b"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "576fa479-fa72-512b-bc72-fb2c01883763"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "61abda1d-2f88-5e5c-ab9b-28e920a4b56d"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -18325,7 +18325,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "28273f31-a51e-5e33-8772-211d41623a58"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -19562,7 +19562,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -19592,7 +19592,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "d93278ce-1670-5a7c-90ce-020ed280966a"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -19626,7 +19626,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -19679,7 +19679,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "694dfa80-ac26-5d24-beac-f480b73cb763"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -19716,7 +19716,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -19726,7 +19726,7 @@ description: Operations executed artificial-heart.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "a4241f21-985f-5e97-9922-28390e04d161"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -19759,7 +19759,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "32e6bda2-a3fd-5f43-acb4-3888bfa6cb27"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -19804,7 +19804,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "1a6511e8-9390-5980-a26f-d8e5f9296384"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -19838,7 +19838,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "39b12400-18c1-58a6-b7a6-660bcd7aaeea"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -19891,7 +19891,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "39b12400-18c1-58a6-b7a6-660bcd7aaeea"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -19901,7 +19901,7 @@ description: Operations executed artificial-heart.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "694dfa80-ac26-5d24-beac-f480b73cb763"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -19934,7 +19934,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "602dfc01-e15e-5e05-af59-b77a397466b1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -20730,7 +20730,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "28273f31-a51e-5e33-8772-211d41623a58"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -21159,7 +21159,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "dcbefe3d-e02a-5a78-b63e-194784a736ad"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21189,7 +21189,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "a27f0970-66a5-5750-bf4d-51995b34967c"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -21219,7 +21219,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d237f941-2991-5274-92ba-45f6e22d7caa"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21256,7 +21256,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "30ac11a8-1960-5b8a-9e47-b39668413425"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21266,7 +21266,7 @@ description: Operations executed artificial-heart.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "2551145a-2956-564e-a947-85deb2487596"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -21299,7 +21299,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a65786e7-72b2-51f0-8005-b9a979c9c5e5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21345,7 +21345,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a65786e7-72b2-51f0-8005-b9a979c9c5e5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21403,7 +21403,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a65786e7-72b2-51f0-8005-b9a979c9c5e5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21461,7 +21461,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a65786e7-72b2-51f0-8005-b9a979c9c5e5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21501,7 +21501,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "28273f31-a51e-5e33-8772-211d41623a58"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -21930,7 +21930,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "604321df-5675-5a50-8ba3-d3c06b7fa832"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -21960,7 +21960,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "058775b9-9bb6-5cd7-b458-c825b012f91e"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -21990,7 +21990,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "98eca586-bb75-58ef-89ff-ffc35db52409"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -22000,7 +22000,7 @@ description: Operations executed artificial-heart.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "d237f941-2991-5274-92ba-45f6e22d7caa"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -22033,7 +22033,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -22079,7 +22079,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -22137,7 +22137,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -22207,7 +22207,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -22249,7 +22249,7 @@ description: Operations executed artificial-heart.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -26782,7 +26782,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f0f1d026-28af-59c7-beb7-102d4e27bcb4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -26812,11 +26812,11 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "4406885d-65f3-5dd4-808b-a175b3d8319f"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "bd65474f-77cd-5603-b75c-91f2a94f1ad7"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -26846,7 +26846,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2224641f-25ad-5575-b005-e16db99ed65a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -26895,7 +26895,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f0f1d026-28af-59c7-beb7-102d4e27bcb4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -26925,11 +26925,11 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "2cab62cd-b9c0-5ce4-857b-6286335fe034"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "ba898db1-0ff7-5f44-b164-9f3e8806a39a"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -26959,7 +26959,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2128dde6-7045-5d16-a133-ed6a3d89ad11"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -27012,7 +27012,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f8831c06-bd41-560a-a95d-01e1214e160f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -27056,13 +27056,13 @@ description: Operations executed artificial-heart.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "0879ff89-e411-539f-9702-6d560b756008"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "f8831c06-bd41-560a-a95d-01e1214e160f"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -27212,7 +27212,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "a1e313ee-e07d-511b-ad78-cd22c9d834de"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -27245,7 +27245,7 @@ description: Operations executed artificial-heart.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -27275,7 +27275,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e832610b-9ec9-589c-b82a-96911e9e3c4f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -27321,7 +27321,7 @@ description: Operations executed artificial-heart.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "74717312-c14b-561f-b188-7e7b011a7910"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
