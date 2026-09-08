@@ -77,14 +77,14 @@ pub fn s_curve(
         if i % 2 == 0 {
             // The x position of the line and the start of the arc.
             let x = x_row;
-            let y = start_point.y;
+            let _y = start_point.y;
             let end_y = ((part_height + overhang + overhang) * direction.y) + start_point.y;
             // diff_of_x_rows makes it a circular arc
             let arc_middle_y = start_point.y + (direction.y * (part_height + overhang + overhang + diff_of_x_rows));
 
             moves.push(Move {
                 end: Point3d {
-                    x: x,
+                    x,
                     y: end_y,
                     z: start_point.z,
                 },
@@ -116,8 +116,8 @@ pub fn s_curve(
 
             moves.push(Move {
                 end: Point3d {
-                    x: x,
-                    y: y,
+                    x,
+                    y,
                     z: start_point.z,
                 },
                 point: None,
@@ -131,7 +131,7 @@ pub fn s_curve(
                     }),
                     end: Point3d {
                         x: next_x_row,
-                        y: y,
+                        y,
                         z: start_point.z,
                     },
                 });
@@ -175,124 +175,121 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         None
     };
 
-    match bounding_box {
-        Some(bounding_box) => {
-            let aabb = bounding_box.dimensions;
-            let center = bounding_box.center;
-            let origin = Point3d {
-                x: (center.x - (aabb.x / 2.0)) as f32,
-                y: (center.y - (aabb.y / 2.0)) as f32,
-                z: (center.z + (aabb.z / 2.0)) as f32,
-            };
-            let direction = Point3d { x: 1.0, y: 1.0, z: 1.0 };
-            let part_width = aabb.x;
-            let part_height = aabb.y;
-            let moves = s_curve(
-                part_width as f32,
-                part_height as f32,
-                tool_diameter.to_mm() as f32,
-                origin,
-                direction,
-                step_over.n as f32,
-            );
+    if let Some(bounding_box) = bounding_box {
+        let aabb = bounding_box.dimensions;
+        let center = bounding_box.center;
+        let origin = Point3d {
+            x: (center.x - (aabb.x / 2.0)) as f32,
+            y: (center.y - (aabb.y / 2.0)) as f32,
+            z: (center.z + (aabb.z / 2.0)) as f32,
+        };
+        let direction = Point3d { x: 1.0, y: 1.0, z: 1.0 };
+        let part_width = aabb.x;
+        let part_height = aabb.y;
+        let moves = s_curve(
+            part_width as f32,
+            part_height as f32,
+            tool_diameter.to_mm() as f32,
+            origin,
+            direction,
+            step_over.n as f32,
+        );
 
-            let plane = make_sketch_plane_from_orientation(PlaneData::XY, exec_state, &args).await?;
-            let sketch_surface_id = plane.id;
-            let enable_sketch_id = exec_state.next_uuid();
-            let path_id = exec_state.next_uuid();
-            let disable_sketch_id = exec_state.next_uuid();
+        let plane = make_sketch_plane_from_orientation(PlaneData::XY, exec_state, &args).await?;
+        let sketch_surface_id = plane.id;
+        let enable_sketch_id = exec_state.next_uuid();
+        let path_id = exec_state.next_uuid();
+        let disable_sketch_id = exec_state.next_uuid();
 
-            let mut cmds = vec![
-                // Enter sketch mode on the surface.
-                // We call this here so you can reuse the sketch surface for multiple sketches.
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(
-                        mcmd::EnableSketchMode::builder()
-                            .animated(false)
-                            .ortho(false)
-                            .entity_id(sketch_surface_id)
-                            .adjust_camera(false)
-                            .planar_normal(plane.info.x_axis.axes_cross_product(&plane.info.y_axis).into())
-                            .build(),
-                    ),
-                    cmd_id: enable_sketch_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(mcmd::StartPath::default()),
-                    cmd_id: path_id.into(),
-                },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::from(
-                        mcmd::MovePathPen::builder()
-                            .path(path_id.into())
-                            .to(Point3d {
-                                x: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.x as f64),
-                                y: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.y as f64),
-                                z: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.z as f64),
-                            })
-                            .build(),
-                    ),
-                    cmd_id: exec_state.next_uuid().into(),
-                },
-            ];
+        let mut cmds = vec![
+            // Enter sketch mode on the surface.
+            // We call this here so you can reuse the sketch surface for multiple sketches.
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(sketch_surface_id)
+                        .adjust_camera(false)
+                        .planar_normal(plane.info.x_axis.axes_cross_product(&plane.info.y_axis).into())
+                        .build(),
+                ),
+                cmd_id: enable_sketch_id.into(),
+            },
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(mcmd::StartPath::default()),
+                cmd_id: path_id.into(),
+            },
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(
+                    mcmd::MovePathPen::builder()
+                        .path(path_id.into())
+                        .to(Point3d {
+                            x: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.x as f64),
+                            y: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.y as f64),
+                            z: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.z as f64),
+                        })
+                        .build(),
+                ),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+        ];
 
-            for move_op in moves {
-                match move_op.point {
-                    Some(p) => {
-                        cmds.push(ModelingCmdReq {
-                            cmd_id: exec_state.next_uuid().into(),
-                            cmd: ModelingCmd::from(
-                                mcmd::ExtendPath::builder()
-                                    .path(path_id.into())
-                                    .segment(PathSegment::ArcTo {
-                                        interior: Point3d {
-                                            x: kittycad_modeling_cmds::length_unit::LengthUnit(p.x as f64),
-                                            y: kittycad_modeling_cmds::length_unit::LengthUnit(p.y as f64),
-                                            z: kittycad_modeling_cmds::length_unit::LengthUnit(p.z as f64),
-                                        },
-                                        end: Point3d {
-                                            x: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.x as f64),
-                                            y: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.y as f64),
-                                            z: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.z as f64),
-                                        },
-                                        relative: false,
-                                    })
-                                    .build(),
-                            ),
-                        });
-                    }
-                    None => {
-                        cmds.push(ModelingCmdReq {
-                            cmd_id: exec_state.next_uuid().into(),
-                            cmd: ModelingCmd::from(
-                                mcmd::ExtendPath::builder()
-                                    .path(path_id.into())
-                                    .segment(PathSegment::Line {
-                                        end: Point3d {
-                                            x: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.x as f64),
-                                            y: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.y as f64),
-                                            z: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.z as f64),
-                                        },
-                                        relative: false,
-                                    })
-                                    .build(),
-                            ),
-                        });
-                    }
+        for move_op in moves {
+            match move_op.point {
+                Some(p) => {
+                    cmds.push(ModelingCmdReq {
+                        cmd_id: exec_state.next_uuid().into(),
+                        cmd: ModelingCmd::from(
+                            mcmd::ExtendPath::builder()
+                                .path(path_id.into())
+                                .segment(PathSegment::ArcTo {
+                                    interior: Point3d {
+                                        x: kittycad_modeling_cmds::length_unit::LengthUnit(p.x as f64),
+                                        y: kittycad_modeling_cmds::length_unit::LengthUnit(p.y as f64),
+                                        z: kittycad_modeling_cmds::length_unit::LengthUnit(p.z as f64),
+                                    },
+                                    end: Point3d {
+                                        x: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.x as f64),
+                                        y: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.y as f64),
+                                        z: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.z as f64),
+                                    },
+                                    relative: false,
+                                })
+                                .build(),
+                        ),
+                    });
+                }
+                None => {
+                    cmds.push(ModelingCmdReq {
+                        cmd_id: exec_state.next_uuid().into(),
+                        cmd: ModelingCmd::from(
+                            mcmd::ExtendPath::builder()
+                                .path(path_id.into())
+                                .segment(PathSegment::Line {
+                                    end: Point3d {
+                                        x: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.x as f64),
+                                        y: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.y as f64),
+                                        z: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.z as f64),
+                                    },
+                                    relative: false,
+                                })
+                                .build(),
+                        ),
+                    });
                 }
             }
-
-            // disable
-            cmds.push(ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                cmd_id: disable_sketch_id.into(),
-            });
-
-            exec_state
-                .batch_modeling_cmds(ModelingCmdMeta::new(exec_state, &args.ctx, args.source_range), &cmds)
-                .await?;
         }
-        None => {}
+
+        // disable
+        cmds.push(ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: disable_sketch_id.into(),
+        });
+
+        exec_state
+            .batch_modeling_cmds(ModelingCmdMeta::new(exec_state, &args.ctx, args.source_range), &cmds)
+            .await?;
     }
 
     // Pass this to the engine in an engine endpoint

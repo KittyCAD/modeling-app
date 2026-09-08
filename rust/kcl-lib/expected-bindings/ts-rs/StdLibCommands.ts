@@ -5568,6 +5568,49 @@ export default {
       }
     ]
   },
+  "operation::facing": {
+    "name": "facing",
+    "preferredName": "operation::facing",
+    "qualName": "std::operation::facing",
+    "moduleName": "operation",
+    "returnType": "number(_)",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "solid",
+        "ty": "Solid",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "toolDiameter",
+        "ty": "number(Length)",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "stepOver",
+        "ty": "number",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
   "parabolic": {
     "name": "parabolic",
     "preferredName": "parabolic",
