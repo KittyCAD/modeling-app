@@ -109,11 +109,7 @@ import {
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 const fileOperations = {
-  readDirectory: async (path: string) =>
-    (await mocks.fsZds.readdir(path)).map((name: string) => ({
-      name,
-      kind: 'directory' as const,
-    })),
+  readDirectory: mocks.fsZds.readdir,
   stat: async (path: string) => {
     const stat = await mocks.fsZds.stat(path)
     return {
@@ -230,6 +226,7 @@ describe('directory project scanner', () => {
     })
 
     expect(projects).toEqual([])
+    expect(mocks.fsZds.stat).toHaveBeenCalledTimes(3)
     expect(onProjectStatFailures).toHaveBeenCalledOnce()
     expect(onProjectStatFailures).toHaveBeenCalledWith({
       error: statFailure,
