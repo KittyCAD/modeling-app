@@ -197,7 +197,7 @@ export function addDeleteFace({
     artifactGraph,
     modifiedAst,
     wasmInstance,
-    mNodeToEdit,
+    undefined,
     {
       lastChildLookup: true,
       artifactTypeFilter: ['sweep', 'compositeSolid', 'edgeCut'],
