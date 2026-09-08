@@ -36,7 +36,7 @@ async fn exec_outcome_highlights_named_segments() {
         .render_sketch_png_with_overlays("profile", &["bottom".to_owned(), "right".to_owned()], None)
         .expect("the named segments should be highlighted");
 
-    assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
+    assert!(png_contains_color(&png, [0xff, 0xc0, 0x00, 0xff]));
     assert!(!png_contains_color(&png, [43, 72, 43, 255]));
 }
 
@@ -71,7 +71,7 @@ async fn exec_outcome_renders_engine_resolved_region_fill() {
         .render_sketch_png_with_overlays("profile", &["bottom".to_owned(), "right".to_owned()], Some(&region))
         .expect("the named segments and resolved region should be highlighted");
 
-    assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
+    assert!(png_contains_color(&png, [0xff, 0xc0, 0x00, 0xff]));
     assert!(png_contains_color(&png, [43, 72, 43, 255]));
     // Every original line/point pixel must retain its constraint color.
     let plain = image::load_from_memory(&outcome.render_sketch_png("profile").unwrap())
@@ -256,7 +256,7 @@ async fn engine_trace_checkpoint_overlays() {
                 assert_eq!(before, after, "{name}: overlay replaced a constraint color");
             }
         }
-        assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
+        assert!(png_contains_color(&png, [0xff, 0xc0, 0x00, 0xff]));
         let filled_pixels = overlay.pixels().filter(|p| p.0 == [43, 72, 43, 255]).count();
         if let Some(region) = region {
             assert_eq!(region.contours.len(), 1, "{name}: unexpected extra boundary");
@@ -281,7 +281,20 @@ async fn engine_trace_checkpoint_overlays() {
                         .iter()
                         .all(|p| (1.07..1.91).contains(&p.x) && (2.86..2.99).contains(&p.y))
                 );
-                assert!((300..700).contains(&filled_pixels), "{name}: pixels={filled_pixels}");
+                let region_only = outcome
+                    .render_sketch_png_with_overlays(sketch, &[], Some(&region))
+                    .unwrap();
+                let region_pixels = image::load_from_memory(&region_only)
+                    .unwrap()
+                    .into_rgba8()
+                    .pixels()
+                    .filter(|p| p.0 == [43, 72, 43, 255])
+                    .count();
+                // Halos can cover part of this tiny cap, but must not erase or enlarge it.
+                assert!(
+                    filled_pixels > 0 && filled_pixels <= region_pixels,
+                    "{name}: pixels={filled_pixels}"
+                );
                 assert_eq!(overlay.get_pixel(550, 550).0, [24, 26, 31, 255]);
             }
         } else {

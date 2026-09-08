@@ -602,7 +602,7 @@ impl ExecOutcome {
     /// Highlighted segment names are local variables from the named sketch
     /// block. The resolved region must be a top-level `region()` result from
     /// that sketch, captured with `resolve_sketch_region` before closing the
-    /// engine session. Magenta seed halos and a soft green region fill sit
+    /// engine session. Gold seed halos with dark separators and a soft green fill sit
     /// underneath the normal constraint-colored lines.
     pub fn render_sketch_png_with_overlays(
         &self,

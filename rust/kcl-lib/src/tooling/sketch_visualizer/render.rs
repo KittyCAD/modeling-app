@@ -25,14 +25,15 @@ const CANVAS_WIDTH: u32 = 1024;
 const CANVAS_HEIGHT: u32 = 1024;
 const CANVAS_PADDING: u32 = 48;
 const PRIMARY_LINE_WIDTH: f64 = 3.0;
-const HIGHLIGHT_LINE_WIDTH: f64 = 5.0;
+const HIGHLIGHT_LINE_WIDTH: f64 = 7.0;
+const HIGHLIGHT_SEPARATOR_WIDTH: f64 = 5.0;
 const POINT_RADIUS: f64 = 4.0;
 const CONTACT_POINT_RADIUS: f64 = 5.0;
 
 const FREE_COLOR: Color = Color::rgb(0x3c, 0x73, 0xff);
 const CONFLICT_COLOR: Color = Color::rgb(0xff, 0x5e, 0x5b);
 const FIXED_COLOR: Color = Color::rgb(0xff, 0xff, 0xff);
-const HIGHLIGHT_COLOR: Color = Color::rgb(0xff, 0x4f, 0xd8);
+const HIGHLIGHT_COLOR: Color = Color::rgb(0xff, 0xc0, 0x00);
 // #75ff5a at 20% opacity over the dark background. The fill is drawn once,
 // before strokes and points, so their original constraint colors stay intact.
 const REGION_FILL_COLOR: Color = Color::rgb(43, 72, 43);
@@ -79,13 +80,21 @@ pub(super) fn render_png(
         fill_region(&mut image, &region.contours, &transform);
     }
 
-    // Seed halos sit below the normal stroke, not in place of constraint colors.
+    // Gold halos and a dark separator sit below all constraint-colored strokes.
     for segment in segments.values().filter(|segment| segment.highlighted) {
         draw_polyline(
             &mut image,
             &segment.polyline,
             HIGHLIGHT_COLOR,
             HIGHLIGHT_LINE_WIDTH,
+            segment.construction,
+            &transform,
+        );
+        draw_polyline(
+            &mut image,
+            &segment.polyline,
+            DARK_BACKGROUND,
+            HIGHLIGHT_SEPARATOR_WIDTH,
             segment.construction,
             &transform,
         );
@@ -282,6 +291,63 @@ fn interpolate_screen(a: ScreenPoint, b: ScreenPoint, t: f64) -> ScreenPoint {
 mod tests {
     use super::*;
     use crate::tooling::sketch_visualizer::sampling::sample_circle;
+
+    #[test]
+    fn selected_strokes_keep_constraint_colors_separate_from_gold_and_region_fill() {
+        let point = |x, y| SketchVisualizationPoint { x, y };
+        let bounds = SketchVisualizationBounds {
+            min: point(-12.0, -12.0),
+            max: point(12.0, 12.0),
+        };
+        let region = ResolvedSketchRegion {
+            name: "region".to_owned(),
+            id: uuid::Uuid::nil(),
+            origin_sketch_id: uuid::Uuid::nil(),
+            contours: vec![vec![
+                point(-5.0, -5.0),
+                point(5.0, -5.0),
+                point(5.0, 5.0),
+                point(-5.0, 5.0),
+                point(-5.0, -5.0),
+            ]],
+        };
+        for freedom in [Freedom::Free, Freedom::Fixed, Freedom::Conflict] {
+            for resolved_region in [None, Some(&region)] {
+                let segments = BTreeMap::from([(
+                    1,
+                    InternalSegment {
+                        construction: false,
+                        freedom: Some(freedom),
+                        highlighted: true,
+                        polyline: vec![point(-10.0, 0.0), point(10.0, 0.0)],
+                    },
+                )]);
+                let png = render_png(&segments, &BTreeMap::new(), &BTreeSet::new(), bounds, resolved_region).unwrap();
+                let image = image::load_from_memory(&png).unwrap().into_rgba8();
+                // Probe both sides of the stroke, inside and outside the region.
+                for world_x in [-8.0, 0.0, 8.0] {
+                    let x = Transform::new(bounds).point(point(world_x, 0.0)).x as u32;
+                    for y in [511, 512] {
+                        assert_eq!(*image.get_pixel(x, y), dof_color(Some(freedom)).to_rgba());
+                    }
+                    for y in [510, 513] {
+                        assert_eq!(*image.get_pixel(x, y), DARK_BACKGROUND.to_rgba());
+                    }
+                    for y in [509, 514] {
+                        assert_eq!(*image.get_pixel(x, y), HIGHLIGHT_COLOR.to_rgba());
+                    }
+                    let background = if resolved_region.is_some() && world_x == 0.0 {
+                        REGION_FILL_COLOR
+                    } else {
+                        DARK_BACKGROUND
+                    };
+                    for y in [508, 515] {
+                        assert_eq!(*image.get_pixel(x, y), background.to_rgba());
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn point_colors_are_independent_of_segment_colors() {
