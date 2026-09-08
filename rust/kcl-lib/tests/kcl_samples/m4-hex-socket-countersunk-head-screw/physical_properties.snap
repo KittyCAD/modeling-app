@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties m4-hex-socket-countersunk-head-screw.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -9.372131582250518,
+      "z": -0.0000000000000004440892098500626
+    },
+    "dimensions": {
+      "x": 7.900000000040002,
+      "y": 21.255736835498965,
+      "z": 7.900000000040001
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 352.30559600563095
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.2673426148236402
+  }
+}

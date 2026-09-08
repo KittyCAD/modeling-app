@@ -19,8 +19,10 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  type SnapTarget,
   applyConstraintsForSnapTarget,
+  GRID_TARGET,
+  getConstraintsForSnapTarget,
+  type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   calculateArcSwapState,
@@ -168,8 +170,17 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         return
       }
 
-      const dx = twoD.x - context.centerPoint[0]
-      const dy = twoD.y - context.centerPoint[1]
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const dx = x - context.centerPoint[0]
+      const dy = y - context.centerPoint[1]
       const radius = Math.sqrt(dx * dx + dy * dy)
       segmentUtilsMap.ArcSegment.updatePreviewCircle({
         sceneInfra: context.sceneInfra,
@@ -177,13 +188,6 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         radius,
       })
 
-      const snappingCandidate = getBestSnappingCandidate({
-        self,
-        sceneInfra: context.sceneInfra,
-        sketchId: context.sketchId,
-        mousePosition: [twoD.x, twoD.y],
-        mouseEvent: args.mouseEvent,
-      })
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,
@@ -252,15 +256,22 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       }
 
       if (!isEditInProgress) {
-        const snappingCandidate = getBestSnappingCandidate({
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const candidate = getBestSnappingCandidate({
           self,
           sceneInfra: context.sceneInfra,
           sketchId: context.sketchId,
-          mousePosition: [twoD.x, twoD.y],
+          mousePosition,
           mouseEvent: args.mouseEvent,
           getExcludedPointIds: (currentSketchObjects) =>
             getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
+        // The third point sets an angle on an already-fixed radius. An
+        // arbitrary grid point usually is not on that circle, so projecting it
+        // would display a grid marker somewhere the arc cannot end.
+        const snappingCandidate =
+          candidate?.target.type === GRID_TARGET ? null : candidate
+        const endPoint = snappingCandidate?.position ?? mousePosition
         sendHoveredSnappingCandidate(self, snappingCandidate)
         updateToolSnappingPreview({
           sceneInfra: context.sceneInfra,
@@ -284,7 +295,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           const [endX, endY] = projectPointOntoArcRadius({
             center: context.centerPoint,
             start: startPoint,
-            end: [twoD.x, twoD.y],
+            end: endPoint,
           })
 
           // Calculate swap state and final start/end points
@@ -381,7 +392,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getBestSnappingCandidate({
+        const candidate = getBestSnappingCandidate({
           self,
           sceneInfra: context.sceneInfra,
           sketchId: context.sketchId,
@@ -390,6 +401,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           getExcludedPointIds: (currentSketchObjects) =>
             getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
+        const snappingCandidate =
+          candidate?.target.type === GRID_TARGET ? null : candidate
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
           type: 'add point',
@@ -949,6 +962,9 @@ export async function finalizeArcActor({
       : undefined
 
     const settings = jsAppSettings(rustContext.settingsActor)
+    const hasSnapConstraints = [startSnapTarget, endSnapTarget].some(
+      (snapTarget) => getConstraintsForSnapTarget(0, snapTarget).length > 0
+    )
     const result = await rustContext.editSegments(
       0,
       sketchId,
@@ -959,7 +975,7 @@ export async function finalizeArcActor({
         },
       ],
       settings,
-      startSnapTarget == null && endSnapTarget == null,
+      !hasSnapConstraints,
       finalDragAnchorSegmentIds
     )
 
@@ -970,7 +986,7 @@ export async function finalizeArcActor({
 
     const fixedArcPointId = editedArc.kind.segment.start
     const clickedArcPointId = editedArc.kind.segment.end
-    const snapTargets = [
+    const snapConstraints = [
       {
         segmentId: fixedArcPointId,
         snapTarget: startSnapTarget,
@@ -983,17 +999,10 @@ export async function finalizeArcActor({
       (
         target
       ): target is { segmentId: number; snapTarget: NonNullable<SnapTarget> } =>
-        target.snapTarget != null
+        target.snapTarget != null &&
+        getConstraintsForSnapTarget(target.segmentId, target.snapTarget)
+          .length > 0
     )
-
-    if (snapTargets.length === 0) {
-      return result
-    }
-
-    const snapConstraints = snapTargets.map(({ segmentId, snapTarget }) => ({
-      segmentId,
-      snapTarget,
-    }))
 
     if (snapConstraints.length === 0) {
       return result

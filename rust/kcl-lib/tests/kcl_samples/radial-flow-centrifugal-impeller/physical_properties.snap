@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties radial-flow-centrifugal-impeller.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.000000018750000663203537,
+      "y": 0.0,
+      "z": 16.30000000000002
+    },
+    "dimensions": {
+      "x": 180.00000000000006,
+      "y": 180.00000000000006,
+      "z": 56.60000000000004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 85102.6179868768
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 174.1077135524923
+  }
+}

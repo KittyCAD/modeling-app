@@ -29,6 +29,7 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -267,6 +268,7 @@ describe('project system', () => {
       )
       const registryBilling = app.registry.get(billingService)
       const registryRustContext = app.registry.get(rustContextService)
+      const registryProjectSession = app.registry.get(projectSession)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
@@ -276,6 +278,10 @@ describe('project system', () => {
       )
       expect(app.billing.actor).toBe(registryBilling.actor)
       expect(app.rustContext).toBe(registryRustContext.context)
+      expect(app.projectSignal).toBe(registryProjectSession.project)
+      expect(app.currentProjectLibraryIdSignal).toBe(
+        registryProjectSession.currentProjectLibraryId
+      )
     } finally {
       app.dispose()
     }
@@ -844,6 +850,276 @@ describe('project system', () => {
     } finally {
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('waits for the Rust project snapshot before executing a reused editor after a file switch', async () => {
+    const projectPath = `/tmp/app-file-switch-open-race-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+    const app = createAppForTest()
+    let resolveOpenProject: () => void = () => {}
+    const openProjectGate = new Promise<void>((resolve) => {
+      resolveOpenProject = resolve
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      await writeText(alternatePath, 'alternate = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 2,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          {
+            name: 'main.kcl',
+            path: mainPath,
+            children: null,
+          },
+          {
+            name: 'alternate.kcl',
+            path: alternatePath,
+            children: null,
+          },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(mainPath)
+      const calls: string[] = []
+
+      vi.spyOn(kclManager.rustContext, 'sendOpenProject').mockImplementation(
+        async (currentFilePath) => {
+          calls.push(`open:${currentFilePath}`)
+          await openProjectGate
+          calls.push(`open:resolved:${currentFilePath}`)
+        }
+      )
+      vi.spyOn(kclManager, 'executeCode').mockImplementation(async () => {
+        calls.push(`execute:${kclManager.path}`)
+      })
+      const sendUpdateFile = vi
+        .spyOn(kclManager.rustContext, 'sendUpdateFile')
+        .mockImplementation(async () => {})
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'sendSceneCommand'
+      ).mockResolvedValue({} as never)
+      kclManager.engineCommandManager.connection = {
+        connected: true,
+      } as typeof kclManager.engineCommandManager.connection
+
+      vi.useFakeTimers()
+      const openAlternatePromise = openedProject.openEditor(
+        alternatePath,
+        kclManager
+      )
+
+      await vi.waitFor(() => {
+        expect(calls).toEqual([`open:${alternatePath}`])
+      })
+
+      expect(openedProject.executingPath).toBe(alternatePath)
+      expect(openedProject.executingFileEntry.value.name).toBe('alternate.kcl')
+
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(calls).toEqual([`open:${alternatePath}`])
+      expect(sendUpdateFile).not.toHaveBeenCalled()
+
+      resolveOpenProject()
+      await openAlternatePromise
+
+      expect(calls).toEqual([
+        `open:${alternatePath}`,
+        `open:resolved:${alternatePath}`,
+        `execute:${alternatePath}`,
+      ])
+      expect(sendUpdateFile).not.toHaveBeenCalled()
+    } finally {
+      vi.useRealTimers()
+      app.dispose()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('does not let a superseded route load replace the active editor', async () => {
+    const projectPath = `/tmp/app-stale-route-load-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+    const app = createAppForTest()
+    const originalRead = File.ioImplementations.read
+    let resolveAlternateRead: (code: string) => void = () => {}
+    const alternateRead = new Promise<string>((resolve) => {
+      resolveAlternateRead = resolve
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      await writeText(alternatePath, 'alternate = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 2,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          { name: 'main.kcl', path: mainPath, children: null },
+          { name: 'alternate.kcl', path: alternatePath, children: null },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(
+        mainPath,
+        undefined,
+        'main = true\n'
+      )
+      kclManager.updateCodeEditor('main = true\n', {
+        shouldExecute: false,
+        shouldSyncRust: false,
+        shouldWriteToDisk: false,
+        shouldClearHistory: true,
+        shouldAddToHistory: false,
+      })
+      File.ioImplementations.read = (path) =>
+        path === alternatePath ? alternateRead : originalRead(path)
+
+      const firstController = new AbortController()
+      const assertFirstLoadCurrent = app.beginFileRouteLoad(
+        firstController.signal
+      )
+      const staleOpen = openedProject.openEditor(
+        alternatePath,
+        kclManager,
+        undefined,
+        true,
+        assertFirstLoadCurrent
+      )
+      await Promise.resolve()
+
+      app.beginFileRouteLoad(new AbortController().signal)
+      resolveAlternateRead('alternate = true\n')
+
+      await expect(staleOpen).rejects.toMatchObject({ name: 'AbortError' })
+      expect(kclManager.path).toBe(mainPath)
+      expect(kclManager.code).toBe('main = true\n')
+      expect(openedProject.executingPath).toBe(mainPath)
+    } finally {
+      File.ioImplementations.read = originalRead
+      app.dispose()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('refreshes sketch grids without clearing the scene', async () => {
+    const app = createAppForTest()
+    const kclManager = app.singletons.kclManager
+    const engineCommandManager = kclManager.engineCommandManager
+    const previousConnection = engineCommandManager.connection
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const updateSketchGrid = vi.spyOn(
+        kclManager.sceneEntitiesManager,
+        'updateSketchGrid'
+      )
+      const clearSceneAndBustCache = vi.spyOn(
+        kclManager.rustContext,
+        'clearSceneAndBustCache'
+      )
+      const executeCode = vi
+        .spyOn(kclManager, 'executeCode')
+        .mockResolvedValue(undefined)
+      engineCommandManager.connection = {
+        connected: false,
+      } as typeof engineCommandManager.connection
+
+      const setGridSetting = async (
+        setting:
+          | 'showSketchGrid'
+          | 'fixedSizeGrid'
+          | 'majorGridSpacing'
+          | 'minorGridsPerMajor',
+        value: boolean | number
+      ) => {
+        app.settings.actor.send({
+          type: `set.modeling.${setting}`,
+          data: { level: 'user', value },
+          doNotPersist: true,
+        } as never)
+        await waitForSettingsIdle(app)
+      }
+
+      await setGridSetting(
+        'fixedSizeGrid',
+        !app.settings.get().modeling.fixedSizeGrid.default
+      )
+      await app.openProject(mockProject)
+      await Promise.resolve()
+
+      expect(updateSketchGrid).not.toHaveBeenCalled()
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      const modeling = app.settings.get().modeling
+      expect(modeling.showSketchGrid.default).toBe(false)
+      expect(modeling.showSketchGrid.current).toBe(false)
+      await setGridSetting('showSketchGrid', !modeling.showSketchGrid.current)
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      await setGridSetting('fixedSizeGrid', !modeling.fixedSizeGrid.current)
+      await vi.waitFor(() => {
+        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+        expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+        expect(executeCode).toHaveBeenCalledTimes(1)
+      })
+
+      updateSketchGrid.mockClear()
+      clearSceneAndBustCache.mockClear()
+      executeCode.mockClear()
+
+      await setGridSetting(
+        'majorGridSpacing',
+        modeling.majorGridSpacing.current + 1
+      )
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      await setGridSetting(
+        'minorGridsPerMajor',
+        modeling.minorGridsPerMajor.current + 1
+      )
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      const currentTheme = app.settings.get().app.theme.current
+      app.settings.actor.send({
+        type: 'set.app.theme',
+        data: {
+          level: 'user',
+          value: currentTheme === 'dark' ? 'light' : 'dark',
+        },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
+      await vi.waitFor(() => {
+        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      })
+    } finally {
+      engineCommandManager.connection = previousConnection
+      app.dispose()
     }
   })
 

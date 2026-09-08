@@ -591,8 +591,9 @@ class Point3d:
 @typing.final
 class RawFile:
     r"""
-    A raw file with unencoded contents to be passed over binary websockets.
-    When raw files come back for exports it is sent as binary/bson, not text/json.
+    A raw file with unencoded contents.
+    
+    See the command that emits this type for its response encoding.
     """
     @property
     def contents(self) -> builtins.list[builtins.int]: ...
@@ -1080,7 +1081,7 @@ class UnitArea(enum.Enum):
     """
     SquareYards = ...
     r"""
-    Square yards <https://en.wikipedia.org/wiki/Square_mile>
+    Square yards <https://en.wikipedia.org/wiki/Square_yard>
     """
 
 @typing.final

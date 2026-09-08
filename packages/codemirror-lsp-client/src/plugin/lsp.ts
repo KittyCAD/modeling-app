@@ -616,6 +616,7 @@ export class LanguageServerPlugin implements PluginValue {
           )
         } finally {
           popup.remove()
+          view.focus()
         }
       }
 

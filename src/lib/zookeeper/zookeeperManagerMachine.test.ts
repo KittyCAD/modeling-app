@@ -8,6 +8,7 @@ import {
   type MlCopilotModeOption,
   NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   parseMlCopilotModesResult,
+  toMlCopilotFile,
   ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
@@ -116,6 +117,44 @@ type SetupActorInput = {
 }
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
+
+describe('toMlCopilotFile', () => {
+  it('turns missing attachment reads into an actionable privacy-safe error', async () => {
+    const file = {
+      name: 'private-customer-file.step',
+      type: 'application/step',
+      arrayBuffer: vi
+        .fn()
+        .mockRejectedValue(
+          new DOMException(
+            'A requested file could not be found',
+            'NotFoundError'
+          )
+        ),
+    } as unknown as File
+
+    const result = await toMlCopilotFile(file)
+
+    expect(result).toMatchObject({
+      name: 'ZookeeperAttachmentReadError',
+      message:
+        "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again.",
+    })
+    expect(result).toBeInstanceOf(Error)
+    expect((result as Error).message).not.toContain(file.name)
+  })
+
+  it('preserves unexpected attachment read errors', async () => {
+    const readError = new Error('Unexpected read failure')
+    const file = {
+      name: 'attachment.step',
+      type: 'application/step',
+      arrayBuffer: vi.fn().mockRejectedValue(readError),
+    } as unknown as File
+
+    await expect(toMlCopilotFile(file)).resolves.toBe(readError)
+  })
+})
 
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
