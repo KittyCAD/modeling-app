@@ -133,6 +133,10 @@ export const ZookeeperConversationPane = (props: {
     props.zookeeperManagerActor,
     (actor) => actor.context.attachmentsLoadedForCurrentPrompt
   )
+  const attachmentFetches = useSelector(
+    props.zookeeperManagerActor,
+    (actor) => actor.context.attachmentFetches
+  )
   const defaultMode = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.defaultMode
   })
@@ -737,6 +741,13 @@ export const ZookeeperConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
+      attachmentFetches={attachmentFetches}
+      onFetchAttachment={(attachmentRef) => {
+        props.zookeeperManagerActor.send({
+          type: ZookeeperManagerTransitions.AttachmentFetch,
+          attachmentRef,
+        })
+      }}
       welcomeMessage={
         // Replace this local component with a remote-authored content source
         // later. `ZookeeperConversation` already handles placement and ordering.
