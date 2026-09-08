@@ -1114,6 +1114,7 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

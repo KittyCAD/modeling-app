@@ -2153,6 +2153,7 @@ description: Result of parsing blend_with_edge_specifier_objects.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
