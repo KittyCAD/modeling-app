@@ -1,13 +1,12 @@
-import type { Feature } from '@kittycad/lib'
-import { test as playwrightTestFn } from '@playwright/test'
-
+import { expect, test as playwrightTestFn } from '@e2e/playwright/base-test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   ElectronZoo,
   fixturesBasedOnProcessEnvPlatform,
 } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { Feature } from '@kittycad/lib'
 
-export { expect } from '@playwright/test'
+export { expect }
 
 declare module '@playwright/test' {
   interface Page {

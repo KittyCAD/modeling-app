@@ -8,6 +8,8 @@ description: Variables in memory after executing subtract_regression11.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -155,17 +157,17 @@ description: Variables in memory after executing subtract_regression11.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
           "objectId": 0,
+          "kind": "YZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -203,7 +205,8 @@ description: Variables in memory after executing subtract_regression11.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -216,6 +219,8 @@ description: Variables in memory after executing subtract_regression11.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -322,17 +327,17 @@ description: Variables in memory after executing subtract_regression11.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
           "objectId": 1,
+          "kind": "YZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -370,7 +375,8 @@ description: Variables in memory after executing subtract_regression11.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -383,6 +389,8 @@ description: Variables in memory after executing subtract_regression11.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -530,17 +538,17 @@ description: Variables in memory after executing subtract_regression11.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
           "objectId": 0,
+          "kind": "YZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -578,7 +586,8 @@ description: Variables in memory after executing subtract_regression11.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -591,8 +600,8 @@ description: Variables in memory after executing subtract_regression11.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "YZ",
       "objectId": 0,
+      "kind": "YZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -729,17 +738,17 @@ description: Variables in memory after executing subtract_regression11.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -777,7 +786,8 @@ description: Variables in memory after executing subtract_regression11.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch003": {
@@ -785,8 +795,8 @@ description: Variables in memory after executing subtract_regression11.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "YZ",
       "objectId": 1,
+      "kind": "YZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -889,17 +899,17 @@ description: Variables in memory after executing subtract_regression11.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 1,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -937,7 +947,8 @@ description: Variables in memory after executing subtract_regression11.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   }
 }

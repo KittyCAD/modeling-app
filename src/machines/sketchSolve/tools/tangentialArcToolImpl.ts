@@ -468,24 +468,25 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       }
       if (isEditInProgress) return
 
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
       const snappingCandidate = getBestSnappingCandidate({
         self,
         sceneInfra: context.sceneInfra,
         sketchId: context.sketchId,
-        mousePosition: [twoD.x, twoD.y],
+        mousePosition,
         mouseEvent: args.mouseEvent,
         excludedPointIds: [
           context.arcStartPointId,
           context.arcEndPointId,
         ].filter((id): id is number => id !== undefined),
       })
+      const endPoint = snappingCandidate?.position ?? mousePosition
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,
         target: snappingCandidate,
       })
 
-      const endPoint: Coords2d = [twoD.x, twoD.y]
       const centerPoint = findTangentialArcCenter({
         startPoint: context.tangentInfo.tangentStart.position,
         endPoint,

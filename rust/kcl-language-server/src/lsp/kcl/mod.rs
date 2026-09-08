@@ -1008,7 +1008,12 @@ impl Backend {
         // Let's convert the position to a character index.
         let pos = position_to_char_index(params.position, current_code);
         // Now let's perform the rename on the ast.
-        ast.rename_symbol(new_name, pos);
+        if !ast.rename_symbol(new_name, pos) {
+            // Nothing was renamed, e.g. the position is on a symbol we can't
+            // rename yet, like a local in a function body or an if-expression
+            // arm. Refuse instead of producing an edit that only reformats.
+            return Ok(None);
+        }
         // Now recast it.
         let recast = ast.recast_top(&Default::default(), 0);
 

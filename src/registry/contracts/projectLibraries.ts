@@ -79,6 +79,8 @@ export interface ProjectLibraryRealization {
   localProjectName: string
   name: string
   title?: string
+  /** Local identity stored in project.toml under settings.meta.id. */
+  projectId?: string
   cloudProjectId?: string
   modified?: number
   defaultFile?: string
@@ -120,9 +122,9 @@ export interface ProjectLibraryRealizationsService {
    */
   invalidate: (input?: ProjectLibraryRealizationsInvalidationInput) => void
   /**
-   * Watches configured library roots for realization boundary changes while a UI
-   * surface needs live discovery updates. The returned disposer must be called
-   * when that surface unmounts.
+   * Refreshes each configured library once, then watches its root for
+   * realization boundary changes while a UI surface needs live discovery
+   * updates. The returned disposer must be called when that surface unmounts.
    */
   watchConfiguredLibraries: (
     options: ProjectLibraryRealizationWatchOptions

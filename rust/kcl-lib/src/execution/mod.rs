@@ -31,7 +31,11 @@ use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
+pub use kcl_value_view::EdgeCutViewExt;
+pub use kcl_value_view::ExtrudeSurfaceViewExt;
 pub use kcl_value_view::KclValueView;
+pub use kcl_value_view::PathViewExt;
+pub use kcl_value_view::SolidViewExt;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -212,8 +216,16 @@ pub(crate) use early_return;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum ControlFlowKind {
+    /// Normal control flow. Continue to the next step.
     #[default]
     Continue,
+    /// A `return` statement executed under KCL 3.0: unwind to the nearest
+    /// function-call boundary, which absorbs it as the function's result. Never
+    /// constructed under older entry points, whose `return` uses
+    /// write-and-continue semantics instead; see `bind_return_value`.
+    Return,
+    /// `exit()` was called: unwind all the way to the program root, bypassing
+    /// function-call boundaries.
     Exit,
 }
 
@@ -222,6 +234,7 @@ impl ControlFlowKind {
     pub fn is_some_return(&self) -> bool {
         match self {
             ControlFlowKind::Continue => false,
+            ControlFlowKind::Return => true,
             ControlFlowKind::Exit => true,
         }
     }
@@ -243,6 +256,13 @@ impl KclValue {
         }
     }
 
+    pub(crate) fn return_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: Box::new(self),
+            control: ControlFlowKind::Return,
+        }
+    }
+
     pub(crate) fn exit(self) -> KclValueControlFlow {
         KclValueControlFlow {
             value: Box::new(self),
@@ -255,6 +275,19 @@ impl KclValueControlFlow {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
         self.control.is_some_return()
+    }
+
+    pub(crate) fn is_return(&self) -> bool {
+        matches!(self.control, ControlFlowKind::Return)
+    }
+
+    pub(crate) fn is_exit(&self) -> bool {
+        matches!(self.control, ControlFlowKind::Exit)
+    }
+
+    /// The source ranges of the wrapped value, for error reporting.
+    pub(crate) fn source_ranges(&self) -> Vec<SourceRange> {
+        self.value.metadata().iter().map(|m| m.source_range).collect()
     }
 
     pub(crate) fn into_value(self) -> KclValue {
@@ -317,6 +350,11 @@ impl PreserveMem {
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
     pub variables: IndexMap<String, KclValueView>,
+    /// Runtime memory retained only for tests that need to verify internal behavior.
+    #[cfg(test)]
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) test_program_memory: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.
     pub operations: OperationsByModule,
@@ -4899,6 +4937,82 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_warns_in_legacy_kcl() {
+        for version in ["", "kclVersion = 1.0, ", "kclVersion = 2.0, "] {
+            for unit in ["deg", "rad"] {
+                let code = format!("@settings({version}defaultAngleUnit = {unit})\nx = 1\n");
+                let result = parse_execute(&code).await.unwrap();
+                let issues = result.issues();
+                assert_eq!(issues.len(), 1, "code={code}");
+                assert_eq!(issues[0].severity, Severity::Warning, "code={code}");
+                assert_eq!(
+                    issues[0].message,
+                    "The `defaultAngleUnit` setting is deprecated; use explicit units for angles"
+                );
+                assert_eq!(variable_f64(&result, "x"), 1.0);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_errors_in_kcl_v3() {
+        for settings in [
+            "@settings(kclVersion = \"3.0-preview\", defaultAngleUnit = deg)",
+            "@settings(defaultAngleUnit = rad, kclVersion = \"3.0-preview\")",
+            "@settings(defaultAngleUnit = deg)\n@settings(kclVersion = \"3.0-preview\")",
+            "@settings(kclVersion = \"3.0-preview\")\n@settings(defaultAngleUnit = rad)",
+        ] {
+            let code = format!("{settings}\nx = 1\n");
+            let Err(error) = parse_execute(&code).await else {
+                panic!("defaultAngleUnit must fail in KCL 3.0: {code}");
+            };
+            assert_eq!(
+                error.message(),
+                "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles",
+                "code={code}"
+            );
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 1);
+            assert!(code[ranges[0].start()..ranges[0].end()].contains("defaultAngleUnit"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_error_cannot_be_suppressed() {
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let code = format!(
+                "@warnings(allow = angleUnits)\n@settings(kclVersion = {version}, defaultAngleUnit = deg)\nx = 1\n"
+            );
+            let result = parse_execute(&code).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(
+                    result.unwrap_err().message(),
+                    "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                );
+            } else {
+                assert!(result.unwrap().issues().is_empty(), "code={code}");
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_in_import_uses_effective_kcl_version() {
+        let dep = "@settings(kclVersion = 2.0, defaultAngleUnit = deg)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(
+                    result.unwrap_err().message(),
+                    "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                );
+            } else {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn entry_point_kcl_version_recorded_only_for_v3() {
         let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
             .await
@@ -4907,7 +5021,7 @@ startSketchOn(XY)
             result.exec_state.global.entry_point_kcl_version,
             Some(KclVersion::V3Preview)
         );
-        assert!(result.exec_state.entry_point_is_v3());
+        assert!(result.exec_state.entry_point_version_is_v3_or_higher());
 
         for code in [
             "x = 1\n",
@@ -4916,7 +5030,7 @@ startSketchOn(XY)
         ] {
             let result = parse_execute(code).await.unwrap();
             assert_eq!(result.exec_state.global.entry_point_kcl_version, None, "code={code}");
-            assert!(!result.exec_state.entry_point_is_v3(), "code={code}");
+            assert!(!result.exec_state.entry_point_version_is_v3_or_higher(), "code={code}");
         }
     }
 
@@ -4930,7 +5044,7 @@ startSketchOn(XY)
         assert_eq!(exec_state.kcl_version(), KclVersion::V2);
         assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
 
-        // An entry-point 3.0-preview declaration overrides the module-local
+        // An entry-point KCL 3.0 declaration overrides the module-local
         // settings for the unified lookup, but not for the legacy one.
         exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
         assert_eq!(exec_state.kcl_version(), KclVersion::V3Preview);
@@ -4966,7 +5080,7 @@ startSketchOn(XY)
                 Some(KclVersion::V3Preview),
                 "mock execution should record a 3.0-preview entry point"
             );
-            assert!(exec_state.entry_point_is_v3());
+            assert!(exec_state.entry_point_version_is_v3_or_higher());
 
             // Populate the preserved mock memory with a 3.0-preview run, then
             // check that a 2.0 run restoring that memory isn't pinned to
@@ -4974,13 +5088,64 @@ startSketchOn(XY)
             ctx.run_mock(&v3_program, &fresh_memory).await.unwrap();
             let (exec_state, _) = ctx.run_mock_returning_state(&v2_program, &prev_memory).await.unwrap();
             assert_eq!(exec_state.global.entry_point_kcl_version, None);
-            assert!(!exec_state.entry_point_is_v3());
+            assert!(!exec_state.entry_point_version_is_v3_or_higher());
 
             // ...and that a 3.0-preview run restoring a 2.0 run's memory
             // records 3.0-preview.
             ctx.run_mock(&v2_program, &fresh_memory).await.unwrap();
             let (exec_state, _) = ctx.run_mock_returning_state(&v3_program, &prev_memory).await.unwrap();
             assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V3Preview));
+        })
+        .catch_unwind()
+        .await;
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        if let Err(panic) = test_result {
+            std::panic::resume_unwind(panic);
+        }
+    }
+
+    /// Mock execution applies the KCL 3.0 semantics -- early return and
+    /// if-arm scoping -- since it records the entry point's kclVersion via
+    /// `inner_run` rather than `run_concurrent`.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_applies_v3_semantics() {
+        use futures::FutureExt;
+
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let fresh_memory = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+outer = 1
+y = if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+"#,
+        )
+        .unwrap();
+
+        // Close the context and clear the cache even if an assertion panics,
+        // then let the panic continue.
+        let test_result = std::panic::AssertUnwindSafe(async {
+            let (exec_state, env) = ctx.run_mock_returning_state(&program, &fresh_memory).await.unwrap();
+            let var = |name: &str| mem_get_json(exec_state.stack(), env, name).as_f64().unwrap();
+            assert_eq!(var("x"), 1.0, "early return produces the function's value");
+            assert_eq!(var("y"), 12.0, "the branch sees its own shadowing binding");
+            assert_eq!(var("outer"), 1.0, "the outer binding is unchanged after the if");
         })
         .catch_unwind()
         .await;
@@ -5044,9 +5209,9 @@ export fn filletedBox() {
 }
 "#;
 
-    /// A 3.0-preview entry point pins the kclVersion for the whole execution:
-    /// an imported 2.0 module observes 3.0-preview both in its module-level
-    /// code and in its functions, wherever they are called from.
+    /// A KCL 3.0 entry point pins the kclVersion for the whole execution: an
+    /// imported 2.0 module observes KCL 3.0 both in its module-level code and
+    /// in its functions, wherever they are called from.
     #[tokio::test(flavor = "multi_thread")]
     async fn entry_point_v3_pins_kcl_version_for_imported_modules() {
         use kittycad_modeling_cmds::shared::EdgeCutVersion;
@@ -5067,10 +5232,10 @@ box = filletedBox()
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
     }
 
-    /// Without a 3.0-preview entry point, the legacy lookup applies
-    /// unchanged, including its quirk: an imported module's module-level code
-    /// observes the module's own declared version, but its functions observe
-    /// the CALLING module's version.
+    /// Without a KCL 3.0 entry point, the legacy lookup applies unchanged,
+    /// including its quirk: an imported module's module-level code observes the
+    /// module's own declared version, but its functions observe the CALLING
+    /// module's version.
     #[tokio::test(flavor = "multi_thread")]
     async fn legacy_kcl_version_quirk_applies_without_v3_entry_point() {
         use kittycad_modeling_cmds::shared::EdgeCutVersion;
@@ -5089,6 +5254,1089 @@ box = filletedBox()
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V1]);
+    }
+
+    #[track_caller]
+    fn variable_f64(result: &ExecTestResults, name: &str) -> f64 {
+        mem_get_json(result.exec_state.stack(), result.mem_env, name)
+            .as_f64()
+            .unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_terminates_function_early_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn second_return_is_unreachable_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  return 2
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_if_arm_returns_from_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@b) {
+  dummy = if b {
+    return 1
+    0
+  } else {
+    0
+  }
+  return 2
+}
+x = f(true)
+y = f(false)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+        assert_eq!(variable_f64(&result, "y"), 2.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_nested_if_returns_from_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@a, b) {
+  dummy = if a {
+    inner = if b {
+      return 10
+      0
+    } else {
+      1
+    }
+    inner + 1
+  } else {
+    2
+  }
+  return dummy * 100
+}
+x = f(true, b = true)
+y = f(true, b = false)
+z = f(false, b = false)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 10.0);
+        assert_eq!(variable_f64(&result, "y"), 200.0);
+        assert_eq!(variable_f64(&result, "z"), 200.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_closure_returns_only_from_closure_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn outer() {
+  inner = fn() {
+    return 5
+    assert(1, isEqualTo = 2, error = "code after inner return ran")
+  }
+  v = inner()
+  return v + 1
+}
+x = outer()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 6.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_type_coercion_applies_to_early_return_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(): number(mm) {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+
+        // A coercion failure surfaces as an error (on the machine, this
+        // exercises unwind_return's error path).
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(): number(mm) {
+  return "nope"
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.expect_err("coercion failure should error");
+        assert!(err.message().contains("type"), "unexpected message: {}", err.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_at_top_level_errors() {
+        // A return statement at the top level is rejected in all versions.
+        for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
+            let code = format!("{header}return 1\n");
+            assert_eq!(
+                parse_execute(&code).await.expect_err("should error").message(),
+                "Cannot return from outside a function."
+            );
+        }
+
+        // Under KCL 3.0, a return escaping a top-level if-arm is also rejected
+        // (without the setting it is silently ignored; see
+        // top_level_if_arm_return_ignored_without_v3).
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  return 1
+  0
+} else {
+  0
+}
+"#;
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Cannot return from outside a function."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_function_still_exits_program_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  exit()
+  return 1
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_sketch_block_terminates_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  sketch(on = XY) {
+    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+    return 42
+  }
+  return 0
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 42.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_sketch_block_ignored_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: `__return` binds in the sketch block's
+        // child environment and is lost when it pops.
+        let code = r#"@settings(experimentalFeatures = allow)
+fn f() {
+  sketch(on = XY) {
+    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+    return 42
+  }
+  return 0
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 0.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn code_after_return_still_runs_without_v3() {
+        let code = r#"fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("ran past return"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn multiple_returns_error_without_v3() {
+        let code = r#"fn f() {
+  return 1
+  return 2
+}
+x = f()
+"#;
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Multiple returns from a single function."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_return_plus_function_return_errors_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: the if-arm's `return` writes
+        // `__return` into the function's environment, so the function-level
+        // `return` is a second return.
+        let code = r#"fn f() {
+  dummy = if true {
+    return 1
+    0
+  } else {
+    0
+  }
+  return 2
+}
+x = f()
+"#;
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Multiple returns from a single function."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn top_level_if_arm_return_ignored_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: the return silently binds
+        // `__return` in the root environment and the arm yields its trailing
+        // expression.
+        let code = r#"x = if true {
+  return 1
+  0
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 0.0);
+        assert_eq!(variable_f64(&result, memory::RETURN_NAME), 1.0);
+    }
+
+    /// Early return is gated on the entry point's kclVersion, not the
+    /// defining module's.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_semantics_gated_on_entry_point_not_module() {
+        // A 2.0 entry point keeps write-and-continue everywhere, even inside an
+        // imported KCL 3.0 module: its function still runs code after return,
+        // and a return escaping its module-level if-arm is still silently
+        // ignored.
+        let dep = r#"@settings(kclVersion = "3.0-preview")
+ignored = if true {
+  return 1
+  0
+} else {
+  0
+}
+
+export fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+"#;
+        let main = r#"@settings(kclVersion = 2.0)
+import f from "dep.kcl"
+x = f()
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("ran past return"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A KCL 3.0 entry point applies early return everywhere, including
+        // inside an imported 2.0 module.
+        let dep = r#"@settings(kclVersion = 2.0)
+export fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import f from "dep.kcl"
+x = f()
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+    }
+
+    /// Early return inside a callback driven by a builtin terminates only
+    /// that callback invocation; the builtin keeps iterating. On the machine
+    /// executor, map/reduce callbacks run behind a Callback-completion call
+    /// boundary, so this exercises unwind_return's resume-the-builtin path,
+    /// unlike a directly called function.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_map_and_reduce_callbacks_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+doubled = map([1, 2, 3], f = fn(@i) {
+  return i * 2
+  assert(1, isEqualTo = 2, error = "code after return ran in the map callback")
+})
+assert(doubled[0], isEqualTo = 2, error = "map result 0")
+assert(doubled[1], isEqualTo = 4, error = "map result 1")
+assert(doubled[2], isEqualTo = 6, error = "map result 2")
+
+total = reduce([1, 2, 3], initial = 0, f = fn(@i, accum) {
+  return accum + i
+  assert(1, isEqualTo = 2, error = "code after return ran in the reduce callback")
+})
+assert(total, isEqualTo = 6, error = "reduce total")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "total"), 6.0);
+    }
+
+    /// unwind_return must decrement the machine call depth like a normal
+    /// call completion; otherwise sequential early-return calls would
+    /// accumulate depth until the runaway guard trips. The recursive
+    /// executor doesn't use the counter, so the bound is trivially true
+    /// there.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn early_returns_do_not_leak_machine_call_depth() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn one() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+total = reduce([1..100], initial = 0, f = fn(@i, accum) {
+  return accum + one()
+})
+assert(total, isEqualTo = 100, error = "each call returns 1")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // Real nesting here is a few levels (reduce callback then one()).
+        // If early returns leaked a level per call, the 100 sequential
+        // calls would push the high water toward 100.
+        let high_water = result.exec_state.global.machine_depth_high_water;
+        assert!(high_water < 10, "high water: {high_water}");
+    }
+
+    /// A return escaping to the top level of an imported module is rejected
+    /// under a KCL 3.0 entry point. The entry module's version governs, so
+    /// the imported module declaring 2.0 doesn't opt back out. (Without a
+    /// KCL 3.0 entry point the return is silently ignored; see
+    /// top_level_if_arm_return_ignored_without_v3.)
+    #[tokio::test(flavor = "multi_thread")]
+    async fn top_level_if_arm_return_in_imported_module_errors_in_v3() {
+        let dep = r#"@settings(kclVersion = 2.0)
+x = if true {
+  return 1
+  0
+} else {
+  0
+}
+export y = x
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import y from "dep.kcl"
+z = y
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("Cannot return from outside a function."),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// exit() in a return's argument still exits the whole program: the
+    /// Exit control flow from evaluating the argument takes precedence over
+    /// turning the statement into an early return. If it were mistakenly
+    /// treated as the function's return value, execution would continue
+    /// after the call and hit the failing assert.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_of_exit_still_exits_program_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return exit()
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_bindings_do_not_leak_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  y = 1
+  y
+} else {
+  0
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_bindings_leak_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: arm bodies share the enclosing
+        // environment, so arm bindings are visible after the if.
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}x = if true {{
+  y = 1
+  y
+}} else {{
+  0
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_shadowing_allowed_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+y = 1
+x = if true {
+  y = 2
+  y + 10
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "y"), 1.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_shadowing_still_errors_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: the arm shares the enclosing
+        // environment, so redeclaring an outer name is an error.
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}y = 1
+x = if true {{
+  y = 2
+  y
+}} else {{
+  0
+}}
+"#
+            );
+            let err = parse_execute(&code).await.expect_err("should error");
+            assert!(
+                err.message().contains("Cannot redefine `y`"),
+                "unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_closure_escape_in_v3() {
+        // A closure declared in an arm captures arm-locals and stays valid
+        // after the arm's scope is popped.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+n = 1
+f = if true {
+  m = 41
+  g = fn() {
+    return m + n
+  }
+  g
+} else {
+  g = fn() {
+    return 0
+  }
+  g
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 42.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn recursive_if_arm_closure_keeps_enclosing_function_frame_alive_in_v3() {
+        // A named recursive closure takes a different snapshot path from an
+        // anonymous closure. Escaping through an arm must retain both the arm
+        // and its enclosing call frame.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn makeCounter() {
+  outer = 40
+  selected = if true {
+    inner = 2
+    fn count(@n) {
+      return if n == 0 {
+        outer + inner
+      } else {
+        count(n - 1) + 1
+      }
+    }
+    count
+  } else {
+    fn fallback(@n) {
+      return n
+    }
+    fallback
+  }
+  return selected
+}
+counter = makeCounter()
+x = counter(3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 45.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_scoped_if_arm_in_v3() {
+        // Early return from inside a scoped arm pops the arm environment on
+        // the way out.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@b) {
+  local = if b {
+    w = 1
+    return w + 9
+    0
+  } else {
+    0
+  }
+  return local
+}
+x = f(true)
+y = f(false)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 10.0);
+        assert_eq!(variable_f64(&result, "y"), 0.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_nested_if_scoping_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if true {
+  a = 1
+  b = if true {
+    c = 2
+    a + c
+  } else {
+    0
+  }
+  a + b
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 4.0);
+
+        // A nested arm's binding is not visible in the enclosing arm.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  b = if true {
+    c = 2
+    c
+  } else {
+    0
+  }
+  b + c
+} else {
+  0
+}
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`c` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// Else-if and final-else arms are isolated exactly like then-arms:
+    /// their bindings are invisible after the if, and they may shadow outer
+    /// bindings without changing them. Pinned per arm kind so a refactor of
+    /// the shared arm dispatch can't silently drop one.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_final_else_arms_are_isolated_in_v3() {
+        // A taken else-if arm's binding doesn't leak.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if true {
+  y = 1
+  y
+} else {
+  0
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A taken final-else arm's binding doesn't leak.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if false {
+  0
+} else {
+  y = 1
+  y
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A taken else-if arm can shadow an outer binding without changing it.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+outer = 1
+x = if false {
+  0
+} else if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "outer"), 1.0);
+
+        // Same from the final-else arm.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+outer = 1
+x = if false {
+  0
+} else if false {
+  0
+} else {
+  outer = 2
+  outer + 10
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "outer"), 1.0);
+    }
+
+    /// Pins the pre-KCL-3.0 behavior for else-if and final-else arms: their
+    /// bindings leak into the enclosing environment, and shadowing an outer
+    /// name is a redefinition error, matching then-arms.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_final_else_arm_bindings_leak_without_v3() {
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}x = if false {{
+  0
+}} else if true {{
+  y = 1
+  y
+}} else {{
+  0
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0, "code={code}");
+
+            let code = format!(
+                r#"{header}x = if false {{
+  0
+}} else if false {{
+  0
+}} else {{
+  y = 1
+  y
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0, "code={code}");
+
+            let code = format!(
+                r#"{header}outer = 1
+x = if false {{
+  0
+}} else if true {{
+  outer = 2
+  outer
+}} else {{
+  0
+}}
+"#
+            );
+            let err = parse_execute(&code).await.expect_err("should error");
+            assert!(
+                err.message().contains("Cannot redefine `outer`"),
+                "unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn error_inside_if_arm_unwinds_balanced_in_v3() {
+        // The user's error surfaces (not an internal environment-imbalance
+        // error), on both executors.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  dummy = if true {
+    assert(1, isEqualTo = 2, error = "boom")
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(err.message().contains("boom"), "unexpected message: {}", err.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_scoped_if_arm_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  dummy = if true {
+    exit()
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    /// If-arm scoping is gated on the entry point's kclVersion, not the
+    /// defining module's.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scoping_gated_on_entry_point_not_module() {
+        // A 2.0 entry point keeps leaking arms everywhere, even inside an
+        // imported KCL 3.0 module.
+        let dep = r#"@settings(kclVersion = "3.0-preview")
+ignored = if true {
+  leaked = 1
+  leaked
+} else {
+  0
+}
+export leakCheck = leaked
+"#;
+        let main = r#"@settings(kclVersion = 2.0)
+import leakCheck from "dep.kcl"
+x = leakCheck
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+
+        // A KCL 3.0 entry point applies arm scoping everywhere,
+        // including inside an imported 2.0 module.
+        let dep = r#"@settings(kclVersion = 2.0)
+ignored = if true {
+  arm = 1
+  arm
+} else {
+  0
+}
+export fn leakCheck() {
+  return arm
+}
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import leakCheck from "dep.kcl"
+x = leakCheck()
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("`arm` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// Unwinding out of a sketch block nested inside a scoped if-arm must
+    /// run the sketch cleanup and then pop the arm's scope environment, in
+    /// that order, on all three unwind paths: error, exit(), and early
+    /// return.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unwind_through_sketch_block_inside_scoped_if_arm_in_v3() {
+        // Error: the user's error surfaces, not an internal
+        // environment-imbalance error.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      q = notDefinedAnywhere
+    }
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        assert!(
+            err.message().contains("`notDefinedAnywhere` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // exit() terminates the program; nothing after it runs.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      e = exit()
+    }
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+
+        // Early return terminates the enclosing function with its value.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn g() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      return 42
+    }
+    0
+  } else {
+    0
+  }
+  return 0
+}
+y = g()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "y"), 42.0);
+    }
+
+    /// A tag declared inside an if-arm is bound like any arm-local: usable
+    /// within its arm, and under KCL 3.0 not visible after the if. Without
+    /// KCL 3.0 it leaks like other arm bindings.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tag_declared_inside_if_arm_is_arm_local_in_v3() {
+        let arm_body = r#"p = if true {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0], tag = $edge)
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+  inArmLen = segLen(edge)
+  assert(inArmLen, isEqualTo = 10, error = "tag is usable within its arm")
+  profile
+} else {
+  startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> close()
+}
+len = segLen(edge)
+"#;
+
+        let code = format!("@settings(kclVersion = \"3.0-preview\")\n{arm_body}");
+        let err = parse_execute(&code).await.unwrap_err();
+        assert!(
+            err.message().contains("`edge` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // Pins the pre-KCL-3.0 behavior: the tag leaks out of the arm.
+        let result = parse_execute(arm_body).await.unwrap();
+        assert_eq!(variable_f64(&result, "len"), 10.0);
+    }
+
+    /// Repeated calls to a function whose body evaluates an if-expression must
+    /// not accumulate retained call frames when nothing escapes the arms: the
+    /// arm's scope environment defers pinning its parent until it is itself
+    /// referenced. Before deferred pinning, each of the 100 calls below
+    /// permanently retained its frame.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scopes_do_not_retain_function_frames_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn pick(@i) {
+  r = if i > 50 {
+    a = i * 2
+    a
+  } else {
+    b = i + 1
+    b
+  }
+  return r
+}
+results = map([1..100], f = fn(@i) { return pick(i) })
+assert(results[0], isEqualTo = 2, error = "pick(1) = 2")
+assert(results[99], isEqualTo = 200, error = "pick(100) = 200")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // Long-lived environments (std prelude modules, the root env, ...) are
+        // a small constant independent of the call count.
+        let retained = result.exec_state.stack().memory.envs_with_bindings();
+        assert!(retained < 20, "retained environments: {retained}");
+    }
+
+    /// An if-expression used as a pipe element gets arm scoping without
+    /// disturbing the ambient pipe value: the arm's result feeds the next
+    /// element's `%` (the parser doesn't accept `%` anywhere inside the if
+    /// element itself), and arm-locals don't leak.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scoping_inside_pipe_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+cond = true
+result = 5
+  |> if cond {
+    a = 20
+    a
+  } else {
+    0
+  }
+  |> max([%, 1])
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // The then-arm's 20 must flow through the pipe into max's `%`. If
+        // the arm's scope push/pop corrupted the ambient pipe value, this
+        // would not be 20.
+        assert_eq!(variable_f64(&result, "result"), 20.0);
+
+        // Arm-locals of a pipe element are invisible after the pipe.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+cond = true
+result = 5
+  |> if cond {
+    a = 20
+    a
+  } else {
+    0
+  }
+leaked = a
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        assert!(
+            err.message().contains("`a` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_evaluates_object_before_property_in_v3() {
+        // Both operands are undefined, so the error names whichever one is
+        // evaluated first. KCL 3.0 evaluates in source order: `a` before `b`.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = a[b]
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert_eq!(err.message(), "`a` is not defined");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_evaluates_property_before_object_without_v3() {
+        // Pre-KCL-3.0 order, preserved for compatibility: the computed
+        // property is evaluated before the object.
+        let code = r#"@settings(kclVersion = 2.0)
+x = a[b]
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert_eq!(err.message(), "`b` is not defined");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_undefined_object_with_static_property_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = a.b
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert_eq!(err.message(), "`a` is not defined");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_values_in_v3() {
+        // The source-order path handles computed, non-computed, chained, and
+        // call-result access.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn xs() {
+  return [10, 20, 30]
+}
+fn one() {
+  return 1
+}
+obj = { inner = { xs = xs() } }
+objs = [obj, obj]
+a = obj.inner.xs[one()]
+b = xs()[one() + 1]
+c = objs[0].inner.xs[0]
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "a"), 20.0);
+        assert_eq!(variable_f64(&result, "b"), 30.0);
+        assert_eq!(variable_f64(&result, "c"), 10.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_member_expression_in_v3() {
+        // exit() propagates out of either half of a member expression and
+        // terminates the program before the assert runs.
+        for code in [
+            r#"@settings(kclVersion = "3.0-preview")
+x = exit()[0]
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#,
+            r#"@settings(kclVersion = "3.0-preview")
+arr = [1]
+x = arr[exit()]
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#,
+        ] {
+            parse_execute(code).await.unwrap();
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5498,7 +6746,7 @@ type Empty { | }
         // one file would collide. The parser and formatter accept this shape, so
         // execution is the only thing that can reject it.
         //
-        // The rule is about nesting, not about one kind of block, so both routes
+        // The rule is about nesting, not about one kind of block, so all routes
         // to `BodyType::Block` are covered here.
         let allow = "@settings(experimentalFeatures = allow)\n";
         for (case, code) in [
@@ -5511,6 +6759,10 @@ type Empty { | }
                 format!(
                     "{allow}sketch(on = XY) {{\n  type Color {{ | Red }}\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
                 ),
+            ),
+            (
+                "if arm",
+                format!("{allow}x = if true {{\n  type Color {{ | Red }}\n  0\n}} else {{\n  0\n}}\n"),
             ),
         ] {
             assert_eq!(
@@ -5621,41 +6873,42 @@ type Color { | Red | Green | Red }
         // A diagnostic raised while evaluating a member expression's object
         // (here, the imported module's missing-return warning) points at the
         // object's own span, not the whole member expression.
-        let main = "import \"m.kcl\" as m
-x = m.field
-";
-        let issues = issues_with_empty_module(main).await;
-        let warning = issues
-            .iter()
-            .find(|issue| issue.message.contains("no return value"))
-            .expect("missing-return warning should be recorded");
-        let object_start = main.rfind("m.field").unwrap();
-        assert_eq!(
-            (warning.source_range.start(), warning.source_range.end()),
-            (object_start, object_start + 1),
-            "warning should point at the object's span"
-        );
+        // Both member evaluation orders (pre-KCL-3.0 and KCL 3.0) must
+        // attribute the diagnostic the same way.
+        for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
+            let main = format!("{header}import \"m.kcl\" as m\nx = m.field\n");
+            let issues = issues_with_empty_module(&main).await;
+            let warning = issues
+                .iter()
+                .find(|issue| issue.message.contains("no return value"))
+                .expect("missing-return warning should be recorded");
+            let object_start = main.rfind("m.field").unwrap();
+            assert_eq!(
+                (warning.source_range.start(), warning.source_range.end()),
+                (object_start, object_start + 1),
+                "warning should point at the object's span (header={header:?})"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn member_property_diagnostics_use_property_range() {
         // Same for the computed property: the warning points at the index
         // expression's span inside the brackets.
-        let main = "import \"m.kcl\" as m
-arr = [1]
-x = arr[m]
-";
-        let issues = issues_with_empty_module(main).await;
-        let warning = issues
-            .iter()
-            .find(|issue| issue.message.contains("no return value"))
-            .expect("missing-return warning should be recorded");
-        let prop_start = main.rfind("[m]").unwrap() + 1;
-        assert_eq!(
-            (warning.source_range.start(), warning.source_range.end()),
-            (prop_start, prop_start + 1),
-            "warning should point at the property's span"
-        );
+        for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
+            let main = format!("{header}import \"m.kcl\" as m\narr = [1]\nx = arr[m]\n");
+            let issues = issues_with_empty_module(&main).await;
+            let warning = issues
+                .iter()
+                .find(|issue| issue.message.contains("no return value"))
+                .expect("missing-return warning should be recorded");
+            let prop_start = main.rfind("[m]").unwrap() + 1;
+            assert_eq!(
+                (warning.source_range.start(), warning.source_range.end()),
+                (prop_start, prop_start + 1),
+                "warning should point at the property's span (header={header:?})"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

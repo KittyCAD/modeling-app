@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties angled_line.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 10.865906786014012,
+      "y": 2.183434335797447,
+      "z": 2.0
+    },
+    "dimensions": {
+      "x": 29.31382371356637,
+      "y": 30.85575759408613,
+      "z": 4.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 909.011418116279
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.1402588325400604
+  }
+}

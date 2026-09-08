@@ -3,6 +3,7 @@ import { beforeEach, expect, test, vi } from 'vitest'
 
 import { COMMAND_PALETTE_USAGE_STORAGE_KEY } from '@src/lib/commandPaletteUsage'
 import type { Command } from '@src/lib/commandTypes'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 const mocks = vi.hoisted(() => ({
   send: vi.fn(),
@@ -20,6 +21,7 @@ function command(id: string, displayName: string): Command {
     name: id,
     groupId: 'test',
     displayName,
+    scopes: GLOBAL_COMMAND_SCOPES,
     needsReview: false,
     onSubmit: () => {},
   }
