@@ -41,12 +41,18 @@ async function expectModelFrame(image: Locator) {
           const context = canvas.getContext('2d')!
           context.drawImage(element, 0, 0, 32, 18)
           const pixels = context.getImageData(0, 0, 32, 18).data
+          // These centered models leave the top-left pixel as background.
+          const background = (pixels[0] + pixels[1] + pixels[2]) / 3
           let total = 0
+          let foreground = 0
           for (let i = 0; i < pixels.length; i += 4) {
-            total += pixels[i] + pixels[i + 1] + pixels[i + 2]
+            const brightness = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3
+            total += brightness
+            if (Math.abs(brightness - background) > 40) foreground++
           }
-          const mean = total / (32 * 18 * 3)
-          return mean > 10 && mean < 248
+          const mean = total / (32 * 18)
+          // Require a model-sized foreground, not just a non-black background.
+          return mean > 10 && mean < 248 && foreground >= 32
         }),
       {
         message:
@@ -132,9 +138,11 @@ async function expectRecovered(page: Page, reconnect: () => Promise<unknown>) {
               return
             }
             first ??= metadata
+            // WebKit can keep mediaTime at zero for live WebRTC streams.
+            // Presentation timestamps still advance with the rendered frames.
             if (
               metadata.presentedFrames > first.presentedFrames + 3 &&
-              metadata.mediaTime > first.mediaTime
+              metadata.presentationTime > first.presentationTime
             ) {
               finish()
               return
