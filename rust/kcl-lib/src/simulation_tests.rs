@@ -132,6 +132,7 @@ struct Test {
     /// If set, assert that execution emits exactly this many deprecation warnings.
     expected_deprecation_warnings: Option<usize>,
     /// If set, redact the test's UUIDs.
+    #[cfg_attr(feature = "snapshot-engine-responses", expect(dead_code))]
     redact_uuids: bool,
 }
 
