@@ -366,17 +366,17 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -439,6 +439,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
     "value": {
       "type": "Solid",
       "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "topologyId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
       "value": [
         {
@@ -493,17 +495,17 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -551,8 +553,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
         },
         "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-        "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
       "endCapId": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc",
@@ -565,6 +567,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
     "value": {
       "type": "Solid",
       "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "topologyId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "value": [
         {
@@ -619,17 +623,17 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -677,8 +681,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
         },
         "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
         "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-        "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "a33b4b9e-bd51-5a8c-8eac-e1c70a744f07",
       "endCapId": "d9fe94bb-ab6e-5eea-9518-db330f040aa8",
