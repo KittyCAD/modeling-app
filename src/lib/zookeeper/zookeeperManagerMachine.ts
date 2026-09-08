@@ -1,4 +1,5 @@
 import type {
+  AttachmentRef,
   MlCopilotAccessDeniedCode,
   MlCopilotClientMessage,
   MlCopilotFile,
@@ -238,6 +239,7 @@ export enum ZookeeperManagerTransitions {
   CacheSetupAndConnect = 'cache-setup-and-connect',
   BackendShutdown = 'backend-shutdown',
   SetupProgress = 'setup-progress',
+  AttachmentFetch = 'attachment-fetch',
 }
 
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
@@ -407,6 +409,10 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.SetupProgress
     }
+  | {
+      type: ZookeeperManagerTransitions.AttachmentFetch
+      attachmentRef: AttachmentRef
+    }
 
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
@@ -432,6 +438,16 @@ export type Conversation = {
   exchanges: Exchange[]
 }
 
+export type ZookeeperAttachmentFetchState =
+  | { status: 'loading' }
+  | { status: 'loaded'; file: MlCopilotFile }
+  | { status: 'error'; message: string }
+
+export const getZookeeperAttachmentKey = (
+  attachmentRef: AttachmentRef
+): string =>
+  `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
+
 export interface ZookeeperManagerContext {
   apiToken: string
   ws?: WebSocket
@@ -449,6 +465,7 @@ export interface ZookeeperManagerContext {
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
   attachmentsLoadedForCurrentPrompt: boolean
+  attachmentFetches: Record<string, ZookeeperAttachmentFetchState>
   pendingBackendShutdown: boolean
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
@@ -480,6 +497,7 @@ export const zookeeperDefaultContext = (args: {
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
   attachmentsLoadedForCurrentPrompt: true,
+  attachmentFetches: {},
   pendingBackendShutdown: false,
   defaultMode: undefined,
   modeOptions: undefined,
@@ -805,6 +823,19 @@ export const zookeeperManagerMachine = setup({
       assertEvent(event, ZookeeperManagerTransitions.ResumeSuperseded)
       return context.ws === event.webSocket
     },
+    canFetchAttachment: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      const key = getZookeeperAttachmentKey(event.attachmentRef)
+      const found = context.attachmentFetches[key]
+
+      // prevent duplicate requests
+      return (
+        context.ws?.readyState === WebSocket.OPEN &&
+        found?.status !== 'loading' &&
+        found?.status !== 'loaded'
+      )
+    },
   },
   actions: {
     assignApiToken: assign(({ event }) => {
@@ -1001,6 +1032,7 @@ export const zookeeperManagerMachine = setup({
         modeOptions: undefined,
         awaitingResponse: false,
         attachmentsLoadedForCurrentPrompt: true,
+        attachmentFetches: {},
         pendingBackendShutdown: false,
         cachedSetup: {
           refParentSend: event.refParentSend,
@@ -1012,6 +1044,40 @@ export const zookeeperManagerMachine = setup({
         },
       }
     }),
+    markAttachmentLoading: assign(({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      const key = getZookeeperAttachmentKey(event.attachmentRef)
+
+      return {
+        attachmentFetches: {
+          ...context.attachmentFetches,
+          [key]: { status: 'loading' as const },
+        },
+      }
+    }),
+
+    sendAttachmentFetch: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AttachmentFetch)
+
+      if (context.ws?.readyState !== WebSocket.OPEN) {
+        return
+      }
+
+      const { prompt_id, seq, index } = event.attachmentRef
+
+      const request: Extract<
+        MlCopilotClientMessage,
+        { type: 'fetch_attachments' }
+      > = {
+        type: 'fetch_attachments',
+        prompt_id,
+        seq,
+        indices: [index],
+      }
+
+      context.ws.send(JSON.stringify(request))
+    },
     clearCacheSetup: assign({
       cachedSetup: undefined,
     }),
@@ -1038,6 +1104,7 @@ export const zookeeperManagerMachine = setup({
       if (maybeConversationId) {
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
+        queryParams.set('replay_attachment_mode', 'metadata_only')
       }
       const querystring = queryParams.toString()
         ? `?${queryParams.toString()}`
@@ -1837,6 +1904,10 @@ export const zookeeperManagerMachine = setup({
         [ZookeeperManagerTransitions.BackendShutdown]: {
           actions: ['handleBackendShutdown', 'disconnectIfIdle'],
         },
+        [ZookeeperManagerTransitions.AttachmentFetch]: {
+          guard: 'canFetchAttachment',
+          actions: ['markAttachmentLoading', 'sendAttachmentFetch'],
+        },
       },
       states: {
         [ZookeeperManagerStates.Response]: {
@@ -1870,6 +1941,35 @@ export const zookeeperManagerMachine = setup({
                     assertEvent(event, [
                       ZookeeperManagerTransitions.ResponseReceive,
                     ])
+
+                    if ('attachments' in event.response) {
+                      const attachmentFetches: Record<
+                        string,
+                        ZookeeperAttachmentFetchState
+                      > = {
+                        ...context.attachmentFetches,
+                      }
+
+                      for (const file of event.response.attachments.files) {
+                        if (file.attachment_ref === undefined) {
+                          continue
+                        }
+
+                        const key = getZookeeperAttachmentKey(
+                          file.attachment_ref
+                        )
+
+                        attachmentFetches[key] = {
+                          status: 'loaded',
+                          file,
+                        }
+                      }
+                      // This early return is needed because attachment response
+                      // is just a bookkeeping, not a message.
+                      // It should not create a conversation exchange, increment lastMessageId,
+                      // change awaitingResponse, or affect active Zookeeper generation.
+                      return { attachmentFetches }
+                    }
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
                     const responseComplete = isResponseComplete(event.response)
@@ -2092,6 +2192,7 @@ export const zookeeperManagerMachine = setup({
               lastMessageType: undefined,
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
+              attachmentFetches: {},
               pendingBackendShutdown: false,
               closeReason: undefined,
               ws: undefined,
