@@ -39,6 +39,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
+  getOrderedGraphAndPrimitiveSelections,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
 } from '@src/lib/selections'
@@ -268,13 +269,6 @@ export function addPlanarSurface({
         isEnginePrimitiveSelection(selection) &&
         selection.primitiveType === 'edge'
     )
-    if (primitiveEdges.length > 0 && curves.graphSelections.length > 0) {
-      // Selections store graph and engine primitives separately, so the
-      // original loop order cannot be recovered across these collections.
-      return new Error(
-        'This combination of edges is not supported. Select a sketch region instead.'
-      )
-    }
     for (const originalSelection of curves.graphSelections) {
       let selection = originalSelection
       if (selection.artifact?.type === 'solid2d') {
@@ -472,8 +466,24 @@ export function addPlanarSurface({
     }
     // The stdlib takes one Sketch directly, but requires arrays for curves,
     // including a single closed curve such as a circle.
-    curvesExpr = sketchCount > 0 ? exprs[0] : createArrayExpression(exprs)
-    if (curvesExpr.type === 'PipeSubstitution') curvesExpr = null
+    if (sketchCount > 0) {
+      curvesExpr = exprs[0]
+    } else {
+      const exprBySelection = new Map(
+        [...curves.graphSelections, ...primitiveEdges].map(
+          (selection, index) => [selection, exprs[index]]
+        )
+      )
+      const orderedExprs: Expr[] = []
+      for (const selection of getOrderedGraphAndPrimitiveSelections(curves)) {
+        const expression = exprBySelection.get(selection)
+        if (!expression)
+          return new Error('Could not resolve the selected curve in code.')
+        orderedExprs.push(expression)
+      }
+      curvesExpr = createArrayExpression(orderedExprs)
+    }
+    if (curvesExpr?.type === 'PipeSubstitution') curvesExpr = null
   }
 
   const call = createCallExpressionStdLibKw(

@@ -2,7 +2,10 @@ import type { KclManager } from '@src/lang/KclManager'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import {
+  codeRefFromRange,
+  getOriginalSegmentArtifact,
+} from '@src/lang/std/artifactGraph'
 import {
   addFlipSurface,
   addJoinSurfaces,
@@ -11,6 +14,10 @@ import {
 import { type Artifact, assertParse, recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
+  getEventForSelectWithPoint,
+  getOrderedGraphAndPrimitiveSelections,
+} from '@src/lib/selections'
+import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
   enginelessExecutor,
@@ -18,16 +25,33 @@ import {
   getKclCommandValue,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { isRecord } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createActor } from 'xstate'
+
+// These unrelated sketch dialogs initialize the browser app on import.
+vi.mock('@src/components/SetHorVertDistanceModal', () => ({
+  createInfoModal: vi.fn(),
+  GetInfoModal: vi.fn(),
+}))
+vi.mock('@src/components/SetAngleLengthModal', () => ({
+  createSetAngleLengthModal: vi.fn(),
+  SetAngleLengthModal: vi.fn(),
+}))
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
+let worldInThisFile: Awaited<
+  ReturnType<typeof buildTheWorldAndConnectToEngine>
+> = null!
 
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
@@ -40,8 +64,9 @@ beforeEach(async () => {
     return
   }
 
+  worldInThisFile = await buildTheWorldAndConnectToEngine()
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    worldInThisFile
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -474,6 +499,118 @@ surface001 = planarSurface(region001)`
       )
     ).toBeUndefined()
   })
+
+  it('preserves viewport click order when a closed loop mixes mapped and primitive edges', async () => {
+    const { ast, artifactGraph } = await setup(`${triangle}
+region001 = region(point = [2mm, 2mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)`)
+    expect(kclManagerInThisFile.errors).toEqual([])
+    const edges = [...artifactGraph.values()]
+      .filter(
+        (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
+          artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
+      )
+      .sort((left, right) => {
+        const leftSegment = getOriginalSegmentArtifact(
+          left.segId,
+          artifactGraph
+        )
+        const rightSegment = getOriginalSegmentArtifact(
+          right.segId,
+          artifactGraph
+        )
+        if (!leftSegment || !rightSegment)
+          throw new Error('Missing source segment')
+        return leftSegment.codeRef.range[0] - rightSegment.codeRef.range[0]
+      })
+    expect(edges).toHaveLength(3)
+    // Preserve real engine geometry while exercising the viewport fallback for
+    // an edge whose ID has no artifact mapping, as happens after edge treatments.
+    artifactGraph.delete(edges[1].id)
+    // The lite test connection drops unsuccessful replies. Forward the expected
+    // region-query miss so viewport normalization can continue to edge lookup.
+    const websocket = engineCommandManagerInThisFile.connection?.websocket
+    if (!websocket) throw new Error('Missing test engine websocket')
+    const handleMessage = engineCommandManagerInThisFile.createMessageHandler()
+    const forwardEngineError = (event: MessageEvent) => {
+      const response: unknown = JSON.parse(event.data)
+      if (isRecord(response) && response.success === false) handleMessage(event)
+    }
+    websocket.addEventListener('message', forwardEngineError)
+    const actor = createActor(modelingMachine, {
+      input: generateModelingMachineDefaultContext({
+        ...worldInThisFile,
+        wasmInstance: instanceInThisFile,
+      }),
+    }).start()
+    const clickEdge = async (index: number, isShiftDown = true) => {
+      const event = await getEventForSelectWithPoint(
+        {
+          type: 'select_with_point',
+          data: { entity_id: edges[index].id },
+        },
+        {
+          engineCommandManager: engineCommandManagerInThisFile,
+          kclManager: kclManagerInThisFile,
+          rustContext: rustContextInThisFile,
+          wasmInstance: instanceInThisFile,
+          useSegmentsBasedRegions: false,
+        }
+      )
+      if (event?.type !== 'Set selection')
+        throw new Error('Missing viewport selection event')
+      expect(event.data.selectionType).toBe(
+        index === 1 ? 'enginePrimitiveSelection' : 'singleCodeCursor'
+      )
+      actor.send({ ...event, data: { ...event.data, isShiftDown } })
+    }
+    const selectedEdgeIds = () =>
+      getOrderedGraphAndPrimitiveSelections(
+        actor.getSnapshot().context.selectionRanges
+      ).map((selection) =>
+        'type' in selection ? selection.entityId : selection.engineEntityId
+      )
+    const createSurface = () => {
+      const result = addPlanarSurface({
+        ast,
+        artifactGraph,
+        curves: actor.getSnapshot().context.selectionRanges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      return newCode
+    }
+    try {
+      await clickEdge(0, false)
+      await clickEdge(1)
+      await clickEdge(2)
+      expect(selectedEdgeIds()).toEqual(edges.map((edge) => edge.id))
+      expect(createSurface().replace(/\s/g, '')).toContain(
+        'planarSurface([getOppositeEdge(extrude001.sketch.tags.line1),edge001,getOppositeEdge(extrude001.sketch.tags.line3)])'
+      )
+      await clickEdge(0)
+      await clickEdge(0)
+      expect(selectedEdgeIds()).toEqual([edges[1].id, edges[2].id, edges[0].id])
+      await clickEdge(1)
+      await clickEdge(1)
+      expect(selectedEdgeIds()).toEqual([edges[2].id, edges[0].id, edges[1].id])
+      const newCode = createSurface()
+      expect(newCode.replace(/\s/g, '')).toContain(
+        'planarSurface([getOppositeEdge(extrude001.sketch.tags.line3),getOppositeEdge(extrude001.sketch.tags.line1),edge001])'
+      )
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+    } finally {
+      actor.stop()
+      websocket.removeEventListener('message', forwardEngineError)
+    }
+  }, 10_000)
 
   it.each(['path', 'solid2d'] as const)(
     'uses a legacy closed sketch directly from a %s selection',

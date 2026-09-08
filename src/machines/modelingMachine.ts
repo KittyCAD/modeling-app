@@ -177,6 +177,7 @@ import {
   handleSelectionBatch,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
+  reconcileSelectionOrder,
   selectionBodyFace,
   updateExtraSegments,
   updateSelections,
@@ -1718,12 +1719,13 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
+        const isShiftDown = setSelections.isShiftDown ?? kclManager.isShiftDown
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && kclManager.isShiftDown) {
+          if (!setSelections.selection && isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1731,17 +1733,17 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections,
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (!setSelections.selection && !kclManager.isShiftDown) {
+          } else if (!setSelections.selection && !isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (setSelections.selection && !kclManager.isShiftDown) {
+          } else if (setSelections.selection && !isShiftDown) {
             selections = {
               graphSelections: [setSelections.selection],
               otherSelections: [],
             }
-          } else if (setSelections.selection && kclManager.isShiftDown) {
+          } else if (setSelections.selection && isShiftDown) {
             // selecting and deselecting multiple objects
 
             /**
@@ -1852,13 +1854,19 @@ export const modelingMachine = setup({
           updateSceneObjectColors()
 
           return {
-            selectionRanges: selections,
+            selectionRanges: reconcileSelectionOrder(
+              selectionRanges,
+              selections
+            ),
           }
         }
 
         if (setSelections.selectionType === 'mirrorCodeMirrorSelections') {
           return {
-            selectionRanges: setSelections.selection,
+            selectionRanges: reconcileSelectionOrder(
+              selectionRanges,
+              setSelections.selection
+            ),
           }
         }
 
@@ -1869,7 +1877,7 @@ export const modelingMachine = setup({
               selection.entityId === setSelections.selection.entityId
           )
 
-          const otherSelections = kclManager.isShiftDown
+          const otherSelections = isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1882,9 +1890,7 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: kclManager.isShiftDown
-              ? selectionRanges.graphSelections
-              : [],
+            graphSelections: isShiftDown ? selectionRanges.graphSelections : [],
             otherSelections,
           }
           const { engineEvents } = handleSelectionBatch({
@@ -1907,7 +1913,10 @@ export const modelingMachine = setup({
           })
 
           return {
-            selectionRanges: selections,
+            selectionRanges: reconcileSelectionOrder(
+              selectionRanges,
+              selections
+            ),
           }
         }
 
@@ -1918,7 +1927,7 @@ export const modelingMachine = setup({
               selection.id === setSelections.selection.id
           )
 
-          const otherSelections = kclManager.isShiftDown
+          const otherSelections = isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1931,9 +1940,7 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: kclManager.isShiftDown
-              ? selectionRanges.graphSelections
-              : [],
+            graphSelections: isShiftDown ? selectionRanges.graphSelections : [],
             otherSelections,
           }
           const { engineEvents } = handleSelectionBatch({
@@ -1953,7 +1960,10 @@ export const modelingMachine = setup({
           })
 
           return {
-            selectionRanges: selections,
+            selectionRanges: reconcileSelectionOrder(
+              selectionRanges,
+              selections
+            ),
           }
         }
 
@@ -1961,7 +1971,7 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (kclManager.isShiftDown) {
+          if (isShiftDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections,
               otherSelections: [setSelections.selection],
@@ -2002,7 +2012,10 @@ export const modelingMachine = setup({
           }
 
           return {
-            selectionRanges: selections,
+            selectionRanges: reconcileSelectionOrder(
+              selectionRanges,
+              selections
+            ),
           }
         }
 
@@ -2036,10 +2049,16 @@ export const modelingMachine = setup({
 
           if (!sketchDetails)
             return {
-              selectionRanges: setSelections.selection,
+              selectionRanges: reconcileSelectionOrder(
+                selectionRanges,
+                setSelections.selection
+              ),
             }
           return {
-            selectionRanges: setSelections.selection,
+            selectionRanges: reconcileSelectionOrder(
+              selectionRanges,
+              setSelections.selection
+            ),
             sketchDetails: {
               ...sketchDetails,
               sketchEntryNodePath:
