@@ -182,6 +182,7 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         let direction = Point3d { x: 1.0, y: 1.0, z: 1.0 };
         let part_width = aabb.x;
         let part_height = aabb.y;
+
         let moves = s_curve(
             part_width as f32,
             part_height as f32,
