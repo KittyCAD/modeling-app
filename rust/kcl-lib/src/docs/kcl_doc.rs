@@ -1861,7 +1861,8 @@ mod test {
             }
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
-            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None, !eg.1.no3d).await {
+
+            let result = match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.no3d).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!(
                         "Error testing example {NAME} for {owner_name} in {}: {}",
@@ -1892,18 +1893,16 @@ mod test {
                 );
             }
             // Doc generation omits the model viewer for a `no3d` example. Its
-            // glTF export was already skipped by `execute_and_snapshot_3d`.
+            // glb export was already skipped by `execute_and_snapshot_3d`.
             // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
-            if !eg.1.no3d {
-                for gltf_file in result.gltf {
-                    let path = format!(
-                        "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
-                        qualname.replace("::", "-"),
-                        gltf_file.name,
-                    );
-                    let mut f = std::fs::File::create(path).expect("could not create file");
-                    std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
-                }
+            if let Some(glb) = result.glb {
+                let path = format!(
+                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
+                    qualname.replace("::", "-"),
+                    glb.name,
+                );
+                let mut f = std::fs::File::create(path).expect("could not create file");
+                std::io::Write::write_all(&mut f, &glb.bytes).expect("could not write to file");
             }
             return;
         }
