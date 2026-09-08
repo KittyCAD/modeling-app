@@ -91,9 +91,7 @@ export async function duplicateProjectInDirectory({
   )
   const name = getUniqueProjectNameFromExistingNames(
     requestedCopyName,
-    (await fileOperations.readDirectory(projectDirectoryPath)).map(
-      ({ name }) => name
-    )
+    await fileOperations.readDirectory(projectDirectoryPath)
   )
   const title = `${requestedCopyTitle}${name.slice(requestedCopyName.length)}`
 
