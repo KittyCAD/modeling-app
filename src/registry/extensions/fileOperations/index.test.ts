@@ -41,9 +41,7 @@ describe('file operations extension', () => {
     await expect(operations.stat(file)).resolves.toMatchObject({
       kind: 'file',
     })
-    await expect(operations.readDirectory(root)).resolves.toEqual([
-      { name: 'main.kcl', kind: 'file' },
-    ])
+    await expect(operations.readDirectory(root)).resolves.toEqual(['main.kcl'])
     await expect(operations.pending()).resolves.toBe(0)
   })
 })

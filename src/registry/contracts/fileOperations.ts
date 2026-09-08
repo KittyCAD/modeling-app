@@ -2,7 +2,6 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
   CopyOptions,
-  DirectoryEntry,
   FileContents,
   FileStat,
 } from '@src/lib/fileSystem/fileOperations'
@@ -20,7 +19,7 @@ export interface FileOperationsRegistryService {
    */
   readonly exists: (path: string) => Promise<boolean>
   /** Read a stable snapshot of a directory's immediate membership. */
-  readonly readDirectory: (path: string) => Promise<readonly DirectoryEntry[]>
+  readonly readDirectory: (path: string) => Promise<readonly string[]>
   /** Read one complete version of a file coordinated with path mutations. */
   readonly readFile: (path: string) => Promise<Uint8Array>
   readonly copy: (
