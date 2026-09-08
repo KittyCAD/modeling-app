@@ -664,6 +664,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         ...(project.duplicateProjectIdPaths ?? []),
       ].filter((projectPath): projectPath is string => Boolean(projectPath))
       const { sharedProjectId } = await separateProjectsSharingProjectId({
+        fileOperations: ctx.services.get(fileOperationsService),
         projectPaths,
         keepProjectPath,
       })

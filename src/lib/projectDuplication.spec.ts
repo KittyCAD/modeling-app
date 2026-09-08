@@ -1,4 +1,5 @@
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
   type DuplicateProjectResult,
   duplicateProjectInDirectory,
@@ -60,6 +61,7 @@ async function duplicateSourceProject({
   currentFileContents?: string
 }) {
   const result = await duplicateProjectInDirectory({
+    fileOperations: testFileOperations,
     source: {
       directoryName,
       displayName: 'Source project',

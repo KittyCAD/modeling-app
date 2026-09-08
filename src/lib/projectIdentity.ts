@@ -5,6 +5,7 @@ import {
   setProjectIdInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
@@ -14,9 +15,11 @@ import { v4 as uuidv4 } from 'uuid'
  * Zookeeper conversation.
  */
 export async function separateProjectsSharingProjectId({
+  fileOperations,
   projectPaths,
   keepProjectPath,
 }: {
+  fileOperations: Pick<FileOperationsRegistryService, 'readFile' | 'writeFile'>
   projectPaths: readonly string[]
   keepProjectPath?: string
 }) {
@@ -38,9 +41,9 @@ export async function separateProjectsSharingProjectId({
         projectPath,
         PROJECT_SETTINGS_FILE_NAME
       )
-      const contents = await fsZds.readFile(projectTomlPath, {
-        encoding: 'utf-8',
-      })
+      const contents = new TextDecoder().decode(
+        await fileOperations.readFile(projectTomlPath)
+      )
       return {
         contents,
         projectId: getProjectIdFromProjectTomlContents(contents),
@@ -73,7 +76,7 @@ export async function separateProjectsSharingProjectId({
 
   await Promise.all(
     updates.map(({ nextContents, projectTomlPath }) =>
-      fsZds.writeFile(projectTomlPath, new TextEncoder().encode(nextContents))
+      fileOperations.writeFile(projectTomlPath, nextContents)
     )
   )
 

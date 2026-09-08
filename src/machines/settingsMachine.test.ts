@@ -1,4 +1,5 @@
 import type { MachineManager } from '@src/lib/MachineManager'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -47,6 +48,7 @@ describe('settingsMachine', () => {
           defaultProjectLibraries: [],
           projectLibrarySettingDefaultPolicies: [],
           extensionSettings: {},
+          fileOperations: testFileOperations,
           ...createSettings(),
           wasmInstancePromise,
         },

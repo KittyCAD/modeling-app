@@ -216,6 +216,7 @@ describe('ProjectCard', () => {
       const props = {
         projects,
         projectActions,
+        fileOperations,
         projectStatuses: new Map<string, ProjectStatus>(),
         showCloudSyncUi: true,
         onMoveToLibrary: vi.fn(),
@@ -280,15 +281,17 @@ describe('ProjectCard', () => {
   )
 
   test('loads local thumbnails without requesting their remote copy', async () => {
-    vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
+    fileOperations.readFile.mockResolvedValue(new Uint8Array([1, 2, 3]))
     const { projectActions } = renderProjectCard()
-    await waitFor(() => expect(fsZds.readFile).toHaveBeenCalledTimes(1))
+    await waitFor(() =>
+      expect(fileOperations.readFile).toHaveBeenCalledTimes(1)
+    )
 
     const card = screen.getByRole('listitem')
     setCardInView(card, true)
     setCardInView(card, false)
     expect(projectActions.watchRemoteThumbnail).not.toHaveBeenCalled()
-    expect(fsZds.readFile).toHaveBeenCalledTimes(1)
+    expect(fileOperations.readFile).toHaveBeenCalledTimes(1)
     expect(createObjectURLMock).toHaveBeenCalledTimes(1)
   })
 
@@ -301,7 +304,11 @@ describe('ProjectCard', () => {
     } satisfies HomeProjectEntry
     const renderCard = (project: HomeProjectEntry) => (
       <BrowserRouter>
-        <AppProjectCard project={project} projectActions={projectActions} />
+        <AppProjectCard
+          project={project}
+          projectActions={projectActions}
+          fileOperations={fileOperations}
+        />
       </BrowserRouter>
     )
     const { rerender } = render(renderCard(project))

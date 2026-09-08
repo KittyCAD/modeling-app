@@ -79,6 +79,7 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
     requestedFileNameWithExtension,
     absolutePathToParentDirectory,
   } = input
+  const operations = input.app.registry.get(fileOperationsService)
 
   const oldPath = fsZds.join(
     absolutePathToParentDirectory,
@@ -107,9 +108,7 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
     }
   }
 
-  const entries = await fileOperations(input.context).readDirectory(
-    fsZds.dirname(newPath)
-  )
+  const entries = await operations.readDirectory(fsZds.dirname(newPath))
   if (entries.includes(requestedFileNameWithExtension)) {
     return Promise.reject(new ExpectedSystemIOError('Filename already exists.'))
   }
@@ -133,7 +132,7 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
     }
   }
 
-  await fileOperations(input.context).rename(oldPath, newPath)
+  await operations.rename(oldPath, newPath)
 
   if (
     input.app.project?.executingPathSignal.value &&

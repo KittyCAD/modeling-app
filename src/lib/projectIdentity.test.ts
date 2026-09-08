@@ -1,5 +1,4 @@
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
 import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity'
 import { getProjectIdFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -8,6 +7,11 @@ const fsZdsMocks = vi.hoisted(() => ({
   readFile: vi.fn(),
   writeFile: vi.fn(),
 }))
+
+const fileOperations = {
+  readFile: fsZdsMocks.readFile,
+  writeFile: fsZdsMocks.writeFile,
+}
 
 const uuidMocks = vi.hoisted(() => ({
   values: ['new-project-id-1', 'new-project-id-2'],
@@ -38,20 +42,26 @@ function writtenProjectId(projectPath: string) {
   if (!write) {
     return undefined
   }
-  return getProjectIdFromProjectTomlContents(new TextDecoder().decode(write[1]))
+  const contents = write[1]
+  return getProjectIdFromProjectTomlContents(
+    typeof contents === 'string' ? contents : new TextDecoder().decode(contents)
+  )
 }
 
 describe('separateProjectsSharingProjectId', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     uuidMocks.values = ['new-project-id-1', 'new-project-id-2']
-    fsZdsMocks.readFile.mockResolvedValue(projectToml('shared-project-id'))
+    fsZdsMocks.readFile.mockResolvedValue(
+      new TextEncoder().encode(projectToml('shared-project-id'))
+    )
     fsZdsMocks.writeFile.mockResolvedValue(undefined)
   })
 
   it('keeps the selected project id and gives every other copy a new id', async () => {
     await expect(
       separateProjectsSharingProjectId({
+        fileOperations,
         projectPaths: ['/projects/original', '/projects/copy'],
         keepProjectPath: '/projects/copy',
       })
@@ -63,6 +73,7 @@ describe('separateProjectsSharingProjectId', () => {
 
   it('gives every copy a new id when no project keeps the history', async () => {
     await separateProjectsSharingProjectId({
+      fileOperations,
       projectPaths: ['/projects/original', '/projects/copy'],
     })
 
@@ -72,14 +83,19 @@ describe('separateProjectsSharingProjectId', () => {
 
   it('does not write if the folders no longer share one project id', async () => {
     fsZdsMocks.readFile
-      .mockResolvedValueOnce(projectToml('project-id-1'))
-      .mockResolvedValueOnce(projectToml('project-id-2'))
+      .mockResolvedValueOnce(
+        new TextEncoder().encode(projectToml('project-id-1'))
+      )
+      .mockResolvedValueOnce(
+        new TextEncoder().encode(projectToml('project-id-2'))
+      )
 
     await expect(
       separateProjectsSharingProjectId({
+        fileOperations,
         projectPaths: ['/projects/original', '/projects/copy'],
       })
     ).rejects.toThrow('no longer share the same project ID')
-    expect(fsZds.writeFile).not.toHaveBeenCalled()
+    expect(fileOperations.writeFile).not.toHaveBeenCalled()
   })
 })

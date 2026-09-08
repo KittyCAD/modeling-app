@@ -1,6 +1,6 @@
 import { isPathNotFoundError } from '@src/lib/desktop'
-import fsZds from '@src/lib/fs-zds'
 import { normalizeFilesystemPathForComparison } from '@src/lib/paths'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 export interface ModelingStateMatcher {
   matches: (...args: any[]) => boolean
@@ -12,9 +12,11 @@ export type OpenedProjectPresence =
   | { type: 'error'; error: unknown }
 
 export async function checkOpenedProjectPresence({
+  fileOperations,
   projectPath,
   projects,
 }: {
+  fileOperations: Pick<FileOperationsRegistryService, 'stat'>
   projectPath: string
   projects: readonly { path: string }[]
 }): Promise<OpenedProjectPresence> {
@@ -30,7 +32,7 @@ export async function checkOpenedProjectPresence({
   }
 
   try {
-    await fsZds.stat(projectPath)
+    await fileOperations.stat(projectPath)
     return { type: 'present' }
   } catch (error) {
     if (isPathNotFoundError(error)) {

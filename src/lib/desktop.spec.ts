@@ -12,6 +12,7 @@ import {
 } from '@src/lib/desktop'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -145,6 +146,27 @@ describe('desktop utilities', () => {
     readFile: async (path: string) =>
       new TextEncoder().encode(await mockElectron.readFile(path)),
     writeFile: mockElectron.writeFile,
+    createFile: async (path: string, contents: string | Uint8Array) => {
+      try {
+        await mockElectron.writeFile(
+          path,
+          typeof contents === 'string'
+            ? new TextEncoder().encode(contents)
+            : new Uint8Array(contents),
+          { flag: 'wx' }
+        )
+      } catch (cause) {
+        if (cause === 'EEXIST') {
+          throw new FileAlreadyExists({
+            operation: 'create-file',
+            path,
+            cause,
+            message: `Unable to create-file ${path}`,
+          })
+        }
+        throw cause
+      }
+    },
   } as unknown as FileOperationsRegistryService
 
   beforeEach(() => {
@@ -250,6 +272,7 @@ describe('desktop utilities', () => {
 
       await expect(
         getDefaultKclFileForDir(
+          testFileOperations,
           projectPath,
           {
             name: 'project-without-kcl-files',
