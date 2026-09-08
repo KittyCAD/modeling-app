@@ -27,6 +27,7 @@ import {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { getSelectionReferences } from '@src/lib/selections'
 import type RustContext from '@src/lib/rustContext'
 import {
   clonedRegionBody,
@@ -539,6 +540,33 @@ fillet001 = fillet(extrude001, tags = extrude001.sketch.tags.circle1, radius = 1
           )
         ).toBe(true)
 
+        const oppositeBottomEdge = [...artifactGraph.values()].find(
+          (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
+            artifact.type === 'sweepEdge' &&
+            artifact.subType === 'opposite' &&
+            artifact.segId === selectedBottomEdge.id
+        )
+        if (!oppositeBottomEdge) {
+          throw new Error('Expected to find the opposite bottom edge')
+        }
+        const oppositeSelection = createSelectionFromArtifacts(
+          [oppositeBottomEdge],
+          artifactGraph
+        )
+        const oppositeReferences = await getSelectionReferences({
+          graphSelections: oppositeSelection.graphSelections,
+          defaultPlaneSelections: [],
+          enginePrimitives: [],
+          artifactGraph,
+          engineCommandManager: engineCommandManagerInThisFile,
+          kclManager: kclManagerInThisFile,
+          wasmInstance: instanceInThisFile,
+        })
+        expect(oppositeReferences).toHaveLength(1)
+        expect(oppositeReferences[0].code).toBe(
+          'getOppositeEdge(perforatedPlate.sketch.tags.bottomEdge)'
+        )
+
         const radius = (await stringToKclExpression(
           '1',
           rustContextInThisFile
@@ -606,22 +634,10 @@ fillet001 = fillet(perforatedPlate, tags = perforatedPlate.sketch.tags.bottomEdg
           consumedEdgeId: selectedBottomEdge.id,
         })
 
-        const oppositeBottomEdge = [...artifactGraph.values()].find(
-          (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
-            artifact.type === 'sweepEdge' &&
-            artifact.subType === 'opposite' &&
-            artifact.segId === selectedBottomEdge.id
-        )
-        if (!oppositeBottomEdge) {
-          throw new Error('Expected to find the opposite bottom edge')
-        }
         const oppositeResult = addFillet({
           ast,
           artifactGraph,
-          selection: createSelectionFromArtifacts(
-            [oppositeBottomEdge],
-            artifactGraph
-          ),
+          selection: oppositeSelection,
           radius,
           wasmInstance: instanceInThisFile,
         })

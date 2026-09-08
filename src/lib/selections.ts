@@ -30,6 +30,7 @@ import {
   createMemberExpression,
   nonCodeMetaEmpty,
 } from '@src/lang/create'
+import { resolveEdgeSelectionContext } from '@src/lang/modifyAst/tagManagement'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
@@ -727,7 +728,8 @@ function createDirectTaggedEdgeReferenceExpr(
 function createAdjacentOrOppositeEdgeReferenceExpr(
   context: SelectionExpressionBuilderContext
 ): Expr | null {
-  const { primitiveSelection, artifactGraph } = context
+  const { primitiveSelection, artifactGraph, kclManager, wasmInstance } =
+    context
   if (primitiveSelection.primitiveType !== 'edge') {
     return null
   }
@@ -742,24 +744,24 @@ function createAdjacentOrOppositeEdgeReferenceExpr(
     return null
   }
 
-  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+  const edgeContext = resolveEdgeSelectionContext(
+    kclManager.ast,
     {
       ...graphSelection,
       artifact: edgeArtifact,
     },
-    artifactGraph
+    artifactGraph,
+    wasmInstance,
+    undefined,
+    false
   )
-  if (err(sourceSurfaceArtifact)) {
+  if (err(edgeContext)) {
     return null
   }
-  const sourceSurface = sourceSurfaceArtifact as Extract<
-    Artifact,
-    { type: 'sweep' }
-  >
 
   const tagExpr = getDirectTagExprFromSourceSurface({
-    sourceSurfaceArtifact: sourceSurface,
-    sourceSurfaceExpr: getSourceSurfaceExpr(sourceSurface, context),
+    sourceSurfaceArtifact: edgeContext.sourceSweep,
+    sourceSurfaceExpr: edgeContext.selectedBodyExpr,
     taggedArtifact: edgeArtifact,
     context,
   })
