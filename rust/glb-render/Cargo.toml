@@ -1,0 +1,14 @@
+[package]
+name = "glb-render"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "kcl-render"
+path = "src/main.rs"
+
+[dependencies]
+bevy_math = "0.19.1"
+gltf = { version = "1.4", default-features = false, features = ["utils"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+zoo-brep = { path = "../zoo-brep" }
