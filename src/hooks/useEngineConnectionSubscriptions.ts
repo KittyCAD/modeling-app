@@ -48,44 +48,63 @@ export function useEngineConnectionSubscriptions() {
         }
       },
     })
+    let active = true
+    let pendingClick = Promise.resolve()
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: (engineEvent) => {
-        ;(async () => {
-          const selectingSketchPlane =
-            stateRef.current.matches('Sketch no face')
-          // Ignore select_with_point in sketch solve: without this selection is overridden
-          // and breaks multiple line highlights
-          if (stateRef.current.matches('sketchSolveMode')) {
-            return
-          }
-          const event = await getEventForSelectWithPoint(engineEvent, {
-            engineCommandManager,
-            kclManager,
-            rustContext,
-            wasmInstance,
-            useSegmentsBasedRegions,
+        const selectingSketchPlane = stateRef.current.matches('Sketch no face')
+        const isShiftDown = kclManager.isShiftDown
+        if (stateRef.current.matches('sketchSolveMode')) return
+        // Primitive lookup can await the engine while mapped edges resolve
+        // immediately. Apply clicks in arrival order using their original Shift state.
+        pendingClick = pendingClick
+          .then(async () => {
+            // Ignore select_with_point in sketch solve: without this selection is overridden
+            // and breaks multiple line highlights
+            if (
+              !active ||
+              stateRef.current.matches('sketchSolveMode') ||
+              selectingSketchPlane !==
+                stateRef.current.matches('Sketch no face')
+            ) {
+              return
+            }
+            const event = await getEventForSelectWithPoint(engineEvent, {
+              engineCommandManager,
+              kclManager,
+              rustContext,
+              wasmInstance,
+              useSegmentsBasedRegions,
+            })
+            // Check state again, in case it changed before
+            // getEventForSelectWithPoint returned.
+            if (
+              !active ||
+              stateRef.current.matches('sketchSolveMode') ||
+              selectingSketchPlane !==
+                stateRef.current.matches('Sketch no face')
+            ) {
+              return
+            }
+            if (event?.type === 'Set selection') {
+              send({ ...event, data: { ...event.data, isShiftDown } })
+            } else if (event) {
+              send(event)
+            }
+            if (selectingSketchPlane) {
+              await selectSketchPlane(
+                engineEvent.data.entity_id,
+                context.store.useSketchSolveMode?.current,
+                kclManager
+              )
+            }
           })
-          // Check state again, in case it changed before
-          // getEventForSelectWithPoint returned.
-          if (
-            stateRef.current.matches('sketchSolveMode') ||
-            selectingSketchPlane !== stateRef.current.matches('Sketch no face')
-          ) {
-            return
-          }
-          if (event) send(event)
-          if (selectingSketchPlane) {
-            await selectSketchPlane(
-              engineEvent.data.entity_id,
-              context.store.useSketchSolveMode?.current,
-              kclManager
-            )
-          }
-        })().catch(reportRejection)
+          .catch(reportRejection)
       },
     })
     return () => {
+      active = false
       unSubHover()
       unSubClick()
     }

@@ -47,7 +47,11 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import {
+  addFlipSurface,
+  addJoinSurfaces,
+  addPlanarSurface,
+} from '@src/lang/modifyAst/surfaces'
 import {
   addExtrude,
   addLoft,
@@ -282,6 +286,7 @@ export const modelingCommandCodemods = {
   'GDT Note': withAst('GDT Note', addNoteGdt),
   'GDT Datum': withGdtDefaults('GDT Datum', addDatumGdt),
   'Flip Surface': withArtifactGraph('Flip Surface', addFlipSurface),
+  'Planar Surface': withArtifactGraph('Planar Surface', addPlanarSurface),
   'Join Surfaces': withArtifactGraph('Join Surfaces', addJoinSurfaces),
   'Delete Face': withArtifactGraph('Delete Face', addDeleteFace),
   Blend: withArtifactGraph('Blend', addBlend),

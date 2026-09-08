@@ -13,6 +13,7 @@ import {
   assertParse,
   defaultNodePath,
   nodePathFromRange,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
@@ -810,6 +811,125 @@ describe('operations.test.ts', () => {
         'edge-id'
       )
       expect(argDefaultValues.bodyType).toBe('SURFACE')
+    })
+  })
+
+  describe('Planar Surface edit flow', () => {
+    it('restores a region and the tolerance expression', async () => {
+      const { rustContext, instance } =
+        await buildTheWorldAndNoEngineConnection()
+      const toleranceExpression = '0.002mm + 0.001mm'
+      const call = `planarSurface(region001, tolerance = ${toleranceExpression})`
+      const code = `surface001 = ${call}`
+      const operation = stdlib('planarSurface')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.nodePath = await buildNodePath(code, call, instance)
+      operation.unlabeledArg = {
+        value: { type: 'Sketch', value: { artifactId: 'path-id' } },
+        sourceRange: rangeOfText(code, 'region001'),
+      }
+      operation.labeledArgs = {
+        tolerance: {
+          value: { type: 'Number', value: 0.003, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, toleranceExpression),
+        },
+      }
+
+      const artifact = pathArtifact('path-id')
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([artifact]),
+        rustContext,
+      })
+
+      expect(getOperationLabel(operation)).toBe('Planar Surface')
+      expect(getOperationIcon(operation)).toBe('planarSurface')
+      expect(result).toMatchObject({
+        type: 'Find and select command',
+        data: {
+          name: 'Planar Surface',
+          groupId: 'modeling',
+          argDefaultValues: {
+            curves: {
+              graphSelections: [{ artifact }],
+              otherSelections: [],
+            },
+            tolerance: { valueText: toleranceExpression },
+            nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+          },
+        },
+      })
+    })
+
+    it('allows tolerance edits when engine edge selections cannot be recovered', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'surface001 = planarSurface([edge001], tolerance = 0.01mm)'
+      const operation = stdlib('planarSurface')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Array',
+          value: [{ type: 'Uuid', value: 'unresolved-engine-edge' }],
+        },
+        sourceRange: rangeOfText(code, '[edge001]'),
+      }
+      operation.labeledArgs = {
+        tolerance: {
+          value: { type: 'Number', value: 0.01, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '0.01mm'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: new Map(),
+        rustContext,
+      })
+
+      expect(result).toMatchObject({
+        type: 'Find and select command',
+        data: {
+          name: 'Planar Surface',
+          argDefaultValues: {
+            curves: { graphSelections: [], otherSelections: [] },
+            tolerance: { valueText: '0.01mm' },
+          },
+        },
+      })
+    })
+
+    it('leaves omitted tolerance unset', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'surface001 = planarSurface(region001)'
+      const operation = stdlib('planarSurface')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: { type: 'Sketch', value: { artifactId: 'path-id' } },
+        sourceRange: rangeOfText(code, 'region001'),
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
+        rustContext,
+      })
+
+      expect(result).toMatchObject({
+        type: 'Find and select command',
+        data: {
+          name: 'Planar Surface',
+          argDefaultValues: { tolerance: undefined },
+        },
+      })
     })
   })
 

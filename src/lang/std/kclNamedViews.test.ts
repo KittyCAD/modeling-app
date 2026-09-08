@@ -490,6 +490,7 @@ const LINKED_SWEEP_ENGINE_ID = {
   sweep: 'basePath',
   loft: 'ownId',
   blend: 'ownId',
+  planarSurface: 'ownId',
 } as const satisfies Record<SweepSubType, 'basePath' | 'ownId'>
 
 const SWEEP_ENGINE_ID_ROWS = Object.entries(LINKED_SWEEP_ENGINE_ID) as [

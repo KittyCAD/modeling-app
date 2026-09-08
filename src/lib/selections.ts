@@ -1119,6 +1119,84 @@ function isSameDefaultPlaneSelection(
   return left.id === right.id
 }
 
+function orderedSelectionKey(selection: Selection | EnginePrimitiveSelection) {
+  if ('type' in selection) return `entity:${selection.entityId}`
+  const entityId = selection.engineEntityId ?? selection.artifact?.id
+  return entityId
+    ? `entity:${entityId}`
+    : `range:${JSON.stringify(selection.codeRef.range)}`
+}
+
+/** Unranked programmatic selections retain graph-then-primitive order. */
+export function getOrderedGraphAndPrimitiveSelections(selections: Selections) {
+  return [
+    ...selections.graphSelections,
+    ...selections.otherSelections.filter(isEnginePrimitiveSelection),
+  ].sort(
+    (left, right) =>
+      (left.selectionOrder ?? Number.MAX_SAFE_INTEGER) -
+      (right.selectionOrder ?? Number.MAX_SAFE_INTEGER)
+  )
+}
+
+/** Keep ordering on the selected items themselves as the two collections change. */
+export function reconcileSelectionOrder(
+  previous: Selections,
+  next: Selections
+): Selections {
+  const previousItems = getOrderedGraphAndPrimitiveSelections(previous)
+  const nextItems = getOrderedGraphAndPrimitiveSelections(next)
+  const hasMixedSelections =
+    next.graphSelections.length > 0 &&
+    next.otherSelections.some(isEnginePrimitiveSelection)
+  if (
+    !hasMixedSelections &&
+    !previousItems.some(
+      (selection) => selection.selectionOrder !== undefined
+    ) &&
+    !nextItems.some((selection) => selection.selectionOrder !== undefined)
+  ) {
+    return next
+  }
+
+  const previousOrder = new Map(
+    previousItems.map((selection, index): [string, number] => [
+      orderedSelectionKey(selection),
+      selection.selectionOrder ?? index,
+    ])
+  )
+  let nextIndex =
+    Math.max(
+      -1,
+      ...previousOrder.values(),
+      ...nextItems.map((selection) => selection.selectionOrder ?? -1)
+    ) + 1
+  const order = new Map(
+    nextItems.map((selection): [string, number] => {
+      const key = orderedSelectionKey(selection)
+      return [
+        key,
+        selection.selectionOrder ?? previousOrder.get(key) ?? nextIndex++,
+      ]
+    })
+  )
+  return {
+    ...next,
+    graphSelections: next.graphSelections.map((selection) => ({
+      ...selection,
+      selectionOrder: order.get(orderedSelectionKey(selection)),
+    })),
+    otherSelections: next.otherSelections.map((selection) =>
+      isEnginePrimitiveSelection(selection)
+        ? {
+            ...selection,
+            selectionOrder: order.get(orderedSelectionKey(selection)),
+          }
+        : selection
+    ),
+  }
+}
+
 export function removeEnginePrimitiveSelectionFromSelections(
   selections: Selections,
   enginePrimitiveSelectionToRemove: EnginePrimitiveSelection

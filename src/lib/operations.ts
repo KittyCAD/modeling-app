@@ -3132,6 +3132,41 @@ const prepareToEditSplit: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditPlanarSurface: PrepareToEditCallback = async ({
+  operation,
+  artifactGraph,
+  code,
+  rustContext,
+}) => {
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // Curve selections are hidden in edit mode, and the codemod preserves the
+  // original expression, including its edge order and any inline selectors.
+  const curves = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
+  const tolerance = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (tolerance && 'error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const argDefaultValues: ModelingCommandSchema['Planar Surface'] = {
+    curves,
+    tolerance,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    name: 'Planar Surface',
+    groupId: 'modeling',
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -3524,6 +3559,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   joinSurfaces: {
     label: 'Join Surfaces',
     icon: 'joinSurfaces',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  planarSurface: {
+    label: 'Planar Surface',
+    icon: 'planarSurface',
+    prepareToEdit: prepareToEditPlanarSurface,
     supportsAppearance: true,
     supportsTransform: true,
   },

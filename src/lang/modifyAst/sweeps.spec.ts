@@ -1000,6 +1000,53 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       expect(error).not.toBeInstanceOf(Error)
     })
 
+    it('keeps a legacy edge tag valid when extruding from an anonymous surface', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+extrude(profile001, length = 5, bodyType = SURFACE)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const edge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' && artifact.subType === 'opposite'
+      )
+      if (!edge) throw new Error('Missing opposite surface edge')
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches: createSelectionFromArtifacts([edge], artifactGraph),
+        length: await getKclCommandValue(
+          '2',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('line(end = [10, 0], tag = $seg01)')
+      expect(newCode).toContain(`extrude001 = extrude(
+  getOppositeEdge(seg01),
+  length = 2,
+  method = NEW,
+  bodyType = SURFACE,
+)`)
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+    })
+
     it('should add a surface extrude from an edge on a cloned body', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         clonedRegionBody,
