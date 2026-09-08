@@ -34,7 +34,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -330,7 +330,10 @@ extrude001 = extrude(region001, length = 100)`
         newCode
       ).toContain(`extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
 helix001 = helix(
-  axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]),
+  axis = getCommonEdge(faces = [
+    region001.tags.line1,
+    extrude001.faces.capEnd001
+  ]),
   revolutions = 1,
   angleStart = 2,
   radius = 3,

@@ -9,9 +9,9 @@ use tower_lsp::lsp_types::DiagnosticSeverity;
 
 use crate::SourceRange;
 use crate::errors::Suggestion;
-use crate::lsp::IntoDiagnostic;
-use crate::lsp::ToLspRange;
-use crate::lsp::to_lsp_edit;
+use crate::lsp_types::IntoDiagnostic;
+use crate::lsp_types::ToLspRange;
+use crate::lsp_types::to_lsp_edit;
 use crate::parsing::ast::types::Node as AstNode;
 use crate::parsing::ast::types::Program;
 use crate::walk::Node;
@@ -66,6 +66,14 @@ impl Discovered {
     }
 }
 
+/// The maximum number of iterations of the fix loops in [`lint_and_fix_all`]
+/// and [`lint_and_fix_families`]. Each iteration applies one suggestion, so
+/// this bounds how many auto-fixes can be applied to a single file. It's a
+/// backstop against a buggy suggestion that never converges, e.g. one whose
+/// insert is identical to the existing source, which would otherwise loop
+/// forever.
+const MAX_FIX_ITERATIONS: usize = 10_000;
+
 /// Lint, and try to apply all suggestions.
 /// Returns the new source code, and any lints without suggestions.
 /// # Implementation
@@ -75,7 +83,7 @@ impl Discovered {
 /// If/when we discover that this autofix loop is too slow, we'll change our lint system so that
 /// lints can be applied to a small part of the program.
 pub fn lint_and_fix_all(mut source: String) -> anyhow::Result<(String, Vec<Discovered>)> {
-    loop {
+    for _ in 0..MAX_FIX_ITERATIONS {
         let (program, errors) = crate::Program::parse(&source)?;
         if !errors.is_empty() {
             anyhow::bail!("Found errors while parsing, please run the parser and fix them before linting.");
@@ -90,6 +98,9 @@ pub fn lint_and_fix_all(mut source: String) -> anyhow::Result<(String, Vec<Disco
             return Ok((source, lints));
         }
     }
+    anyhow::bail!(
+        "Lint auto-fix did not finish after {MAX_FIX_ITERATIONS} iterations; a lint suggestion is not making progress"
+    )
 }
 
 /// Lint, and try to apply all suggestions.
@@ -104,7 +115,7 @@ pub fn lint_and_fix_families(
     mut source: String,
     families_to_fix: &[FindingFamily],
 ) -> anyhow::Result<(String, Vec<Discovered>)> {
-    loop {
+    for _ in 0..MAX_FIX_ITERATIONS {
         let (program, errors) = crate::Program::parse(&source)?;
         if !errors.is_empty() {
             anyhow::bail!("Found errors while parsing, please run the parser and fix them before linting.");
@@ -125,6 +136,9 @@ pub fn lint_and_fix_families(
             return Ok((source, lints));
         }
     }
+    anyhow::bail!(
+        "Lint auto-fix did not finish after {MAX_FIX_ITERATIONS} iterations; a lint suggestion is not making progress"
+    )
 }
 
 #[cfg(feature = "pyo3")]
@@ -153,8 +167,8 @@ impl Discovered {
 }
 
 impl IntoDiagnostic for Discovered {
-    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
-        (&self).to_lsp_diagnostics(code)
+    fn to_lsp_diagnostics(&self, code: &str, uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
+        (&self).to_lsp_diagnostics(code, uri)
     }
 
     fn severity(&self) -> DiagnosticSeverity {
@@ -163,7 +177,7 @@ impl IntoDiagnostic for Discovered {
 }
 
 impl IntoDiagnostic for &Discovered {
-    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+    fn to_lsp_diagnostics(&self, code: &str, _uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
         let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
@@ -360,6 +374,27 @@ mod test {
 
         // After the fix, no more snake_case identifiers.
         assert!(!new_code.contains('_'));
+    }
+
+    #[test]
+    fn test_lint_and_fix_all_terminates_on_unfixable_rename() {
+        // A snake_case declaration in an if-expression arm gets a Z0001
+        // finding, but it can't be auto-renamed, so it must come back unfixed
+        // with the source unchanged. This used to produce a suggestion whose
+        // insert was identical to the source, making this loop forever.
+        let source = "\
+x = if true {
+  local_value = 1
+  local_value
+} else {
+  0
+}
+";
+        let (new_code, unfixed) = lint_and_fix_all(source.to_string()).unwrap();
+        assert_eq!(new_code, source);
+        assert_eq!(unfixed.len(), 1, "unfixed: {unfixed:?}");
+        assert_eq!(unfixed[0].description, "found 'local_value'");
+        assert!(unfixed[0].suggestion.is_none());
     }
 
     #[test]

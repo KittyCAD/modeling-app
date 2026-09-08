@@ -246,7 +246,15 @@ impl ArtifactMermaidExt for Artifact {
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::ImportedGeometry(_) => Vec::new(),
             Artifact::GdtAnnotation(_) => Vec::new(),
+            // A view names objects that already exist when it is declared, so
+            // its lists point back at prior nodes rather than owning them.
+            Artifact::NamedView(a) => {
+                let mut ids = a.show_ids.clone();
+                ids.extend(a.hide_ids.iter());
+                ids
+            }
             Artifact::Pattern(a) => vec![a.source_id],
         }
     }
@@ -388,7 +396,10 @@ impl ArtifactMermaidExt for Artifact {
                 }
                 ids
             }
+            Artifact::ImportedGeometry(_) => Vec::new(),
             Artifact::GdtAnnotation(_) => Vec::new(),
+            // Note: Don't include show_ids or hide_ids since they're parents.
+            Artifact::NamedView(_) => Vec::new(),
             Artifact::Pattern(a) => {
                 // Note: Don't include source_id since it's the parent.
                 let mut ids = a.copy_ids.clone();
@@ -496,7 +507,9 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                 | Artifact::EdgeCut(_)
                 | Artifact::EdgeCutEdge(_)
                 | Artifact::Helix(_)
+                | Artifact::ImportedGeometry(_)
                 | Artifact::GdtAnnotation(_)
+                | Artifact::NamedView(_)
                 | Artifact::Pattern(_) => false,
             };
             if !grouped {
@@ -695,6 +708,14 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }
+            Artifact::ImportedGeometry(imported_geometry) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"ImportedGeometry<br>{:?}\"]",
+                    code_ref_display(&imported_geometry.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &imported_geometry.code_ref)?;
+            }
             Artifact::GdtAnnotation(annotation) => {
                 writeln!(
                     output,
@@ -702,6 +723,21 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                     code_ref_display(&annotation.code_ref)
                 )?;
                 node_path_display(output, prefix, None, &annotation.code_ref)?;
+            }
+            Artifact::NamedView(named_view) => {
+                // The name is written with `{:?}` because it is author-supplied
+                // text: the quoting escapes a name containing a quotation mark
+                // or a newline, which would otherwise break the diagram. The
+                // baseline is shown because it decides which of the two id
+                // lists takes effect.
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"NamedView {:?}<br>Baseline: {:?}<br>{:?}\"]",
+                    named_view.name,
+                    named_view.baseline,
+                    code_ref_display(&named_view.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &named_view.code_ref)?;
             }
             Artifact::Pattern(pattern) => {
                 writeln!(
@@ -833,7 +869,16 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
             }
             Artifact::EdgeCutEdge(_) => "EdgeCutEdge".to_owned(),
             Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
+            Artifact::ImportedGeometry(imported_geometry) => {
+                format!("ImportedGeometry:{}", code_ref_key(&imported_geometry.code_ref))
+            }
             Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
+            // The name is part of the key so that two views declared in one
+            // module sort deterministically by name before falling back to
+            // source position.
+            Artifact::NamedView(named_view) => {
+                format!("NamedView:{}:{}", named_view.name, code_ref_key(&named_view.code_ref))
+            }
             Artifact::Pattern(pattern) => format!("Pattern:{:?}:{}", pattern.sub_type, code_ref_key(&pattern.code_ref)),
         }
     }

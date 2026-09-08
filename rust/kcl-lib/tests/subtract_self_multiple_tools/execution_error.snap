@@ -9,8 +9,7 @@ KCL Engine error
     ╭─[14:12]
  13 │ 
  14 │ fullPart = subtract(part001, tools = [part001, part002])
-    ·            ──────────────────────┬──────────────────────┬
-    ·                                  ╰── tests/subtract_self_multiple_tools/input.kcl
+    ·            ──────────────────────┬──────────────────────
     ·                                  ╰── tests/subtract_self_multiple_tools/input.kcl
     ╰────
   ╰─▶ KCL Engine error

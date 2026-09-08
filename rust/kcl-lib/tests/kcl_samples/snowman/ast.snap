@@ -18017,12 +18017,12 @@ description: Result of parsing snowman.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.0",
+              "raw": "2.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.0,
+                "value": 2.0,
                 "suffix": "None"
               }
             }
@@ -18299,7 +18299,7 @@ description: Result of parsing snowman.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Art & Design; 3D Printable",
             "style": "line"
           }
         },

@@ -1,6 +1,8 @@
+import {
+  calculateArcSwapState,
+  shouldSwapStartEnd,
+} from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 import { describe, expect, it } from 'vitest'
-
-import { shouldSwapStartEnd } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 
 const deg = (d: number) => (d * Math.PI) / 180
 
@@ -115,5 +117,37 @@ describe('shouldSwapStartEnd', () => {
       previousEnd: prevEnd,
     })
     expect(swapped).toBe(false)
+  })
+})
+
+describe('calculateArcSwapState', () => {
+  it('selects CW without swapping the declared endpoints', () => {
+    const result = calculateArcSwapState({
+      center: [0, 0],
+      startPoint: [1, 0],
+      newEndPoint: [0, -1],
+      currentIsSwapped: false,
+    })
+
+    expect(result).toEqual({
+      isSwapped: true,
+      finalStart: [1, 0],
+      finalEnd: [0, -1],
+    })
+  })
+
+  it('selects CCW without swapping the declared endpoints', () => {
+    const result = calculateArcSwapState({
+      center: [0, 0],
+      startPoint: [1, 0],
+      newEndPoint: [0, 1],
+      currentIsSwapped: true,
+    })
+
+    expect(result).toEqual({
+      isSwapped: false,
+      finalStart: [1, 0],
+      finalEnd: [0, 1],
+    })
   })
 })

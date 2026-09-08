@@ -30,6 +30,8 @@ type TestProject = {
   path: string
   name: string
   title: string
+  description: string
+  categoryIds: string[]
   remoteProjectId: string
   remoteRevision: string
   mainKcl: string
@@ -40,6 +42,8 @@ const projects: TestProject[] = [
     path: `${projectDirectory}/one`,
     name: 'one',
     title: 'One',
+    description: 'First synced project',
+    categoryIds: ['fixture-category-one'],
     remoteProjectId: 'remote-one',
     remoteRevision: 'rev-1',
     mainKcl: 'one = 1\n',
@@ -48,6 +52,8 @@ const projects: TestProject[] = [
     path: `${projectDirectory}/two`,
     name: 'two',
     title: 'Two',
+    description: 'Second synced project',
+    categoryIds: ['fixture-category-two'],
     remoteProjectId: 'remote-two',
     remoteRevision: 'rev-2',
     mainKcl: 'two = 2\n',
@@ -71,6 +77,16 @@ function projectFiles(project: TestProject): ProjectArchiveFile[] {
       data: encoder.encode(projectToml(project)),
     },
   ]
+}
+
+function remoteProjectResponse(project: TestProject) {
+  return {
+    id: project.remoteProjectId,
+    title: project.title,
+    description: project.description,
+    category_ids: project.categoryIds,
+    revision: project.remoteRevision,
+  }
 }
 
 async function seedSyncedProjectMetadata(project: TestProject) {
@@ -131,13 +147,7 @@ describe('cloud sync status coalescing', () => {
       const url = getFetchUrl(input)
       const method = getFetchMethod(input, init)
       if (url === `${baseUrl}/user/projects` && method === 'GET') {
-        return jsonResponse(
-          projects.map((project) => ({
-            id: project.remoteProjectId,
-            title: project.title,
-            revision: project.remoteRevision,
-          }))
-        )
+        return jsonResponse(projects.map(remoteProjectResponse))
       }
 
       const project = projects.find(
@@ -146,11 +156,7 @@ describe('cloud sync status coalescing', () => {
           method === 'GET'
       )
       if (project) {
-        return jsonResponse({
-          id: project.remoteProjectId,
-          title: project.title,
-          revision: project.remoteRevision,
-        })
+        return jsonResponse(remoteProjectResponse(project))
       }
 
       return jsonResponse(
@@ -176,11 +182,14 @@ describe('cloud sync status coalescing', () => {
         autoEnrollCloudLibraryProjects: false,
       })
 
-      await vi.waitFor(() => {
-        expect(cloudSyncStatus.value.state).toBe('idle')
-        expect(cloudSyncStatus.value.pendingCount).toBe(0)
-        expect(cloudSyncStatus.value.lastSyncedAt).toBeDefined()
-      })
+      await vi.waitFor(
+        () => {
+          expect(cloudSyncStatus.value.state).toBe('idle')
+          expect(cloudSyncStatus.value.pendingCount).toBe(0)
+          expect(cloudSyncStatus.value.lastSyncedAt).toBeDefined()
+        },
+        { timeout: 5_000 }
+      )
 
       expect(syncingSyncedAtUpdates).toEqual([])
     } finally {

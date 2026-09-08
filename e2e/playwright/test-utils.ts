@@ -1,7 +1,13 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
 import type { Feature, OutputFormat3d } from '@kittycad/lib'
-import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
+import type {
+  BrowserContext,
+  Locator,
+  Page,
+  Request,
+  TestInfo,
+} from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
@@ -45,8 +51,12 @@ import {
 import { test } from '@e2e/playwright/zoo-test'
 import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE } from '@src/lib/projectLibraries'
 
 export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+export const PLAYWRIGHT_TEST_SCOPE_KEY = 'playwrightTestScope'
+export const PLAYWRIGHT_STORAGE_SCOPE_KEY = 'playwrightStorageScope'
 
 export const PLAYWRIGHT_LAYOUT_SETTINGS = {
   layout: {
@@ -97,6 +107,27 @@ async function waitForPageLoad(page: Page) {
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
     timeout: 20_000,
   })
+}
+
+export async function waitForWebKitBillingToSettle(page: Page) {
+  if (process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT !== '1') {
+    return
+  }
+
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const snapshot = window.app.billing.actor.getSnapshot()
+          return (
+            snapshot.value === 'waiting' &&
+            (snapshot.context.lastFetch !== undefined ||
+              snapshot.context.error !== undefined)
+          )
+        }),
+      { timeout: 20_000 }
+    )
+    .toBe(true)
 }
 
 async function removeCurrentCode(page: Page) {
@@ -932,13 +963,66 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   })
 }
 
+export async function mockClientErrorReports(context: BrowserContext) {
+  if (process.env.PLAYWRIGHT_WEBKIT_PERSISTENT_CONTEXT === '1') {
+    await context.addInitScript(() => {
+      const originalFetch = globalThis.fetch.bind(globalThis)
+      globalThis.fetch = async (input, init) => {
+        const rawUrl =
+          typeof input === 'string'
+            ? input
+            : input instanceof URL
+              ? input.href
+              : input.url
+        const url = new URL(rawUrl, globalThis.location.href)
+
+        // WebKit applies CORS before Playwright can fulfill this cross-origin
+        // request, so mock the intentionally triggered report in the page.
+        if (url.pathname === '/user/client-errors') {
+          return new Response('{}', {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          })
+        }
+
+        return originalFetch(input, init)
+      }
+    })
+    return
+  }
+
+  await context.unroute('**/user/client-errors')
+  await context.route('**/user/client-errors', async (route) => {
+    // Keep intentionally simulated failures from polluting real dev telemetry.
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({}),
+    })
+  })
+}
+
+// Temporary function to confirm the feature flag is enabled
+export async function expectCloudFeatureEnabled(page: Page) {
+  await page.goto('/')
+  await expect(
+    page,
+    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: / did not redirect to /home`
+  ).toHaveURL(/\/home$/)
+  await expect(
+    page.getByText(PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE, { exact: true }),
+    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: "${PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE}" not visible`
+  ).toBeVisible()
+}
+
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
 export async function setup(
   context: BrowserContext,
   page: Page,
   testInfo?: TestInfo,
-  userFeatures: readonly Feature[] = []
+  userFeatures: readonly Feature[] = [],
+  { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
 ) {
   const testProjectSettings =
     TEST_SETTINGS.project &&
@@ -967,8 +1051,24 @@ export async function setup(
       settings,
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
+      PLAYWRIGHT_TEST_SCOPE_KEY,
+      PLAYWRIGHT_STORAGE_SCOPE_KEY,
     }) => {
-      localStorage.clear()
+      // Init scripts also run on opaque startup documents, which cannot use
+      // web storage. Electron's file documents still need initialization.
+      if (window.origin === 'null' && location.protocol !== 'file:') {
+        return
+      }
+      const testScope = sessionStorage.getItem(PLAYWRIGHT_TEST_SCOPE_KEY)
+      const initializedScope = sessionStorage.getItem(
+        PLAYWRIGHT_STORAGE_SCOPE_KEY
+      )
+      if (testScope === null || initializedScope !== testScope) {
+        localStorage.clear()
+        if (testScope !== null) {
+          sessionStorage.setItem(PLAYWRIGHT_STORAGE_SCOPE_KEY, testScope)
+        }
+      }
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
@@ -983,7 +1083,7 @@ export async function setup(
         settings: {
           ...TEST_SETTINGS,
           plugins: playwrightPluginSettings({
-            cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+            cloudSyncEnabled,
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
@@ -1002,6 +1102,8 @@ export async function setup(
       }),
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
+      PLAYWRIGHT_TEST_SCOPE_KEY,
+      PLAYWRIGHT_STORAGE_SCOPE_KEY,
     }
   )
 
@@ -1137,8 +1239,34 @@ async function installSlowFsForPlaywright(page: Page) {
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
+  let mainFrameNavigationRequest: Request | undefined
+  page.on('request', (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+      mainFrameNavigationRequest = request
+    }
+  })
+  page.on('load', () => {
+    mainFrameNavigationRequest = undefined
+  })
+  page.on('requestfailed', (request) => {
+    if (request === mainFrameNavigationRequest) {
+      mainFrameNavigationRequest = undefined
+    }
+  })
+
   page.on('pageerror', (exception: any) => {
     if (isErrorWhitelisted(exception)) {
+      return
+    }
+    if (
+      testInfo?.project.name === 'webkit' &&
+      mainFrameNavigationRequest !== undefined &&
+      exception.name === 'Cannot load blob' &&
+      exception.message.includes('due to access control checks') &&
+      exception.stack?.includes('/src/lib/fs-zds/opfs.ts')
+    ) {
+      // WebKit reports interrupted OPFS reads from the old document as page
+      // errors while it unloads; the replacement document is unaffected.
       return
     }
     // Only disable this environment variable if you want to collect console errors

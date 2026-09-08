@@ -14,11 +14,18 @@ import {
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
+  getUnresolvedEnginePrimitiveSelections,
   handleSelectionBatch,
+  removeEnginePrimitiveSelectionFromSelections,
+  removeReferenceFromSelections,
   selectSketchPlane,
 } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type {
+  DefaultPlaneSelection,
+  EnginePrimitiveSelection,
+  Selection,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, test, vi } from 'vitest'
 
@@ -1413,6 +1420,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [],
       artifactGraph: ___artifactGraph,
       engineCommandManager: createPrimitiveEngineConnectionManager({
@@ -1457,6 +1465,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1545,6 +1554,7 @@ cube = extrude(cubeRegion, length = 10)
           codeRef: regionRightCodeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [],
       artifactGraph,
       engineCommandManager: createPrimitiveEngineConnectionManager({
@@ -1588,6 +1598,7 @@ cube = extrude(cubeRegion, length = 10)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1612,6 +1623,87 @@ cube = extrude(cubeRegion, length = 10)
     expect(
       references.find((reference) => reference.label === 'Edge')?.code
     ).toBe('seg01')
+  })
+
+  test('includes selected default planes and lets them be removed', async () => {
+    const defaultPlaneSelection = {
+      id: 'default-plane-xy',
+      name: 'xy',
+    } as unknown as DefaultPlaneSelection
+    const references = await getSelectionReferences({
+      graphSelections: [],
+      defaultPlaneSelections: [defaultPlaneSelection],
+      enginePrimitives: [],
+      artifactGraph: new Map(),
+      engineCommandManager: null as never,
+      kclManager: null as never,
+      wasmInstance: null as never,
+    })
+
+    expect(references).toEqual([
+      {
+        id: 'plane:default-plane-xy',
+        label: 'XY Plane',
+        code: 'XY',
+        defaultPlaneSelection,
+      },
+    ])
+    expect(
+      removeReferenceFromSelections(
+        {
+          graphSelections: [],
+          otherSelections: [defaultPlaneSelection, 'x-axis'],
+        },
+        references[0]
+      )
+    ).toEqual({
+      graphSelections: [],
+      otherSelections: ['x-axis'],
+    })
+  })
+
+  test('identifies and removes engine primitives without KCL references', () => {
+    const unresolvedFace: EnginePrimitiveSelection = {
+      type: 'enginePrimitive',
+      entityId: 'unresolved-face',
+      parentEntityId: 'body',
+      primitiveIndex: 1,
+      primitiveType: 'face',
+    }
+    const resolvedEdge: EnginePrimitiveSelection = {
+      type: 'enginePrimitive',
+      entityId: 'resolved-edge',
+      parentEntityId: 'body',
+      primitiveIndex: 2,
+      primitiveType: 'edge',
+    }
+
+    expect(
+      getUnresolvedEnginePrimitiveSelections(
+        [unresolvedFace, resolvedEdge],
+        [
+          {
+            id: 'edge:resolved-edge',
+            label: 'Edge',
+            code: 'getEdge(body, 2)',
+            enginePrimitiveSelection: resolvedEdge,
+          },
+        ]
+      )
+    ).toEqual([unresolvedFace])
+
+    expect(
+      removeEnginePrimitiveSelectionFromSelections(
+        {
+          graphSelections: [],
+          otherSelections: [unresolvedFace, resolvedEdge, 'x-axis'],
+        },
+        unresolvedFace
+      )
+    ).toEqual({
+      graphSelections: [],
+      otherSelections: [resolvedEdge, 'x-axis'],
+    })
   })
 })
 

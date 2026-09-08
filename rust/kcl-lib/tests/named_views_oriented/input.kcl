@@ -1,0 +1,15 @@
+// Pins the two call shapes of view::oriented and the value each produces:
+// only the orientation, with every omission staying absent in the value and
+// the projection defaulting to orthographic; and every optional argument
+// fixed. The ops snapshot additionally pins that each call emits a feature
+// tree operation recording its arguments.
+@settings(experimentalFeatures = allow)
+
+minimal = view::oriented(view::Orientation::Isometric)
+
+full = view::oriented(
+  view::Orientation::Front,
+  target = [0, 0, 0],
+  distance = 500,
+  projection = view::Projection::Perspective,
+)

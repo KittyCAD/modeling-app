@@ -13,11 +13,7 @@ if [ "${VERCEL_ENV:-}" = "preview" ]; then
 fi
 wasm-pack "${wasm_pack_args[@]}"
 
-if [ -n "${VERCEL:-}" ]; then
-  cp -R kcl-lib/expected-bindings/ts-rs kcl-lib/bindings
-else
-  cargo test --package=kcl-lib --features=artifact-graph export_bindings
-fi
+cp -R kcl-lib/expected-bindings/ts-rs kcl-lib/bindings
 
 cp kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm ../public
 cp kcl-wasm-lib/README.md kcl-wasm-lib/pkg/README.md

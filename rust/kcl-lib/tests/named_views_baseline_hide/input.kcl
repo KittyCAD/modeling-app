@@ -1,0 +1,40 @@
+// Pins a Hide baseline with an exception list, the mirror of
+// named_views_baseline_show. Nothing is visible except the listed objects, so
+// the same authored list must land in the artifact's show_ids this time and
+// leave hide_ids empty. The list names two objects of different kinds, a solid
+// and the sketch region it was extruded from, because each kind carries its
+// artifact id differently.
+@settings(experimentalFeatures = allow)
+
+plateSketch = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  edge2 = line(start = [var 40mm, var 0mm], end = [var 40mm, var 20mm])
+  edge3 = line(start = [var 40mm, var 20mm], end = [var 0mm, var 20mm])
+  edge4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+plateRegion = region(point = [20mm, 10mm], sketch = plateSketch)
+plate = extrude(plateRegion, length = 5mm)
+
+bossSketch = sketch(on = XY) {
+  edge1 = line(start = [var 50mm, var 0mm], end = [var 60mm, var 0mm])
+  edge2 = line(start = [var 60mm, var 0mm], end = [var 60mm, var 10mm])
+  edge3 = line(start = [var 60mm, var 10mm], end = [var 50mm, var 10mm])
+  edge4 = line(start = [var 50mm, var 10mm], end = [var 50mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+bossRegion = region(point = [55mm, 5mm], sketch = bossSketch)
+boss = extrude(bossRegion, length = 8mm)
+
+plateOnly = view::named(
+  "Plate only",
+  camera = view::directed([0, -1, 0], distance = 150mm),
+  baseline = view::Visibility::Hide,
+  except = [plate, bossRegion],
+)

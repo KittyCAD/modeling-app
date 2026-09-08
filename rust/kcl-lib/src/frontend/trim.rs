@@ -90,7 +90,7 @@ pub enum ArcPoint {
 
 /// Which point of a circle segment to get coordinates for
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CirclePoint {
+enum CirclePoint {
     Start,
     Center,
 }
@@ -187,7 +187,7 @@ pub struct ConstraintToMigrate {
 /// Semantic trim plan produced by analysis/planning before lowering to frontend operations.
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
-pub enum TrimPlan {
+enum TrimPlan {
     DeleteSegment {
         segment_id: ObjectId,
     },
@@ -402,14 +402,14 @@ fn rewrite_constraint_with_map(
             segments: rewrite_constraint_segments(&coincident.segments, rewrite_map),
         })),
         Constraint::Distance(distance) => Some(Constraint::Distance(crate::frontend::sketch::Distance {
-            points: rewrite_constraint_segments(&distance.points, rewrite_map),
+            segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
             distance: distance.distance,
             label_position: distance.label_position.clone(),
             source: distance.source.clone(),
         })),
         Constraint::HorizontalDistance(distance) => {
             Some(Constraint::HorizontalDistance(crate::frontend::sketch::Distance {
-                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
                 distance: distance.distance,
                 label_position: distance.label_position.clone(),
                 source: distance.source.clone(),
@@ -417,7 +417,7 @@ fn rewrite_constraint_with_map(
         }
         Constraint::VerticalDistance(distance) => {
             Some(Constraint::VerticalDistance(crate::frontend::sketch::Distance {
-                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
                 distance: distance.distance,
                 label_position: distance.label_position.clone(),
                 source: distance.source.clone(),
@@ -594,6 +594,18 @@ fn sketch_segment_ids_for_segment(objects: &[Object], segment_id: ObjectId) -> V
             sketch.segments.contains(&segment_id).then(|| sketch.segments.clone())
         })
         .unwrap_or_default()
+}
+
+fn sketch_segment_ids(objects: &[Object], sketch_id: ObjectId) -> Result<IndexSet<ObjectId>, String> {
+    let sketch_object = objects
+        .iter()
+        .find(|object| object.id == sketch_id)
+        .ok_or_else(|| format!("Sketch {} not found", sketch_id.0))?;
+    let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+        return Err(format!("Object {} is not a sketch", sketch_id.0));
+    };
+
+    Ok(sketch.segments.iter().copied().collect())
 }
 
 #[derive(Debug, Clone)]
@@ -814,7 +826,7 @@ pub fn perpendicular_distance_to_segment(point: Coords2d, segment_start: Coords2
 /// Helper to check if a point is on an arc segment (CCW from start to end)
 ///
 /// Returns true if the point is on the arc, false otherwise.
-pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: Coords2d, epsilon: f64) -> bool {
+fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: Coords2d, epsilon: f64) -> bool {
     // Calculate radius
     let radius = ((start.x - center.x) * (start.x - center.x) + (start.y - center.y) * (start.y - center.y)).sqrt();
 
@@ -864,7 +876,7 @@ pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: 
 /// Helper to calculate intersections between a line segment and an arc.
 ///
 /// Returns intersections sorted by the line segment parametric position.
-pub fn line_arc_intersections(
+fn line_arc_intersections(
     line_start: Coords2d,
     line_end: Coords2d,
     arc_center: Coords2d,
@@ -953,7 +965,7 @@ pub fn line_arc_intersections(
 /// Helper to calculate intersection between a line segment and an arc.
 ///
 /// Returns the first intersection point if found, None otherwise.
-pub fn line_arc_intersection(
+fn line_arc_intersection(
     line_start: Coords2d,
     line_end: Coords2d,
     arc_center: Coords2d,
@@ -971,7 +983,7 @@ pub fn line_arc_intersection(
 ///
 /// Returns intersections as `(t, point)` where `t` is the line parametric position:
 /// `point = line_start + t * (line_end - line_start)`, with `0 <= t <= 1`.
-pub fn line_circle_intersections(
+fn line_circle_intersections(
     line_start: Coords2d,
     line_end: Coords2d,
     circle_center: Coords2d,
@@ -1038,7 +1050,7 @@ pub fn line_circle_intersections(
 /// Returns `t` in `[0, 1)` where:
 /// - `t = 0` at circle start
 /// - increasing `t` moves CCW
-pub fn project_point_onto_circle(point: Coords2d, center: Coords2d, start: Coords2d) -> f64 {
+fn project_point_onto_circle(point: Coords2d, center: Coords2d, start: Coords2d) -> f64 {
     let normalize_angle = |angle: f64| -> f64 {
         if !angle.is_finite() {
             return angle;
@@ -1169,7 +1181,7 @@ fn project_point_onto_ccw_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
 /// Helper to calculate all intersections between two arcs (via circle-circle intersection).
 ///
 /// Returns all valid points that lie on both arcs (0, 1, or 2).
-pub fn arc_arc_intersections(
+fn arc_arc_intersections(
     arc1_center: Coords2d,
     arc1_start: Coords2d,
     arc1_end: Coords2d,
@@ -1265,36 +1277,10 @@ pub fn arc_arc_intersections(
     candidates
 }
 
-/// Helper to calculate one intersection between two arcs (if any).
-///
-/// This is kept for compatibility with existing call sites/tests that expect
-/// a single optional intersection.
-pub fn arc_arc_intersection(
-    arc1_center: Coords2d,
-    arc1_start: Coords2d,
-    arc1_end: Coords2d,
-    arc2_center: Coords2d,
-    arc2_start: Coords2d,
-    arc2_end: Coords2d,
-    epsilon: f64,
-) -> Option<Coords2d> {
-    arc_arc_intersections(
-        arc1_center,
-        arc1_start,
-        arc1_end,
-        arc2_center,
-        arc2_start,
-        arc2_end,
-        epsilon,
-    )
-    .first()
-    .copied()
-}
-
 /// Helper to calculate intersections between a full circle and an arc.
 ///
 /// Returns all valid intersection points on the arc (0, 1, or 2).
-pub fn circle_arc_intersections(
+fn circle_arc_intersections(
     circle_center: Coords2d,
     circle_radius: f64,
     arc_center: Coords2d,
@@ -1358,7 +1344,7 @@ pub fn circle_arc_intersections(
 /// Helper to calculate intersections between two full circles.
 ///
 /// Returns 0, 1 (tangent), or 2 intersection points.
-pub fn circle_circle_intersections(
+fn circle_circle_intersections(
     circle1_center: Coords2d,
     circle1_radius: f64,
     circle2_center: Coords2d,
@@ -1508,7 +1494,7 @@ pub fn get_position_coords_from_arc(
 }
 
 /// Helper to get point coordinates from a Circle segment by looking up the point object (native types)
-pub fn get_position_coords_from_circle(
+fn get_position_coords_from_circle(
     segment_obj: &Object,
     which: CirclePoint,
     objects: &[Object],
@@ -2366,10 +2352,12 @@ fn trim_stroke_intersection_counts(
     points: &[Coords2d],
     objects: &[Object],
     default_unit: UnitLength,
+    eligible_segment_ids: &IndexSet<ObjectId>,
 ) -> IndexMap<ArtifactId, usize> {
     objects
         .iter()
         .filter_map(|object| load_curve_handle(object, objects, default_unit).ok())
+        .filter(|curve| eligible_segment_ids.contains(&curve.segment_id))
         .filter_map(|curve| {
             let intersection_count = curve_polyline_intersections(&curve, points, EPSILON_POINT_ON_SEGMENT).len();
             (intersection_count > 0).then(|| {
@@ -2391,6 +2379,7 @@ fn trim_stroke_intersection_counts(
  *
  * The function searches for candidates in each direction and selects the closest one,
  * with the following priority when distances are equal: coincident > intersection > endpoint.
+ * Only segments in `eligible_segment_ids` participate in the termination search.
  *
  * ## segEndPoint: The segment's own endpoint
  *
@@ -2438,12 +2427,20 @@ fn trim_stroke_intersection_counts(
 /// For the trim spawn segment and the intersection point on that segment,
 /// finds the "trim terminations" in both directions (left and right from the intersection point).
 /// A trim termination is the point where trimming should stop in each direction.
-pub fn get_trim_spawn_terminations(
+fn get_trim_spawn_terminations(
     trim_spawn_seg_id: ObjectId,
     trim_spawn_coords: &[Coords2d],
     objects: &[Object],
     default_unit: UnitLength,
+    eligible_segment_ids: &IndexSet<ObjectId>,
 ) -> Result<TrimTerminations, String> {
+    if !eligible_segment_ids.contains(&trim_spawn_seg_id) {
+        return Err(format!(
+            "Trim spawn segment {} is not eligible for termination analysis",
+            trim_spawn_seg_id.0
+        ));
+    }
+
     // Find the trim spawn segment
     let trim_spawn_seg = objects.iter().find(|obj| obj.id == trim_spawn_seg_id);
 
@@ -2504,6 +2501,7 @@ pub fn get_trim_spawn_terminations(
         TrimDirection::Left,
         objects,
         default_unit,
+        eligible_segment_ids,
     )?;
 
     let right_termination = find_termination_in_direction(
@@ -2513,6 +2511,7 @@ pub fn get_trim_spawn_terminations(
         TrimDirection::Right,
         objects,
         default_unit,
+        eligible_segment_ids,
     )?;
 
     Ok(TrimTerminations {
@@ -2580,6 +2579,7 @@ fn find_termination_in_direction(
     direction: TrimDirection,
     objects: &[Object],
     default_unit: UnitLength,
+    eligible_segment_ids: &IndexSet<ObjectId>,
 ) -> Result<TrimTermination, String> {
     // Use native types
     let ObjectKind::Segment { segment } = &trim_spawn_seg.kind else {
@@ -2674,7 +2674,7 @@ fn find_termination_in_direction(
     // Find intersections and coincident endpoint candidates against all other segments.
     for other_seg in objects.iter() {
         let other_id = other_seg.id;
-        if other_id == trim_spawn_seg_id {
+        if other_id == trim_spawn_seg_id || !eligible_segment_ids.contains(&other_id) {
             continue;
         }
 
@@ -2878,11 +2878,28 @@ fn find_termination_in_direction(
         }
     }
 
-    // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
+    // A coincident point belonging to another segment can occupy the trim segment's
+    // own endpoint (for example, a line endpoint constrained onto an arc endpoint).
+    // Treat that as the arc/line endpoint termination. Returning it as an interior
+    // coincident termination makes build_trim_plan split the segment and leaves a
+    // zero-length piece behind.
     let endpoint = match direction {
         TrimDirection::Left => trim_curve.start,
         TrimDirection::Right => trim_curve.end,
     };
+    if !is_circle_segment && closest_candidate.candidate_type == CandidateType::Coincident {
+        let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
+        let coord_distance = ((closest_candidate.point.x - endpoint.x).squared()
+            + (closest_candidate.point.y - endpoint.y).squared())
+        .sqrt();
+        if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT || coord_distance < EPSILON_POINT_ON_SEGMENT {
+            return Ok(TrimTermination::SegEndPoint {
+                trim_termination_coords: endpoint,
+            });
+        }
+    }
+
+    // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
     if !is_circle_segment && closest_candidate.candidate_type == CandidateType::Endpoint {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
         if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT {
@@ -2960,8 +2977,21 @@ where
     ));
     let mut invalidates_ids = false;
     let mut current_scene_graph_delta = initial_scene_graph_delta;
-    let selected_intersection_counts =
-        trim_stroke_intersection_counts(points, &current_scene_graph_delta.new_graph.objects, default_unit);
+    // This test-only generic loop has no sketch context, so every segment in
+    // its synthetic scene is explicitly eligible for the initial snapshot.
+    let initial_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
+        .new_graph
+        .objects
+        .iter()
+        .filter(|object| matches!(object.kind, ObjectKind::Segment { .. }))
+        .map(|object| object.id)
+        .collect();
+    let selected_intersection_counts = trim_stroke_intersection_counts(
+        points,
+        &current_scene_graph_delta.new_graph.objects,
+        default_unit,
+        &initial_segment_ids,
+    );
     let initial_intersection_count: usize = selected_intersection_counts.values().sum();
     let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
     let circle_delete_fallback_strategy =
@@ -3041,11 +3071,21 @@ where
                 ..
             } => {
                 // Get terminations
+                // This test-only generic loop has no sketch context, so every
+                // segment in its synthetic scene is explicitly eligible.
+                let termination_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .filter(|object| matches!(object.kind, ObjectKind::Segment { .. }))
+                    .map(|object| object.id)
+                    .collect();
                 let terminations = match get_trim_spawn_terminations(
                     *trim_spawn_seg_id,
                     points,
                     &current_scene_graph_delta.new_graph.objects,
                     default_unit,
+                    &termination_segment_ids,
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
@@ -3159,7 +3199,7 @@ where
 /// Result of executing trim flow
 #[cfg(test)]
 #[derive(Debug, Clone)]
-pub struct TrimFlowResult {
+struct TrimFlowResult {
     pub kcl_code: String,
     pub invalidates_ids: bool,
 }
@@ -3180,7 +3220,7 @@ pub struct TrimFlowResult {
 /// Note: This function is only available for non-WASM builds (tests) and uses
 /// a mock executor context so tests can run without an engine token.
 #[cfg(all(not(target_arch = "wasm32"), test))]
-pub(crate) async fn execute_trim_flow(
+async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
     sketch_id: ObjectId,
@@ -3221,20 +3261,6 @@ pub(crate) async fn execute_trim_flow(
             initial_scene_graph.objects = exec_outcome.scene_objects.clone();
         }
 
-        // Get the sketch ID from the scene graph
-        // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch_id
-        let actual_sketch_id = if let Some(sketch_mode) = initial_scene_graph.sketch_mode {
-            sketch_mode
-        } else {
-            // Try to find a sketch object in the scene graph
-            initial_scene_graph
-                .objects
-                .iter()
-                .find(|obj| matches!(obj.kind, crate::frontend::api::ObjectKind::Sketch { .. }))
-                .map(|obj| obj.id)
-                .unwrap_or(sketch_id) // Fall back to provided sketch_id
-        };
-
         let version = Version(0);
         let initial_scene_graph_delta = crate::frontend::api::SceneGraphDelta {
             new_graph: initial_scene_graph,
@@ -3253,7 +3279,7 @@ pub(crate) async fn execute_trim_flow(
             &mut frontend,
             &mock_ctx,
             version,
-            actual_sketch_id,
+            sketch_id,
         )
         .await?;
 
@@ -3337,8 +3363,13 @@ pub async fn execute_trim_loop_with_context(
         };
 
     let points = normalized_points.as_slice();
-    let selected_intersection_counts =
-        trim_stroke_intersection_counts(points, &current_scene_graph_delta.new_graph.objects, default_unit);
+    let active_sketch_segment_ids = sketch_segment_ids(&current_scene_graph_delta.new_graph.objects, sketch_id)?;
+    let selected_intersection_counts = trim_stroke_intersection_counts(
+        points,
+        &current_scene_graph_delta.new_graph.objects,
+        default_unit,
+        &active_sketch_segment_ids,
+    );
     let initial_intersection_count: usize = selected_intersection_counts.values().sum();
     let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
 
@@ -3346,20 +3377,22 @@ pub async fn execute_trim_loop_with_context(
         iteration_count += 1;
 
         // Get next trim result
+        let active_sketch_segment_ids = sketch_segment_ids(&current_scene_graph_delta.new_graph.objects, sketch_id)?;
         let eligible_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
             .new_graph
             .objects
             .iter()
             .filter(|object| {
-                initial_intersection_count > 1
-                    || selected_intersection_counts
-                        .get(&object.artifact_id)
-                        .copied()
-                        .unwrap_or(0)
-                        > processed_intersection_counts
+                active_sketch_segment_ids.contains(&object.id)
+                    && (initial_intersection_count > 1
+                        || selected_intersection_counts
                             .get(&object.artifact_id)
                             .copied()
                             .unwrap_or(0)
+                            > processed_intersection_counts
+                                .get(&object.artifact_id)
+                                .copied()
+                                .unwrap_or(0))
             })
             .map(|object| object.id)
             .collect();
@@ -3395,6 +3428,7 @@ pub async fn execute_trim_loop_with_context(
                     points,
                     &current_scene_graph_delta.new_graph.objects,
                     default_unit,
+                    &active_sketch_segment_ids,
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
@@ -3722,7 +3756,7 @@ fn spline_constraint_ids_to_delete(
             Constraint::Distance(distance)
             | Constraint::HorizontalDistance(distance)
             | Constraint::VerticalDistance(distance)
-                if distance.point_ids().any(|id| spline_control_ids.contains(&id)) =>
+                if distance.segment_ids().any(|id| spline_control_ids.contains(&id)) =>
             {
                 deletions.insert(obj.id);
             }
@@ -3749,7 +3783,7 @@ fn spline_constraint_ids_to_delete(
     deletions.into_iter().collect()
 }
 
-pub(crate) fn build_trim_plan(
+fn build_trim_plan(
     trim_spawn_id: ObjectId,
     trim_spawn_coords: Coords2d,
     trim_spawn_segment: &Object,
@@ -3815,7 +3849,7 @@ pub(crate) fn build_trim_plan(
             // even when this segment is trimmed. Only constraints that measure distances between
             // points on the same segment (e.g., segment length constraints) should be deleted.
             let points_owned_by_segment: Vec<bool> = distance
-                .point_ids()
+                .segment_ids()
                 .map(|point_id| {
                     if let Some(point_obj) = objects.iter().find(|o| o.id == point_id)
                         && let ObjectKind::Segment { segment } = &point_obj.kind
@@ -4074,6 +4108,36 @@ pub(crate) fn build_trim_plan(
         constraint_ids
     };
 
+    // Find point-to-segment constraints whose point occupies an endpoint being
+    // trimmed off this segment. The point may be owned by a different segment,
+    // so looking only for constraints that reference our endpoint ID misses it.
+    let find_body_coincident_constraints_at_endpoint =
+        |segment_id: ObjectId, endpoint_coords: Coords2d| -> Vec<ObjectId> {
+            objects
+                .iter()
+                .filter_map(|obj| {
+                    let ObjectKind::Constraint {
+                        constraint: Constraint::Coincident(coincident),
+                    } = &obj.kind
+                    else {
+                        return None;
+                    };
+                    if !coincident.contains_segment(segment_id) {
+                        return None;
+                    }
+                    coincident
+                        .segment_ids()
+                        .filter(|id| *id != segment_id)
+                        .filter_map(|point_id| get_point_coords_from_native(objects, point_id, default_unit))
+                        .any(|point| {
+                            ((point.x - endpoint_coords.x).squared() + (point.y - endpoint_coords.y).squared()).sqrt()
+                                < EPSILON_POINT_ON_SEGMENT
+                        })
+                        .then_some(obj.id)
+                })
+                .collect()
+        };
+
     let find_midpoint_constraints_for_segment = |segment_id: ObjectId| -> Vec<ObjectId> {
         objects
             .iter()
@@ -4229,6 +4293,10 @@ pub(crate) fn build_trim_plan(
         } else {
             Vec::new()
         };
+        let trimmed_endpoint_coords = match endpoint_to_change {
+            EndpointChanged::Start => load_curve_handle(trim_spawn_segment, objects, default_unit)?.start,
+            EndpointChanged::End => load_curve_handle(trim_spawn_segment, objects, default_unit)?.end,
+        };
 
         let point_axis_constraint_ids_to_delete = if let Some(point_id) = endpoint_point_id {
             objects
@@ -4338,6 +4406,10 @@ pub(crate) fn build_trim_plan(
             all_constraint_ids_to_delete.push(constraint_id);
         }
         all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
+        all_constraint_ids_to_delete.extend(find_body_coincident_constraints_at_endpoint(
+            trim_spawn_id,
+            trimmed_endpoint_coords,
+        ));
         all_constraint_ids_to_delete.extend(point_axis_constraint_ids_to_delete);
         all_constraint_ids_to_delete.extend(find_midpoint_constraints_for_segment(trim_spawn_id));
 
@@ -4345,6 +4417,8 @@ pub(crate) fn build_trim_plan(
         // When trimming an endpoint, the distance constraint no longer makes sense
         let distance_constraint_ids = find_distance_constraints_for_segment(trim_spawn_id);
         all_constraint_ids_to_delete.extend(distance_constraint_ids);
+        all_constraint_ids_to_delete.sort_unstable();
+        all_constraint_ids_to_delete.dedup();
 
         let coincident_target_id = coincident_data
             .intersecting_endpoint_point_id
@@ -5129,7 +5203,7 @@ pub(crate) fn build_trim_plan(
                 if let Some(constraint_obj) = objects.iter().find(|o| o.id == constraint_id)
                     && let ObjectKind::Constraint { constraint } = &constraint_obj.kind
                     && let Constraint::Distance(distance) = constraint
-                    && distance.contains_point(center_id)
+                    && distance.contains_segment(center_id)
                 {
                     // This is a center point constraint - skip deletion, it will be migrated
                     continue;
@@ -5804,7 +5878,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             migrated_constraints.push(Constraint::Coincident(migrated_coincident));
                         }
                         Constraint::Distance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5812,7 +5886,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             }
                         }
                         Constraint::HorizontalDistance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5820,7 +5894,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             }
                         }
                         Constraint::VerticalDistance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5932,7 +6006,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                         // Find distance constraints that reference the original center point
                         if let Constraint::Distance(distance) = constraint
-                            && distance.contains_point(original_center_id)
+                            && distance.contains_segment(original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
@@ -6293,8 +6367,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             continue;
                         };
 
-                        let references_start = distance.contains_point(original_start_id);
-                        let references_end = distance.contains_point(original_end_id);
+                        let references_start = distance.contains_segment(original_start_id);
+                        let references_end = distance.contains_segment(original_end_id);
 
                         if references_start && references_end {
                             distance_constraints_to_re_add.push((
@@ -6310,7 +6384,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 if let Some(original_start_id) = original_segment_start_point_id {
                     for (distance_value, label_position, source) in distance_constraints_to_re_add {
                         batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
-                            points: vec![original_start_id.into(), new_segment_end_point_id.into()],
+                            segments: vec![original_start_id.into(), new_segment_end_point_id.into()],
                             distance: distance_value,
                             label_position,
                             source,

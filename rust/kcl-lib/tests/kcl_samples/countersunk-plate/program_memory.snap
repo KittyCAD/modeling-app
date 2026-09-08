@@ -94,6 +94,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -101,10 +103,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 871,
-            "end": 891,
+            "commentStart": 883,
+            "end": 903,
             "moduleId": 0,
-            "start": 871,
+            "start": 883,
             "type": "TagDeclarator",
             "value": "upperRightTransition"
           },
@@ -115,10 +117,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 966,
-            "end": 977,
+            "commentStart": 978,
+            "end": 989,
             "moduleId": 0,
-            "start": 966,
+            "start": 978,
             "type": "TagDeclarator",
             "value": "rightEndArc"
           },
@@ -129,10 +131,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1153,
-            "end": 1173,
+            "commentStart": 1165,
+            "end": 1185,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "lowerRightTransition"
           },
@@ -143,10 +145,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1325,
-            "end": 1340,
+            "commentStart": 1337,
+            "end": 1352,
             "moduleId": 0,
-            "start": 1325,
+            "start": 1337,
             "type": "TagDeclarator",
             "value": "bottomCenterArc"
           },
@@ -157,10 +159,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1522,
-            "end": 1541,
+            "commentStart": 1534,
+            "end": 1553,
             "moduleId": 0,
-            "start": 1522,
+            "start": 1534,
             "type": "TagDeclarator",
             "value": "lowerLeftTransition"
           },
@@ -171,10 +173,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1698,
-            "end": 1708,
+            "commentStart": 1710,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1698,
+            "start": 1710,
             "type": "TagDeclarator",
             "value": "leftEndArc"
           },
@@ -185,10 +187,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1885,
-            "end": 1904,
+            "commentStart": 1897,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1885,
+            "start": 1897,
             "type": "TagDeclarator",
             "value": "upperLeftTransition"
           },
@@ -199,10 +201,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2054,
-            "end": 2066,
+            "commentStart": 2066,
+            "end": 2078,
             "moduleId": 0,
-            "start": 2054,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "topCenterArc"
           },
@@ -213,10 +215,24 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4060,
-            "end": 4068,
+            "commentStart": 3698,
+            "end": 3719,
             "moduleId": 0,
-            "start": 4060,
+            "start": 3698,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4135,
+            "end": 4143,
+            "moduleId": 0,
+            "start": 4135,
             "type": "TagDeclarator",
             "value": "topFace"
           },
@@ -244,10 +260,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.7107222563028273
             ],
             "tag": {
-              "commentStart": 871,
-              "end": 891,
+              "commentStart": 883,
+              "end": 903,
               "moduleId": 0,
-              "start": 871,
+              "start": 883,
               "type": "TagDeclarator",
               "value": "upperRightTransition"
             },
@@ -274,10 +290,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 0.7500000000000691,
             "tag": {
-              "commentStart": 966,
-              "end": 977,
+              "commentStart": 978,
+              "end": 989,
               "moduleId": 0,
-              "start": 966,
+              "start": 978,
               "type": "TagDeclarator",
               "value": "rightEndArc"
             },
@@ -298,10 +314,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.6579515205398779
             ],
             "tag": {
-              "commentStart": 1153,
-              "end": 1173,
+              "commentStart": 1165,
+              "end": 1185,
               "moduleId": 0,
-              "start": 1153,
+              "start": 1165,
               "type": "TagDeclarator",
               "value": "lowerRightTransition"
             },
@@ -328,10 +344,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 1.9500000026399495,
             "tag": {
-              "commentStart": 1325,
-              "end": 1340,
+              "commentStart": 1337,
+              "end": 1352,
               "moduleId": 0,
-              "start": 1325,
+              "start": 1337,
               "type": "TagDeclarator",
               "value": "bottomCenterArc"
             },
@@ -352,10 +368,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               -1.7107222563048272
             ],
             "tag": {
-              "commentStart": 1522,
-              "end": 1541,
+              "commentStart": 1534,
+              "end": 1553,
               "moduleId": 0,
-              "start": 1522,
+              "start": 1534,
               "type": "TagDeclarator",
               "value": "lowerLeftTransition"
             },
@@ -382,10 +398,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 0.750000000000069,
             "tag": {
-              "commentStart": 1698,
-              "end": 1708,
+              "commentStart": 1710,
+              "end": 1720,
               "moduleId": 0,
-              "start": 1698,
+              "start": 1710,
               "type": "TagDeclarator",
               "value": "leftEndArc"
             },
@@ -406,10 +422,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               0.6579515204257759
             ],
             "tag": {
-              "commentStart": 1885,
-              "end": 1904,
+              "commentStart": 1897,
+              "end": 1916,
               "moduleId": 0,
-              "start": 1885,
+              "start": 1897,
               "type": "TagDeclarator",
               "value": "upperLeftTransition"
             },
@@ -436,10 +452,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 1.95000000263995,
             "tag": {
-              "commentStart": 2054,
-              "end": 2066,
+              "commentStart": 2066,
+              "end": 2078,
               "moduleId": 0,
-              "start": 2054,
+              "start": 2066,
               "type": "TagDeclarator",
               "value": "topCenterArc"
             },
@@ -449,20 +465,50 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000005512464898470455,
+              0.00000000000000000001890106011052112
+            ],
+            "from": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 3698,
+              "end": 3719,
+              "moduleId": 0,
+              "start": 3698,
+              "type": "TagDeclarator",
+              "value": "centerClearanceCircle"
+            },
+            "to": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -542,8 +588,8 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -567,10 +613,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             1.7107222563028273
           ],
           "tag": {
-            "commentStart": 871,
-            "end": 891,
+            "commentStart": 883,
+            "end": 903,
             "moduleId": 0,
-            "start": 871,
+            "start": 883,
             "type": "TagDeclarator",
             "value": "upperRightTransition"
           },
@@ -597,10 +643,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           ],
           "radius": 0.7500000000000691,
           "tag": {
-            "commentStart": 966,
-            "end": 977,
+            "commentStart": 978,
+            "end": 989,
             "moduleId": 0,
-            "start": 966,
+            "start": 978,
             "type": "TagDeclarator",
             "value": "rightEndArc"
           },
@@ -621,10 +667,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             -0.6579515205398779
           ],
           "tag": {
-            "commentStart": 1153,
-            "end": 1173,
+            "commentStart": 1165,
+            "end": 1185,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "lowerRightTransition"
           },
@@ -651,10 +697,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           ],
           "radius": 1.9500000026399495,
           "tag": {
-            "commentStart": 1325,
-            "end": 1340,
+            "commentStart": 1337,
+            "end": 1352,
             "moduleId": 0,
-            "start": 1325,
+            "start": 1337,
             "type": "TagDeclarator",
             "value": "bottomCenterArc"
           },
@@ -675,10 +721,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             -1.7107222563048272
           ],
           "tag": {
-            "commentStart": 1522,
-            "end": 1541,
+            "commentStart": 1534,
+            "end": 1553,
             "moduleId": 0,
-            "start": 1522,
+            "start": 1534,
             "type": "TagDeclarator",
             "value": "lowerLeftTransition"
           },
@@ -705,10 +751,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           ],
           "radius": 0.750000000000069,
           "tag": {
-            "commentStart": 1698,
-            "end": 1708,
+            "commentStart": 1710,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1698,
+            "start": 1710,
             "type": "TagDeclarator",
             "value": "leftEndArc"
           },
@@ -729,10 +775,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             0.6579515204257759
           ],
           "tag": {
-            "commentStart": 1885,
-            "end": 1904,
+            "commentStart": 1897,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1885,
+            "start": 1897,
             "type": "TagDeclarator",
             "value": "upperLeftTransition"
           },
@@ -759,10 +805,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           ],
           "radius": 1.95000000263995,
           "tag": {
-            "commentStart": 2054,
-            "end": 2066,
+            "commentStart": 2066,
+            "end": 2078,
             "moduleId": 0,
-            "start": 2054,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "topCenterArc"
           },
@@ -772,20 +818,50 @@ description: Variables in memory after executing countersunk-plate.kcl
           ],
           "type": "Arc",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.00000000000000000005512464898470455,
+            0.00000000000000000001890106011052112
+          ],
+          "from": [
+            1.270887087750827,
+            -0.7967722448656341
+          ],
+          "radius": 1.5,
+          "tag": {
+            "commentStart": 3698,
+            "end": 3719,
+            "moduleId": 0,
+            "start": 3698,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "to": [
+            1.270887087750827,
+            -0.7967722448656341
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -865,8 +941,8 @@ description: Variables in memory after executing countersunk-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "plateSketch": {
@@ -1676,10 +1752,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                     1.7107222563028273
                   ],
                   "tag": {
-                    "commentStart": 871,
-                    "end": 891,
+                    "commentStart": 883,
+                    "end": 903,
                     "moduleId": 0,
-                    "start": 871,
+                    "start": 883,
                     "type": "TagDeclarator",
                     "value": "upperRightTransition"
                   },
@@ -1706,10 +1782,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                   ],
                   "radius": 0.7500000000000691,
                   "tag": {
-                    "commentStart": 966,
-                    "end": 977,
+                    "commentStart": 978,
+                    "end": 989,
                     "moduleId": 0,
-                    "start": 966,
+                    "start": 978,
                     "type": "TagDeclarator",
                     "value": "rightEndArc"
                   },
@@ -1730,10 +1806,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                     -0.6579515205398779
                   ],
                   "tag": {
-                    "commentStart": 1153,
-                    "end": 1173,
+                    "commentStart": 1165,
+                    "end": 1185,
                     "moduleId": 0,
-                    "start": 1153,
+                    "start": 1165,
                     "type": "TagDeclarator",
                     "value": "lowerRightTransition"
                   },
@@ -1760,10 +1836,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                   ],
                   "radius": 1.9500000026399495,
                   "tag": {
-                    "commentStart": 1325,
-                    "end": 1340,
+                    "commentStart": 1337,
+                    "end": 1352,
                     "moduleId": 0,
-                    "start": 1325,
+                    "start": 1337,
                     "type": "TagDeclarator",
                     "value": "bottomCenterArc"
                   },
@@ -1784,10 +1860,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                     -1.7107222563048272
                   ],
                   "tag": {
-                    "commentStart": 1522,
-                    "end": 1541,
+                    "commentStart": 1534,
+                    "end": 1553,
                     "moduleId": 0,
-                    "start": 1522,
+                    "start": 1534,
                     "type": "TagDeclarator",
                     "value": "lowerLeftTransition"
                   },
@@ -1814,10 +1890,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                   ],
                   "radius": 0.750000000000069,
                   "tag": {
-                    "commentStart": 1698,
-                    "end": 1708,
+                    "commentStart": 1710,
+                    "end": 1720,
                     "moduleId": 0,
-                    "start": 1698,
+                    "start": 1710,
                     "type": "TagDeclarator",
                     "value": "leftEndArc"
                   },
@@ -1838,10 +1914,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                     0.6579515204257759
                   ],
                   "tag": {
-                    "commentStart": 1885,
-                    "end": 1904,
+                    "commentStart": 1897,
+                    "end": 1916,
                     "moduleId": 0,
-                    "start": 1885,
+                    "start": 1897,
                     "type": "TagDeclarator",
                     "value": "upperLeftTransition"
                   },
@@ -1868,10 +1944,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                   ],
                   "radius": 1.95000000263995,
                   "tag": {
-                    "commentStart": 2054,
-                    "end": 2066,
+                    "commentStart": 2066,
+                    "end": 2078,
                     "moduleId": 0,
-                    "start": 2054,
+                    "start": 2066,
                     "type": "TagDeclarator",
                     "value": "topCenterArc"
                   },
@@ -1915,10 +1991,10 @@ description: Variables in memory after executing countersunk-plate.kcl
                   ],
                   "radius": 1.5,
                   "tag": {
-                    "commentStart": 3686,
-                    "end": 3707,
+                    "commentStart": 3698,
+                    "end": 3719,
                     "moduleId": 0,
-                    "start": 3686,
+                    "start": 3698,
                     "type": "TagDeclarator",
                     "value": "centerClearanceCircle"
                   },
@@ -1931,17 +2007,17 @@ description: Variables in memory after executing countersunk-plate.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2706,6 +2782,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2713,10 +2791,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 871,
-            "end": 891,
+            "commentStart": 883,
+            "end": 903,
             "moduleId": 0,
-            "start": 871,
+            "start": 883,
             "type": "TagDeclarator",
             "value": "upperRightTransition"
           },
@@ -2727,10 +2805,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 966,
-            "end": 977,
+            "commentStart": 978,
+            "end": 989,
             "moduleId": 0,
-            "start": 966,
+            "start": 978,
             "type": "TagDeclarator",
             "value": "rightEndArc"
           },
@@ -2741,10 +2819,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1153,
-            "end": 1173,
+            "commentStart": 1165,
+            "end": 1185,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "lowerRightTransition"
           },
@@ -2755,10 +2833,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1325,
-            "end": 1340,
+            "commentStart": 1337,
+            "end": 1352,
             "moduleId": 0,
-            "start": 1325,
+            "start": 1337,
             "type": "TagDeclarator",
             "value": "bottomCenterArc"
           },
@@ -2769,10 +2847,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1522,
-            "end": 1541,
+            "commentStart": 1534,
+            "end": 1553,
             "moduleId": 0,
-            "start": 1522,
+            "start": 1534,
             "type": "TagDeclarator",
             "value": "lowerLeftTransition"
           },
@@ -2783,10 +2861,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1698,
-            "end": 1708,
+            "commentStart": 1710,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1698,
+            "start": 1710,
             "type": "TagDeclarator",
             "value": "leftEndArc"
           },
@@ -2797,10 +2875,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1885,
-            "end": 1904,
+            "commentStart": 1897,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1885,
+            "start": 1897,
             "type": "TagDeclarator",
             "value": "upperLeftTransition"
           },
@@ -2811,10 +2889,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2054,
-            "end": 2066,
+            "commentStart": 2066,
+            "end": 2078,
             "moduleId": 0,
-            "start": 2054,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "topCenterArc"
           },
@@ -2825,10 +2903,24 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4060,
-            "end": 4068,
+            "commentStart": 3698,
+            "end": 3719,
             "moduleId": 0,
-            "start": 4060,
+            "start": 3698,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4135,
+            "end": 4143,
+            "moduleId": 0,
+            "start": 4135,
             "type": "TagDeclarator",
             "value": "topFace"
           },
@@ -2856,10 +2948,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.7107222563028273
             ],
             "tag": {
-              "commentStart": 871,
-              "end": 891,
+              "commentStart": 883,
+              "end": 903,
               "moduleId": 0,
-              "start": 871,
+              "start": 883,
               "type": "TagDeclarator",
               "value": "upperRightTransition"
             },
@@ -2886,10 +2978,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 0.7500000000000691,
             "tag": {
-              "commentStart": 966,
-              "end": 977,
+              "commentStart": 978,
+              "end": 989,
               "moduleId": 0,
-              "start": 966,
+              "start": 978,
               "type": "TagDeclarator",
               "value": "rightEndArc"
             },
@@ -2910,10 +3002,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.6579515205398779
             ],
             "tag": {
-              "commentStart": 1153,
-              "end": 1173,
+              "commentStart": 1165,
+              "end": 1185,
               "moduleId": 0,
-              "start": 1153,
+              "start": 1165,
               "type": "TagDeclarator",
               "value": "lowerRightTransition"
             },
@@ -2940,10 +3032,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 1.9500000026399495,
             "tag": {
-              "commentStart": 1325,
-              "end": 1340,
+              "commentStart": 1337,
+              "end": 1352,
               "moduleId": 0,
-              "start": 1325,
+              "start": 1337,
               "type": "TagDeclarator",
               "value": "bottomCenterArc"
             },
@@ -2964,10 +3056,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               -1.7107222563048272
             ],
             "tag": {
-              "commentStart": 1522,
-              "end": 1541,
+              "commentStart": 1534,
+              "end": 1553,
               "moduleId": 0,
-              "start": 1522,
+              "start": 1534,
               "type": "TagDeclarator",
               "value": "lowerLeftTransition"
             },
@@ -2994,10 +3086,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 0.750000000000069,
             "tag": {
-              "commentStart": 1698,
-              "end": 1708,
+              "commentStart": 1710,
+              "end": 1720,
               "moduleId": 0,
-              "start": 1698,
+              "start": 1710,
               "type": "TagDeclarator",
               "value": "leftEndArc"
             },
@@ -3018,10 +3110,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               0.6579515204257759
             ],
             "tag": {
-              "commentStart": 1885,
-              "end": 1904,
+              "commentStart": 1897,
+              "end": 1916,
               "moduleId": 0,
-              "start": 1885,
+              "start": 1897,
               "type": "TagDeclarator",
               "value": "upperLeftTransition"
             },
@@ -3048,10 +3140,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 1.95000000263995,
             "tag": {
-              "commentStart": 2054,
-              "end": 2066,
+              "commentStart": 2066,
+              "end": 2078,
               "moduleId": 0,
-              "start": 2054,
+              "start": 2066,
               "type": "TagDeclarator",
               "value": "topCenterArc"
             },
@@ -3061,20 +3153,50 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000005512464898470455,
+              0.00000000000000000001890106011052112
+            ],
+            "from": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 3698,
+              "end": 3719,
+              "moduleId": 0,
+              "start": 3698,
+              "type": "TagDeclarator",
+              "value": "centerClearanceCircle"
+            },
+            "to": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3154,8 +3276,8 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3168,6 +3290,8 @@ description: Variables in memory after executing countersunk-plate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3175,10 +3299,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 871,
-            "end": 891,
+            "commentStart": 883,
+            "end": 903,
             "moduleId": 0,
-            "start": 871,
+            "start": 883,
             "type": "TagDeclarator",
             "value": "upperRightTransition"
           },
@@ -3189,10 +3313,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 966,
-            "end": 977,
+            "commentStart": 978,
+            "end": 989,
             "moduleId": 0,
-            "start": 966,
+            "start": 978,
             "type": "TagDeclarator",
             "value": "rightEndArc"
           },
@@ -3203,10 +3327,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1153,
-            "end": 1173,
+            "commentStart": 1165,
+            "end": 1185,
             "moduleId": 0,
-            "start": 1153,
+            "start": 1165,
             "type": "TagDeclarator",
             "value": "lowerRightTransition"
           },
@@ -3217,10 +3341,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1325,
-            "end": 1340,
+            "commentStart": 1337,
+            "end": 1352,
             "moduleId": 0,
-            "start": 1325,
+            "start": 1337,
             "type": "TagDeclarator",
             "value": "bottomCenterArc"
           },
@@ -3231,10 +3355,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1522,
-            "end": 1541,
+            "commentStart": 1534,
+            "end": 1553,
             "moduleId": 0,
-            "start": 1522,
+            "start": 1534,
             "type": "TagDeclarator",
             "value": "lowerLeftTransition"
           },
@@ -3245,10 +3369,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1698,
-            "end": 1708,
+            "commentStart": 1710,
+            "end": 1720,
             "moduleId": 0,
-            "start": 1698,
+            "start": 1710,
             "type": "TagDeclarator",
             "value": "leftEndArc"
           },
@@ -3259,10 +3383,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1885,
-            "end": 1904,
+            "commentStart": 1897,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1885,
+            "start": 1897,
             "type": "TagDeclarator",
             "value": "upperLeftTransition"
           },
@@ -3273,10 +3397,10 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2054,
-            "end": 2066,
+            "commentStart": 2066,
+            "end": 2078,
             "moduleId": 0,
-            "start": 2054,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "topCenterArc"
           },
@@ -3287,10 +3411,24 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4060,
-            "end": 4068,
+            "commentStart": 3698,
+            "end": 3719,
             "moduleId": 0,
-            "start": 4060,
+            "start": 3698,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4135,
+            "end": 4143,
+            "moduleId": 0,
+            "start": 4135,
             "type": "TagDeclarator",
             "value": "topFace"
           },
@@ -3318,10 +3456,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.7107222563028273
             ],
             "tag": {
-              "commentStart": 871,
-              "end": 891,
+              "commentStart": 883,
+              "end": 903,
               "moduleId": 0,
-              "start": 871,
+              "start": 883,
               "type": "TagDeclarator",
               "value": "upperRightTransition"
             },
@@ -3348,10 +3486,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 0.7500000000000691,
             "tag": {
-              "commentStart": 966,
-              "end": 977,
+              "commentStart": 978,
+              "end": 989,
               "moduleId": 0,
-              "start": 966,
+              "start": 978,
               "type": "TagDeclarator",
               "value": "rightEndArc"
             },
@@ -3372,10 +3510,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.6579515205398779
             ],
             "tag": {
-              "commentStart": 1153,
-              "end": 1173,
+              "commentStart": 1165,
+              "end": 1185,
               "moduleId": 0,
-              "start": 1153,
+              "start": 1165,
               "type": "TagDeclarator",
               "value": "lowerRightTransition"
             },
@@ -3402,10 +3540,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 1.9500000026399495,
             "tag": {
-              "commentStart": 1325,
-              "end": 1340,
+              "commentStart": 1337,
+              "end": 1352,
               "moduleId": 0,
-              "start": 1325,
+              "start": 1337,
               "type": "TagDeclarator",
               "value": "bottomCenterArc"
             },
@@ -3426,10 +3564,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               -1.7107222563048272
             ],
             "tag": {
-              "commentStart": 1522,
-              "end": 1541,
+              "commentStart": 1534,
+              "end": 1553,
               "moduleId": 0,
-              "start": 1522,
+              "start": 1534,
               "type": "TagDeclarator",
               "value": "lowerLeftTransition"
             },
@@ -3456,10 +3594,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 0.750000000000069,
             "tag": {
-              "commentStart": 1698,
-              "end": 1708,
+              "commentStart": 1710,
+              "end": 1720,
               "moduleId": 0,
-              "start": 1698,
+              "start": 1710,
               "type": "TagDeclarator",
               "value": "leftEndArc"
             },
@@ -3480,10 +3618,10 @@ description: Variables in memory after executing countersunk-plate.kcl
               0.6579515204257759
             ],
             "tag": {
-              "commentStart": 1885,
-              "end": 1904,
+              "commentStart": 1897,
+              "end": 1916,
               "moduleId": 0,
-              "start": 1885,
+              "start": 1897,
               "type": "TagDeclarator",
               "value": "upperLeftTransition"
             },
@@ -3510,10 +3648,10 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "radius": 1.95000000263995,
             "tag": {
-              "commentStart": 2054,
-              "end": 2066,
+              "commentStart": 2066,
+              "end": 2078,
               "moduleId": 0,
-              "start": 2054,
+              "start": 2066,
               "type": "TagDeclarator",
               "value": "topCenterArc"
             },
@@ -3523,20 +3661,50 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000005512464898470455,
+              0.00000000000000000001890106011052112
+            ],
+            "from": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 3698,
+              "end": 3719,
+              "moduleId": 0,
+              "start": 3698,
+              "type": "TagDeclarator",
+              "value": "centerClearanceCircle"
+            },
+            "to": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3616,8 +3784,8 @@ description: Variables in memory after executing countersunk-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

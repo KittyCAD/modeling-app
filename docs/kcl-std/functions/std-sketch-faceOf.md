@@ -73,7 +73,7 @@ triangle = sketch(on = XY) {
   equalLength([line2, line3])
 }
 
-triangleRegion = region(point = [1.86mm, 3.82mm], sketch = triangle)
+triangleRegion = region(segments = [triangle.line1, triangle.line2])
 prism = extrude(triangleRegion, length = 2)
 
 face001 = faceOf(prism, face = triangleRegion.tags.line1)

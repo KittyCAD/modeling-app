@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands import_nested_foreign_error.kcl
+---
+{}

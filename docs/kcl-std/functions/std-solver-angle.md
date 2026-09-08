@@ -45,7 +45,7 @@ profile = sketch(on = XY) {
   angle([line1, line2]) == 60deg
 }
 
-solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+solid = extrude(region(segments = [profile.line1, profile.line2]), length = 2)
 
 ```
 

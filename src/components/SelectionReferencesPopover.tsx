@@ -9,9 +9,13 @@ import { useSingletons } from '@src/lib/boot'
 import {
   type SelectionReference,
   getSelectionReferences,
+  getUnresolvedEnginePrimitiveSelections,
+  isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
+  removeEnginePrimitiveSelectionFromSelections,
   removeReferenceFromSelections,
 } from '@src/lib/selections'
+import type { EnginePrimitiveSelection } from '@src/machines/modelingSharedTypes'
 import { reportRejection } from '@src/lib/trap'
 
 type SelectionReferenceState =
@@ -44,6 +48,9 @@ export function SelectionReferencesPopover() {
 
     getSelectionReferences({
       graphSelections: selectionRanges.graphSelections,
+      defaultPlaneSelections: selectionRanges.otherSelections.filter(
+        isDefaultPlaneSelection
+      ),
       enginePrimitives: selectionRanges.otherSelections.filter(
         isEnginePrimitiveSelection
       ),
@@ -93,7 +100,21 @@ export function SelectionReferencesPopover() {
     )
   }
 
-  if (state.references.length === 0) {
+  const enginePrimitives = selectionRanges.otherSelections.filter(
+    isEnginePrimitiveSelection
+  )
+  const unresolvedEnginePrimitives =
+    state.status === 'ready'
+      ? getUnresolvedEnginePrimitiveSelections(
+          enginePrimitives,
+          state.references
+        )
+      : []
+
+  if (
+    state.references.length === 0 &&
+    unresolvedEnginePrimitives.length === 0
+  ) {
     return (
       <div className="p-2 text-xs text-chalkboard-70 dark:text-chalkboard-30">
         No selection references for the current selection.
@@ -107,6 +128,21 @@ export function SelectionReferencesPopover() {
       data: {
         selectionType: 'completeSelection',
         selection: removeReferenceFromSelections(selectionRanges, reference),
+      },
+    })
+  }
+
+  const removeUnresolvedEnginePrimitive = (
+    selection: EnginePrimitiveSelection
+  ) => {
+    send({
+      type: 'Set selection',
+      data: {
+        selectionType: 'completeSelection',
+        selection: removeEnginePrimitiveSelectionFromSelections(
+          selectionRanges,
+          selection
+        ),
       },
     })
   }
@@ -152,6 +188,30 @@ export function SelectionReferencesPopover() {
               contentClassName="max-w-64 text-xs text-left"
             >
               Remove this item from the selection.
+            </Tooltip>
+          </button>
+        </div>
+      ))}
+      {unresolvedEnginePrimitives.map((selection) => (
+        <div
+          key={`unresolved:${selection.primitiveType}:${selection.entityId}`}
+          className="grid grid-cols-[minmax(0,1fr),auto] items-center gap-2 rounded-sm px-2 py-1 text-xs"
+        >
+          <span className="truncate text-destroy-80 dark:text-destroy-40">
+            Unresolved {selection.primitiveType}
+          </span>
+          <button
+            type="button"
+            className="relative p-0.5 rounded-sm text-2 hover:bg-destroy-80 focus:bg-destroy-80 !border-none"
+            aria-label={`Remove unresolved ${selection.primitiveType} from selection`}
+            onClick={() => removeUnresolvedEnginePrimitive(selection)}
+          >
+            <CustomIcon name="close" className="h-4 w-4" />
+            <Tooltip
+              position="left"
+              contentClassName="max-w-64 text-xs text-left"
+            >
+              Remove this unresolved item from the selection.
             </Tooltip>
           </button>
         </div>

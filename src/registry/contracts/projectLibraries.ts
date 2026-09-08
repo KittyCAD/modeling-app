@@ -7,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
   ProjectLibrary,
+  ProjectLibraryInitialProject,
   ProjectLibrarySetting,
   ProjectLibraryType,
 } from '@src/lib/projectLibraries'
@@ -78,6 +79,8 @@ export interface ProjectLibraryRealization {
   localProjectName: string
   name: string
   title?: string
+  /** Local identity stored in project.toml under settings.meta.id. */
+  projectId?: string
   cloudProjectId?: string
   modified?: number
   defaultFile?: string
@@ -119,9 +122,9 @@ export interface ProjectLibraryRealizationsService {
    */
   invalidate: (input?: ProjectLibraryRealizationsInvalidationInput) => void
   /**
-   * Watches configured library roots for realization boundary changes while a UI
-   * surface needs live discovery updates. The returned disposer must be called
-   * when that surface unmounts.
+   * Refreshes each configured library once, then watches its root for
+   * realization boundary changes while a UI surface needs live discovery
+   * updates. The returned disposer must be called when that surface unmounts.
    */
   watchConfiguredLibraries: (
     options: ProjectLibraryRealizationWatchOptions
@@ -145,6 +148,8 @@ export interface ProjectLibraryCreateProjectInput {
     fileName: string
     code: string
   }
+  /** Optional complete project to write before publishing it. */
+  initialProject?: ProjectLibraryInitialProject
 }
 
 export interface ProjectLibraryProjectInput {
@@ -234,6 +239,16 @@ export interface ProjectLibrarySettingsDetailsProps {
   }) => Promise<string | undefined>
 }
 
+/**
+ * Home-page library summary renderers let a project-library type attach compact
+ * type-specific state to both the library overview row and the library detail
+ * header without coupling Home to a plugin implementation.
+ */
+export interface ProjectLibraryHomeSummaryProps {
+  library: ProjectLibrary
+  projects: readonly HomeProjectEntry[]
+}
+
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
@@ -245,6 +260,8 @@ export interface ProjectLibraryTypeContribution {
   newLibrarySetting?: ProjectLibrarySetting
   /** Optional detail cell rendered in the project libraries settings row. */
   settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
+  /** Optional compact status/action component for Home library surfaces. */
+  homeSummary?: ComponentType<ProjectLibraryHomeSummaryProps>
   /** Hide this type from creation/editing UI while keeping runtime support. */
   hideInSettingsOnPlatform?: HideOnPlatformValue
   operations?: ProjectLibraryTypeOperations

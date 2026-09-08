@@ -143,7 +143,10 @@ mod tests {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, "appearance(color = ${0:\"#ff0000\"})");
+        assert_eq!(
+            snippet,
+            "appearance(color = ${0:\"#da4333\"}, metalness = ${1:90}, roughness = ${2:50})"
+        );
     }
 
     #[test]

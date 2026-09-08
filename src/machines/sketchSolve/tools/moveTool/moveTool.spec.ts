@@ -64,6 +64,7 @@ function createConstraintApiObject({
   type,
   line = 3,
   arc = 3,
+  segments,
   points,
   labelPosition,
 }: {
@@ -79,6 +80,7 @@ function createConstraintApiObject({
     | 'Angle'
   line?: number
   arc?: number
+  segments?: Array<number | 'ORIGIN'>
   points?: Array<number | 'ORIGIN'>
   labelPosition?: {
     x: { value: number; units: 'Mm' }
@@ -93,7 +95,7 @@ function createConstraintApiObject({
   ) {
     constraint = {
       type,
-      points: points ?? [1, 2],
+      segments: segments ?? [1, 2],
       distance: { value: 10, units: 'Mm' },
       ...(labelPosition ? { labelPosition } : {}),
       source: {
@@ -903,7 +905,7 @@ describe('createOnDragCallback', () => {
       const distanceConstraint = createConstraintApiObject({
         id: 8,
         type: constraintType,
-        points: [1, 2],
+        segments: [1, 2],
         labelPosition: {
           x: { value: 5, units: 'Mm' },
           y: { value: 4, units: 'Mm' },
@@ -1567,7 +1569,7 @@ describe('createOnDragCallback', () => {
     const distanceConstraint = createConstraintApiObject({
       id: 8,
       type: 'Distance',
-      points: [1, 5],
+      segments: [1, 5],
       labelPosition: {
         x: { value: 5, units: 'Mm' },
         y: { value: 5, units: 'Mm' },
@@ -1603,7 +1605,7 @@ describe('createOnDragCallback', () => {
     const committedConstraint = createConstraintApiObject({
       id: 8,
       type: 'Distance',
-      points: [1, 5],
+      segments: [1, 5],
       labelPosition: {
         x: { value: 9, units: 'Mm' },
         y: { value: 11, units: 'Mm' },
@@ -2389,7 +2391,7 @@ describe('createOnDragCallback', () => {
     const distanceConstraint = createConstraintApiObject({
       id: 8,
       type: 'HorizontalDistance',
-      points: [4, 5],
+      segments: [4, 5],
       labelPosition: {
         x: { value: 25, units: 'Mm' },
         y: { value: 14, units: 'Mm' },
@@ -2405,7 +2407,7 @@ describe('createOnDragCallback', () => {
     const snappedConstraint = createConstraintApiObject({
       id: 8,
       type: 'HorizontalDistance',
-      points: [4, 5],
+      segments: [4, 5],
       labelPosition: {
         x: { value: 25, units: 'Mm' },
         y: { value: 9, units: 'Mm' },

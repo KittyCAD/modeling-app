@@ -8,8 +8,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -41,8 +41,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 31,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -128,6 +128,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -135,10 +137,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2438,
-            "end": 2445,
+            "commentStart": 2496,
+            "end": 2503,
             "moduleId": 0,
-            "start": 2438,
+            "start": 2496,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -166,10 +168,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             ],
             "radius": 60.0,
             "tag": {
-              "commentStart": 2438,
-              "end": 2445,
+              "commentStart": 2496,
+              "end": 2503,
               "moduleId": 0,
-              "start": 2438,
+              "start": 2496,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -182,17 +184,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 31,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": -2.5,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -236,8 +238,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -259,6 +261,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -266,10 +270,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1113,
-            "end": 1118,
+            "commentStart": 1171,
+            "end": 1176,
             "moduleId": 0,
-            "start": 1113,
+            "start": 1171,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -280,10 +284,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1185,
-            "end": 1190,
+            "commentStart": 1243,
+            "end": 1248,
             "moduleId": 0,
-            "start": 1185,
+            "start": 1243,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -294,10 +298,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1258,
-            "end": 1263,
+            "commentStart": 1316,
+            "end": 1321,
             "moduleId": 0,
-            "start": 1258,
+            "start": 1316,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -308,10 +312,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1330,
-            "end": 1335,
+            "commentStart": 1388,
+            "end": 1393,
             "moduleId": 0,
-            "start": 1330,
+            "start": 1388,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -333,10 +337,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               -0.0000000000000000000000000025000049231360345
             ],
             "tag": {
-              "commentStart": 1113,
-              "end": 1118,
+              "commentStart": 1171,
+              "end": 1176,
               "moduleId": 0,
-              "start": 1113,
+              "start": 1171,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -357,10 +361,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               -0.000000000000000000000000003333339898153603
             ],
             "tag": {
-              "commentStart": 1185,
-              "end": 1190,
+              "commentStart": 1243,
+              "end": 1248,
               "moduleId": 0,
-              "start": 1185,
+              "start": 1243,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -381,10 +385,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 1258,
-              "end": 1263,
+              "commentStart": 1316,
+              "end": 1321,
               "moduleId": 0,
-              "start": 1258,
+              "start": 1316,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -405,10 +409,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 1330,
-              "end": 1335,
+              "commentStart": 1388,
+              "end": 1393,
               "moduleId": 0,
-              "start": 1330,
+              "start": 1388,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -421,17 +425,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": -20.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -487,8 +491,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -528,8 +532,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1058,10 +1062,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     -0.0000000000000000000000000025000049231360345
                   ],
                   "tag": {
-                    "commentStart": 1113,
-                    "end": 1118,
+                    "commentStart": 1171,
+                    "end": 1176,
                     "moduleId": 0,
-                    "start": 1113,
+                    "start": 1171,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1082,10 +1086,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     -0.000000000000000000000000003333339898153603
                   ],
                   "tag": {
-                    "commentStart": 1185,
-                    "end": 1190,
+                    "commentStart": 1243,
+                    "end": 1248,
                     "moduleId": 0,
-                    "start": 1185,
+                    "start": 1243,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1106,10 +1110,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     3.0
                   ],
                   "tag": {
-                    "commentStart": 1258,
-                    "end": 1263,
+                    "commentStart": 1316,
+                    "end": 1321,
                     "moduleId": 0,
-                    "start": 1258,
+                    "start": 1316,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1130,10 +1134,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                     3.0
                   ],
                   "tag": {
-                    "commentStart": 1330,
-                    "end": 1335,
+                    "commentStart": 1388,
+                    "end": 1393,
                     "moduleId": 0,
-                    "start": 1330,
+                    "start": 1388,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1146,17 +1150,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": -20.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1359,10 +1363,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             -0.0000000000000000000000000025000049231360345
           ],
           "tag": {
-            "commentStart": 1113,
-            "end": 1118,
+            "commentStart": 1171,
+            "end": 1176,
             "moduleId": 0,
-            "start": 1113,
+            "start": 1171,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1383,10 +1387,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             -0.000000000000000000000000003333339898153603
           ],
           "tag": {
-            "commentStart": 1185,
-            "end": 1190,
+            "commentStart": 1243,
+            "end": 1248,
             "moduleId": 0,
-            "start": 1185,
+            "start": 1243,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1407,10 +1411,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 1258,
-            "end": 1263,
+            "commentStart": 1316,
+            "end": 1321,
             "moduleId": 0,
-            "start": 1258,
+            "start": 1316,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1431,10 +1435,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 1330,
-            "end": 1335,
+            "commentStart": 1388,
+            "end": 1393,
             "moduleId": 0,
-            "start": 1330,
+            "start": 1388,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1447,17 +1451,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": -20.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1513,8 +1517,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bladeRootRadius": {
@@ -1543,6 +1547,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1550,10 +1556,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1113,
-                "end": 1118,
+                "commentStart": 1171,
+                "end": 1176,
                 "moduleId": 0,
-                "start": 1113,
+                "start": 1171,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -1564,10 +1570,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1185,
-                "end": 1190,
+                "commentStart": 1243,
+                "end": 1248,
                 "moduleId": 0,
-                "start": 1185,
+                "start": 1243,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -1578,10 +1584,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1258,
-                "end": 1263,
+                "commentStart": 1316,
+                "end": 1321,
                 "moduleId": 0,
-                "start": 1258,
+                "start": 1316,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -1592,10 +1598,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1330,
-                "end": 1335,
+                "commentStart": 1388,
+                "end": 1393,
                 "moduleId": 0,
-                "start": 1330,
+                "start": 1388,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -1617,10 +1623,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.0000000000000000000000000025000049231360345
                 ],
                 "tag": {
-                  "commentStart": 1113,
-                  "end": 1118,
+                  "commentStart": 1171,
+                  "end": 1176,
                   "moduleId": 0,
-                  "start": 1113,
+                  "start": 1171,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1641,10 +1647,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.000000000000000000000000003333339898153603
                 ],
                 "tag": {
-                  "commentStart": 1185,
-                  "end": 1190,
+                  "commentStart": 1243,
+                  "end": 1248,
                   "moduleId": 0,
-                  "start": 1185,
+                  "start": 1243,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -1665,10 +1671,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1258,
-                  "end": 1263,
+                  "commentStart": 1316,
+                  "end": 1321,
                   "moduleId": 0,
-                  "start": 1258,
+                  "start": 1316,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -1689,10 +1695,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1330,
-                  "end": 1335,
+                  "commentStart": 1388,
+                  "end": 1393,
                   "moduleId": 0,
-                  "start": 1330,
+                  "start": 1388,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -1705,17 +1711,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": -20.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1771,8 +1777,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1785,6 +1791,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1792,10 +1800,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1113,
-                "end": 1118,
+                "commentStart": 1171,
+                "end": 1176,
                 "moduleId": 0,
-                "start": 1113,
+                "start": 1171,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -1806,10 +1814,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1185,
-                "end": 1190,
+                "commentStart": 1243,
+                "end": 1248,
                 "moduleId": 0,
-                "start": 1185,
+                "start": 1243,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -1820,10 +1828,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1258,
-                "end": 1263,
+                "commentStart": 1316,
+                "end": 1321,
                 "moduleId": 0,
-                "start": 1258,
+                "start": 1316,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -1834,10 +1842,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1330,
-                "end": 1335,
+                "commentStart": 1388,
+                "end": 1393,
                 "moduleId": 0,
-                "start": 1330,
+                "start": 1388,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -1859,10 +1867,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.0000000000000000000000000025000049231360345
                 ],
                 "tag": {
-                  "commentStart": 1113,
-                  "end": 1118,
+                  "commentStart": 1171,
+                  "end": 1176,
                   "moduleId": 0,
-                  "start": 1113,
+                  "start": 1171,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1883,10 +1891,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.000000000000000000000000003333339898153603
                 ],
                 "tag": {
-                  "commentStart": 1185,
-                  "end": 1190,
+                  "commentStart": 1243,
+                  "end": 1248,
                   "moduleId": 0,
-                  "start": 1185,
+                  "start": 1243,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -1907,10 +1915,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1258,
-                  "end": 1263,
+                  "commentStart": 1316,
+                  "end": 1321,
                   "moduleId": 0,
-                  "start": 1258,
+                  "start": 1316,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -1931,10 +1939,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1330,
-                  "end": 1335,
+                  "commentStart": 1388,
+                  "end": 1393,
                   "moduleId": 0,
-                  "start": 1330,
+                  "start": 1388,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -1947,17 +1955,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": -20.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2013,8 +2021,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2027,6 +2035,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2034,10 +2044,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1113,
-                "end": 1118,
+                "commentStart": 1171,
+                "end": 1176,
                 "moduleId": 0,
-                "start": 1113,
+                "start": 1171,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -2048,10 +2058,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1185,
-                "end": 1190,
+                "commentStart": 1243,
+                "end": 1248,
                 "moduleId": 0,
-                "start": 1185,
+                "start": 1243,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -2062,10 +2072,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1258,
-                "end": 1263,
+                "commentStart": 1316,
+                "end": 1321,
                 "moduleId": 0,
-                "start": 1258,
+                "start": 1316,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -2076,10 +2086,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1330,
-                "end": 1335,
+                "commentStart": 1388,
+                "end": 1393,
                 "moduleId": 0,
-                "start": 1330,
+                "start": 1388,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -2101,10 +2111,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.0000000000000000000000000025000049231360345
                 ],
                 "tag": {
-                  "commentStart": 1113,
-                  "end": 1118,
+                  "commentStart": 1171,
+                  "end": 1176,
                   "moduleId": 0,
-                  "start": 1113,
+                  "start": 1171,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2125,10 +2135,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.000000000000000000000000003333339898153603
                 ],
                 "tag": {
-                  "commentStart": 1185,
-                  "end": 1190,
+                  "commentStart": 1243,
+                  "end": 1248,
                   "moduleId": 0,
-                  "start": 1185,
+                  "start": 1243,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -2149,10 +2159,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1258,
-                  "end": 1263,
+                  "commentStart": 1316,
+                  "end": 1321,
                   "moduleId": 0,
-                  "start": 1258,
+                  "start": 1316,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -2173,10 +2183,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1330,
-                  "end": 1335,
+                  "commentStart": 1388,
+                  "end": 1393,
                   "moduleId": 0,
-                  "start": 1330,
+                  "start": 1388,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -2189,17 +2199,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": -20.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2255,8 +2265,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2269,6 +2279,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2276,10 +2288,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1113,
-                "end": 1118,
+                "commentStart": 1171,
+                "end": 1176,
                 "moduleId": 0,
-                "start": 1113,
+                "start": 1171,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -2290,10 +2302,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1185,
-                "end": 1190,
+                "commentStart": 1243,
+                "end": 1248,
                 "moduleId": 0,
-                "start": 1185,
+                "start": 1243,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -2304,10 +2316,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1258,
-                "end": 1263,
+                "commentStart": 1316,
+                "end": 1321,
                 "moduleId": 0,
-                "start": 1258,
+                "start": 1316,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -2318,10 +2330,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1330,
-                "end": 1335,
+                "commentStart": 1388,
+                "end": 1393,
                 "moduleId": 0,
-                "start": 1330,
+                "start": 1388,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -2343,10 +2355,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.0000000000000000000000000025000049231360345
                 ],
                 "tag": {
-                  "commentStart": 1113,
-                  "end": 1118,
+                  "commentStart": 1171,
+                  "end": 1176,
                   "moduleId": 0,
-                  "start": 1113,
+                  "start": 1171,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2367,10 +2379,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   -0.000000000000000000000000003333339898153603
                 ],
                 "tag": {
-                  "commentStart": 1185,
-                  "end": 1190,
+                  "commentStart": 1243,
+                  "end": 1248,
                   "moduleId": 0,
-                  "start": 1185,
+                  "start": 1243,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -2391,10 +2403,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1258,
-                  "end": 1263,
+                  "commentStart": 1316,
+                  "end": 1321,
                   "moduleId": 0,
-                  "start": 1258,
+                  "start": 1316,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -2415,10 +2427,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   3.0
                 ],
                 "tag": {
-                  "commentStart": 1330,
-                  "end": 1335,
+                  "commentStart": 1388,
+                  "end": 1393,
                   "moduleId": 0,
-                  "start": 1330,
+                  "start": 1388,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -2431,17 +2443,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": -20.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2497,8 +2509,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2765,10 +2777,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   ],
                   "radius": 12.5000000015,
                   "tag": {
-                    "commentStart": 3700,
-                    "end": 3707,
+                    "commentStart": 3758,
+                    "end": 3765,
                     "moduleId": 0,
-                    "start": 3700,
+                    "start": 3758,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2844,6 +2856,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2851,10 +2865,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3065,
-            "end": 3072,
+            "commentStart": 3123,
+            "end": 3130,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3123,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2882,10 +2896,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             ],
             "radius": 17.500000001500002,
             "tag": {
-              "commentStart": 3065,
-              "end": 3072,
+              "commentStart": 3123,
+              "end": 3130,
               "moduleId": 0,
-              "start": 3065,
+              "start": 3123,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2946,8 +2960,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -2969,6 +2983,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2976,10 +2992,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3700,
-            "end": 3707,
+            "commentStart": 3758,
+            "end": 3765,
             "moduleId": 0,
-            "start": 3700,
+            "start": 3758,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3007,10 +3023,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             ],
             "radius": 12.5000000015,
             "tag": {
-              "commentStart": 3700,
-              "end": 3707,
+              "commentStart": 3758,
+              "end": 3765,
               "moduleId": 0,
-              "start": 3700,
+              "start": 3758,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3071,8 +3087,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3354,10 +3370,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   ],
                   "radius": 60.0,
                   "tag": {
-                    "commentStart": 2438,
-                    "end": 2445,
+                    "commentStart": 2496,
+                    "end": 2503,
                     "moduleId": 0,
-                    "start": 2438,
+                    "start": 2496,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -3370,17 +3386,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 31,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": -2.5,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3439,8 +3455,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 31,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -3472,6 +3488,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3479,10 +3497,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3065,
-            "end": 3072,
+            "commentStart": 3123,
+            "end": 3130,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3123,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3510,10 +3528,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
             ],
             "radius": 17.500000001500002,
             "tag": {
-              "commentStart": 3065,
-              "end": 3072,
+              "commentStart": 3123,
+              "end": 3130,
               "moduleId": 0,
-              "start": 3065,
+              "start": 3123,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3574,8 +3592,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -3840,10 +3858,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
                   ],
                   "radius": 17.500000001500002,
                   "tag": {
-                    "commentStart": 3065,
-                    "end": 3072,
+                    "commentStart": 3123,
+                    "end": 3130,
                     "moduleId": 0,
-                    "start": 3065,
+                    "start": 3123,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -3992,10 +4010,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           ],
           "radius": 60.0,
           "tag": {
-            "commentStart": 2438,
-            "end": 2445,
+            "commentStart": 2496,
+            "end": 2503,
             "moduleId": 0,
-            "start": 2438,
+            "start": 2496,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -4008,17 +4026,17 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 31,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": -2.5,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4062,8 +4080,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region003": {
@@ -4088,10 +4106,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           ],
           "radius": 17.500000001500002,
           "tag": {
-            "commentStart": 3065,
-            "end": 3072,
+            "commentStart": 3123,
+            "end": 3130,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3123,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -4152,8 +4170,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region004": {
@@ -4178,10 +4196,10 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
           ],
           "radius": 12.5000000015,
           "tag": {
-            "commentStart": 3700,
-            "end": 3707,
+            "commentStart": 3758,
+            "end": 3765,
             "moduleId": 0,
-            "start": 3700,
+            "start": 3758,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -4242,8 +4260,8 @@ description: Variables in memory after executing flat-bladed-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   }
 }

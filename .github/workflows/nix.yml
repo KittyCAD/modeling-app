@@ -17,7 +17,7 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: cachix/install-nix-action@v31.11.0
+      - uses: cachix/install-nix-action@v31.11.1
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
@@ -26,13 +26,13 @@ jobs:
           nix flake check --all-systems
 
   nix-build-linux:
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           submodules: recursive
 
-      - uses: cachix/install-nix-action@v31.11.0
+      - uses: cachix/install-nix-action@v31.11.1
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
@@ -46,10 +46,9 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: cachix/install-nix-action@v31.11.0
+      - uses: cachix/install-nix-action@v31.11.1
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
       - name: nix build . for x86_64-darwin
         run: nix build .
-

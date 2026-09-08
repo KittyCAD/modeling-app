@@ -7,11 +7,78 @@ import type {
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { Connection } from '@src/lib/engineConnection/connection'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { isArray } from '@src/lib/utils'
 
 // Ping/Pong every 1 second
 export const PING_INTERVAL_MS = 1_000
 
 export type ModelTypes = OkModelingCmdResponse['type']
+
+/** Normalized result for engine commands whose successful response carries data. */
+export type ModelingDataResult =
+  | { type: 'data'; data: unknown }
+  | { type: 'error'; error: Error }
+
+/**
+ * Pulls a human-readable message out of whatever `sendSceneCommand` resolved
+ * with. It resolves with an Error or a `[failureMessage]` array instead of
+ * rejecting, so both shapes have to be handled here.
+ */
+export function getResponseErrorMessage(
+  response: unknown,
+  fallbackMessage: string
+): string {
+  if (response instanceof Error) {
+    return response.message
+  }
+
+  if (isArray(response)) {
+    for (const item of response) {
+      if (
+        typeof item !== 'object' ||
+        item === null ||
+        !('errors' in item) ||
+        !isArray(item.errors)
+      ) {
+        continue
+      }
+
+      const [firstError] = item.errors
+      if (
+        typeof firstError === 'object' &&
+        firstError !== null &&
+        'message' in firstError &&
+        typeof firstError.message === 'string'
+      ) {
+        return firstError.message
+      }
+    }
+  }
+
+  return fallbackMessage
+}
+
+/** Validates and extracts the data payload from a modeling response. */
+export function getModelingData(
+  response: unknown,
+  expectedType: string,
+  fallbackMessage: string
+): ModelingDataResult {
+  if (!isModelingResponse(response)) {
+    return {
+      type: 'error',
+      error: new Error(getResponseErrorMessage(response, fallbackMessage)),
+    }
+  }
+
+  const modelingResponse = response.resp.data.modeling_response
+  if (modelingResponse.type !== expectedType || !('data' in modelingResponse)) {
+    return { type: 'error', error: new Error(fallbackMessage) }
+  }
+
+  return { type: 'data', data: modelingResponse.data }
+}
 // TODO: Should eventually be replaced with native EventTarget event system,
 // as it manages events in a more familiar way to other developers.
 export interface Subscription<T extends ModelTypes> {
@@ -302,16 +369,87 @@ export interface IEventListenerTracked {
   type: EventSource
 }
 
+export const MIN_STREAM_DIMENSION = 256
+export const MAX_STREAM_DIMENSION = 2160
+export const STREAM_DIMENSION_FACTOR = 4
+
 export function getDimensions(streamWidth: number, streamHeight: number) {
-  const factorOf = 4
-  const maxResolution = 2160
-  const ratio = Math.min(
-    Math.min(maxResolution / streamWidth, maxResolution / streamHeight),
-    1.0
+  const ratio = getStreamDimensionScale(streamWidth, streamHeight)
+  const width = normalizeStreamDimension(streamWidth * ratio)
+  const height = normalizeStreamDimension(streamHeight * ratio)
+  return { width, height }
+}
+
+export function validateStreamDimensions({
+  width,
+  height,
+}: {
+  width: number
+  height: number
+}): Error | undefined {
+  const invalidDimension = validateStreamDimension(width, 'width')
+  if (invalidDimension) {
+    return invalidDimension
+  }
+
+  return validateStreamDimension(height, 'height')
+}
+
+function getStreamDimensionScale(streamWidth: number, streamHeight: number) {
+  if (
+    !Number.isFinite(streamWidth) ||
+    !Number.isFinite(streamHeight) ||
+    streamWidth <= 0 ||
+    streamHeight <= 0
+  ) {
+    return 1
+  }
+
+  const minScale = Math.max(
+    MIN_STREAM_DIMENSION / streamWidth,
+    MIN_STREAM_DIMENSION / streamHeight,
+    1
   )
-  const quadWidth = Math.round((streamWidth * ratio) / factorOf) * factorOf
-  const quadHeight = Math.round((streamHeight * ratio) / factorOf) * factorOf
-  return { width: quadWidth, height: quadHeight }
+  const maxScale = Math.min(
+    MAX_STREAM_DIMENSION / streamWidth,
+    MAX_STREAM_DIMENSION / streamHeight
+  )
+
+  return Math.min(minScale, maxScale)
+}
+
+function normalizeStreamDimension(dimension: number) {
+  if (!Number.isFinite(dimension)) {
+    return dimension
+  }
+
+  const rounded =
+    Math.round(dimension / STREAM_DIMENSION_FACTOR) * STREAM_DIMENSION_FACTOR
+  if (rounded <= 0) {
+    return rounded
+  }
+
+  return Math.min(Math.max(rounded, MIN_STREAM_DIMENSION), MAX_STREAM_DIMENSION)
+}
+
+function validateStreamDimension(dimension: number, label: string) {
+  if (!Number.isFinite(dimension)) {
+    return new Error(`${label} must be finite, ${dimension}`)
+  }
+
+  if (dimension < MIN_STREAM_DIMENSION || dimension > MAX_STREAM_DIMENSION) {
+    return new Error(
+      `${label} must be between ${MIN_STREAM_DIMENSION} and ${MAX_STREAM_DIMENSION}, ${dimension}`
+    )
+  }
+
+  if (dimension % STREAM_DIMENSION_FACTOR !== 0) {
+    return new Error(
+      `${label} must be a multiple of ${STREAM_DIMENSION_FACTOR}, ${dimension}`
+    )
+  }
+
+  return undefined
 }
 
 export interface ManagerTearDown {

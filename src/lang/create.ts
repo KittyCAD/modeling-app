@@ -1,7 +1,9 @@
+import type { Annotation } from '@rust/kcl-lib/bindings/Annotation'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { type NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
+import type { ObjectProperty } from '@rust/kcl-lib/bindings/ObjectProperty'
 import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 
 import type { ImportPath } from '@rust/kcl-lib/bindings/ImportPath'
@@ -267,18 +269,42 @@ export function createObjectExpression(properties: {
     commentStart: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
-    properties: Object.entries(properties).map(([key, value]) => ({
-      type: 'ObjectProperty',
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      outerAttrs: [],
-      preComments: [],
-      commentStart: 0,
-      key: createIdentifier(key),
+    properties: Object.entries(properties).map(([key, value]) =>
+      createObjectProperty(key, value)
+    ),
+  }
+}
 
-      value,
-    })),
+function createObjectProperty(key: string, value: Expr): Node<ObjectProperty> {
+  return {
+    type: 'ObjectProperty',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    key: createIdentifier(key),
+    value,
+  }
+}
+
+export function createAnnotation(
+  properties: Record<string, Expr>,
+  name: string | null = null
+): Node<Annotation> {
+  return {
+    type: 'Annotation',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+    name: name === null ? null : createIdentifier(name),
+    properties: Object.entries(properties).map(([key, value]) =>
+      createObjectProperty(key, value)
+    ),
   }
 }
 

@@ -1,7 +1,7 @@
 /**
- * Utility functions for handling arc endpoint swapping logic.
- * These functions determine when and how to swap arc start/end points
- * when dragging an arc endpoint, particularly when crossing the 0/360° seam.
+ * Utility functions for handling draft arc direction changes.
+ * These functions determine when an arc should switch between its default
+ * counterclockwise direction and `direction = CW` while crossing the 0/360° seam.
  */
 
 /**
@@ -70,11 +70,11 @@ export function shouldSwapStartEnd({
 }
 
 /**
- * Determines the swap state and final start/end points for an arc when editing an endpoint.
+ * Determines the direction state and declared start/end points for a draft arc.
  * This function encapsulates the logic for:
  * 1. Determining initial swap state (on first edit, when previousEnd is undefined)
  * 2. Detecting seam crossing and updating swap state (on subsequent edits)
- * 3. Calculating the final start/end points based on swap state
+ * 3. Keeping the declared start/end points stable while direction changes
  *
  * @param center - Arc center point
  * @param startPoint - Current start point (may be swapped)
@@ -150,17 +150,9 @@ export function calculateArcSwapState({
     }
   }
 
-  // If swapped, swap start and end points for the arc
-  let finalStart = startPoint
-  let finalEnd: [number, number] = newEndPoint
-  if (isSwapped) {
-    finalStart = newEndPoint
-    finalEnd = startPoint
-  }
-
   return {
     isSwapped,
-    finalStart,
-    finalEnd,
+    finalStart: startPoint,
+    finalEnd: newEndPoint,
   }
 }

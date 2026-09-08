@@ -30,6 +30,64 @@ pub(crate) type DependencyInfo = (AstNode<ImportStatement>, ModuleId, ModulePath
 pub(crate) type UniverseMap = HashMap<TypedPath, AstNode<ImportStatement>>;
 pub(crate) type Universe = HashMap<String, DependencyInfo>;
 
+/// Add the ancestor import statements between `module_id` and the root module
+/// to an error raised while eagerly executing that module.
+///
+/// Imported modules are executed in dependency order, so a leaf can fail
+/// before its parents execute and naturally unwind. The universe still holds
+/// each module's importing statement, which lets us reconstruct that chain.
+/// Every per-module error path in the eager loop already records the
+/// immediate import frame (`exec_module_from_ast` for KCL modules, the
+/// labeled `send_to_engine` failure for foreign ones, and the not-found
+/// internal error, which ranges the error at the import site), so this
+/// starts with its parent.
+pub(crate) fn add_import_backtrace(error: KclError, module_id: ModuleId, universe: &Universe) -> KclError {
+    let Some((immediate_import, _, _, _)) = universe
+        .values()
+        .find(|(_, candidate_id, _, _)| *candidate_id == module_id)
+    else {
+        return error;
+    };
+    let parent = SourceRange::from(immediate_import).module_id();
+    walk_import_ancestry(error, parent, universe, std::collections::HashSet::from([module_id]))
+}
+
+/// Add the import statements of `module_id` and its ancestors to an error
+/// whose frames end inside that module, starting with `module_id`'s own
+/// import statement.
+///
+/// Unlike [`add_import_backtrace`], this does not assume any import frame has
+/// been recorded yet. Use it for errors that surface outside module
+/// execution, like engine rejections of async commands.
+pub(crate) fn add_import_backtrace_from(error: KclError, module_id: ModuleId, universe: &Universe) -> KclError {
+    walk_import_ancestry(error, module_id, universe, std::collections::HashSet::new())
+}
+
+fn walk_import_ancestry(
+    mut error: KclError,
+    mut module_id: ModuleId,
+    universe: &Universe,
+    // Guard against malformed universes. Import cycles are rejected before
+    // modules execute, but this runs on an error path where the failure mode
+    // would be an infinite loop, so don't rely on that invariant here.
+    mut visited: std::collections::HashSet<ModuleId>,
+) -> KclError {
+    while module_id != ModuleId::default() && visited.insert(module_id) {
+        let Some((import_stmt, _, _, _)) = universe
+            .values()
+            .find(|(_, candidate_id, _, _)| *candidate_id == module_id)
+        else {
+            break;
+        };
+
+        let import_site = SourceRange::from(import_stmt);
+        error = error.add_import_location(&import_stmt.path.to_string(), import_site);
+        module_id = import_site.module_id();
+    }
+
+    error
+}
+
 /// Process a number of programs, returning the graph of dependencies.
 ///
 /// This will (currently) return a list of lists of IDs that can be safely
@@ -268,6 +326,156 @@ mod tests {
             },
             ModuleRepr::Kcl(program, None),
         )
+    }
+
+    /// A universe entry for `filename` imported by a statement located in
+    /// `importer`.
+    fn dependency_info(filename: &str, module_id: ModuleId, importer: ModuleId) -> DependencyInfo {
+        (
+            AstNode::new(
+                ImportStatement {
+                    selector: ImportSelector::None { alias: None },
+                    path: ImportPath::Kcl {
+                        filename: filename.into(),
+                    },
+                    visibility: Default::default(),
+                    digest: None,
+                },
+                0,
+                filename.len(),
+                importer,
+            ),
+            module_id,
+            ModulePath::Local {
+                value: filename.into(),
+                original_import_path: None,
+            },
+            ModuleRepr::Dummy,
+        )
+    }
+
+    #[test]
+    fn add_import_backtrace_walks_ancestors_to_root() {
+        let root = ModuleId::default();
+        let mid = ModuleId::from_usize(1);
+        let leaf = ModuleId::from_usize(2);
+        let mut universe = HashMap::new();
+        universe.insert("mid.kcl".to_owned(), dependency_info("mid.kcl", mid, root));
+        universe.insert("leaf.kcl".to_owned(), dependency_info("leaf.kcl", leaf, mid));
+
+        // The per-module error path has already recorded the leaf's own
+        // import site by the time add_import_backtrace runs.
+        let error = KclError::new_semantic(KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![SourceRange::new(0, 1, leaf)],
+        ))
+        .add_import_location("leaf.kcl", SourceRange::new(0, 8, mid));
+        let error = add_import_backtrace(error, leaf, &universe);
+
+        // Only the ancestor (mid.kcl's import in the root) is added here,
+        // completing the innermost-first chain.
+        let fn_names: Vec<_> = error.backtrace().into_iter().map(|item| item.fn_name).collect();
+        assert_eq!(
+            fn_names,
+            [
+                Some("import leaf.kcl".to_owned()),
+                Some("import mid.kcl".to_owned()),
+                None
+            ]
+        );
+        let modules: Vec<_> = error
+            .source_ranges()
+            .into_iter()
+            .map(|range| range.module_id())
+            .collect();
+        assert_eq!(modules, [leaf, mid, root]);
+    }
+
+    #[test]
+    fn foreign_import_failure_gets_full_backtrace() {
+        // main.kcl imports assembly.kcl, which imports model.obj. The engine
+        // send fails; the error is ranged at the import statement in
+        // assembly.kcl and carries no deeper frames because foreign files
+        // have no source ranges.
+        let root = ModuleId::default();
+        let assembly = ModuleId::from_usize(1);
+        let obj = ModuleId::from_usize(2);
+        let mut universe = HashMap::new();
+        universe.insert(
+            "assembly.kcl".to_owned(),
+            dependency_info("assembly.kcl", assembly, root),
+        );
+        universe.insert("model.obj".to_owned(), dependency_info("model.obj", obj, assembly));
+
+        let obj_import_site = SourceRange::new(0, 18, assembly);
+        let engine_error =
+            KclError::new_engine(KclErrorDetails::new("engine hangup".to_owned(), vec![obj_import_site]));
+        // The eager loop's foreign arm labels the failure with the import.
+        let error = engine_error.add_import_location("model.obj", obj_import_site);
+        let error = add_import_backtrace(error, obj, &universe);
+
+        let fn_names: Vec<_> = error.backtrace().into_iter().map(|item| item.fn_name).collect();
+        assert_eq!(
+            fn_names,
+            [
+                Some("import model.obj".to_owned()),
+                Some("import assembly.kcl".to_owned()),
+                None
+            ]
+        );
+        let modules: Vec<_> = error
+            .source_ranges()
+            .into_iter()
+            .map(|range| range.module_id())
+            .collect();
+        assert_eq!(modules, [assembly, assembly, root]);
+    }
+
+    #[test]
+    fn add_import_backtrace_from_records_own_import_first() {
+        // A deferred engine error (e.g. an async foreign import rejection)
+        // carries only a range inside the module; nothing has recorded any
+        // import frame yet.
+        let root = ModuleId::default();
+        let assembly = ModuleId::from_usize(1);
+        let mut universe = HashMap::new();
+        universe.insert(
+            "assembly.kcl".to_owned(),
+            dependency_info("assembly.kcl", assembly, root),
+        );
+
+        let error = KclError::new_engine(KclErrorDetails::new(
+            "Import failed".to_owned(),
+            vec![SourceRange::new(0, 18, assembly)],
+        ));
+        let error = add_import_backtrace_from(error, assembly, &universe);
+
+        let fn_names: Vec<_> = error.backtrace().into_iter().map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, [Some("import assembly.kcl".to_owned()), None]);
+        let modules: Vec<_> = error
+            .source_ranges()
+            .into_iter()
+            .map(|range| range.module_id())
+            .collect();
+        assert_eq!(modules, [assembly, root]);
+    }
+
+    #[test]
+    fn add_import_backtrace_terminates_on_cyclic_universe() {
+        // A universe that claims module 1 was imported from module 2 and vice
+        // versa never reaches the root. Import cycles are rejected before
+        // execution, but a malformed universe must not hang this error path.
+        let a = ModuleId::from_usize(1);
+        let b = ModuleId::from_usize(2);
+        let mut universe = HashMap::new();
+        universe.insert("a.kcl".to_owned(), dependency_info("a.kcl", a, b));
+        universe.insert("b.kcl".to_owned(), dependency_info("b.kcl", b, a));
+
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), vec![SourceRange::new(0, 1, a)]));
+        let error = add_import_backtrace(error, a, &universe);
+
+        // Each module's import location is added at most once.
+        assert!(error.source_ranges().len() <= 3);
     }
 
     #[tokio::test]

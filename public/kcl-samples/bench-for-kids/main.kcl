@@ -1,8 +1,8 @@
 // Bench for kids.
 // Shaped like a friendly animal and sturdy enough for climbing.
-// Categories: Maker
+// Categories: Home & Lifestyle; Toys, Games, & Recreation
 
-@settings(defaultLengthUnit = cm)
+@settings(defaultLengthUnit = cm, kclVersion = 2.0)
 
 // Define primary parameters for the bench geometry.
 benchLength = 80 // overall end-to-end size

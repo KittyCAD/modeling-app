@@ -2,7 +2,7 @@
 // Key dimensional parameters for all parts in the coilover assembly. These are imported into the kcl part files. Key parameters include retainer plate, eye mount, spring and piston rod dimensions.
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Coilover Bottom (coilover-bottom.kcl)
 export retainerPlateLength = 6.3mm

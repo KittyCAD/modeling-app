@@ -1,9 +1,9 @@
 // Thermal Block Insert
 // Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency
-// Categories: Automotive, Computer Hardware
+// Categories: Architecture & Construction; Parametric
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define overall dimensions of the insert block
 insertLength = 400

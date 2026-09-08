@@ -1,4 +1,5 @@
 import { Spinner } from '@src/components/Spinner'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useApp } from '@src/lib/boot'
 import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
@@ -106,15 +107,29 @@ function Welcome() {
 function Scene() {
   const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
+  const currentFilePath = useAbsoluteFilePath()
+  const isBlankFileOpen = Boolean(currentFilePath?.endsWith('blank.kcl'))
+  const [isBlankSceneReady, setIsBlankSceneReady] = useState(isBlankFileOpen)
 
   // Ensure panes are closed
   useOnboardingPanes()
+
+  useEffect(() => {
+    if (isBlankFileOpen) {
+      setIsBlankSceneReady(true)
+    }
+  }, [isBlankFileOpen])
 
   // Things that happen when we load this route
   useEffect(() => {
     if (!projectName) {
       return
     }
+    if (isBlankFileOpen) {
+      return
+    }
+    let cancelled = false
+    setIsBlankSceneReady(false)
     // Create if necessary and navigate to the `blank.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
@@ -133,9 +148,17 @@ function Scene() {
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
+        onSuccess: () => {
+          if (!cancelled) {
+            setIsBlankSceneReady(true)
+          }
+        },
       },
     })
-  }, [systemIOActor, projectName])
+    return () => {
+      cancelled = true
+    }
+  }, [systemIOActor, projectName, isBlankFileOpen])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -146,7 +169,17 @@ function Scene() {
           scene is empty. Try right-clicking and dragging to orbit around, and
           scroll to zoom in and out.
         </p>
-        <OnboardingButtons currentSlug="/desktop/scene" platform="desktop" />
+        {!isBlankSceneReady && (
+          <p className="my-4 flex items-center gap-2">
+            <Spinner className="w-5 h-5" />
+            Preparing blank scene...
+          </p>
+        )}
+        <OnboardingButtons
+          currentSlug="/desktop/scene"
+          hideNext={!isBlankSceneReady}
+          platform="desktop"
+        />
       </OnboardingCard>
     </div>
   )
@@ -220,7 +253,7 @@ function ZookeeperPrompt() {
   // Enter the zookeeper flow with a prebaked prompt
   useEffect(() => {
     searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
-    setSearchParams(searchParams)
+    setSearchParams(searchParams, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -444,7 +477,7 @@ function PromptToEditPrompt() {
   const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
     searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
-    setSearchParams(searchParams)
+    setSearchParams(searchParams, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -643,10 +676,10 @@ function OnboardingConclusion() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Time to start building</h1>
         <p className="my-4">
-          We appreciate you downloading Zoo Design Studio and taking the time to
-          walk through the basics. To navigate back home to create your own
-          project, click the Zoo button in the top left. To learn more detailed
-          and advanced techniques,{' '}
+          We appreciate you taking the time to walk through the basics. Select
+          Finish to return home, where you can keep working with the tutorial
+          project or create a project of your own. To learn more detailed and
+          advanced techniques,{' '}
           <a
             onClick={openExternalBrowserIfDesktop(withSiteBaseURL('/docs'))}
             href={`${withSiteBaseURL('/docs')}`}

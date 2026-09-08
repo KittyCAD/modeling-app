@@ -15,8 +15,9 @@
 //!
 //! | KCL value kind | Artifact id vs engine object id |
 //! |---|---|
-//! | solid from `extrude`, `revolve`, or `sweep`; a pattern's ORIGINAL | differ |
-//! | solid from `loft` (`loft.rs` overrides the profile id with its command id) | equal |
+//! | solid from `extrude` (with or without `twistAngle`), `revolve` (either axis form), or `sweep`; a pattern's ORIGINAL | differ |
+//! | solid from `loft` or `blend`, each of which overrides the profile id with its own command id | equal |
+//! | solid from `mirror3d` | equal |
 //! | sketch, plane, helix, GD&T annotation, imported geometry, pattern COPIES | equal |
 //!
 //! For the divergent kinds, the artifact graph's `Artifact::Sweep` node holds
@@ -25,6 +26,13 @@
 //! other, and the route matters because the engine silently ignores unknown
 //! ids and acks success -- sending an artifact id where an engine object id
 //! is required hides nothing and reports nothing.
+//!
+//! A `Sweep` node's subtype does not by itself decide which row it falls in.
+//! `mirror3d` copies the source body's node, overwrites `id` with the mirrored
+//! body's engine object id, and leaves `path_id` naming the SOURCE body's path,
+//! so a mirrored `extrusion` node sits in the equal row while the node it was
+//! copied from sits in the divergent one. The `Path` node's `sweep_id`
+//! back-link separates them, because it records the original node only.
 //!
 //! The relation holds over both sketch construction routes, which differ in
 //! what the profile becomes:
@@ -48,8 +56,9 @@
 //!
 //! One English word, three systems: in this file "sweep" always names the
 //! artifact-graph node kind `Artifact::Sweep`, which covers ALL swept bodies
-//! (subtypes extrusion, revolve, sweep, loft). It is not the KCL `sweep()`
-//! function and not an engine command, though both exist.
+//! (subtypes extrusion, extrusionTwist, revolve, revolveAboutEdge, loft, blend,
+//! sweep). It is not the KCL `sweep()` function and not an engine command,
+//! though both exist.
 //!
 //! Real engine required (`ZOO_API_TOKEN`): mock execution cannot reach some
 //! construction paths (pattern copies get engine-assigned ids).
@@ -98,6 +107,11 @@ struct ObservedIds {
     recorded_in_operations: Vec<ArtifactId>,
     /// From the artifact graph: the id pairs that relate the two domains.
     sweep_ids: Vec<SweepIds>,
+    /// From the artifact graph: each `Artifact::Path` node's id paired with the
+    /// sweep that names it as its base path, if any. A client reads this
+    /// back-link to tell an original swept body from a `mirror3d` copy. Both
+    /// carry the same `path_id`.
+    path_back_links: Vec<(ArtifactId, Option<ArtifactId>)>,
 }
 
 impl ObservedIds {
@@ -158,12 +172,24 @@ async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf
         })
         .collect();
 
+    let path_back_links = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Path(path) => Some((path.id, path.sweep_id)),
+            _ => None,
+        })
+        .collect();
+
     ctx.close().await;
 
     ObservedIds {
         sent_to_engine,
         recorded_in_operations,
         sweep_ids,
+        path_back_links,
     }
 }
 
@@ -172,9 +198,8 @@ async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf
 /// `rename_all = "camelCase"` structs one level down (`artifactId`), while
 /// `OpKclValue::Plane`, `GdtAnnotation` and `ImportedGeometry` are flat enum
 /// variants with no rename, so they serialize as `artifact_id`. The TypeScript
-/// client's `getHideOperationArtifactIds` only reads the first shape, which
-/// means it cannot see hidden planes, GD&T annotations or imported geometry --
-/// a gap this file deliberately does NOT copy.
+/// client reads both shapes in `artifactIdsInOpValue`
+/// (`src/lib/operations.ts`), so both are collected on each side.
 fn artifact_ids_in(value: &serde_json::Value) -> Vec<ArtifactId> {
     match value {
         serde_json::Value::Object(map) => map
@@ -246,6 +271,63 @@ fn assert_sweep_bridge(observed: &ObservedIds) {
     );
 }
 
+/// Asserts that a `mirror3d` body owns its engine object id.
+///
+/// A mirrored node inherits its subtype from the source body, so subtype alone
+/// cannot decide the translation. `mirror_3d_artifact_updates` copies the source
+/// body's `Artifact::Sweep` node, overwrites `id` with the mirrored body's engine
+/// object id, and leaves `path_id` naming the SOURCE body's path.
+///
+/// Three assertions pin what a client depends on:
+///
+/// - the recorded artifact id, reinterpreted, is among the sent ids, so the two
+///   domains agree for this body;
+/// - `path_id` is a different id, and the path it names does not record the
+///   mirrored node as its sweep;
+/// - `path_id` was NOT sent, so translating through it addresses the source
+///   body.
+#[track_caller]
+fn assert_mirrored_body_owns_its_engine_id(observed: &ObservedIds) {
+    let hidden = observed.hidden_object_ids();
+    assert_eq!(
+        observed.recorded_in_operations.len(),
+        1,
+        "expected exactly one artifact id recorded on the hide operation, got {:?}",
+        observed.recorded_in_operations
+    );
+    let recorded = observed.recorded_in_operations[0];
+    assert!(
+        hidden.contains(&in_engine_domain(recorded)),
+        "a mirrored body should hold the same uuid in both domains; recorded on the operation: \
+         {recorded:?}, sent as hidden: {hidden:?}"
+    );
+
+    let mirrored = observed.sweep_ids.iter().find(|sweep| sweep.sweep_id == recorded);
+    let Some(SweepIds { path_id, .. }) = mirrored else {
+        panic!("no Artifact::Sweep node with id {recorded:?} in the artifact graph");
+    };
+    assert_ne!(
+        *path_id, recorded,
+        "the mirrored node should carry the source body's path_id, which is a different id"
+    );
+
+    let Some((_, back_link)) = observed.path_back_links.iter().find(|(path, _)| path == path_id) else {
+        panic!("no Artifact::Path node with id {path_id:?} in the artifact graph");
+    };
+    assert_ne!(
+        *back_link,
+        Some(recorded),
+        "the base path should NOT record the mirrored node as its sweep; if it now does, the \
+         back-link a client tests no longer separates a mirror3d copy from an original -- update \
+         the named-views apply-path translation and this test together. path_id: {path_id:?}"
+    );
+    assert!(
+        !hidden.contains(&in_engine_domain(*path_id)),
+        "path_id was not sent for this hide, so translating the mirrored body through it would \
+         address the source body instead; path_id: {path_id:?}, sent as hidden: {hidden:?}"
+    );
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn named_views_hide_ids_sketch() {
     let code = r#"sketchHidden = sketch(on = XY) {
@@ -279,6 +361,30 @@ hide(part001)
     assert_sweep_bridge(&observed);
 }
 
+/// The twist subtype reaches `TwistExtrude` but shares `do_post_extrude` with
+/// plain extrusion, so it diverges the same way. That shared handling is the
+/// only reason it does, and nothing else in the suite sends that command.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_extrude_twist() {
+    let code = r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var 0, var 10])
+  line4 = line(start = [var 0, var 10], end = [var 0, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+part001 = extrude(region(point = [5, 5], sketch = sketch001), length = 5, twistAngle = 45deg)
+
+hide(part001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_sweep_bridge(&observed);
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn named_views_hide_ids_revolve() {
     let code = r#"sketch001 = sketch(on = XZ) {
@@ -293,6 +399,32 @@ async fn named_views_hide_ids_revolve() {
 }
 
 part001 = revolve(region(point = [6.5, 1.5], sketch = sketch001), axis = Y)
+
+hide(part001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_sweep_bridge(&observed);
+}
+
+/// A solved segment as the axis reaches `RevolveAboutEdge`, which the artifact
+/// graph records under its own subtype. It calls the same `do_post_extrude` as
+/// the axis form, so it diverges identically.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_revolve_about_edge() {
+    let code = r#"sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -3.34mm, var -1.89mm], end = [var -1.62mm, var -1.89mm])
+  line2 = line(start = [var -1.62mm, var -1.89mm], end = [var -1.62mm, var 0.56mm])
+  line3 = line(start = [var -1.62mm, var 0.56mm], end = [var -3.34mm, var 0.56mm])
+  line4 = line(start = [var -3.34mm, var 0.56mm], end = [var -3.34mm, var -1.89mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])
+}
+
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+part001 = revolve(region001, angle = 36deg, axis = sketch001.line5)
 
 hide(part001)
 "#;
@@ -344,6 +476,47 @@ part001 = loft([
   region(point = [0, 0], sketch = sketch001),
   region(point = [0, 0], sketch = sketch002)
 ])
+
+hide(part001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_ids_equal(&observed);
+}
+
+/// `blend` is the second sweep subtype that does not diverge. `surfaces.rs`
+/// builds its result as `Solid { id, artifact_id: id.into() }`, so the engine
+/// knows the body under its artifact id. Its KCL function takes edges, not
+/// sketches, so its `path_id` is a surface's path.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_blend() {
+    let code = r#"sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
+  line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
+  line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.9mm, var 2.8mm])
+  line4 = line(start = [var 4.1mm, var 3mm], end = [var 4.5mm, var -0.2mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+sketch002 = sketch(on = -XZ) {
+  line5 = line(start = [var -5.3mm, var -0.1mm], end = [var -3.5mm, var -0.1mm])
+  line6 = line(start = [var -3.5mm, var -0.1mm], end = [var -3.5mm, var 3.1mm])
+  line7 = line(start = [var -3.5mm, var 4.5mm], end = [var -5.4mm, var 4.5mm])
+  line8 = line(start = [var -5.3mm, var 3.1mm], end = [var -5.3mm, var -0.1mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+}
+
+region001 = region(segments = [sketch002.line5, sketch002.line6])
+extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
+region002 = region(segments = [sketch001.line1, sketch001.line2])
+extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
+
+part001 = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])
 
 hide(part001)
 "#;
@@ -488,6 +661,31 @@ hide(part001)
 // The `_v1` tests below pin the classic pipeline's OWN behavior -- the parts
 // of the old route that differ from sketch V2 and remain in production. They
 // are deliberately few; sketch V2 is the default suite above.
+
+/// A mirrored extrusion. The node's subtype is `extrusion`, its two id domains
+/// agree, and its `path_id` names the source body's path. That combination is
+/// what makes the subtype table insufficient on its own.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_hide_ids_mirror3d() {
+    let code = r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var 0, var 10])
+  line4 = line(start = [var 0, var 10], end = [var 0, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+part001 = extrude(region(point = [5, 5], sketch = sketch001), length = 5)
+mirrored001 = mirror3d(part001, across = YZ)
+
+hide(mirrored001)
+"#;
+    let observed = execute_and_observe(code, None).await;
+    assert_mirrored_body_owns_its_engine_id(&observed);
+}
 
 /// Classic route only: the extrude consumes its profile, so the body answers
 /// to the profile's engine object id. This is the divergence as it was first

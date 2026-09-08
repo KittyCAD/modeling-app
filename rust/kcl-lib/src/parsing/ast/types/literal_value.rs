@@ -5,6 +5,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::Node;
+use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::Literal;
 use crate::parsing::token::NumericSuffix;
@@ -72,7 +73,7 @@ impl fmt::Display for LiteralValue {
 
 impl From<Node<Literal>> for Expr {
     fn from(literal: Node<Literal>) -> Self {
-        Expr::Literal(Box::new(literal))
+        Expr::Literal(BoxNode::new(literal))
     }
 }
 

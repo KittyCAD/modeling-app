@@ -10,7 +10,7 @@ Do not use deprecated profile-pipe sketch APIs in current samples, including
 `startSketchOn`, `startProfile`, `xLine`, `yLine`, `angledLine`,
 `tangentialArc`, or `close()`. Do not pass a sketch or surface as a positional
 argument to `circle`, `rectangle`, or `polygon`; define those segments inside
-a sketch block. Compatibility examples belong under `public/kcl-samples-legacy`.
+a sketch block.
 
 Format and lint every changed KCL file with Zoo CLI. Execute and visually
 compare affected samples before claiming that their geometry is preserved.

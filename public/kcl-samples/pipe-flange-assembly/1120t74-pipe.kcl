@@ -1,0 +1,19 @@
+// Pipe
+// Piping for the pipe flange assembly
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import pipeInnerDiameter, pipeOuterDiameter, pipeLength from "parameters.kcl"
+
+export fn pipe() {
+  pipeSketch = sketch(on = XZ) {
+    outerCircle = circle(start = [var 1.1875in, var 0in], center = [var 0in, var 0in])
+    innerCircle = circle(start = [var 1in, var 0in], center = [var 0in, var 0in])
+  }
+
+  pipeRegion = region(segments = [pipeSketch.outerCircle])
+  pipeBody = extrude(pipeRegion, length = pipeLength)
+    |> appearance(color = "#a24ed0")
+
+  return pipeBody
+}

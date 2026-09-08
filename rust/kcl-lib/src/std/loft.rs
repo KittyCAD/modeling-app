@@ -207,8 +207,11 @@ async fn inner_loft(
 
     // Using the first sketch as the base curve, idk we might want to change this later.
     let mut sketch = sketches[0].clone();
-    // Override its id with the loft id so we can get its faces later
+    // A loft creates a new engine body rather than reusing its first section.
+    // Keep both ID fields on the new body so follow-up operations query the
+    // loft instead of the first section's path object.
     sketch.id = id;
+    sketch.original_id = id;
     Ok(Box::new(
         do_post_extrude(
             &sketch,
@@ -236,11 +239,13 @@ mod tests {
 
     use super::*;
     use crate::execution::AbstractSegment;
+    use crate::execution::KclValue;
     use crate::execution::Plane;
     use crate::execution::Segment;
     use crate::execution::SegmentKind;
     use crate::execution::SegmentRepr;
     use crate::execution::SketchSurface;
+    use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
     use crate::execution::types::NumericTypeExt;
     use crate::front::Expr;
@@ -345,5 +350,36 @@ mod tests {
             "{err:?}"
         );
         ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_uses_its_body_id_for_topology_queries() {
+        let result = parse_execute(
+            r#"@settings(kclVersion = 2.0)
+
+firstSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 10, var 0], center = [var 0, var 0])
+}
+secondSketch = sketch(on = offsetPlane(XY, offset = 10)) {
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+}
+
+lofted = loft([
+  region(segments = [firstSketch.circle1]),
+  region(segments = [secondSketch.circle1]),
+])
+"#,
+        )
+        .await
+        .expect("loft executes");
+
+        let KclValue::Solid { value: solid } = result.variable("lofted") else {
+            panic!("`lofted` is not a solid");
+        };
+        assert_eq!(solid.id, solid.topology_id());
+        assert_eq!(
+            solid.sketch().expect("loft retains its base sketch").original_id,
+            solid.id
+        );
     }
 }

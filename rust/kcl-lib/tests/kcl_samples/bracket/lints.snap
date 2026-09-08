@@ -13,8 +13,8 @@ description: Lints bracket.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4177,
-      4343,
+      4189,
+      4355,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints bracket.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4428,
-      4606,
+      4440,
+      4618,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints bracket.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4699,
-      5168,
+      4711,
+      5180,
       0
     ],
     "overridden": false,

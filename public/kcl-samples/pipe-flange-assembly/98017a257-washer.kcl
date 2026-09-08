@@ -1,0 +1,19 @@
+// Washer
+// Washer for the screws in the pipe flange assembly
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import washerInnerDia, washerOuterDia, washerThickness from "parameters.kcl"
+
+export fn washer() {
+  washerSketch = sketch(on = XY) {
+    outerCircle = circle(start = [var 0.594in, var 0in], center = [var 0in, var 0in])
+    innerCircle = circle(start = [var 0.32in, var 0in], center = [var 0in, var 0in])
+  }
+
+  washerRegion = region(segments = [washerSketch.outerCircle])
+  washerBody = extrude(washerRegion, length = washerThickness)
+    |> appearance(color = "#ee4f4f")
+
+  return washerBody
+}

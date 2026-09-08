@@ -151,7 +151,6 @@ fn corpus_matches_old_scanner() {
     let mut roots = vec![
         manifest.to_path_buf(),
         repo_root.join("public").join("kcl-samples"),
-        repo_root.join("public").join("kcl-samples-legacy"),
         repo_root.join("rust").join("kcl-python-bindings"),
     ];
     if let Ok(external) = std::env::var("KCL_CORPUS_DIR") {

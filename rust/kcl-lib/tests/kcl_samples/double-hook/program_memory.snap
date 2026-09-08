@@ -99,6 +99,8 @@ description: Variables in memory after executing double-hook.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -106,10 +108,10 @@ description: Variables in memory after executing double-hook.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3855,
-            "end": 3868,
+            "commentStart": 3910,
+            "end": 3923,
             "moduleId": 0,
-            "start": 3855,
+            "start": 3910,
             "type": "TagDeclarator",
             "value": "sectionCircle"
           },
@@ -137,10 +139,10 @@ description: Variables in memory after executing double-hook.kcl
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 3855,
-              "end": 3868,
+              "commentStart": 3910,
+              "end": 3923,
               "moduleId": 0,
-              "start": 3855,
+              "start": 3910,
               "type": "TagDeclarator",
               "value": "sectionCircle"
             },
@@ -153,17 +155,17 @@ description: Variables in memory after executing double-hook.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 74,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -207,8 +209,8 @@ description: Variables in memory after executing double-hook.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -750,10 +752,10 @@ description: Variables in memory after executing double-hook.kcl
                     0.0000000029999996824717065
                   ],
                   "tag": {
-                    "commentStart": 1023,
-                    "end": 1031,
+                    "commentStart": 1078,
+                    "end": 1086,
                     "moduleId": 0,
-                    "start": 1023,
+                    "start": 1078,
                     "type": "TagDeclarator",
                     "value": "lowerTip"
                   },
@@ -780,10 +782,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 3.000000000388889,
                   "tag": {
-                    "commentStart": 1224,
-                    "end": 1233,
+                    "commentStart": 1279,
+                    "end": 1288,
                     "moduleId": 0,
-                    "start": 1224,
+                    "start": 1279,
                     "type": "TagDeclarator",
                     "value": "lowerBend"
                   },
@@ -804,10 +806,10 @@ description: Variables in memory after executing double-hook.kcl
                     -7.999999991777775
                   ],
                   "tag": {
-                    "commentStart": 1528,
-                    "end": 1539,
+                    "commentStart": 1583,
+                    "end": 1594,
                     "moduleId": 0,
-                    "start": 1528,
+                    "start": 1583,
                     "type": "TagDeclarator",
                     "value": "lowerBridge"
                   },
@@ -834,10 +836,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 3.000000000777777,
                   "tag": {
-                    "commentStart": 1811,
-                    "end": 1821,
+                    "commentStart": 1866,
+                    "end": 1876,
                     "moduleId": 0,
-                    "start": 1811,
+                    "start": 1866,
                     "type": "TagDeclarator",
                     "value": "upperEntry"
                   },
@@ -858,10 +860,10 @@ description: Variables in memory after executing double-hook.kcl
                     -4.9999999927888865
                   ],
                   "tag": {
-                    "commentStart": 2128,
-                    "end": 2137,
+                    "commentStart": 2183,
+                    "end": 2192,
                     "moduleId": 0,
-                    "start": 2128,
+                    "start": 2183,
                     "type": "TagDeclarator",
                     "value": "connector"
                   },
@@ -882,10 +884,10 @@ description: Variables in memory after executing double-hook.kcl
                     29.000000022500004
                   ],
                   "tag": {
-                    "commentStart": 2383,
-                    "end": 2394,
+                    "commentStart": 2438,
+                    "end": 2449,
                     "moduleId": 0,
-                    "start": 2383,
+                    "start": 2438,
                     "type": "TagDeclarator",
                     "value": "upperBottom"
                   },
@@ -912,10 +914,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 2.999999999611111,
                   "tag": {
-                    "commentStart": 2612,
-                    "end": 2626,
+                    "commentStart": 2667,
+                    "end": 2681,
                     "moduleId": 0,
-                    "start": 2612,
+                    "start": 2667,
                     "type": "TagDeclarator",
                     "value": "upperLowerBend"
                   },
@@ -936,10 +938,10 @@ description: Variables in memory after executing double-hook.kcl
                     42.00000000822223
                   ],
                   "tag": {
-                    "commentStart": 2957,
-                    "end": 2966,
+                    "commentStart": 3012,
+                    "end": 3021,
                     "moduleId": 0,
-                    "start": 2957,
+                    "start": 3012,
                     "type": "TagDeclarator",
                     "value": "upperSide"
                   },
@@ -966,10 +968,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 2.9999999992222186,
                   "tag": {
-                    "commentStart": 3220,
-                    "end": 3232,
+                    "commentStart": 3275,
+                    "end": 3287,
                     "moduleId": 0,
-                    "start": 3220,
+                    "start": 3275,
                     "type": "TagDeclarator",
                     "value": "upperTopBend"
                   },
@@ -990,10 +992,10 @@ description: Variables in memory after executing double-hook.kcl
                     39.00000000271111
                   ],
                   "tag": {
-                    "commentStart": 3543,
-                    "end": 3551,
+                    "commentStart": 3598,
+                    "end": 3606,
                     "moduleId": 0,
-                    "start": 3543,
+                    "start": 3598,
                     "type": "TagDeclarator",
                     "value": "upperTop"
                   },
@@ -1006,17 +1008,17 @@ description: Variables in memory after executing double-hook.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2016,10 +2018,10 @@ description: Variables in memory after executing double-hook.kcl
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 3855,
-            "end": 3868,
+            "commentStart": 3910,
+            "end": 3923,
             "moduleId": 0,
-            "start": 3855,
+            "start": 3910,
             "type": "TagDeclarator",
             "value": "sectionCircle"
           },
@@ -2032,17 +2034,17 @@ description: Variables in memory after executing double-hook.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 74,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2086,8 +2088,8 @@ description: Variables in memory after executing double-hook.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sectionSketch": {
@@ -2118,10 +2120,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 3855,
-                    "end": 3868,
+                    "commentStart": 3910,
+                    "end": 3923,
                     "moduleId": 0,
-                    "start": 3855,
+                    "start": 3910,
                     "type": "TagDeclarator",
                     "value": "sectionCircle"
                   },
@@ -2134,17 +2136,17 @@ description: Variables in memory after executing double-hook.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 74,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

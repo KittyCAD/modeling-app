@@ -11,9 +11,10 @@ surface of the Rust code:
   hashes that aren't stable. So this was removed.
 
 Because the generated directories are gitignored, changes to the TypeScript
-API would otherwise be invisible in review. CI (`build-wasm.yml`) regenerates
-the bindings, copies them here, and fails if the result differs from what is
-committed.
+API would otherwise be invisible in review. The native Rust CI
+(`cargo-test.yml`) regenerates the bindings, copies them here, and fails if the
+result differs from what is committed. Wasm builds copy these committed files
+into `rust/kcl-lib/bindings/` without compiling `kcl-lib` for a native target.
 
 - If CI fails and the API change is **unintentional**, fix the Rust code.
 - If the API change is **intentional**, run `npm run bindings:update` and

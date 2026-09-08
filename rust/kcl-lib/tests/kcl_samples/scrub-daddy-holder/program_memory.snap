@@ -72,8 +72,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 33,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -105,6 +105,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -112,10 +114,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1358,
-            "end": 1363,
+            "commentStart": 1383,
+            "end": 1388,
             "moduleId": 0,
-            "start": 1358,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -126,10 +128,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1438,
-            "end": 1443,
+            "commentStart": 1463,
+            "end": 1468,
             "moduleId": 0,
-            "start": 1438,
+            "start": 1463,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -140,10 +142,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1555,
-            "end": 1560,
+            "commentStart": 1580,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1555,
+            "start": 1580,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -154,10 +156,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1677,
+            "commentStart": 1697,
+            "end": 1702,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -179,10 +181,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1358,
-              "end": 1363,
+              "commentStart": 1383,
+              "end": 1388,
               "moduleId": 0,
-              "start": 1358,
+              "start": 1383,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -203,10 +205,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1438,
-              "end": 1443,
+              "commentStart": 1463,
+              "end": 1468,
               "moduleId": 0,
-              "start": 1438,
+              "start": 1463,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -227,10 +229,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1555,
-              "end": 1560,
+              "commentStart": 1580,
+              "end": 1585,
               "moduleId": 0,
-              "start": 1555,
+              "start": 1580,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -251,10 +253,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1672,
-              "end": 1677,
+              "commentStart": 1697,
+              "end": 1702,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1697,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -267,17 +269,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 13,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -333,8 +335,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -358,10 +360,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             -10.5
           ],
           "tag": {
-            "commentStart": 1358,
-            "end": 1363,
+            "commentStart": 1383,
+            "end": 1388,
             "moduleId": 0,
-            "start": 1358,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -382,10 +384,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             -10.5
           ],
           "tag": {
-            "commentStart": 1438,
-            "end": 1443,
+            "commentStart": 1463,
+            "end": 1468,
             "moduleId": 0,
-            "start": 1438,
+            "start": 1463,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -406,10 +408,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             10.5
           ],
           "tag": {
-            "commentStart": 1555,
-            "end": 1560,
+            "commentStart": 1580,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1555,
+            "start": 1580,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -430,10 +432,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             10.5
           ],
           "tag": {
-            "commentStart": 1672,
-            "end": 1677,
+            "commentStart": 1697,
+            "end": 1702,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -446,17 +448,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 13,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -512,8 +514,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "baseSketch": {
@@ -1018,10 +1020,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     -10.5
                   ],
                   "tag": {
-                    "commentStart": 1358,
-                    "end": 1363,
+                    "commentStart": 1383,
+                    "end": 1388,
                     "moduleId": 0,
-                    "start": 1358,
+                    "start": 1383,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1042,10 +1044,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     -10.5
                   ],
                   "tag": {
-                    "commentStart": 1438,
-                    "end": 1443,
+                    "commentStart": 1463,
+                    "end": 1468,
                     "moduleId": 0,
-                    "start": 1438,
+                    "start": 1463,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1066,10 +1068,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     10.5
                   ],
                   "tag": {
-                    "commentStart": 1555,
-                    "end": 1560,
+                    "commentStart": 1580,
+                    "end": 1585,
                     "moduleId": 0,
-                    "start": 1555,
+                    "start": 1580,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1090,10 +1092,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     10.5
                   ],
                   "tag": {
-                    "commentStart": 1672,
-                    "end": 1677,
+                    "commentStart": 1697,
+                    "end": 1702,
                     "moduleId": 0,
-                    "start": 1672,
+                    "start": 1697,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1106,17 +1108,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 13,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1192,6 +1194,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1199,10 +1203,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1358,
-            "end": 1363,
+            "commentStart": 1383,
+            "end": 1388,
             "moduleId": 0,
-            "start": 1358,
+            "start": 1383,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1213,10 +1217,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1438,
-            "end": 1443,
+            "commentStart": 1463,
+            "end": 1468,
             "moduleId": 0,
-            "start": 1438,
+            "start": 1463,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1227,10 +1231,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1555,
-            "end": 1560,
+            "commentStart": 1580,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1555,
+            "start": 1580,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1241,10 +1245,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1677,
+            "commentStart": 1697,
+            "end": 1702,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1697,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1266,10 +1270,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1358,
-              "end": 1363,
+              "commentStart": 1383,
+              "end": 1388,
               "moduleId": 0,
-              "start": 1358,
+              "start": 1383,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1290,10 +1294,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               -10.5
             ],
             "tag": {
-              "commentStart": 1438,
-              "end": 1443,
+              "commentStart": 1463,
+              "end": 1468,
               "moduleId": 0,
-              "start": 1438,
+              "start": 1463,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1314,10 +1318,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1555,
-              "end": 1560,
+              "commentStart": 1580,
+              "end": 1585,
               "moduleId": 0,
-              "start": 1555,
+              "start": 1580,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1338,10 +1342,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               10.5
             ],
             "tag": {
-              "commentStart": 1672,
-              "end": 1677,
+              "commentStart": 1697,
+              "end": 1702,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1697,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1354,17 +1358,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 13,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1420,8 +1424,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1495,6 +1499,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1502,10 +1508,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2151,
-                "end": 2158,
+                "commentStart": 2176,
+                "end": 2183,
                 "moduleId": 0,
-                "start": 2151,
+                "start": 2176,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1516,10 +1522,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2638,
-                "end": 2648,
+                "commentStart": 2663,
+                "end": 2673,
                 "moduleId": 0,
-                "start": 2638,
+                "start": 2663,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -1553,10 +1559,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 ],
                 "radius": 7.0,
                 "tag": {
-                  "commentStart": 2151,
-                  "end": 2158,
+                  "commentStart": 2176,
+                  "end": 2183,
                   "moduleId": 0,
-                  "start": 2151,
+                  "start": 2176,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1569,17 +1575,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 33,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 4.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1627,8 +1633,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1657,6 +1663,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1664,10 +1672,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2151,
-                "end": 2158,
+                "commentStart": 2176,
+                "end": 2183,
                 "moduleId": 0,
-                "start": 2151,
+                "start": 2176,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1678,10 +1686,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2638,
-                "end": 2648,
+                "commentStart": 2663,
+                "end": 2673,
                 "moduleId": 0,
-                "start": 2638,
+                "start": 2663,
                 "type": "TagDeclarator",
                 "value": "capEnd001"
               },
@@ -1715,10 +1723,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 ],
                 "radius": 7.0,
                 "tag": {
-                  "commentStart": 2151,
-                  "end": 2158,
+                  "commentStart": 2176,
+                  "end": 2183,
                   "moduleId": 0,
-                  "start": 2151,
+                  "start": 2176,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1731,17 +1739,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 33,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 4.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1789,8 +1797,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1847,10 +1855,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           ],
           "radius": 3.100000003539559,
           "tag": {
-            "commentStart": 800,
-            "end": 807,
+            "commentStart": 843,
+            "end": 850,
             "moduleId": 0,
-            "start": 800,
+            "start": 843,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1863,17 +1871,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1917,8 +1925,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "magnetSketch": {
@@ -2190,10 +2198,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   ],
                   "radius": 3.100000003539559,
                   "tag": {
-                    "commentStart": 800,
-                    "end": 807,
+                    "commentStart": 843,
+                    "end": 850,
                     "moduleId": 0,
-                    "start": 800,
+                    "start": 843,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2206,17 +2214,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2287,6 +2295,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2294,10 +2304,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 800,
-                "end": 807,
+                "commentStart": 843,
+                "end": 850,
                 "moduleId": 0,
-                "start": 800,
+                "start": 843,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2325,10 +2335,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 ],
                 "radius": 3.100000003539559,
                 "tag": {
-                  "commentStart": 800,
-                  "end": 807,
+                  "commentStart": 843,
+                  "end": 850,
                   "moduleId": 0,
-                  "start": 800,
+                  "start": 843,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2341,17 +2351,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2395,8 +2405,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2409,6 +2419,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2416,10 +2428,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 800,
-                "end": 807,
+                "commentStart": 843,
+                "end": 850,
                 "moduleId": 0,
-                "start": 800,
+                "start": 843,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2447,10 +2459,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 ],
                 "radius": 3.100000003539559,
                 "tag": {
-                  "commentStart": 800,
-                  "end": 807,
+                  "commentStart": 843,
+                  "end": 850,
                   "moduleId": 0,
-                  "start": 800,
+                  "start": 843,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2463,17 +2475,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2517,8 +2529,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2550,10 +2562,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 2151,
-            "end": 2158,
+            "commentStart": 2176,
+            "end": 2183,
             "moduleId": 0,
-            "start": 2151,
+            "start": 2176,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2566,17 +2578,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 33,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 4.5,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2624,8 +2636,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "pegSketch": {
@@ -2897,10 +2909,10 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 2151,
-                    "end": 2158,
+                    "commentStart": 2176,
+                    "end": 2183,
                     "moduleId": 0,
-                    "start": 2151,
+                    "start": 2176,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2913,17 +2925,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 33,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 4.5,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

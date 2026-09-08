@@ -53,6 +53,22 @@ export const CONSTRAINT_COLOR = {
   [Themes.Light]: 0xd9d9d9,
 }
 
+export function createGuideLine(
+  group: Group,
+  resources: ConstraintResources,
+  role: string
+) {
+  const geometry = new LineGeometry()
+  geometry.setPositions([0, 0, 0, 0, 0, 0])
+
+  const line = new Line2(geometry, resources.materials.default.line)
+  line.userData.type = DISTANCE_CONSTRAINT_BODY
+  line.userData.role = role
+  line.visible = false
+  group.add(line)
+  return line
+}
+
 export function createDimensionLine(
   obj: ConstraintObject,
   resources: ConstraintResources

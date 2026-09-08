@@ -104,6 +104,9 @@ vi.mock('@src/lib/fs-zds', () => ({
 
 vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
   ZookeeperConversationToMarkdown: vi.fn(() => ''),
+  ZookeeperManagerTransitions: {
+    AuthTokenChanged: 'auth-token-changed',
+  },
   ZookeeperManagerReactContext: {
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     useActorRef: () => ({

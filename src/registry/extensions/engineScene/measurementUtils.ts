@@ -6,6 +6,7 @@ import type {
   UnitVolume,
 } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import {
   isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
@@ -192,6 +193,19 @@ export function getMeasurementEntities(
   ])
 }
 
+export function graphSelectionsReferenceCurrentArtifacts(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+): boolean {
+  return selectionRanges.graphSelections.every((selection) => {
+    if (!selection.artifact) {
+      return true
+    }
+
+    return artifactGraph.get(selection.artifact.id) === selection.artifact
+  })
+}
+
 export function getMeasurementEntityIds(selectionRanges: Selections): string[] {
   return getMeasurementEntities(selectionRanges).map((entity) => entity.id)
 }
@@ -201,6 +215,35 @@ export function getDistanceTypeForMode(mode: DistanceMode): DistanceType {
     return { type: 'euclidean' }
   }
   return { type: 'on_axis', axis: mode }
+}
+
+/**
+ * Display labels for the analysis panel. These carry Unicode superscripts
+ * because the unit dropdowns are native selects and an <option> cannot hold
+ * <sup> markup. The engine still receives the plain union values.
+ */
+export const unitAreaLabels: Record<UnitArea, string> = {
+  mm2: 'mm\u00b2',
+  cm2: 'cm\u00b2',
+  dm2: 'dm\u00b2',
+  m2: 'm\u00b2',
+  km2: 'km\u00b2',
+  in2: 'in\u00b2',
+  ft2: 'ft\u00b2',
+  yd2: 'yd\u00b2',
+}
+
+export const unitVolumeLabels: Record<UnitVolume, string> = {
+  mm3: 'mm\u00b3',
+  cm3: 'cm\u00b3',
+  m3: 'm\u00b3',
+  in3: 'in\u00b3',
+  ft3: 'ft\u00b3',
+  yd3: 'yd\u00b3',
+  ml: 'mL',
+  l: 'L',
+  usfloz: 'US fl oz',
+  usgal: 'US gal',
 }
 
 export function getAreaUnit(unit: UnitLength): UnitArea {

@@ -1,0 +1,3652 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands sprocket.kcl
+---
+{
+  "public/kcl-samples/sprocket/main.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 27.98982649649623,
+          "y": 1.6096059830122025,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 26.944200627835514,
+            "y": 6.190792242354582
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": -77.14285714285715
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -49.14285714285728
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000001127986593019159,
+            "y": 0.00000000000000986988268891764
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": 5.01986370259972
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 7.837279154543119
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 27.64623413520211,
+            "y": -0.039927467177889725
+          },
+          "radius": 4.6989999999999785,
+          "start": {
+            "unit": "degrees",
+            "value": 62.00000000000015
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 27.646234135202082,
+            "y": 6.310072532822114
+          },
+          "radius": 1.6510000000000253,
+          "start": {
+            "unit": "degrees",
+            "value": -89.99999999999902
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -244.28571428571436
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 24.89107239180559,
+            "y": 12.03122484400251
+          },
+          "radius": 4.699000000000006,
+          "start": {
+            "unit": "degrees",
+            "value": -64.28571428571446
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -36.28571428571461
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000002255973186038318,
+            "y": 0.00000000000004511946372076636
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": 17.877006559742576
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 20.694422011686
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 26.961970022409343,
+            "y": 6.1129394379256965
+          },
+          "radius": 4.699000000000002,
+          "start": {
+            "unit": "degrees",
+            "value": 74.85714285714275
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 102.85714285714286
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 25.54896209178673,
+            "y": 12.303731680280265
+          },
+          "radius": 1.6509999999999898,
+          "start": {
+            "unit": "degrees",
+            "value": -77.14285714285656
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -231.42857142857244
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 21.589801849983797,
+            "y": 17.268361593952253
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": -51.428571428571274
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -23.428571428571473
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000004511946372076636,
+            "y": 0.000000000000047939430203314254
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": 30.734149416885437
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 33.551564868828855
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 24.92572014931086,
+            "y": 11.959278034199523
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": 87.71428571428586
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 115.71428571428571
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 22.17055840591435,
+            "y": 17.68043034537987
+          },
+          "radius": 1.6510000000000042,
+          "start": {
+            "unit": "degrees",
+            "value": -64.28571428571357
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -218.57142857142878
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 17.20592849224238,
+            "y": 21.639590587182845
+          },
+          "radius": 4.698999999999992,
+          "start": {
+            "unit": "degrees",
+            "value": -38.57142857142875
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -10.571428571428667
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000003665956427312267,
+            "y": 0.00000000000005357936316841005
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": 43.59129227402831
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 46.4087077259717
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 21.63959058718275,
+            "y": 17.205928492242474
+          },
+          "radius": 4.698999999999993,
+          "start": {
+            "unit": "degrees",
+            "value": 100.57142857142868
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 128.57142857142853
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 17.68043034537976,
+            "y": 22.17055840591446
+          },
+          "radius": 1.651000000000023,
+          "start": {
+            "unit": "degrees",
+            "value": -51.428571428570514
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -205.71428571428643
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 11.959278034199405,
+            "y": 24.925720149310976
+          },
+          "radius": 4.698999999999984,
+          "start": {
+            "unit": "degrees",
+            "value": -25.714285714285722
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 2.285714285714138
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000007331912854624534,
+            "y": 0.00000000000007331912854624534
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": 56.44843513117116
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 59.26585058311456
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 17.268361593952132,
+            "y": 21.589801849983896
+          },
+          "radius": 4.699000000000006,
+          "start": {
+            "unit": "degrees",
+            "value": 113.42857142857149
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 141.42857142857127
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 12.303731680280123,
+            "y": 25.548962091786848
+          },
+          "radius": 1.6510000000000085,
+          "start": {
+            "unit": "degrees",
+            "value": -38.57142857142752
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -192.85714285714343
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 6.112939437925547,
+            "y": 26.96197002240946
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": -12.857142857142843
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 15.142857142857242
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.0000000000001184385922670117,
+            "y": 0.00000000000007331912854624534
+          },
+          "radius": 30.13375048069501,
+          "start": {
+            "unit": "degrees",
+            "value": 69.305577988314
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 72.12299344025743
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 12.031224844002347,
+            "y": 24.891072391805704
+          },
+          "radius": 4.699000000000004,
+          "start": {
+            "unit": "degrees",
+            "value": 126.2857142857146
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 154.28571428571445
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 6.310072532821982,
+            "y": 27.64623413520218
+          },
+          "radius": 1.6509999999999918,
+          "start": {
+            "unit": "degrees",
+            "value": -25.714285714285655
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -180.000000000001
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.03992746717798348,
+            "y": 27.64623413520221
+          },
+          "radius": 4.698999999999974,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 27.99999999999985
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000008600897771771087,
+            "y": 0.00000000000009023892744153272
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": 82.16272084545689
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 84.98013629740028
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 6.190792242354497,
+            "y": 26.944200627835606
+          },
+          "radius": 4.6990000000000025,
+          "start": {
+            "unit": "degrees",
+            "value": 139.14285714285728
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 167.1428571428572
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000009728884364790246,
+            "y": 28.35720855845819
+          },
+          "radius": 1.6510000000000096,
+          "start": {
+            "unit": "degrees",
+            "value": -12.857142857142481
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -167.1428571428575
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -6.190792242354679,
+            "y": 26.944200627835606
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": 12.857142857142843
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 40.857142857142726
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.000000000000096231356216947,
+            "y": 0.00000000000009023892744153272
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": 95.01986370259974
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 97.83727915454313
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.0399274671778023,
+            "y": 27.64623413520221
+          },
+          "radius": 4.6989999999999785,
+          "start": {
+            "unit": "degrees",
+            "value": 152.00000000000017
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 180.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -6.310072532822201,
+            "y": 27.64623413520218
+          },
+          "radius": 1.6510000000000253,
+          "start": {
+            "unit": "degrees",
+            "value": 0.000000000000978632209681067
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -154.28571428571436
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -12.031224844002573,
+            "y": 24.891072391805686
+          },
+          "radius": 4.698999999999984,
+          "start": {
+            "unit": "degrees",
+            "value": 25.714285714285687
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 53.714285714285644
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000012548850847338144,
+            "y": 0.00000000000007331912854624534
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": 107.8770065597426
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 110.69442201168602
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -6.1129394379257835,
+            "y": 26.96197002240944
+          },
+          "radius": 4.699000000000002,
+          "start": {
+            "unit": "degrees",
+            "value": 164.85714285714278
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 192.85714285714283
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -12.303731680280352,
+            "y": 25.54896209178683
+          },
+          "radius": 1.6509999999999898,
+          "start": {
+            "unit": "degrees",
+            "value": 12.857142857143439
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -141.4285714285725
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -17.26836159395234,
+            "y": 21.589801849983896
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": 38.571428571428726
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 66.57142857142853
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000012971845819720328,
+            "y": 0.00000000000005639932965095795
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": 120.73414941688544
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 123.55156486882885
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -11.959278034199599,
+            "y": 24.92572014931097
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": 177.7142857142859
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 205.71428571428572
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -17.68043034537995,
+            "y": 22.170558405914456
+          },
+          "radius": 1.6510000000000042,
+          "start": {
+            "unit": "degrees",
+            "value": 25.71428571428643
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -128.5714285714295
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -21.639590587182912,
+            "y": 17.205928492242496
+          },
+          "radius": 4.698999999999977,
+          "start": {
+            "unit": "degrees",
+            "value": 51.4285714285715
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 79.42857142857135
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000013535839116229907,
+            "y": 0.00000000000005921929613350585
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": 133.5912922740283
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 136.4087077259717
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -17.20592849224256,
+            "y": 21.639590587182838
+          },
+          "radius": 4.698999999999993,
+          "start": {
+            "unit": "degrees",
+            "value": -169.42857142857133
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -141.4285714285715
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -22.17055840591455,
+            "y": 17.680430345379854
+          },
+          "radius": 1.651000000000023,
+          "start": {
+            "unit": "degrees",
+            "value": 38.571428571429486
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -115.71428571428642
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -24.925720149311065,
+            "y": 11.959278034199494
+          },
+          "radius": 4.698999999999984,
+          "start": {
+            "unit": "degrees",
+            "value": 64.28571428571428
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 92.28571428571415
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000016637802247032595,
+            "y": 0.000000000000016919798895287383
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": 146.44843513117115
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 149.26585058311457
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -21.589801849983992,
+            "y": 17.26836159395222
+          },
+          "radius": 4.699000000000006,
+          "start": {
+            "unit": "degrees",
+            "value": -156.57142857142853
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -128.57142857142873
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -25.54896209178695,
+            "y": 12.303731680280237
+          },
+          "radius": 1.6509999999999887,
+          "start": {
+            "unit": "degrees",
+            "value": 51.428571428571935
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -102.85714285714326
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -26.961970022409552,
+            "y": 6.112939437925679
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": 77.14285714285715
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 105.142857142857
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000016919798895287386,
+            "y": 0.000000000000016919798895287383
+          },
+          "radius": 30.13375048069499,
+          "start": {
+            "unit": "degrees",
+            "value": 159.30557798831398
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 162.12299344025743
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -24.891072391805782,
+            "y": 12.031224844002475
+          },
+          "radius": 4.699000000000004,
+          "start": {
+            "unit": "degrees",
+            "value": -143.7142857142854
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -115.71428571428557
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -27.64623413520226,
+            "y": 6.310072532822112
+          },
+          "radius": 1.6509999999999918,
+          "start": {
+            "unit": "degrees",
+            "value": 64.28571428571435
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -90.000000000001
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -27.64623413520229,
+            "y": -0.03992746717785377
+          },
+          "radius": 4.698999999999974,
+          "start": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 117.9999999999997
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000015791812302268225,
+            "y": 0.000000000000026789681584205025
+          },
+          "radius": 30.133750480695003,
+          "start": {
+            "unit": "degrees",
+            "value": 172.16272084545685
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 174.9801362974003
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -26.944200627835677,
+            "y": 6.190792242354606
+          },
+          "radius": 4.6990000000000025,
+          "start": {
+            "unit": "degrees",
+            "value": -130.85714285714272
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -102.85714285714286
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -28.357208558458268,
+            "y": 0.000000000000011984857550828564
+          },
+          "radius": 1.6510000000000096,
+          "start": {
+            "unit": "degrees",
+            "value": 77.14285714285752
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -77.14285714285752
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -26.944200627835684,
+            "y": -6.190792242354569
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": 102.85714285714286
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 130.85714285714272
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000015791812302268225,
+            "y": -0.0000000000000007049916206369744
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": -174.9801362974003
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -172.16272084545687
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -27.646234135202278,
+            "y": 0.03992746717791722
+          },
+          "radius": 4.699000000000001,
+          "start": {
+            "unit": "degrees",
+            "value": -117.9999999999997
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -90.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -27.64623413520225,
+            "y": -6.310072532822084
+          },
+          "radius": 1.651,
+          "start": {
+            "unit": "degrees",
+            "value": 90.000000000001
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -64.28571428571473
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -24.891072391805775,
+            "y": -12.031224844002438
+          },
+          "radius": 4.698999999999984,
+          "start": {
+            "unit": "degrees",
+            "value": 115.7142857142857
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 143.71428571428567
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000015791812302268225,
+            "y": -0.000000000000007049916206369744
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": -162.12299344025743
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -159.305577988314
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -26.961970022409524,
+            "y": -6.112939437925651
+          },
+          "radius": 4.699000000000002,
+          "start": {
+            "unit": "degrees",
+            "value": -105.14285714285725
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -77.14285714285715
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -25.548962091786912,
+            "y": -12.303731680280219
+          },
+          "radius": 1.6509999999999898,
+          "start": {
+            "unit": "degrees",
+            "value": 102.85714285714346
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -51.42857142857249
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -21.589801849983974,
+            "y": -17.268361593952207
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": 128.57142857142873
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 156.57142857142853
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000013535839116229907,
+            "y": -0.000000000000005639932965095795
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": -149.26585058311457
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -146.44843513117115
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -24.92572014931104,
+            "y": -11.959278034199478
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": -92.28571428571415
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -64.28571428571428
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -22.170558405914527,
+            "y": -17.680430345379825
+          },
+          "radius": 1.6510000000000042,
+          "start": {
+            "unit": "degrees",
+            "value": 115.71428571428642
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -38.5714285714288
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -17.205928492242556,
+            "y": -21.6395905871828
+          },
+          "radius": 4.698999999999992,
+          "start": {
+            "unit": "degrees",
+            "value": 141.42857142857125
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 169.4285714285714
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000011561862578446379,
+            "y": -0.000000000000014099832412739488
+          },
+          "radius": 30.13375048069501,
+          "start": {
+            "unit": "degrees",
+            "value": -136.4087077259717
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -133.5912922740283
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -21.63959058718291,
+            "y": -17.205928492242446
+          },
+          "radius": 4.698999999999993,
+          "start": {
+            "unit": "degrees",
+            "value": -79.42857142857135
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -51.4285714285715
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -17.68043034537995,
+            "y": -22.170558405914434
+          },
+          "radius": 1.6510000000000074,
+          "start": {
+            "unit": "degrees",
+            "value": 128.5714285714288
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -25.714285714286046
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -11.9592780341996,
+            "y": -24.92572014931093
+          },
+          "radius": 4.698999999999984,
+          "start": {
+            "unit": "degrees",
+            "value": 154.2857142857143
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 182.28571428571414
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000012407852523210748,
+            "y": -0.000000000000028199664825478976
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": -123.55156486882885
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -120.73414941688544
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -17.268361593952335,
+            "y": -21.589801849983854
+          },
+          "radius": 4.699000000000006,
+          "start": {
+            "unit": "degrees",
+            "value": -66.57142857142853
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -38.571428571428726
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -12.303731680280348,
+            "y": -25.5489620917868
+          },
+          "radius": 1.6509999999999887,
+          "start": {
+            "unit": "degrees",
+            "value": 141.42857142857196
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -12.857142857143247
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -6.112939437925791,
+            "y": -26.961970022409403
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": 167.1428571428572
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 195.14285714285697
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000012266854199083353,
+            "y": -0.000000000000028199664825478976
+          },
+          "radius": 30.13375048069499,
+          "start": {
+            "unit": "degrees",
+            "value": -110.69442201168603
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -107.8770065597426
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -12.031224844002598,
+            "y": -24.89107239180563
+          },
+          "radius": 4.699000000000004,
+          "start": {
+            "unit": "degrees",
+            "value": -53.714285714285396
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -25.714285714285687
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -6.310072532822214,
+            "y": -27.64623413520212
+          },
+          "radius": 1.6510000000000147,
+          "start": {
+            "unit": "degrees",
+            "value": 154.28571428571476
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -0.000000000000978632209681067
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.03992746717777551,
+            "y": -27.64623413520215
+          },
+          "radius": 4.698999999999974,
+          "start": {
+            "unit": "degrees",
+            "value": 180.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 207.9999999999997
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000010574874309554616,
+            "y": -0.00000000000001127986593019159
+          },
+          "radius": 30.133750480695003,
+          "start": {
+            "unit": "degrees",
+            "value": -97.83727915454317
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -95.01986370259974
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -6.190792242354699,
+            "y": -26.944200627835528
+          },
+          "radius": 4.6990000000000025,
+          "start": {
+            "unit": "degrees",
+            "value": -40.857142857142726
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -12.857142857142843
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000010504375147490918,
+            "y": -28.357208558458115
+          },
+          "radius": 1.6510000000000096,
+          "start": {
+            "unit": "degrees",
+            "value": 167.1428571428575
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 12.857142857142481
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 6.190792242354477,
+            "y": -26.94420062783553
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": -167.1428571428572
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -139.14285714285728
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000009587886040662851,
+            "y": -0.00000000000001127986593019159
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": -84.98013629740028
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -82.16272084545689
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.03992746717802226,
+            "y": -27.646234135202132
+          },
+          "radius": 4.699000000000001,
+          "start": {
+            "unit": "degrees",
+            "value": -27.999999999999705
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 6.310072532821978,
+            "y": -27.646234135202103
+          },
+          "radius": 1.651,
+          "start": {
+            "unit": "degrees",
+            "value": -179.99999999999903
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -334.28571428571473
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 12.031224844002331,
+            "y": -24.89107239180563
+          },
+          "radius": 4.698999999999984,
+          "start": {
+            "unit": "degrees",
+            "value": -154.2857142857143
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -126.28571428571435
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000009869882688917642,
+            "y": -0.00000000000001127986593019159
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": -72.12299344025743
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -69.305577988314
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 6.112939437925526,
+            "y": -26.961970022409375
+          },
+          "radius": 4.6990000000000265,
+          "start": {
+            "unit": "degrees",
+            "value": -15.142857142857164
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 12.857142857142843
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 12.303731680280142,
+            "y": -25.548962091786763
+          },
+          "radius": 1.6510000000000145,
+          "start": {
+            "unit": "degrees",
+            "value": -167.14285714285674
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -321.42857142857247
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 17.26836159395215,
+            "y": -21.589801849983814
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": -141.42857142857127
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -113.42857142857149
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000005639932965095795,
+            "y": 0.000000000000028199664825478976
+          },
+          "radius": 30.133750480695,
+          "start": {
+            "unit": "degrees",
+            "value": -59.26585058311456
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -56.44843513117116
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 11.959278034199416,
+            "y": -24.92572014931088
+          },
+          "radius": 4.698999999999994,
+          "start": {
+            "unit": "degrees",
+            "value": -2.285714285714138
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 25.714285714285722
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 17.680430345379765,
+            "y": -22.170558405914367
+          },
+          "radius": 1.6510000000000042,
+          "start": {
+            "unit": "degrees",
+            "value": -154.28571428571357
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -308.5714285714288
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 21.639590587182735,
+            "y": -17.205928492242393
+          },
+          "radius": 4.698999999999992,
+          "start": {
+            "unit": "degrees",
+            "value": -128.57142857142875
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -100.57142857142863
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.000000000000050759396685862156,
+            "y": 0.00000000000004511946372076636
+          },
+          "radius": 30.13375048069501,
+          "start": {
+            "unit": "degrees",
+            "value": -46.408707725971716
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -43.59129227402831
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 17.205928492242375,
+            "y": -21.639590587182756
+          },
+          "radius": 4.698999999999993,
+          "start": {
+            "unit": "degrees",
+            "value": 10.571428571428667
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 38.571428571428505
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 22.170558405914363,
+            "y": -17.680430345379797
+          },
+          "radius": 1.6510000000000074,
+          "start": {
+            "unit": "degrees",
+            "value": -141.42857142857122
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -295.714285714286
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 24.925720149310862,
+            "y": -11.959278034199446
+          },
+          "radius": 4.698999999999984,
+          "start": {
+            "unit": "degrees",
+            "value": -115.71428571428571
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -87.71428571428586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000003665956427312267,
+            "y": 0.00000000000003665956427312267
+          },
+          "radius": 30.133750480694992,
+          "start": {
+            "unit": "degrees",
+            "value": -33.551564868828855
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -30.734149416885437
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 21.58980184998379,
+            "y": -17.26836159395217
+          },
+          "radius": 4.699000000000006,
+          "start": {
+            "unit": "degrees",
+            "value": 23.428571428571473
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 51.428571428571274
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 25.54896209178674,
+            "y": -12.303731680280185
+          },
+          "radius": 1.6509999999999887,
+          "start": {
+            "unit": "degrees",
+            "value": -128.57142857142807
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -282.8571428571433
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 26.961970022409343,
+            "y": -6.112939437925628
+          },
+          "radius": 4.69899999999999,
+          "start": {
+            "unit": "degrees",
+            "value": -102.85714285714286
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -74.85714285714302
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.00000000000003947953075567056,
+            "y": 0.00000000000003242961454930082
+          },
+          "radius": 30.13375048069499,
+          "start": {
+            "unit": "degrees",
+            "value": -20.694422011686015
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -17.877006559742576
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 24.89107239180557,
+            "y": -12.031224844002432
+          },
+          "radius": 4.699000000000004,
+          "start": {
+            "unit": "degrees",
+            "value": 36.28571428571461
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 64.28571428571432
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 27.646234135202057,
+            "y": -6.310072532822047
+          },
+          "radius": 1.6510000000000147,
+          "start": {
+            "unit": "degrees",
+            "value": -115.71428571428528
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -270.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 27.646234135202057,
+            "y": 0.03992746717794189
+          },
+          "radius": 4.698999999999974,
+          "start": {
+            "unit": "degrees",
+            "value": -90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -62.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -0.000000000000050759396685862156,
+            "y": 0.00000000000007613909502879323
+          },
+          "radius": 30.133750480695003,
+          "start": {
+            "unit": "degrees",
+            "value": -7.837279154543166
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -5.01986370259972
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 26.94420062783547,
+            "y": -6.190792242354506
+          },
+          "radius": 4.6990000000000025,
+          "start": {
+            "unit": "degrees",
+            "value": 49.14285714285728
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 77.14285714285715
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 28.35720855845806,
+            "y": 0.00000000000008741896095898482
+          },
+          "radius": 1.6510000000000096,
+          "start": {
+            "unit": "degrees",
+            "value": -102.85714285714249
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -257.1428571428575
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 2.8575,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 7.9375,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "radius": 7.9375,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 3.548190855845815,
+          "y": 17.73460427922906,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.0,
+            "y": 17.73460427922906
+          },
+          "radius": 3.548190855845815,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -14.186413423383247,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -17.73460427922906,
+            "y": 0.0
+          },
+          "radius": 3.548190855845815,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 3.548190855845815,
+          "y": -17.73460427922906,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.0,
+            "y": -17.73460427922906
+          },
+          "radius": 3.548190855845815,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 21.282795135074878,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 17.73460427922906,
+            "y": 0.0
+          },
+          "radius": 3.548190855845815,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 2.8575,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 2.8575,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 2.8575,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 2.8575,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 2.8575,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": null,
+            "rotate_rpy": {
+              "property": {
+                "x": 90.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "global"
+              }
+            },
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    }
+  ]
+}

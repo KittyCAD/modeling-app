@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_nested_foreign_error.kcl
+---
+{
+  "theModel": {
+    "type": "ImportedGeometry",
+    "id": "[uuid]",
+    "value": [
+      "bad.obj"
+    ]
+  }
+}

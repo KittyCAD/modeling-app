@@ -1,0 +1,3 @@
+import "bad.obj"
+
+export theModel = bad

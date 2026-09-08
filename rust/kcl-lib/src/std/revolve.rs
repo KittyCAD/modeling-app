@@ -112,6 +112,16 @@ async fn inner_revolve(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    if let Axis2dOrEdgeReference::Axis { direction, .. } = &axis
+        && direction[0].to_mm() == 0.0
+        && direction[1].to_mm() == 0.0
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "The axis of revolution cannot be the zero vector.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     if let Some(angle) = angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -363,6 +373,7 @@ mod tests {
 
     use super::*;
     use crate::execution::AbstractSegment;
+    use crate::execution::MockConfig;
     use crate::execution::Plane;
     use crate::execution::Segment;
     use crate::execution::SegmentKind;
@@ -436,5 +447,48 @@ mod tests {
             "{err:?}"
         );
         ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_revolve_rejects_axis_that_collapses_to_zero_in_2d() {
+        let code = r#"
+profile = startSketchOn(XZ)
+  |> startProfile(at = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = revolve(profile, axis = Z, angle = 90deg)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(
+            err.error
+                .message()
+                .contains("axis of revolution cannot be the zero vector"),
+            "{err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_revolve_accepts_nonzero_2d_axis() {
+        let code = r#"
+profile = startSketchOn(XZ)
+  |> startProfile(at = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = revolve(profile, axis = Y, angle = 90deg)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+
+        outcome.unwrap();
     }
 }

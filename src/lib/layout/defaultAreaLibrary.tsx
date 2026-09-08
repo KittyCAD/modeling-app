@@ -5,12 +5,14 @@ import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
+import { KclNamedViewsPane } from '@src/components/layout/areas/KclNamedViewsPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
@@ -52,7 +54,7 @@ function ModelingArea() {
   )
 
   return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div className="relative z-0 min-w-64 min-h-64 flex flex-col flex-1 items-center overflow-hidden">
       <ConnectionStream
         authToken={authToken}
         sketchSolveStreamDimming={sketchSolveStreamDimming}
@@ -70,8 +72,9 @@ function ModelingArea() {
 
 export const useDefaultAreaLibrary = () => {
   useSignals()
-  const { settings, layout, registry } = useApp()
+  const { settings, layout, registry, userFeatures } = useApp()
   const { kclManager } = useSingletons()
+  const showNamedViews = userFeatures.useHas(NAMED_VIEWS_UI_FEATURE_FLAG, false)
   const getSettings = settings.get
   const registeredAreaLibrary = registry.signal(
     layoutAreaLibraryValueSpec
@@ -103,6 +106,10 @@ export const useDefaultAreaLibrary = () => {
         bodies: {
           hide: () => false,
           Component: BodiesPane,
+        },
+        namedViews: {
+          hide: () => !showNamedViews,
+          Component: KclNamedViewsPane,
         },
         modeling: {
           hide: () => false,
@@ -163,7 +170,13 @@ export const useDefaultAreaLibrary = () => {
         },
         ...registeredAreaLibrary,
       } satisfies AreaLibrary),
-    [getSettings, kclManager, onCodeNotificationClick, registeredAreaLibrary]
+    [
+      getSettings,
+      kclManager,
+      onCodeNotificationClick,
+      registeredAreaLibrary,
+      showNamedViews,
+    ]
   )
 }
 
@@ -181,6 +194,7 @@ function testArea(name: string): AreaTypeDefinition {
 export const testAreaLibrary = Object.freeze({
   featureTree: testArea('Feature Tree'),
   bodies: testArea('bodies'),
+  namedViews: testArea('Views'),
   modeling: testArea('Modeling Scene'),
   ttc: testArea('Zookeeper'),
   codeEditor: testArea('Code Editor'),

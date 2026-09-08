@@ -96,9 +96,9 @@ export fn counterbore(diameter: number(Length), depth: number(Length)) {
 ///   equalLength([line2, line3])
 ///   distance([line2.start, line2.end]) == 3mm
 /// }
-/// cubeRegion = region(point = [0mm, 0mm], sketch = cubeProfile)
+/// cubeRegion = region(segments = [cubeProfile.line1, cubeProfile.line2])
 /// cube1 = extrude(cubeRegion, length = 3mm)
-/// 
+///
 /// // Add a hole to the cube.
 /// // It'll have a drilled end and a countersink (angled tip at the start).
 /// cube1
@@ -152,9 +152,9 @@ export fn counterbore(diameter: number(Length), depth: number(Length)) {
 ///   equalLength([line2, line3])
 ///   distance([line2.start, line2.end]) == 3mm
 /// }
-/// cubeRegion = region(point = [0mm, 0mm], sketch = cubeProfile)
+/// cubeRegion = region(segments = [cubeProfile.line1, cubeProfile.line2])
 /// cube1 = extrude(cubeRegion, length = 3mm)
-/// 
+///
 /// // Add a hole to the cube.
 /// // It'll have a drilled end and a recessed countersink.
 /// cube1
@@ -448,7 +448,7 @@ fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [4mm, 3mm], sketch = blockProfile), length = 6mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 6mm, tagEnd = $top)
 /// drilledBlock = hole::hole(
 ///   block,
 ///   face = top,
@@ -519,7 +519,7 @@ export fn hole(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 6mm, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 6mm, tagEnd = $top)
 /// drilledBlock = hole::holes(
 ///   block,
 ///   face = top,
@@ -657,8 +657,8 @@ fn holeAtGeometry(@plane: Plane, holeBottom, holeBody, holeType) {
 ///   equalLength([line2, line3])
 ///   distance([line2.start, line2.end]) == 3mm
 /// }
-/// 
-/// cube1 = extrude(region(point = [0mm, 0mm], sketch = cubeProfile), length = 3mm)
+///
+/// cube1 = extrude(region(segments = [cubeProfile.line1, cubeProfile.line2]), length = 3mm)
 ///
 /// // Define a custom plane, into which a hole will be cut.
 /// customPlane = {

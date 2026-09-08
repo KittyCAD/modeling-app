@@ -1,0 +1,64 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing named_views_directed.kcl
+---
+{
+  "full": {
+    "type": "CameraView",
+    "value": {
+      "look": {
+        "type": "directed",
+        "direction": {
+          "x": -0.6917144638660746,
+          "y": -0.6917144638660746,
+          "z": -0.20751433915982237,
+          "units": null
+        },
+        "up": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "target": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 10.0,
+        "units": "mm"
+      },
+      "distance": {
+        "n": 200.0,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      },
+      "projection": "Perspective"
+    }
+  },
+  "minimal": {
+    "type": "CameraView",
+    "value": {
+      "look": {
+        "type": "directed",
+        "direction": {
+          "x": 0.0,
+          "y": 0.4472135954999579,
+          "z": -0.8944271909999159,
+          "units": null
+        },
+        "up": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "target": null,
+      "distance": null,
+      "projection": "Orthographic"
+    }
+  }
+}

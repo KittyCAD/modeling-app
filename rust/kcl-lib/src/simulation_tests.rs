@@ -5,7 +5,16 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::units::UnitArea;
+use kittycad_modeling_cmds::units::UnitDensity;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::units::UnitMass;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use serde::Serialize;
 use uuid::Uuid;
 
 use crate::ExecOutcome;
@@ -14,11 +23,16 @@ use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
 use crate::errors::Tag;
+use crate::execution::AbstractSegment;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactGraphMermaidExt;
+use crate::execution::CameraView;
 use crate::execution::EnvironmentRef;
+use crate::execution::KclValue;
 use crate::execution::KclValueView;
 use crate::execution::ModuleArtifactState;
+use crate::execution::NamedViewValue;
+use crate::execution::SketchConstraint;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
@@ -29,6 +43,74 @@ use crate::walk::walk;
 
 mod kcl_samples;
 mod region_liveness_engine_contract;
+
+/// Preserve the concrete runtime types used by opaque debug-only API values in
+/// program-memory snapshots. Insta distinguishes structs from maps when sorting
+/// fields; serializing these values through `serde_json::Value` would turn every
+/// nested struct into a map and reorder its fields alphabetically.
+#[derive(Serialize)]
+#[serde(untagged)]
+enum ProgramMemoryValueSnapshot {
+    Runtime(RuntimeProgramMemoryValueSnapshot),
+    View(KclValueView),
+}
+
+#[derive(Serialize)]
+#[serde(tag = "type")]
+enum RuntimeProgramMemoryValueSnapshot {
+    SketchConstraint {
+        value: Box<SketchConstraint>,
+    },
+    CameraView {
+        value: Box<CameraView>,
+    },
+    NamedView {
+        value: Box<NamedViewValue>,
+    },
+    Segment {
+        value: Box<AbstractSegment>,
+    },
+    Tuple {
+        value: Vec<ProgramMemoryValueSnapshot>,
+    },
+    HomArray {
+        value: Vec<ProgramMemoryValueSnapshot>,
+    },
+    Object {
+        value: Box<IndexMap<String, ProgramMemoryValueSnapshot>>,
+        constrainable: bool,
+    },
+}
+
+impl From<KclValue> for ProgramMemoryValueSnapshot {
+    fn from(value: KclValue) -> Self {
+        let runtime = match value {
+            KclValue::SketchConstraint { value } => RuntimeProgramMemoryValueSnapshot::SketchConstraint { value },
+            KclValue::CameraView { value } => RuntimeProgramMemoryValueSnapshot::CameraView { value },
+            KclValue::NamedView { value } => RuntimeProgramMemoryValueSnapshot::NamedView { value },
+            KclValue::Segment { value } => RuntimeProgramMemoryValueSnapshot::Segment { value },
+            KclValue::Tuple { value, .. } => RuntimeProgramMemoryValueSnapshot::Tuple {
+                value: value.into_iter().map(Self::from).collect(),
+            },
+            KclValue::HomArray { value, .. } => RuntimeProgramMemoryValueSnapshot::HomArray {
+                value: value.into_iter().map(Self::from).collect(),
+            },
+            KclValue::Object {
+                value, constrainable, ..
+            } => RuntimeProgramMemoryValueSnapshot::Object {
+                value: Box::new(
+                    value
+                        .into_iter()
+                        .map(|(name, value)| (name, Self::from(value)))
+                        .collect(),
+                ),
+                constrainable,
+            },
+            value => return Self::View(KclValueView::from(value)),
+        };
+        Self::Runtime(runtime)
+    }
+}
 
 /// A simulation test.
 #[derive(Debug, Clone)]
@@ -44,12 +126,20 @@ struct Test {
     /// True to skip asserting the artifact graph and only write it. The default
     /// is false and to assert it.
     skip_assert_artifact_graph: bool,
+    /// Whether a successful execution should snapshot physical properties.
+    snapshot_physical_properties: bool,
     /// If set, assert that execution emits exactly this many deprecation warnings.
     expected_deprecation_warnings: Option<usize>,
 }
 
 const REPO_ROOT: &str = "../..";
 const KCL_SAMPLE_DEPRECATION_VERSION: &str = "2.0";
+const MATERIAL_DENSITY_KG_PER_CUBIC_METER: f64 = 1000.0;
+// Physical properties come from floating-point geometry calculations. Require
+// agreement to one part per trillion, with a small absolute floor for values
+// near zero. The snapshots use fixed units: mm, mm^2, g, and kg/m^3.
+const PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE: f64 = 1e-9;
+const PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE: f64 = 1e-12;
 
 fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
@@ -63,6 +153,7 @@ impl Test {
             input_dir: Path::new("tests").join(name),
             output_dir: Path::new("tests").join(name),
             skip_assert_artifact_graph: false,
+            snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
         }
     }
@@ -83,9 +174,16 @@ impl ExecState {
         project_directory: &Path,
     ) -> (
         ExecOutcome,
+        IndexMap<String, ProgramMemoryValueSnapshot>,
         IndexMap<String, ModuleArtifactState>,
         Option<IndexMap<Uuid, WebSocketResponse>>,
     ) {
+        let program_memory = self
+            .program_memory_for_tests(main_ref)
+            .expect("simulation test execution outcome should collect variables")
+            .into_iter()
+            .map(|(name, value)| (name, ProgramMemoryValueSnapshot::from(value)))
+            .collect();
         let module_state = self.to_module_state(project_directory);
         #[cfg(feature = "snapshot-engine-responses")]
         let (outcome, responses) = {
@@ -106,7 +204,7 @@ impl ExecState {
                 .expect("simulation test execution outcome should collect variables");
             (outcome, responses)
         };
-        (outcome, module_state, responses)
+        (outcome, program_memory, module_state, responses)
     }
 
     /// The keys of the map are the module paths.  Can't use `ModulePath` since
@@ -189,6 +287,210 @@ where
     }
     // Run `f` (the closure that was passed in) with these settings.
     settings.bind(f);
+}
+
+fn physical_property_values_match(expected: f64, actual: f64) -> bool {
+    approx::relative_eq!(
+        expected,
+        actual,
+        epsilon = PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE,
+        max_relative = PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE
+    )
+}
+
+fn physical_properties_mismatch(
+    expected: &serde_json::Value,
+    actual: &serde_json::Value,
+    path: &str,
+) -> Option<String> {
+    match (expected, actual) {
+        (serde_json::Value::Number(expected), serde_json::Value::Number(actual)) => {
+            let (Some(expected), Some(actual)) = (expected.as_f64(), actual.as_f64()) else {
+                return (expected != actual).then(|| format!("{path}: expected {expected}, got {actual}"));
+            };
+            (!physical_property_values_match(expected, actual)).then(|| {
+                format!(
+                    "{path}: expected {expected}, got {actual} (absolute tolerance {}, relative tolerance {})",
+                    PHYSICAL_PROPERTIES_ABSOLUTE_TOLERANCE, PHYSICAL_PROPERTIES_RELATIVE_TOLERANCE
+                )
+            })
+        }
+        (serde_json::Value::Object(expected), serde_json::Value::Object(actual)) => {
+            for (key, expected_value) in expected {
+                let child_path = format!("{path}.{key}");
+                let Some(actual_value) = actual.get(key) else {
+                    return Some(format!("{child_path}: missing from actual physical properties"));
+                };
+                if let Some(mismatch) = physical_properties_mismatch(expected_value, actual_value, &child_path) {
+                    return Some(mismatch);
+                }
+            }
+            actual
+                .keys()
+                .find(|key| !expected.contains_key(*key))
+                .map(|key| format!("{path}.{key}: unexpected physical property"))
+        }
+        (serde_json::Value::Array(expected), serde_json::Value::Array(actual)) => {
+            if expected.len() != actual.len() {
+                return Some(format!(
+                    "{path}: expected an array of length {}, got {}",
+                    expected.len(),
+                    actual.len()
+                ));
+            }
+            expected
+                .iter()
+                .zip(actual)
+                .enumerate()
+                .find_map(|(index, (expected, actual))| {
+                    physical_properties_mismatch(expected, actual, &format!("{path}[{index}]"))
+                })
+        }
+        _ => (expected != actual).then(|| format!("{path}: expected {expected}, got {actual}")),
+    }
+}
+
+fn assert_physical_properties_snapshot(test: &Test, actual: serde_json::Value) {
+    if !is_writing()
+        && let Ok(snapshot) = insta::Snapshot::from_file(&test.output_dir.join("physical_properties.snap"))
+        && let Some(text) = snapshot.as_text()
+        && let Ok(expected) = serde_json::from_str(&text.to_string())
+        && physical_properties_mismatch(&expected, &actual, "physical_properties").is_none()
+    {
+        // Keep the original text after accepting numeric noise. Parsing and
+        // serializing it again can change a float's last digit. Still invoke
+        // Insta so it tracks the snapshot and applies its normal update policy.
+        assert_snapshot(test, "Physical properties", || {
+            insta::assert_snapshot!("physical_properties", text.to_string())
+        });
+        return;
+    }
+
+    // Missing, unreadable, or materially different snapshots use Insta's normal
+    // failure reporting and update policy, including .snap.new review files.
+    assert_snapshot(test, "Physical properties", || {
+        insta::assert_json_snapshot!("physical_properties", actual)
+    });
+}
+
+#[test]
+fn physical_property_values_allow_numeric_noise_but_reject_wrong_results() {
+    let expected = serde_json::json!({
+        "surface_area": {
+            "unit": "mm2",
+            "value": 138_485.213_581_107_76,
+        },
+    });
+    let observed_numeric_noise = serde_json::json!({
+        "surface_area": {
+            "unit": "mm2",
+            "value": 138_485.213_581_107_73,
+        },
+    });
+    let materially_wrong_surface_area = serde_json::json!({
+        "surface_area": {
+            "unit": "mm2",
+            "value": 138_486.213_581_107_76,
+        },
+    });
+
+    assert_eq!(
+        physical_properties_mismatch(&expected, &observed_numeric_noise, "physical_properties"),
+        None
+    );
+    assert!(physical_properties_mismatch(&expected, &materially_wrong_surface_area, "physical_properties").is_some());
+}
+
+#[test]
+fn physical_properties_snapshot_preserves_insta_workflow() {
+    const CHILD_MODE: &str = "KCL_PHYSICAL_PROPERTIES_SNAPSHOT_TEST_MODE";
+    let Ok(mode) = std::env::var(CHILD_MODE) else {
+        // Insta caches its environment configuration. Use subprocesses to test
+        // each policy without changing the environment of parallel tests.
+        for mode in ["new", "always", "no", "force"] {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "simulation_tests::physical_properties_snapshot_preserves_insta_workflow",
+                    "--nocapture",
+                ])
+                .env(CHILD_MODE, mode)
+                .env("INSTA_UPDATE", if mode == "force" { "always" } else { mode })
+                .env("ZOO_SIM_UPDATE", if mode == "force" { "always" } else { "" })
+                .env("INSTA_FORCE_PASS", "0")
+                .env_remove("INSTA_SNAPSHOT_REFERENCES_FILE")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{mode}:\n{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        return;
+    };
+
+    for (stored, value, within_tolerance) in [
+        (None, 2.0, false),
+        (Some(1.0), 2.0, false),
+        (Some(1.0), 1.0 + 5e-13, true),
+    ] {
+        let directory = tempfile::tempdir().unwrap();
+        let mut test = Test::new("physical_properties_snapshot_workflow");
+        test.output_dir = directory.path().to_owned();
+        let snapshot_path = test.output_dir.join("physical_properties.snap");
+        let properties = |value| serde_json::json!({"surface_area": {"unit": "mm2", "value": value}});
+        let original = stored.map(|value| {
+            format!(
+                "---\nsource: simulation_tests.rs\n---\n{}\n",
+                serde_json::to_string_pretty(&properties(value)).unwrap()
+            )
+        });
+        if let Some(original) = &original {
+            std::fs::write(&snapshot_path, original).unwrap();
+        }
+
+        let actual = properties(value);
+        let result = catch_unwind(|| assert_physical_properties_snapshot(&test, actual.clone()));
+        let updates = matches!(mode.as_str(), "always" | "force");
+        assert_eq!(result.is_ok(), within_tolerance || updates);
+        assert_eq!(
+            test.output_dir.join("physical_properties.snap.new").exists(),
+            mode == "new" && !within_tolerance
+        );
+        if updates {
+            let snapshot = insta::Snapshot::from_file(&snapshot_path).unwrap();
+            let updated: serde_json::Value = serde_json::from_str(&snapshot.as_text().unwrap().to_string()).unwrap();
+            let expected = if within_tolerance && mode != "force" {
+                properties(stored.unwrap())
+            } else {
+                actual
+            };
+            assert_eq!(updated, expected);
+        } else {
+            assert_eq!(std::fs::read_to_string(&snapshot_path).ok(), original);
+        }
+    }
+}
+
+#[test]
+fn physical_properties_snapshot_preserves_stored_decimal_text() {
+    let directory = tempfile::tempdir().unwrap();
+    let mut test = Test::new("holes_cube");
+    test.output_dir = directory.path().to_owned();
+    let snapshot_path = test.output_dir.join("physical_properties.snap");
+    let original = include_str!("../tests/holes_cube/physical_properties.snap");
+    std::fs::write(&snapshot_path, original).unwrap();
+    let snapshot = insta::Snapshot::from_file(&snapshot_path).unwrap();
+    let actual = serde_json::from_str(&snapshot.as_text().unwrap().to_string()).unwrap();
+
+    // Parsing this snapshot and serializing its numbers again changes the last
+    // digit of bounding_box.center.z despite an exact numeric comparison.
+    assert_physical_properties_snapshot(&test, actual);
+
+    assert_eq!(std::fs::read_to_string(&snapshot_path).unwrap(), original);
+    assert!(!test.output_dir.join("physical_properties.snap.new").exists());
 }
 
 fn parse(test_name: &str) {
@@ -283,6 +585,105 @@ async fn execute(test_name: &str, render_to_png: bool) {
     execute_test(&Test::new(test_name), render_to_png, false).await
 }
 
+async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
+    // Ask for mass first because it returns "Nothing to export" without
+    // closing the engine connection when a successful KCL program produces no
+    // physical body. Bounding box requests close empty-scene connections.
+    let mass_response = match ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::Mass::builder()
+                    .material_density(MATERIAL_DENSITY_KG_PER_CUBIC_METER)
+                    .material_density_unit(UnitDensity::KilogramsPerCubicMeter)
+                    .output_unit(UnitMass::Grams)
+                    .build(),
+            ),
+        )
+        .await
+    {
+        Ok(response) => response,
+        Err(err)
+            if err.message() == "Nothing to export"
+                // Surface bodies have area and bounds, but no volume from
+                // which the engine can calculate mass.
+                || err.message() == "internal error: unknown" =>
+        {
+            return None;
+        }
+        Err(err) => panic!("simulation test should measure the model mass: {err}"),
+    };
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Mass(mass),
+    } = mass_response
+    else {
+        panic!("Expected a mass response, got {mass_response:?}");
+    };
+
+    let bounding_box_response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::BoundingBox::builder()
+                    .output_unit(UnitLength::Millimeters)
+                    .build(),
+            ),
+        )
+        .await
+        .expect("simulation test should measure the model bounding box");
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BoundingBox(bounding_box),
+    } = bounding_box_response
+    else {
+        panic!("Expected a bounding box response, got {bounding_box_response:?}");
+    };
+
+    let surface_area_response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::SurfaceArea::builder()
+                    .output_unit(UnitArea::SquareMillimeters)
+                    .build(),
+            ),
+        )
+        .await
+        .expect("simulation test should measure the model surface area");
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area),
+    } = surface_area_response
+    else {
+        panic!("Expected a surface area response, got {surface_area_response:?}");
+    };
+
+    Some(serde_json::json!({
+        "bounding_box": {
+            "center": bounding_box.center,
+            "dimensions": bounding_box.dimensions,
+            "unit": UnitLength::Millimeters,
+        },
+        "weight": {
+            "value": mass.mass,
+            "unit": mass.output_unit,
+            "material_density": MATERIAL_DENSITY_KG_PER_CUBIC_METER,
+            "material_density_unit": UnitDensity::KilogramsPerCubicMeter,
+        },
+        "surface_area": {
+            "value": surface_area.surface_area,
+            "unit": surface_area.output_unit,
+        },
+    }))
+}
+
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
@@ -290,7 +691,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
     // Run the program.
     let exec_res = execute_with_retries(&RetryConfig::default(), || {
-        crate::test_server::execute_and_snapshot_ast(
+        crate::test_server::execute_and_snapshot_ast_no_close(
             ast.clone(),
             Some(test.entry_point.clone()),
             export_step,
@@ -315,6 +716,15 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 );
             }
 
+            // Depth survey: when KCL_DEPTH_HIGH_WATER_FILE is set, append the
+            // machine executor's high-water call depth for this program, to
+            // validate the runaway guard's default limit against real code.
+            if let Ok(path) = std::env::var("KCL_DEPTH_HIGH_WATER_FILE") {
+                use std::io::Write;
+                if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+                    let _ = writeln!(f, "{}\t{}", exec_state.machine_depth_high_water(), test.name);
+                }
+            }
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(
@@ -322,8 +732,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     fail_path.to_string_lossy()
                 )
             }
-            if render_to_png {
-                twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
+            if render_to_png
+                && let Err(err) = twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99)
+            {
+                panic!(
+                    "Image assertion failed: {err}; input KCL file: {}",
+                    test.entry_point.display()
+                );
             }
 
             // Ensure the step has data.
@@ -365,15 +780,34 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     .flatten(),
             );
 
-            // Filter out Z0005 (old sketch syntax) from test snapshots
-            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            // Filter out Z0005 (old sketch syntax) from test snapshots.
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
-            let (outcome, module_state, responses) =
+            let (outcome, program_memory, module_state, responses) =
                 exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
+            let physical_properties = if test.snapshot_physical_properties {
+                physical_properties(&ctx).await
+            } else {
+                None
+            };
+            ctx.close().await;
 
-            let snapshot_results = common_snapshots(test, outcome.variables, responses);
-
+            let mut snapshot_results = common_snapshots(test, program_memory, responses);
+            if let Some(physical_properties) = physical_properties {
+                snapshot_results.push(catch_unwind(AssertUnwindSafe(|| {
+                    assert_physical_properties_snapshot(test, physical_properties)
+                })));
+            } else {
+                let physical_properties_snap_path = test.output_dir.join("physical_properties.snap");
+                if is_writing() {
+                    let _ = std::fs::remove_file(&physical_properties_snap_path);
+                } else if physical_properties_snap_path.exists() {
+                    panic!(
+                        "This test case produced no physical model, but it previously did. If this is intended, delete kcl-lib/{}.",
+                        physical_properties_snap_path.to_string_lossy()
+                    );
+                }
+            }
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
 
             let lint_snap_path = test.output_dir.join("lints.snap");
@@ -433,7 +867,12 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         #[cfg(not(feature = "snapshot-engine-responses"))]
                         None
                     };
-                    let snapshot_results = common_snapshots(test, error.variables, responses);
+                    let program_memory = error
+                        .variables
+                        .into_iter()
+                        .map(|(name, value)| (name, ProgramMemoryValueSnapshot::View(value)))
+                        .collect();
+                    let snapshot_results = common_snapshots(test, program_memory, responses);
 
                     {
                         let module_state = e
@@ -466,7 +905,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 #[must_use]
 fn common_snapshots(
     test: &Test,
-    variables: IndexMap<String, KclValueView>,
+    variables: IndexMap<String, ProgramMemoryValueSnapshot>,
     #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
         IndexMap<Uuid, WebSocketResponse>,
     >,
@@ -1605,6 +2044,27 @@ mod export_var_only_at_top_level {
         super::execute(TEST_NAME, false).await
     }
 }
+mod import_nested_runtime_error {
+    const TEST_NAME: &str = "import_nested_runtime_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod assembly_non_default_units {
     const TEST_NAME: &str = "assembly_non_default_units";
 
@@ -2070,27 +2530,6 @@ mod sketch_on_face_start {
 }
 mod sketch_on_face_end_negative_extrude {
     const TEST_NAME: &str = "sketch_on_face_end_negative_extrude";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
-    }
-}
-mod mike_stress_test {
-    const TEST_NAME: &str = "mike_stress_test";
 
     /// Test parsing KCL.
     #[test]
@@ -6386,6 +6825,24 @@ mod fillet_ambiguous_region_edge_specifier_broad {
         super::execute(TEST_NAME, true).await
     }
 }
+mod chamfer_multiple_auto_hole_region_face_api {
+    const TEST_NAME: &str = "chamfer_multiple_auto_hole_region_face_api";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod gdt_face_api_edge_specifier {
     const TEST_NAME: &str = "gdt_face_api_edge_specifier";
 
@@ -7176,5 +7633,614 @@ mod named_views_module_requires_opt_in {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_oriented {
+    const TEST_NAME: &str = "named_views_oriented";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_directed {
+    const TEST_NAME: &str = "named_views_directed";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_directed_zero_direction {
+    const TEST_NAME: &str = "named_views_directed_zero_direction";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_units_are_millimeters {
+    const TEST_NAME: &str = "named_views_units_are_millimeters";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_units_in_inch_default_file {
+    const TEST_NAME: &str = "named_views_units_in_inch_default_file";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_negative_distance {
+    const TEST_NAME: &str = "named_views_negative_distance";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_baseline_show {
+    const TEST_NAME: &str = "named_views_baseline_show";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_baseline_hide {
+    const TEST_NAME: &str = "named_views_baseline_hide";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_duplicate_name {
+    const TEST_NAME: &str = "named_views_duplicate_name";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_duplicate_across_modules {
+    const TEST_NAME: &str = "named_views_duplicate_across_modules";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_duplicate_from_a_function {
+    const TEST_NAME: &str = "named_views_duplicate_from_a_function";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod named_views_except_a_sketch_block {
+    const TEST_NAME: &str = "named_views_except_a_sketch_block";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod clone_dodecahedron {
+    const TEST_NAME: &str = "clone_dodecahedron";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod mirror3d_and_boolean {
+    const TEST_NAME: &str = "mirror3d_and_boolean";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod use_point_from_other_sketch {
+    const TEST_NAME: &str = "use_point_from_other_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_nested_foreign_error {
+    const TEST_NAME: &str = "import_nested_foreign_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_error_in_other_module_with_overflow {
+    const TEST_NAME: &str = "import_error_in_other_module_with_overflow";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod early_return_v3 {
+    const TEST_NAME: &str = "early_return_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_cross_module {
+    const TEST_NAME: &str = "early_return_cross_module";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_geometry {
+    const TEST_NAME: &str = "early_return_geometry";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod if_else_scoped {
+    const TEST_NAME: &str = "if_else_scoped";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod if_arm_scoped_geometry {
+    const TEST_NAME: &str = "if_arm_scoped_geometry";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod clone_a_blend {
+    const TEST_NAME: &str = "clone_a_blend";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod chamfer_multiple_tags_v3 {
+    const TEST_NAME: &str = "chamfer_multiple_tags_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_on_chamfer_two_times_v3 {
+    const TEST_NAME: &str = "sketch_on_chamfer_two_times_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_on_chamfer_two_times_different_order_v3 {
+    const TEST_NAME: &str = "sketch_on_chamfer_two_times_different_order_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod get_opposite_edge_after_fillet_v3 {
+    const TEST_NAME: &str = "get_opposite_edge_after_fillet_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sweep_profile_defaults_v3 {
+    const TEST_NAME: &str = "sweep_profile_defaults_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod member_expression_order_v3 {
+    const TEST_NAME: &str = "member_expression_order_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
     }
 }

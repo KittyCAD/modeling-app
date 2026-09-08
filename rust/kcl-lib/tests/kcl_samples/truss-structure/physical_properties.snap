@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties truss-structure.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -1371.6000000000004,
+      "y": 0.0,
+      "z": -38.40776005091311
+    },
+    "dimensions": {
+      "x": 5791.200000000001,
+      "y": 3657.6,
+      "z": 2361.584479898176
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 12279590.764590466
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 189929.82382716643
+  }
+}

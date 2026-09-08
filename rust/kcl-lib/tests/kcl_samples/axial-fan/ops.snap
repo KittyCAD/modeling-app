@@ -5335,148 +5335,26 @@ description: Operations executed axial-fan.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "direction": {
+          "value": {
+            "type": "String",
+            "value": "cw"
+          },
+          "sourceRange": []
+        },
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": -62.4975,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "arc1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line10": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line11": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line12": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line13": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line14": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line15": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line16": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line7": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line8": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line9": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
@@ -8497,120 +8375,19 @@ description: Operations executed axial-fan.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 116.8825009,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 12.5495212,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "arc4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line10": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line11": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line12": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line13": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line15": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line18": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line7": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line9": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "point2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "point3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "point4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "point5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "point6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -11163,88 +10940,19 @@ description: Operations executed axial-fan.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": -1.8127969,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 5.7222175,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "arc1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
@@ -11874,56 +11582,15 @@ description: Operations executed axial-fan.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": -7.5081825,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": -9.3577348,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "circle1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }

@@ -72,8 +72,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 162,
+      "kind": "Custom",
       "origin": {
         "x": -1750.0,
         "y": 0.0,
@@ -105,8 +105,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 170,
+      "kind": "Custom",
       "origin": {
         "x": 1750.0,
         "y": 0.0,
@@ -266,6 +266,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -273,10 +275,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7498,
-            "end": 7503,
+            "commentStart": 7544,
+            "end": 7549,
             "moduleId": 0,
-            "start": 7498,
+            "start": 7544,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -287,10 +289,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7563,
-            "end": 7568,
+            "commentStart": 7609,
+            "end": 7614,
             "moduleId": 0,
-            "start": 7563,
+            "start": 7609,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -301,10 +303,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7628,
-            "end": 7633,
+            "commentStart": 7674,
+            "end": 7679,
             "moduleId": 0,
-            "start": 7628,
+            "start": 7674,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -315,10 +317,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7693,
-            "end": 7698,
+            "commentStart": 7739,
+            "end": 7744,
             "moduleId": 0,
-            "start": 7693,
+            "start": 7739,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -340,10 +342,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7498,
-              "end": 7503,
+              "commentStart": 7544,
+              "end": 7549,
               "moduleId": 0,
-              "start": 7498,
+              "start": 7544,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -364,10 +366,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 7563,
-              "end": 7568,
+              "commentStart": 7609,
+              "end": 7614,
               "moduleId": 0,
-              "start": 7563,
+              "start": 7609,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -388,10 +390,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 7628,
-              "end": 7633,
+              "commentStart": 7674,
+              "end": 7679,
               "moduleId": 0,
-              "start": 7628,
+              "start": 7674,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -412,10 +414,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7693,
-              "end": 7698,
+              "commentStart": 7739,
+              "end": 7744,
               "moduleId": 0,
-              "start": 7693,
+              "start": 7739,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -428,17 +430,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 94,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -494,8 +496,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1032,10 +1034,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7498,
-                    "end": 7503,
+                    "commentStart": 7544,
+                    "end": 7549,
                     "moduleId": 0,
-                    "start": 7498,
+                    "start": 7544,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1056,10 +1058,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.95
                   ],
                   "tag": {
-                    "commentStart": 7563,
-                    "end": 7568,
+                    "commentStart": 7609,
+                    "end": 7614,
                     "moduleId": 0,
-                    "start": 7563,
+                    "start": 7609,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1080,10 +1082,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.95
                   ],
                   "tag": {
-                    "commentStart": 7628,
-                    "end": 7633,
+                    "commentStart": 7674,
+                    "end": 7679,
                     "moduleId": 0,
-                    "start": 7628,
+                    "start": 7674,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1104,10 +1106,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7693,
-                    "end": 7698,
+                    "commentStart": 7739,
+                    "end": 7744,
                     "moduleId": 0,
-                    "start": 7693,
+                    "start": 7739,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1120,17 +1122,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 94,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1212,10 +1214,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7498,
-            "end": 7503,
+            "commentStart": 7544,
+            "end": 7549,
             "moduleId": 0,
-            "start": 7498,
+            "start": 7544,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1236,10 +1238,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.95
           ],
           "tag": {
-            "commentStart": 7563,
-            "end": 7568,
+            "commentStart": 7609,
+            "end": 7614,
             "moduleId": 0,
-            "start": 7563,
+            "start": 7609,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1260,10 +1262,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.95
           ],
           "tag": {
-            "commentStart": 7628,
-            "end": 7633,
+            "commentStart": 7674,
+            "end": 7679,
             "moduleId": 0,
-            "start": 7628,
+            "start": 7674,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1284,10 +1286,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7693,
-            "end": 7698,
+            "commentStart": 7739,
+            "end": 7744,
             "moduleId": 0,
-            "start": 7693,
+            "start": 7739,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1300,17 +1302,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 94,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1366,8 +1368,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassis": {
@@ -1375,6 +1377,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1382,10 +1386,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6399,
-            "end": 6404,
+            "commentStart": 6445,
+            "end": 6450,
             "moduleId": 0,
-            "start": 6399,
+            "start": 6445,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1396,10 +1400,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6464,
-            "end": 6469,
+            "commentStart": 6510,
+            "end": 6515,
             "moduleId": 0,
-            "start": 6464,
+            "start": 6510,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1410,10 +1414,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6529,
-            "end": 6534,
+            "commentStart": 6575,
+            "end": 6580,
             "moduleId": 0,
-            "start": 6529,
+            "start": 6575,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1424,10 +1428,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6594,
-            "end": 6599,
+            "commentStart": 6640,
+            "end": 6645,
             "moduleId": 0,
-            "start": 6594,
+            "start": 6640,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1449,10 +1453,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.7499999963999996
             ],
             "tag": {
-              "commentStart": 6399,
-              "end": 6404,
+              "commentStart": 6445,
+              "end": 6450,
               "moduleId": 0,
-              "start": 6399,
+              "start": 6445,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1473,10 +1477,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.7499999941499995
             ],
             "tag": {
-              "commentStart": 6464,
-              "end": 6469,
+              "commentStart": 6510,
+              "end": 6515,
               "moduleId": 0,
-              "start": 6464,
+              "start": 6510,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1497,10 +1501,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.1499999950499995
             ],
             "tag": {
-              "commentStart": 6529,
-              "end": 6534,
+              "commentStart": 6575,
+              "end": 6580,
               "moduleId": 0,
-              "start": 6529,
+              "start": 6575,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1521,10 +1525,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.1499999957999996
             ],
             "tag": {
-              "commentStart": 6594,
-              "end": 6599,
+              "commentStart": 6640,
+              "end": 6645,
               "moduleId": 0,
-              "start": 6594,
+              "start": 6640,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1537,17 +1541,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 69,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1603,8 +1607,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2141,10 +2145,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.7499999963999996
                   ],
                   "tag": {
-                    "commentStart": 6399,
-                    "end": 6404,
+                    "commentStart": 6445,
+                    "end": 6450,
                     "moduleId": 0,
-                    "start": 6399,
+                    "start": 6445,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2182,10 +2186,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.7499999941499995
                   ],
                   "tag": {
-                    "commentStart": 6464,
-                    "end": 6469,
+                    "commentStart": 6510,
+                    "end": 6515,
                     "moduleId": 0,
-                    "start": 6464,
+                    "start": 6510,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2223,10 +2227,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.1499999950499995
                   ],
                   "tag": {
-                    "commentStart": 6529,
-                    "end": 6534,
+                    "commentStart": 6575,
+                    "end": 6580,
                     "moduleId": 0,
-                    "start": 6529,
+                    "start": 6575,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2264,10 +2268,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.1499999957999996
                   ],
                   "tag": {
-                    "commentStart": 6594,
-                    "end": 6599,
+                    "commentStart": 6640,
+                    "end": 6645,
                     "moduleId": 0,
-                    "start": 6594,
+                    "start": 6640,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2280,17 +2284,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 69,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2372,10 +2376,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.7499999963999996
           ],
           "tag": {
-            "commentStart": 6399,
-            "end": 6404,
+            "commentStart": 6445,
+            "end": 6450,
             "moduleId": 0,
-            "start": 6399,
+            "start": 6445,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2396,10 +2400,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.7499999941499995
           ],
           "tag": {
-            "commentStart": 6464,
-            "end": 6469,
+            "commentStart": 6510,
+            "end": 6515,
             "moduleId": 0,
-            "start": 6464,
+            "start": 6510,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2420,10 +2424,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.1499999950499995
           ],
           "tag": {
-            "commentStart": 6529,
-            "end": 6534,
+            "commentStart": 6575,
+            "end": 6580,
             "moduleId": 0,
-            "start": 6529,
+            "start": 6575,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2444,10 +2448,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.1499999957999996
           ],
           "tag": {
-            "commentStart": 6594,
-            "end": 6599,
+            "commentStart": 6640,
+            "end": 6645,
             "moduleId": 0,
-            "start": 6594,
+            "start": 6640,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2460,17 +2464,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 69,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2526,8 +2530,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassisWidth": {
@@ -2565,10 +2569,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.35000000000001047
           ],
           "tag": {
-            "commentStart": 4214,
-            "end": 4219,
+            "commentStart": 4260,
+            "end": 4265,
             "moduleId": 0,
-            "start": 4214,
+            "start": 4260,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2589,10 +2593,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.8046633388240976
           ],
           "tag": {
-            "commentStart": 4291,
-            "end": 4296,
+            "commentStart": 4337,
+            "end": 4342,
             "moduleId": 0,
-            "start": 4291,
+            "start": 4337,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2613,10 +2617,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.8046633388241029
           ],
           "tag": {
-            "commentStart": 4407,
-            "end": 4412,
+            "commentStart": 4453,
+            "end": 4458,
             "moduleId": 0,
-            "start": 4407,
+            "start": 4453,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2637,10 +2641,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.3500000000000027
           ],
           "tag": {
-            "commentStart": 4563,
-            "end": 4568,
+            "commentStart": 4609,
+            "end": 4614,
             "moduleId": 0,
-            "start": 4563,
+            "start": 4609,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2661,10 +2665,10 @@ description: Variables in memory after executing stylized-car.kcl
             -0.10466333882410365
           ],
           "tag": {
-            "commentStart": 4679,
-            "end": 4684,
+            "commentStart": 4725,
+            "end": 4730,
             "moduleId": 0,
-            "start": 4679,
+            "start": 4725,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2685,10 +2689,10 @@ description: Variables in memory after executing stylized-car.kcl
             -0.10466333882409196
           ],
           "tag": {
-            "commentStart": 4797,
-            "end": 4802,
+            "commentStart": 4843,
+            "end": 4848,
             "moduleId": 0,
-            "start": 4797,
+            "start": 4843,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2701,17 +2705,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 25,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2775,8 +2779,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "cutOutVoid": {
@@ -2784,6 +2788,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2791,10 +2797,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4214,
-            "end": 4219,
+            "commentStart": 4260,
+            "end": 4265,
             "moduleId": 0,
-            "start": 4214,
+            "start": 4260,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2805,10 +2811,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4291,
-            "end": 4296,
+            "commentStart": 4337,
+            "end": 4342,
             "moduleId": 0,
-            "start": 4291,
+            "start": 4337,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2819,10 +2825,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4407,
-            "end": 4412,
+            "commentStart": 4453,
+            "end": 4458,
             "moduleId": 0,
-            "start": 4407,
+            "start": 4453,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2833,10 +2839,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4563,
-            "end": 4568,
+            "commentStart": 4609,
+            "end": 4614,
             "moduleId": 0,
-            "start": 4563,
+            "start": 4609,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2847,10 +2853,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4679,
-            "end": 4684,
+            "commentStart": 4725,
+            "end": 4730,
             "moduleId": 0,
-            "start": 4679,
+            "start": 4725,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2861,10 +2867,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4797,
-            "end": 4802,
+            "commentStart": 4843,
+            "end": 4848,
             "moduleId": 0,
-            "start": 4797,
+            "start": 4843,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2886,10 +2892,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.35000000000001047
             ],
             "tag": {
-              "commentStart": 4214,
-              "end": 4219,
+              "commentStart": 4260,
+              "end": 4265,
               "moduleId": 0,
-              "start": 4214,
+              "start": 4260,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2910,10 +2916,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 4291,
-              "end": 4296,
+              "commentStart": 4337,
+              "end": 4342,
               "moduleId": 0,
-              "start": 4291,
+              "start": 4337,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2934,10 +2940,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.8046633388241029
             ],
             "tag": {
-              "commentStart": 4407,
-              "end": 4412,
+              "commentStart": 4453,
+              "end": 4458,
               "moduleId": 0,
-              "start": 4407,
+              "start": 4453,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2958,10 +2964,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4563,
-              "end": 4568,
+              "commentStart": 4609,
+              "end": 4614,
               "moduleId": 0,
-              "start": 4563,
+              "start": 4609,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2982,10 +2988,10 @@ description: Variables in memory after executing stylized-car.kcl
               -0.10466333882410365
             ],
             "tag": {
-              "commentStart": 4679,
-              "end": 4684,
+              "commentStart": 4725,
+              "end": 4730,
               "moduleId": 0,
-              "start": 4679,
+              "start": 4725,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3006,10 +3012,10 @@ description: Variables in memory after executing stylized-car.kcl
               -0.10466333882409196
             ],
             "tag": {
-              "commentStart": 4797,
-              "end": 4802,
+              "commentStart": 4843,
+              "end": 4848,
               "moduleId": 0,
-              "start": 4797,
+              "start": 4843,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -3022,17 +3028,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3096,8 +3102,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3110,6 +3116,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3117,10 +3125,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9917,
-            "end": 9924,
+            "commentStart": 9963,
+            "end": 9970,
             "moduleId": 0,
-            "start": 9917,
+            "start": 9963,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3148,10 +3156,10 @@ description: Variables in memory after executing stylized-car.kcl
             ],
             "radius": 0.17500000013000247,
             "tag": {
-              "commentStart": 9917,
-              "end": 9924,
+              "commentStart": 9963,
+              "end": 9970,
               "moduleId": 0,
-              "start": 9917,
+              "start": 9963,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3164,17 +3172,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 145,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3222,8 +3230,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3253,10 +3261,10 @@ description: Variables in memory after executing stylized-car.kcl
           ],
           "radius": 0.17500000013000247,
           "tag": {
-            "commentStart": 9917,
-            "end": 9924,
+            "commentStart": 9963,
+            "end": 9970,
             "moduleId": 0,
-            "start": 9917,
+            "start": 9963,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3269,17 +3277,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 145,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3327,8 +3335,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderBody": {
@@ -3336,6 +3344,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3343,10 +3353,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3065,
-            "end": 3070,
+            "commentStart": 3111,
+            "end": 3116,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3111,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3357,10 +3367,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3130,
-            "end": 3135,
+            "commentStart": 3176,
+            "end": 3181,
             "moduleId": 0,
-            "start": 3130,
+            "start": 3176,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3371,10 +3381,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3195,
-            "end": 3200,
+            "commentStart": 3241,
+            "end": 3246,
             "moduleId": 0,
-            "start": 3195,
+            "start": 3241,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3385,10 +3395,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3260,
-            "end": 3265,
+            "commentStart": 3306,
+            "end": 3311,
             "moduleId": 0,
-            "start": 3260,
+            "start": 3306,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3410,10 +3420,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 3065,
-              "end": 3070,
+              "commentStart": 3111,
+              "end": 3116,
               "moduleId": 0,
-              "start": 3065,
+              "start": 3111,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3434,10 +3444,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 3130,
-              "end": 3135,
+              "commentStart": 3176,
+              "end": 3181,
               "moduleId": 0,
-              "start": 3130,
+              "start": 3176,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3458,10 +3468,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 3195,
-              "end": 3200,
+              "commentStart": 3241,
+              "end": 3246,
               "moduleId": 0,
-              "start": 3195,
+              "start": 3241,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3482,10 +3492,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 3260,
-              "end": 3265,
+              "commentStart": 3306,
+              "end": 3311,
               "moduleId": 0,
-              "start": 3260,
+              "start": 3306,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3498,17 +3508,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3564,8 +3574,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3578,6 +3588,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3585,10 +3597,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3065,
-            "end": 3070,
+            "commentStart": 3111,
+            "end": 3116,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3111,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3599,10 +3611,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3130,
-            "end": 3135,
+            "commentStart": 3176,
+            "end": 3181,
             "moduleId": 0,
-            "start": 3130,
+            "start": 3176,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3613,10 +3625,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3195,
-            "end": 3200,
+            "commentStart": 3241,
+            "end": 3246,
             "moduleId": 0,
-            "start": 3195,
+            "start": 3241,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3627,10 +3639,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3260,
-            "end": 3265,
+            "commentStart": 3306,
+            "end": 3311,
             "moduleId": 0,
-            "start": 3260,
+            "start": 3306,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3652,10 +3664,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 3065,
-              "end": 3070,
+              "commentStart": 3111,
+              "end": 3116,
               "moduleId": 0,
-              "start": 3065,
+              "start": 3111,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3676,10 +3688,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 3130,
-              "end": 3135,
+              "commentStart": 3176,
+              "end": 3181,
               "moduleId": 0,
-              "start": 3130,
+              "start": 3176,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3700,10 +3712,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 3195,
-              "end": 3200,
+              "commentStart": 3241,
+              "end": 3246,
               "moduleId": 0,
-              "start": 3195,
+              "start": 3241,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3724,10 +3736,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 3260,
-              "end": 3265,
+              "commentStart": 3306,
+              "end": 3311,
               "moduleId": 0,
-              "start": 3260,
+              "start": 3306,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3740,17 +3752,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3806,8 +3818,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4344,10 +4356,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.3999999993999999
                   ],
                   "tag": {
-                    "commentStart": 3065,
-                    "end": 3070,
+                    "commentStart": 3111,
+                    "end": 3116,
                     "moduleId": 0,
-                    "start": 3065,
+                    "start": 3111,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4385,10 +4397,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.3999999981999999
                   ],
                   "tag": {
-                    "commentStart": 3130,
-                    "end": 3135,
+                    "commentStart": 3176,
+                    "end": 3181,
                     "moduleId": 0,
-                    "start": 3130,
+                    "start": 3176,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4426,10 +4438,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.7500000016500001
                   ],
                   "tag": {
-                    "commentStart": 3195,
-                    "end": 3200,
+                    "commentStart": 3241,
+                    "end": 3246,
                     "moduleId": 0,
-                    "start": 3195,
+                    "start": 3241,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4467,10 +4479,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.7500000004
                   ],
                   "tag": {
-                    "commentStart": 3260,
-                    "end": 3265,
+                    "commentStart": 3306,
+                    "end": 3311,
                     "moduleId": 0,
-                    "start": 3260,
+                    "start": 3306,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -4483,17 +4495,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4575,10 +4587,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.3999999993999999
           ],
           "tag": {
-            "commentStart": 3065,
-            "end": 3070,
+            "commentStart": 3111,
+            "end": 3116,
             "moduleId": 0,
-            "start": 3065,
+            "start": 3111,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4599,10 +4611,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.3999999981999999
           ],
           "tag": {
-            "commentStart": 3130,
-            "end": 3135,
+            "commentStart": 3176,
+            "end": 3181,
             "moduleId": 0,
-            "start": 3130,
+            "start": 3176,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4623,10 +4635,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.7500000016500001
           ],
           "tag": {
-            "commentStart": 3195,
-            "end": 3200,
+            "commentStart": 3241,
+            "end": 3246,
             "moduleId": 0,
-            "start": 3195,
+            "start": 3241,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4647,10 +4659,10 @@ description: Variables in memory after executing stylized-car.kcl
             0.7500000004
           ],
           "tag": {
-            "commentStart": 3260,
-            "end": 3265,
+            "commentStart": 3306,
+            "end": 3311,
             "moduleId": 0,
-            "start": 3260,
+            "start": 3306,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4663,17 +4675,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4729,8 +4741,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderWidth": {
@@ -4750,6 +4762,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4757,10 +4771,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4214,
-                "end": 4219,
+                "commentStart": 4260,
+                "end": 4265,
                 "moduleId": 0,
-                "start": 4214,
+                "start": 4260,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -4771,10 +4785,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4291,
-                "end": 4296,
+                "commentStart": 4337,
+                "end": 4342,
                 "moduleId": 0,
-                "start": 4291,
+                "start": 4337,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -4785,10 +4799,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4407,
-                "end": 4412,
+                "commentStart": 4453,
+                "end": 4458,
                 "moduleId": 0,
-                "start": 4407,
+                "start": 4453,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -4799,10 +4813,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4563,
-                "end": 4568,
+                "commentStart": 4609,
+                "end": 4614,
                 "moduleId": 0,
-                "start": 4563,
+                "start": 4609,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -4813,10 +4827,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4679,
-                "end": 4684,
+                "commentStart": 4725,
+                "end": 4730,
                 "moduleId": 0,
-                "start": 4679,
+                "start": 4725,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -4827,10 +4841,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4797,
-                "end": 4802,
+                "commentStart": 4843,
+                "end": 4848,
                 "moduleId": 0,
-                "start": 4797,
+                "start": 4843,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -4852,10 +4866,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.35000000000001047
                 ],
                 "tag": {
-                  "commentStart": 4214,
-                  "end": 4219,
+                  "commentStart": 4260,
+                  "end": 4265,
                   "moduleId": 0,
-                  "start": 4214,
+                  "start": 4260,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4876,10 +4890,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388240976
                 ],
                 "tag": {
-                  "commentStart": 4291,
-                  "end": 4296,
+                  "commentStart": 4337,
+                  "end": 4342,
                   "moduleId": 0,
-                  "start": 4291,
+                  "start": 4337,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -4900,10 +4914,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388241029
                 ],
                 "tag": {
-                  "commentStart": 4407,
-                  "end": 4412,
+                  "commentStart": 4453,
+                  "end": 4458,
                   "moduleId": 0,
-                  "start": 4407,
+                  "start": 4453,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -4924,10 +4938,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.3500000000000027
                 ],
                 "tag": {
-                  "commentStart": 4563,
-                  "end": 4568,
+                  "commentStart": 4609,
+                  "end": 4614,
                   "moduleId": 0,
-                  "start": 4563,
+                  "start": 4609,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -4948,10 +4962,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882410365
                 ],
                 "tag": {
-                  "commentStart": 4679,
-                  "end": 4684,
+                  "commentStart": 4725,
+                  "end": 4730,
                   "moduleId": 0,
-                  "start": 4679,
+                  "start": 4725,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -4972,10 +4986,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882409196
                 ],
                 "tag": {
-                  "commentStart": 4797,
-                  "end": 4802,
+                  "commentStart": 4843,
+                  "end": 4848,
                   "moduleId": 0,
-                  "start": 4797,
+                  "start": 4843,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },
@@ -4988,17 +5002,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5062,8 +5076,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5076,6 +5090,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5083,10 +5099,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4214,
-                "end": 4219,
+                "commentStart": 4260,
+                "end": 4265,
                 "moduleId": 0,
-                "start": 4214,
+                "start": 4260,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -5097,10 +5113,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4291,
-                "end": 4296,
+                "commentStart": 4337,
+                "end": 4342,
                 "moduleId": 0,
-                "start": 4291,
+                "start": 4337,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -5111,10 +5127,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4407,
-                "end": 4412,
+                "commentStart": 4453,
+                "end": 4458,
                 "moduleId": 0,
-                "start": 4407,
+                "start": 4453,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -5125,10 +5141,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4563,
-                "end": 4568,
+                "commentStart": 4609,
+                "end": 4614,
                 "moduleId": 0,
-                "start": 4563,
+                "start": 4609,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -5139,10 +5155,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4679,
-                "end": 4684,
+                "commentStart": 4725,
+                "end": 4730,
                 "moduleId": 0,
-                "start": 4679,
+                "start": 4725,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -5153,10 +5169,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4797,
-                "end": 4802,
+                "commentStart": 4843,
+                "end": 4848,
                 "moduleId": 0,
-                "start": 4797,
+                "start": 4843,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -5178,10 +5194,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.35000000000001047
                 ],
                 "tag": {
-                  "commentStart": 4214,
-                  "end": 4219,
+                  "commentStart": 4260,
+                  "end": 4265,
                   "moduleId": 0,
-                  "start": 4214,
+                  "start": 4260,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5202,10 +5218,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388240976
                 ],
                 "tag": {
-                  "commentStart": 4291,
-                  "end": 4296,
+                  "commentStart": 4337,
+                  "end": 4342,
                   "moduleId": 0,
-                  "start": 4291,
+                  "start": 4337,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -5226,10 +5242,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388241029
                 ],
                 "tag": {
-                  "commentStart": 4407,
-                  "end": 4412,
+                  "commentStart": 4453,
+                  "end": 4458,
                   "moduleId": 0,
-                  "start": 4407,
+                  "start": 4453,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -5250,10 +5266,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.3500000000000027
                 ],
                 "tag": {
-                  "commentStart": 4563,
-                  "end": 4568,
+                  "commentStart": 4609,
+                  "end": 4614,
                   "moduleId": 0,
-                  "start": 4563,
+                  "start": 4609,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -5274,10 +5290,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882410365
                 ],
                 "tag": {
-                  "commentStart": 4679,
-                  "end": 4684,
+                  "commentStart": 4725,
+                  "end": 4730,
                   "moduleId": 0,
-                  "start": 4679,
+                  "start": 4725,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -5298,10 +5314,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882409196
                 ],
                 "tag": {
-                  "commentStart": 4797,
-                  "end": 4802,
+                  "commentStart": 4843,
+                  "end": 4848,
                   "moduleId": 0,
-                  "start": 4797,
+                  "start": 4843,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },
@@ -5314,17 +5330,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5388,8 +5404,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5402,6 +5418,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5409,10 +5427,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4214,
-                "end": 4219,
+                "commentStart": 4260,
+                "end": 4265,
                 "moduleId": 0,
-                "start": 4214,
+                "start": 4260,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -5423,10 +5441,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4291,
-                "end": 4296,
+                "commentStart": 4337,
+                "end": 4342,
                 "moduleId": 0,
-                "start": 4291,
+                "start": 4337,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -5437,10 +5455,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4407,
-                "end": 4412,
+                "commentStart": 4453,
+                "end": 4458,
                 "moduleId": 0,
-                "start": 4407,
+                "start": 4453,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -5451,10 +5469,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4563,
-                "end": 4568,
+                "commentStart": 4609,
+                "end": 4614,
                 "moduleId": 0,
-                "start": 4563,
+                "start": 4609,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -5465,10 +5483,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4679,
-                "end": 4684,
+                "commentStart": 4725,
+                "end": 4730,
                 "moduleId": 0,
-                "start": 4679,
+                "start": 4725,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -5479,10 +5497,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4797,
-                "end": 4802,
+                "commentStart": 4843,
+                "end": 4848,
                 "moduleId": 0,
-                "start": 4797,
+                "start": 4843,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -5504,10 +5522,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.35000000000001047
                 ],
                 "tag": {
-                  "commentStart": 4214,
-                  "end": 4219,
+                  "commentStart": 4260,
+                  "end": 4265,
                   "moduleId": 0,
-                  "start": 4214,
+                  "start": 4260,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5528,10 +5546,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388240976
                 ],
                 "tag": {
-                  "commentStart": 4291,
-                  "end": 4296,
+                  "commentStart": 4337,
+                  "end": 4342,
                   "moduleId": 0,
-                  "start": 4291,
+                  "start": 4337,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -5552,10 +5570,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388241029
                 ],
                 "tag": {
-                  "commentStart": 4407,
-                  "end": 4412,
+                  "commentStart": 4453,
+                  "end": 4458,
                   "moduleId": 0,
-                  "start": 4407,
+                  "start": 4453,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -5576,10 +5594,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.3500000000000027
                 ],
                 "tag": {
-                  "commentStart": 4563,
-                  "end": 4568,
+                  "commentStart": 4609,
+                  "end": 4614,
                   "moduleId": 0,
-                  "start": 4563,
+                  "start": 4609,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -5600,10 +5618,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882410365
                 ],
                 "tag": {
-                  "commentStart": 4679,
-                  "end": 4684,
+                  "commentStart": 4725,
+                  "end": 4730,
                   "moduleId": 0,
-                  "start": 4679,
+                  "start": 4725,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -5624,10 +5642,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882409196
                 ],
                 "tag": {
-                  "commentStart": 4797,
-                  "end": 4802,
+                  "commentStart": 4843,
+                  "end": 4848,
                   "moduleId": 0,
-                  "start": 4797,
+                  "start": 4843,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },
@@ -5640,17 +5658,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5714,8 +5732,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5728,6 +5746,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5735,10 +5755,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4214,
-                "end": 4219,
+                "commentStart": 4260,
+                "end": 4265,
                 "moduleId": 0,
-                "start": 4214,
+                "start": 4260,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -5749,10 +5769,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4291,
-                "end": 4296,
+                "commentStart": 4337,
+                "end": 4342,
                 "moduleId": 0,
-                "start": 4291,
+                "start": 4337,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -5763,10 +5783,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4407,
-                "end": 4412,
+                "commentStart": 4453,
+                "end": 4458,
                 "moduleId": 0,
-                "start": 4407,
+                "start": 4453,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -5777,10 +5797,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4563,
-                "end": 4568,
+                "commentStart": 4609,
+                "end": 4614,
                 "moduleId": 0,
-                "start": 4563,
+                "start": 4609,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -5791,10 +5811,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4679,
-                "end": 4684,
+                "commentStart": 4725,
+                "end": 4730,
                 "moduleId": 0,
-                "start": 4679,
+                "start": 4725,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -5805,10 +5825,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4797,
-                "end": 4802,
+                "commentStart": 4843,
+                "end": 4848,
                 "moduleId": 0,
-                "start": 4797,
+                "start": 4843,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -5830,10 +5850,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.35000000000001047
                 ],
                 "tag": {
-                  "commentStart": 4214,
-                  "end": 4219,
+                  "commentStart": 4260,
+                  "end": 4265,
                   "moduleId": 0,
-                  "start": 4214,
+                  "start": 4260,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5854,10 +5874,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388240976
                 ],
                 "tag": {
-                  "commentStart": 4291,
-                  "end": 4296,
+                  "commentStart": 4337,
+                  "end": 4342,
                   "moduleId": 0,
-                  "start": 4291,
+                  "start": 4337,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -5878,10 +5898,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388241029
                 ],
                 "tag": {
-                  "commentStart": 4407,
-                  "end": 4412,
+                  "commentStart": 4453,
+                  "end": 4458,
                   "moduleId": 0,
-                  "start": 4407,
+                  "start": 4453,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -5902,10 +5922,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.3500000000000027
                 ],
                 "tag": {
-                  "commentStart": 4563,
-                  "end": 4568,
+                  "commentStart": 4609,
+                  "end": 4614,
                   "moduleId": 0,
-                  "start": 4563,
+                  "start": 4609,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -5926,10 +5946,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882410365
                 ],
                 "tag": {
-                  "commentStart": 4679,
-                  "end": 4684,
+                  "commentStart": 4725,
+                  "end": 4730,
                   "moduleId": 0,
-                  "start": 4679,
+                  "start": 4725,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -5950,10 +5970,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882409196
                 ],
                 "tag": {
-                  "commentStart": 4797,
-                  "end": 4802,
+                  "commentStart": 4843,
+                  "end": 4848,
                   "moduleId": 0,
-                  "start": 4797,
+                  "start": 4843,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },
@@ -5966,17 +5986,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6040,8 +6060,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6059,6 +6079,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6066,10 +6088,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4214,
-                "end": 4219,
+                "commentStart": 4260,
+                "end": 4265,
                 "moduleId": 0,
-                "start": 4214,
+                "start": 4260,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -6080,10 +6102,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4291,
-                "end": 4296,
+                "commentStart": 4337,
+                "end": 4342,
                 "moduleId": 0,
-                "start": 4291,
+                "start": 4337,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -6094,10 +6116,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4407,
-                "end": 4412,
+                "commentStart": 4453,
+                "end": 4458,
                 "moduleId": 0,
-                "start": 4407,
+                "start": 4453,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -6108,10 +6130,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4563,
-                "end": 4568,
+                "commentStart": 4609,
+                "end": 4614,
                 "moduleId": 0,
-                "start": 4563,
+                "start": 4609,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -6122,10 +6144,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4679,
-                "end": 4684,
+                "commentStart": 4725,
+                "end": 4730,
                 "moduleId": 0,
-                "start": 4679,
+                "start": 4725,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -6136,10 +6158,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4797,
-                "end": 4802,
+                "commentStart": 4843,
+                "end": 4848,
                 "moduleId": 0,
-                "start": 4797,
+                "start": 4843,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -6161,10 +6183,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.35000000000001047
                 ],
                 "tag": {
-                  "commentStart": 4214,
-                  "end": 4219,
+                  "commentStart": 4260,
+                  "end": 4265,
                   "moduleId": 0,
-                  "start": 4214,
+                  "start": 4260,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6185,10 +6207,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388240976
                 ],
                 "tag": {
-                  "commentStart": 4291,
-                  "end": 4296,
+                  "commentStart": 4337,
+                  "end": 4342,
                   "moduleId": 0,
-                  "start": 4291,
+                  "start": 4337,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -6209,10 +6231,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388241029
                 ],
                 "tag": {
-                  "commentStart": 4407,
-                  "end": 4412,
+                  "commentStart": 4453,
+                  "end": 4458,
                   "moduleId": 0,
-                  "start": 4407,
+                  "start": 4453,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -6233,10 +6255,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.3500000000000027
                 ],
                 "tag": {
-                  "commentStart": 4563,
-                  "end": 4568,
+                  "commentStart": 4609,
+                  "end": 4614,
                   "moduleId": 0,
-                  "start": 4563,
+                  "start": 4609,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -6257,10 +6279,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882410365
                 ],
                 "tag": {
-                  "commentStart": 4679,
-                  "end": 4684,
+                  "commentStart": 4725,
+                  "end": 4730,
                   "moduleId": 0,
-                  "start": 4679,
+                  "start": 4725,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -6281,10 +6303,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882409196
                 ],
                 "tag": {
-                  "commentStart": 4797,
-                  "end": 4802,
+                  "commentStart": 4843,
+                  "end": 4848,
                   "moduleId": 0,
-                  "start": 4797,
+                  "start": 4843,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },
@@ -6297,17 +6319,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6371,8 +6393,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6385,6 +6407,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6392,10 +6416,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4214,
-                "end": 4219,
+                "commentStart": 4260,
+                "end": 4265,
                 "moduleId": 0,
-                "start": 4214,
+                "start": 4260,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -6406,10 +6430,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4291,
-                "end": 4296,
+                "commentStart": 4337,
+                "end": 4342,
                 "moduleId": 0,
-                "start": 4291,
+                "start": 4337,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -6420,10 +6444,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4407,
-                "end": 4412,
+                "commentStart": 4453,
+                "end": 4458,
                 "moduleId": 0,
-                "start": 4407,
+                "start": 4453,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -6434,10 +6458,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4563,
-                "end": 4568,
+                "commentStart": 4609,
+                "end": 4614,
                 "moduleId": 0,
-                "start": 4563,
+                "start": 4609,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -6448,10 +6472,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4679,
-                "end": 4684,
+                "commentStart": 4725,
+                "end": 4730,
                 "moduleId": 0,
-                "start": 4679,
+                "start": 4725,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -6462,10 +6486,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4797,
-                "end": 4802,
+                "commentStart": 4843,
+                "end": 4848,
                 "moduleId": 0,
-                "start": 4797,
+                "start": 4843,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -6487,10 +6511,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.35000000000001047
                 ],
                 "tag": {
-                  "commentStart": 4214,
-                  "end": 4219,
+                  "commentStart": 4260,
+                  "end": 4265,
                   "moduleId": 0,
-                  "start": 4214,
+                  "start": 4260,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6511,10 +6535,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388240976
                 ],
                 "tag": {
-                  "commentStart": 4291,
-                  "end": 4296,
+                  "commentStart": 4337,
+                  "end": 4342,
                   "moduleId": 0,
-                  "start": 4291,
+                  "start": 4337,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -6535,10 +6559,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8046633388241029
                 ],
                 "tag": {
-                  "commentStart": 4407,
-                  "end": 4412,
+                  "commentStart": 4453,
+                  "end": 4458,
                   "moduleId": 0,
-                  "start": 4407,
+                  "start": 4453,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -6559,10 +6583,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.3500000000000027
                 ],
                 "tag": {
-                  "commentStart": 4563,
-                  "end": 4568,
+                  "commentStart": 4609,
+                  "end": 4614,
                   "moduleId": 0,
-                  "start": 4563,
+                  "start": 4609,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -6583,10 +6607,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882410365
                 ],
                 "tag": {
-                  "commentStart": 4679,
-                  "end": 4684,
+                  "commentStart": 4725,
+                  "end": 4730,
                   "moduleId": 0,
-                  "start": 4679,
+                  "start": 4725,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -6607,10 +6631,10 @@ description: Variables in memory after executing stylized-car.kcl
                   -0.10466333882409196
                 ],
                 "tag": {
-                  "commentStart": 4797,
-                  "end": 4802,
+                  "commentStart": 4843,
+                  "end": 4848,
                   "moduleId": 0,
-                  "start": 4797,
+                  "start": 4843,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },
@@ -6623,17 +6647,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 25,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6697,8 +6721,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6713,6 +6737,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6720,10 +6746,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4214,
-            "end": 4219,
+            "commentStart": 4260,
+            "end": 4265,
             "moduleId": 0,
-            "start": 4214,
+            "start": 4260,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6734,10 +6760,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4291,
-            "end": 4296,
+            "commentStart": 4337,
+            "end": 4342,
             "moduleId": 0,
-            "start": 4291,
+            "start": 4337,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6748,10 +6774,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4407,
-            "end": 4412,
+            "commentStart": 4453,
+            "end": 4458,
             "moduleId": 0,
-            "start": 4407,
+            "start": 4453,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6762,10 +6788,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4563,
-            "end": 4568,
+            "commentStart": 4609,
+            "end": 4614,
             "moduleId": 0,
-            "start": 4563,
+            "start": 4609,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6776,10 +6802,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4679,
-            "end": 4684,
+            "commentStart": 4725,
+            "end": 4730,
             "moduleId": 0,
-            "start": 4679,
+            "start": 4725,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -6790,10 +6816,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4797,
-            "end": 4802,
+            "commentStart": 4843,
+            "end": 4848,
             "moduleId": 0,
-            "start": 4797,
+            "start": 4843,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6815,10 +6841,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.35000000000001047
             ],
             "tag": {
-              "commentStart": 4214,
-              "end": 4219,
+              "commentStart": 4260,
+              "end": 4265,
               "moduleId": 0,
-              "start": 4214,
+              "start": 4260,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6839,10 +6865,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 4291,
-              "end": 4296,
+              "commentStart": 4337,
+              "end": 4342,
               "moduleId": 0,
-              "start": 4291,
+              "start": 4337,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6863,10 +6889,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.8046633388241029
             ],
             "tag": {
-              "commentStart": 4407,
-              "end": 4412,
+              "commentStart": 4453,
+              "end": 4458,
               "moduleId": 0,
-              "start": 4407,
+              "start": 4453,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6887,10 +6913,10 @@ description: Variables in memory after executing stylized-car.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4563,
-              "end": 4568,
+              "commentStart": 4609,
+              "end": 4614,
               "moduleId": 0,
-              "start": 4563,
+              "start": 4609,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6911,10 +6937,10 @@ description: Variables in memory after executing stylized-car.kcl
               -0.10466333882410365
             ],
             "tag": {
-              "commentStart": 4679,
-              "end": 4684,
+              "commentStart": 4725,
+              "end": 4730,
               "moduleId": 0,
-              "start": 4679,
+              "start": 4725,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -6935,10 +6961,10 @@ description: Variables in memory after executing stylized-car.kcl
               -0.10466333882409196
             ],
             "tag": {
-              "commentStart": 4797,
-              "end": 4802,
+              "commentStart": 4843,
+              "end": 4848,
               "moduleId": 0,
-              "start": 4797,
+              "start": 4843,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -6951,17 +6977,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7025,8 +7051,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -7051,6 +7077,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7058,10 +7086,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11779,
-                "end": 11786,
+                "commentStart": 11799,
+                "end": 11806,
                 "moduleId": 0,
-                "start": 11779,
+                "start": 11799,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7089,10 +7117,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 11779,
-                  "end": 11786,
+                  "commentStart": 11799,
+                  "end": 11806,
                   "moduleId": 0,
-                  "start": 11779,
+                  "start": 11799,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7105,17 +7133,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 162,
+              "kind": "Custom",
               "origin": {
                 "x": -1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7159,8 +7187,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7173,6 +7201,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -7196,10 +7226,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 11779,
-                  "end": 11786,
+                  "commentStart": 11799,
+                  "end": 11806,
                   "moduleId": 0,
-                  "start": 11779,
+                  "start": 11799,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7212,17 +7242,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 162,
+              "kind": "Custom",
               "origin": {
                 "x": -1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7266,8 +7296,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7300,8 +7330,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 162,
+      "kind": "Custom",
       "origin": {
         "x": -1750.0,
         "y": 0.0,
@@ -7353,10 +7383,10 @@ description: Variables in memory after executing stylized-car.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 11779,
-                "end": 11786,
+                "commentStart": 11799,
+                "end": 11806,
                 "moduleId": 0,
-                "start": 11779,
+                "start": 11799,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7369,17 +7399,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 162,
+            "kind": "Custom",
             "origin": {
               "x": -1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -7423,8 +7453,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -7449,10 +7479,10 @@ description: Variables in memory after executing stylized-car.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 11779,
-                "end": 11786,
+                "commentStart": 11799,
+                "end": 11806,
                 "moduleId": 0,
-                "start": 11779,
+                "start": 11799,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7465,17 +7495,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 162,
+            "kind": "Custom",
             "origin": {
               "x": -1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -7519,8 +7549,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -7682,10 +7712,10 @@ description: Variables in memory after executing stylized-car.kcl
                   ],
                   "radius": 0.1599999993650001,
                   "tag": {
-                    "commentStart": 11779,
-                    "end": 11786,
+                    "commentStart": 11799,
+                    "end": 11806,
                     "moduleId": 0,
-                    "start": 11779,
+                    "start": 11799,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -7698,17 +7728,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 162,
+                "kind": "Custom",
                 "origin": {
                   "x": -1750.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -7824,6 +7854,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7831,10 +7863,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8729,
-            "end": 8734,
+            "commentStart": 8775,
+            "end": 8780,
             "moduleId": 0,
-            "start": 8729,
+            "start": 8775,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7845,10 +7877,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8794,
-            "end": 8799,
+            "commentStart": 8840,
+            "end": 8845,
             "moduleId": 0,
-            "start": 8794,
+            "start": 8840,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7859,10 +7891,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8859,
-            "end": 8864,
+            "commentStart": 8905,
+            "end": 8910,
             "moduleId": 0,
-            "start": 8859,
+            "start": 8905,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7873,10 +7905,10 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8924,
-            "end": 8929,
+            "commentStart": 8970,
+            "end": 8975,
             "moduleId": 0,
-            "start": 8924,
+            "start": 8970,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7898,10 +7930,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 8729,
-              "end": 8734,
+              "commentStart": 8775,
+              "end": 8780,
               "moduleId": 0,
-              "start": 8729,
+              "start": 8775,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7922,10 +7954,10 @@ description: Variables in memory after executing stylized-car.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 8794,
-              "end": 8799,
+              "commentStart": 8840,
+              "end": 8845,
               "moduleId": 0,
-              "start": 8794,
+              "start": 8840,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7946,10 +7978,10 @@ description: Variables in memory after executing stylized-car.kcl
               2.05
             ],
             "tag": {
-              "commentStart": 8859,
-              "end": 8864,
+              "commentStart": 8905,
+              "end": 8910,
               "moduleId": 0,
-              "start": 8859,
+              "start": 8905,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7970,10 +8002,10 @@ description: Variables in memory after executing stylized-car.kcl
               2.05
             ],
             "tag": {
-              "commentStart": 8924,
-              "end": 8929,
+              "commentStart": 8970,
+              "end": 8975,
               "moduleId": 0,
-              "start": 8924,
+              "start": 8970,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -7986,17 +8018,17 @@ description: Variables in memory after executing stylized-car.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 120,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8052,8 +8084,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8581,10 +8613,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.95
                   ],
                   "tag": {
-                    "commentStart": 8729,
-                    "end": 8734,
+                    "commentStart": 8775,
+                    "end": 8780,
                     "moduleId": 0,
-                    "start": 8729,
+                    "start": 8775,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8605,10 +8637,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.95
                   ],
                   "tag": {
-                    "commentStart": 8794,
-                    "end": 8799,
+                    "commentStart": 8840,
+                    "end": 8845,
                     "moduleId": 0,
-                    "start": 8794,
+                    "start": 8840,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -8629,10 +8661,10 @@ description: Variables in memory after executing stylized-car.kcl
                     2.05
                   ],
                   "tag": {
-                    "commentStart": 8859,
-                    "end": 8864,
+                    "commentStart": 8905,
+                    "end": 8910,
                     "moduleId": 0,
-                    "start": 8859,
+                    "start": 8905,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8653,10 +8685,10 @@ description: Variables in memory after executing stylized-car.kcl
                     2.05
                   ],
                   "tag": {
-                    "commentStart": 8924,
-                    "end": 8929,
+                    "commentStart": 8970,
+                    "end": 8975,
                     "moduleId": 0,
-                    "start": 8924,
+                    "start": 8970,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -8669,17 +8701,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 120,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8761,10 +8793,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.95
           ],
           "tag": {
-            "commentStart": 8729,
-            "end": 8734,
+            "commentStart": 8775,
+            "end": 8780,
             "moduleId": 0,
-            "start": 8729,
+            "start": 8775,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8785,10 +8817,10 @@ description: Variables in memory after executing stylized-car.kcl
             1.95
           ],
           "tag": {
-            "commentStart": 8794,
-            "end": 8799,
+            "commentStart": 8840,
+            "end": 8845,
             "moduleId": 0,
-            "start": 8794,
+            "start": 8840,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8809,10 +8841,10 @@ description: Variables in memory after executing stylized-car.kcl
             2.05
           ],
           "tag": {
-            "commentStart": 8859,
-            "end": 8864,
+            "commentStart": 8905,
+            "end": 8910,
             "moduleId": 0,
-            "start": 8859,
+            "start": 8905,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8833,10 +8865,10 @@ description: Variables in memory after executing stylized-car.kcl
             2.05
           ],
           "tag": {
-            "commentStart": 8924,
-            "end": 8929,
+            "commentStart": 8970,
+            "end": 8975,
             "moduleId": 0,
-            "start": 8924,
+            "start": 8970,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8849,17 +8881,17 @@ description: Variables in memory after executing stylized-car.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 120,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8915,8 +8947,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "taillightsBody": {
@@ -8927,6 +8959,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8934,10 +8968,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12614,
-                "end": 12619,
+                "commentStart": 12634,
+                "end": 12639,
                 "moduleId": 0,
-                "start": 12614,
+                "start": 12634,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -8948,10 +8982,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12679,
-                "end": 12684,
+                "commentStart": 12699,
+                "end": 12704,
                 "moduleId": 0,
-                "start": 12679,
+                "start": 12699,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -8962,10 +8996,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12744,
-                "end": 12749,
+                "commentStart": 12764,
+                "end": 12769,
                 "moduleId": 0,
-                "start": 12744,
+                "start": 12764,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -8976,10 +9010,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12809,
-                "end": 12814,
+                "commentStart": 12829,
+                "end": 12834,
                 "moduleId": 0,
-                "start": 12809,
+                "start": 12829,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -9001,10 +9035,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8299999963999997
                 ],
                 "tag": {
-                  "commentStart": 12614,
-                  "end": 12619,
+                  "commentStart": 12634,
+                  "end": 12639,
                   "moduleId": 0,
-                  "start": 12614,
+                  "start": 12634,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -9025,10 +9059,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8299999939099995
                 ],
                 "tag": {
-                  "commentStart": 12679,
-                  "end": 12684,
+                  "commentStart": 12699,
+                  "end": 12704,
                   "moduleId": 0,
-                  "start": 12679,
+                  "start": 12699,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -9049,10 +9083,10 @@ description: Variables in memory after executing stylized-car.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 12744,
-                  "end": 12749,
+                  "commentStart": 12764,
+                  "end": 12769,
                   "moduleId": 0,
-                  "start": 12744,
+                  "start": 12764,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -9073,10 +9107,10 @@ description: Variables in memory after executing stylized-car.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 12809,
-                  "end": 12814,
+                  "commentStart": 12829,
+                  "end": 12834,
                   "moduleId": 0,
-                  "start": 12809,
+                  "start": 12829,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -9089,17 +9123,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 170,
+              "kind": "Custom",
               "origin": {
                 "x": 1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9155,8 +9189,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9169,6 +9203,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -9186,10 +9222,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8299999963999997
                 ],
                 "tag": {
-                  "commentStart": 12614,
-                  "end": 12619,
+                  "commentStart": 12634,
+                  "end": 12639,
                   "moduleId": 0,
-                  "start": 12614,
+                  "start": 12634,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -9210,10 +9246,10 @@ description: Variables in memory after executing stylized-car.kcl
                   0.8299999939099995
                 ],
                 "tag": {
-                  "commentStart": 12679,
-                  "end": 12684,
+                  "commentStart": 12699,
+                  "end": 12704,
                   "moduleId": 0,
-                  "start": 12679,
+                  "start": 12699,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -9234,10 +9270,10 @@ description: Variables in memory after executing stylized-car.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 12744,
-                  "end": 12749,
+                  "commentStart": 12764,
+                  "end": 12769,
                   "moduleId": 0,
-                  "start": 12744,
+                  "start": 12764,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -9258,10 +9294,10 @@ description: Variables in memory after executing stylized-car.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 12809,
-                  "end": 12814,
+                  "commentStart": 12829,
+                  "end": 12834,
                   "moduleId": 0,
-                  "start": 12809,
+                  "start": 12829,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -9274,17 +9310,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 170,
+              "kind": "Custom",
               "origin": {
                 "x": 1750.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9340,8 +9376,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9392,8 +9428,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 170,
+      "kind": "Custom",
       "origin": {
         "x": 1750.0,
         "y": 0.0,
@@ -9439,10 +9475,10 @@ description: Variables in memory after executing stylized-car.kcl
                 0.8299999963999997
               ],
               "tag": {
-                "commentStart": 12614,
-                "end": 12619,
+                "commentStart": 12634,
+                "end": 12639,
                 "moduleId": 0,
-                "start": 12614,
+                "start": 12634,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -9463,10 +9499,10 @@ description: Variables in memory after executing stylized-car.kcl
                 0.8299999939099995
               ],
               "tag": {
-                "commentStart": 12679,
-                "end": 12684,
+                "commentStart": 12699,
+                "end": 12704,
                 "moduleId": 0,
-                "start": 12679,
+                "start": 12699,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -9487,10 +9523,10 @@ description: Variables in memory after executing stylized-car.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 12744,
-                "end": 12749,
+                "commentStart": 12764,
+                "end": 12769,
                 "moduleId": 0,
-                "start": 12744,
+                "start": 12764,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -9511,10 +9547,10 @@ description: Variables in memory after executing stylized-car.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 12809,
-                "end": 12814,
+                "commentStart": 12829,
+                "end": 12834,
                 "moduleId": 0,
-                "start": 12809,
+                "start": 12829,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -9527,17 +9563,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 170,
+            "kind": "Custom",
             "origin": {
               "x": 1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -9593,8 +9629,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -9613,10 +9649,10 @@ description: Variables in memory after executing stylized-car.kcl
                 0.8299999963999997
               ],
               "tag": {
-                "commentStart": 12614,
-                "end": 12619,
+                "commentStart": 12634,
+                "end": 12639,
                 "moduleId": 0,
-                "start": 12614,
+                "start": 12634,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -9637,10 +9673,10 @@ description: Variables in memory after executing stylized-car.kcl
                 0.8299999939099995
               ],
               "tag": {
-                "commentStart": 12679,
-                "end": 12684,
+                "commentStart": 12699,
+                "end": 12704,
                 "moduleId": 0,
-                "start": 12679,
+                "start": 12699,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -9661,10 +9697,10 @@ description: Variables in memory after executing stylized-car.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 12744,
-                "end": 12749,
+                "commentStart": 12764,
+                "end": 12769,
                 "moduleId": 0,
-                "start": 12744,
+                "start": 12764,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -9685,10 +9721,10 @@ description: Variables in memory after executing stylized-car.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 12809,
-                "end": 12814,
+                "commentStart": 12829,
+                "end": 12834,
                 "moduleId": 0,
-                "start": 12809,
+                "start": 12829,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -9701,17 +9737,17 @@ description: Variables in memory after executing stylized-car.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 170,
+            "kind": "Custom",
             "origin": {
               "x": 1750.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -9767,8 +9803,8 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -10284,10 +10320,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.8299999963999997
                   ],
                   "tag": {
-                    "commentStart": 12614,
-                    "end": 12619,
+                    "commentStart": 12634,
+                    "end": 12639,
                     "moduleId": 0,
-                    "start": 12614,
+                    "start": 12634,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -10325,10 +10361,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.8299999939099995
                   ],
                   "tag": {
-                    "commentStart": 12679,
-                    "end": 12684,
+                    "commentStart": 12699,
+                    "end": 12704,
                     "moduleId": 0,
-                    "start": 12679,
+                    "start": 12699,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -10366,10 +10402,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.0699999957699997
                   ],
                   "tag": {
-                    "commentStart": 12744,
-                    "end": 12749,
+                    "commentStart": 12764,
+                    "end": 12769,
                     "moduleId": 0,
-                    "start": 12744,
+                    "start": 12764,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -10407,10 +10443,10 @@ description: Variables in memory after executing stylized-car.kcl
                     1.0699999961199997
                   ],
                   "tag": {
-                    "commentStart": 12809,
-                    "end": 12814,
+                    "commentStart": 12829,
+                    "end": 12834,
                     "moduleId": 0,
-                    "start": 12809,
+                    "start": 12829,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -10423,17 +10459,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 170,
+                "kind": "Custom",
                 "origin": {
                   "x": 1750.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -11501,10 +11537,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.35000000000001047
                   ],
                   "tag": {
-                    "commentStart": 4214,
-                    "end": 4219,
+                    "commentStart": 4260,
+                    "end": 4265,
                     "moduleId": 0,
-                    "start": 4214,
+                    "start": 4260,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -11525,10 +11561,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.8046633388240976
                   ],
                   "tag": {
-                    "commentStart": 4291,
-                    "end": 4296,
+                    "commentStart": 4337,
+                    "end": 4342,
                     "moduleId": 0,
-                    "start": 4291,
+                    "start": 4337,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -11549,10 +11585,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.8046633388241029
                   ],
                   "tag": {
-                    "commentStart": 4407,
-                    "end": 4412,
+                    "commentStart": 4453,
+                    "end": 4458,
                     "moduleId": 0,
-                    "start": 4407,
+                    "start": 4453,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -11573,10 +11609,10 @@ description: Variables in memory after executing stylized-car.kcl
                     0.3500000000000027
                   ],
                   "tag": {
-                    "commentStart": 4563,
-                    "end": 4568,
+                    "commentStart": 4609,
+                    "end": 4614,
                     "moduleId": 0,
-                    "start": 4563,
+                    "start": 4609,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -11597,10 +11633,10 @@ description: Variables in memory after executing stylized-car.kcl
                     -0.10466333882410365
                   ],
                   "tag": {
-                    "commentStart": 4679,
-                    "end": 4684,
+                    "commentStart": 4725,
+                    "end": 4730,
                     "moduleId": 0,
-                    "start": 4679,
+                    "start": 4725,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -11621,10 +11657,10 @@ description: Variables in memory after executing stylized-car.kcl
                     -0.10466333882409196
                   ],
                   "tag": {
-                    "commentStart": 4797,
-                    "end": 4802,
+                    "commentStart": 4843,
+                    "end": 4848,
                     "moduleId": 0,
-                    "start": 4797,
+                    "start": 4843,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -11637,17 +11673,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 25,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -11738,6 +11774,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11745,12 +11783,26 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9832,
-                "end": 9839,
+                "commentStart": 9878,
+                "end": 9885,
                 "moduleId": 0,
-                "start": 9832,
+                "start": 9878,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 9963,
+                "end": 9970,
+                "moduleId": 0,
+                "start": 9963,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -11776,10 +11828,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.35000000004378223,
                 "tag": {
-                  "commentStart": 9832,
-                  "end": 9839,
+                  "commentStart": 9878,
+                  "end": 9885,
                   "moduleId": 0,
-                  "start": 9832,
+                  "start": 9878,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11789,20 +11841,50 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.0007138987956651704,
+                  0.35000000000000525
+                ],
+                "from": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "radius": 0.17500000013000247,
+                "tag": {
+                  "commentStart": 9963,
+                  "end": 9970,
+                  "moduleId": 0,
+                  "start": 9963,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11850,8 +11932,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -11864,6 +11946,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11871,10 +11955,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9917,
-                "end": 9924,
+                "commentStart": 9963,
+                "end": 9970,
                 "moduleId": 0,
-                "start": 9917,
+                "start": 9963,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11902,10 +11986,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.17500000013000247,
                 "tag": {
-                  "commentStart": 9917,
-                  "end": 9924,
+                  "commentStart": 9963,
+                  "end": 9970,
                   "moduleId": 0,
-                  "start": 9917,
+                  "start": 9963,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11918,17 +12002,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11976,8 +12060,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -11995,6 +12079,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12002,12 +12088,26 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9832,
-                "end": 9839,
+                "commentStart": 9878,
+                "end": 9885,
                 "moduleId": 0,
-                "start": 9832,
+                "start": 9878,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 9963,
+                "end": 9970,
+                "moduleId": 0,
+                "start": 9963,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -12033,10 +12133,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.35000000004378223,
                 "tag": {
-                  "commentStart": 9832,
-                  "end": 9839,
+                  "commentStart": 9878,
+                  "end": 9885,
                   "moduleId": 0,
-                  "start": 9832,
+                  "start": 9878,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12046,20 +12146,50 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.0007138987956651704,
+                  0.35000000000000525
+                ],
+                "from": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "radius": 0.17500000013000247,
+                "tag": {
+                  "commentStart": 9963,
+                  "end": 9970,
+                  "moduleId": 0,
+                  "start": 9963,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12107,8 +12237,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12121,6 +12251,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12128,10 +12260,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9917,
-                "end": 9924,
+                "commentStart": 9963,
+                "end": 9970,
                 "moduleId": 0,
-                "start": 9917,
+                "start": 9963,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12159,10 +12291,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.17500000013000247,
                 "tag": {
-                  "commentStart": 9917,
-                  "end": 9924,
+                  "commentStart": 9963,
+                  "end": 9970,
                   "moduleId": 0,
-                  "start": 9917,
+                  "start": 9963,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12175,17 +12307,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12233,8 +12365,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12275,10 +12407,10 @@ description: Variables in memory after executing stylized-car.kcl
           ],
           "radius": 0.35000000004378223,
           "tag": {
-            "commentStart": 9832,
-            "end": 9839,
+            "commentStart": 9878,
+            "end": 9885,
             "moduleId": 0,
-            "start": 9832,
+            "start": 9878,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12288,20 +12420,50 @@ description: Variables in memory after executing stylized-car.kcl
           ],
           "type": "Circle",
           "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.0007138987956651704,
+            0.35000000000000525
+          ],
+          "from": [
+            0.1520856463105938,
+            0.43530708681476643
+          ],
+          "radius": 0.17500000013000247,
+          "tag": {
+            "commentStart": 9963,
+            "end": 9970,
+            "moduleId": 0,
+            "start": 9963,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.1520856463105938,
+            0.43530708681476643
+          ],
+          "type": "Circle",
+          "units": "m"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 145,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -12349,8 +12511,8 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "wheelRearLeft": {
@@ -12361,6 +12523,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12368,12 +12532,26 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9832,
-                "end": 9839,
+                "commentStart": 9878,
+                "end": 9885,
                 "moduleId": 0,
-                "start": 9832,
+                "start": 9878,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 9963,
+                "end": 9970,
+                "moduleId": 0,
+                "start": 9963,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -12399,10 +12577,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.35000000004378223,
                 "tag": {
-                  "commentStart": 9832,
-                  "end": 9839,
+                  "commentStart": 9878,
+                  "end": 9885,
                   "moduleId": 0,
-                  "start": 9832,
+                  "start": 9878,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12412,20 +12590,50 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.0007138987956651704,
+                  0.35000000000000525
+                ],
+                "from": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "radius": 0.17500000013000247,
+                "tag": {
+                  "commentStart": 9963,
+                  "end": 9970,
+                  "moduleId": 0,
+                  "start": 9963,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12473,8 +12681,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12487,6 +12695,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12494,10 +12704,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9917,
-                "end": 9924,
+                "commentStart": 9963,
+                "end": 9970,
                 "moduleId": 0,
-                "start": 9917,
+                "start": 9963,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12525,10 +12735,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.17500000013000247,
                 "tag": {
-                  "commentStart": 9917,
-                  "end": 9924,
+                  "commentStart": 9963,
+                  "end": 9970,
                   "moduleId": 0,
-                  "start": 9917,
+                  "start": 9963,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12541,17 +12751,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12599,8 +12809,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12618,6 +12828,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12625,12 +12837,26 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9832,
-                "end": 9839,
+                "commentStart": 9878,
+                "end": 9885,
                 "moduleId": 0,
-                "start": 9832,
+                "start": 9878,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 9963,
+                "end": 9970,
+                "moduleId": 0,
+                "start": 9963,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -12656,10 +12882,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.35000000004378223,
                 "tag": {
-                  "commentStart": 9832,
-                  "end": 9839,
+                  "commentStart": 9878,
+                  "end": 9885,
                   "moduleId": 0,
-                  "start": 9832,
+                  "start": 9878,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12669,20 +12895,50 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.0007138987956651704,
+                  0.35000000000000525
+                ],
+                "from": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "radius": 0.17500000013000247,
+                "tag": {
+                  "commentStart": 9963,
+                  "end": 9970,
+                  "moduleId": 0,
+                  "start": 9963,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.1520856463105938,
+                  0.43530708681476643
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12730,8 +12986,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12744,6 +13000,8 @@ description: Variables in memory after executing stylized-car.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12751,10 +13009,10 @@ description: Variables in memory after executing stylized-car.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9917,
-                "end": 9924,
+                "commentStart": 9963,
+                "end": 9970,
                 "moduleId": 0,
-                "start": 9917,
+                "start": 9963,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12782,10 +13040,10 @@ description: Variables in memory after executing stylized-car.kcl
                 ],
                 "radius": 0.17500000013000247,
                 "tag": {
-                  "commentStart": 9917,
-                  "end": 9924,
+                  "commentStart": 9963,
+                  "end": 9970,
                   "moduleId": 0,
-                  "start": 9917,
+                  "start": 9963,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12798,17 +13056,17 @@ description: Variables in memory after executing stylized-car.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 145,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12856,8 +13114,8 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13256,10 +13514,10 @@ description: Variables in memory after executing stylized-car.kcl
                   ],
                   "radius": 0.35000000004378223,
                   "tag": {
-                    "commentStart": 9832,
-                    "end": 9839,
+                    "commentStart": 9878,
+                    "end": 9885,
                     "moduleId": 0,
-                    "start": 9832,
+                    "start": 9878,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -13303,10 +13561,10 @@ description: Variables in memory after executing stylized-car.kcl
                   ],
                   "radius": 0.17500000013000247,
                   "tag": {
-                    "commentStart": 9917,
-                    "end": 9924,
+                    "commentStart": 9963,
+                    "end": 9970,
                     "moduleId": 0,
-                    "start": 9917,
+                    "start": 9963,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -13319,17 +13577,17 @@ description: Variables in memory after executing stylized-car.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 145,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -13392,6 +13650,8 @@ description: Variables in memory after executing stylized-car.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -13399,12 +13659,26 @@ description: Variables in memory after executing stylized-car.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9832,
-            "end": 9839,
+            "commentStart": 9878,
+            "end": 9885,
             "moduleId": 0,
-            "start": 9832,
+            "start": 9878,
             "type": "TagDeclarator",
             "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 9963,
+            "end": 9970,
+            "moduleId": 0,
+            "start": 9963,
+            "type": "TagDeclarator",
+            "value": "circle2"
           },
           "type": "extrudeArc"
         }
@@ -13430,10 +13704,10 @@ description: Variables in memory after executing stylized-car.kcl
             ],
             "radius": 0.35000000004378223,
             "tag": {
-              "commentStart": 9832,
-              "end": 9839,
+              "commentStart": 9878,
+              "end": 9885,
               "moduleId": 0,
-              "start": 9832,
+              "start": 9878,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -13443,20 +13717,50 @@ description: Variables in memory after executing stylized-car.kcl
             ],
             "type": "Circle",
             "units": "m"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0007138987956651704,
+              0.35000000000000525
+            ],
+            "from": [
+              0.1520856463105938,
+              0.43530708681476643
+            ],
+            "radius": 0.17500000013000247,
+            "tag": {
+              "commentStart": 9963,
+              "end": 9970,
+              "moduleId": 0,
+              "start": 9963,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.1520856463105938,
+              0.43530708681476643
+            ],
+            "type": "Circle",
+            "units": "m"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 145,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -13504,8 +13808,8 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

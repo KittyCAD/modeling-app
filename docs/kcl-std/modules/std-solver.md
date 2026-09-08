@@ -19,7 +19,7 @@ triangle = sketch(on = XY) {
   equalLength([line2, line3])
 }
 
-triangleRegion = region(point = [0.5mm, 0.5mm], sketch = triangle)
+triangleRegion = region(segments = [triangle.line1, triangle.line2])
 extrude(triangleRegion, length = 5)
 ```
 

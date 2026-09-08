@@ -20,6 +20,7 @@ export enum DefaultLayoutPaneID {
   Debug = 'debug',
   Code = 'code',
   FeatureTree = 'feature-tree',
+  NamedViews = 'named-views',
   Files = 'files',
   Zookeeper = 'ttc',
   Variables = 'variables',
@@ -62,6 +63,14 @@ export const featureTreePaneConfig: PaneChild = {
       areaType: AreaType.Bodies,
     },
   ],
+}
+
+export const namedViewsPaneConfig: PaneChild = {
+  id: DefaultLayoutPaneID.NamedViews,
+  label: 'Views',
+  type: LayoutType.Simple,
+  areaType: AreaType.NamedViews,
+  icon: 'namedView',
 }
 
 const primaryPane: Layout = {
@@ -120,6 +129,8 @@ const primaryPane: Layout = {
       type: LayoutType.Simple,
       areaType: AreaType.Debug,
     },
+    // Appended, so the indices `activeIndices` refers to do not shift.
+    namedViewsPaneConfig,
   ],
   actions: [
     ...(isMobile()

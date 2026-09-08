@@ -3,6 +3,7 @@ import type {
   ProjectArchiveFile,
   ProjectManifest,
   ProjectUploadBody,
+  ProjectUploadPublicationMetadata,
   Revision,
 } from '@src/lib/cloudSync/types'
 import {
@@ -14,7 +15,6 @@ import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDefaultFileFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
-  setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isArray } from '@src/lib/utils'
@@ -30,6 +30,8 @@ export function getRemoteProjectTitleForProjectToml(title?: string) {
 type PrepareProjectFilesForCloudUploadOptions = {
   expectedRevision?: Revision
   entrypointPath?: string
+  publicationMetadata?: ProjectUploadPublicationMetadata
+  deletedPaths?: string[]
 }
 
 export function prepareProjectFilesForCloudUpload(
@@ -68,20 +70,31 @@ export function prepareProjectFilesForCloudUpload(
     normalizedFiles,
     preferredEntrypointPath
   )
-  const projectTomlPath = ensureProjectTomlUploadFile(normalizedFiles)
+  const projectTomlPath = getUploadProjectTomlPath(normalizedFiles)
   const projectTitle =
     getProjectTomlTitle(normalizedFiles) ||
     localFs.basename(projectPath.replaceAll('\\', '/').replace(/\/+$/g, ''))
-  ensureProjectTomlUploadTitle(normalizedFiles, projectTitle || 'project')
+  const publicationMetadata =
+    typeof optionsOrExpectedRevision === 'string'
+      ? undefined
+      : optionsOrExpectedRevision?.publicationMetadata
   const body: ProjectUploadBody = {
     title: projectTitle || 'project',
-    description: '',
-    category_ids: [],
+    description: publicationMetadata?.description ?? '',
+    category_ids: publicationMetadata?.category_ids ?? [],
     entrypoint_path: entrypointPath,
     project_toml_path: projectTomlPath,
   }
   if (expectedRevision) {
     body.expected_revision = expectedRevision
+  }
+  if (
+    typeof optionsOrExpectedRevision !== 'string' &&
+    optionsOrExpectedRevision?.deletedPaths?.length
+  ) {
+    body.deleted_paths = Array.from(
+      new Set(optionsOrExpectedRevision.deletedPaths.map(normalizeRelativePath))
+    ).sort()
   }
 
   return {
@@ -103,7 +116,7 @@ export function normalizeProjectArchiveFilesForCloudSync(
   })
 }
 
-function ensureProjectTomlUploadFile(files: ProjectArchiveFile[]) {
+function getUploadProjectTomlPath(files: ProjectArchiveFile[]) {
   const projectTomlFile = files.find(
     (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
   )
@@ -111,32 +124,8 @@ function ensureProjectTomlUploadFile(files: ProjectArchiveFile[]) {
     return projectTomlFile.relativePath
   }
 
-  files.push({
-    relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new Uint8Array(),
-  })
-  return PROJECT_SETTINGS_FILE_NAME
-}
-
-function ensureProjectTomlUploadTitle(
-  files: ProjectArchiveFile[],
-  title: string
-) {
-  const projectTomlFile = files.find(
-    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-  )
-  if (!projectTomlFile) {
-    return
-  }
-
-  const existingProjectToml = new TextDecoder().decode(projectTomlFile.data)
-  if (getProjectTitleFromProjectTomlContents(existingProjectToml)) {
-    return
-  }
-
-  projectTomlFile.data = new TextEncoder().encode(
-    setProjectTitleInProjectTomlContents(existingProjectToml, title)
-  )
+  // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+  throw new Error('Cloud project uploads require an existing project.toml.')
 }
 
 function getProjectTomlTitle(files: ProjectArchiveFile[]) {
@@ -247,20 +236,6 @@ export function withProjectTitleInArchiveFiles(
   )
 }
 
-export function withProjectCloudProjectIdInArchiveFiles(
-  files: ProjectArchiveFile[],
-  projectId: string,
-  environmentName?: string
-) {
-  if (!environmentName) {
-    return files
-  }
-
-  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
-    setCloudProjectIdInProjectTomlContents(contents, environmentName, projectId)
-  )
-}
-
 export function withUpdatedProjectTomlInArchiveFiles(
   files: ProjectArchiveFile[],
   update: (contents: string) => string
@@ -297,22 +272,6 @@ export function withUpdatedProjectTomlInArchiveFiles(
   }
 
   return nextFiles
-}
-
-export function withRemoteProjectMetadataInArchiveFiles(
-  files: ProjectArchiveFile[],
-  title: string | undefined,
-  projectId: string,
-  environmentName?: string
-) {
-  return withProjectCloudProjectIdInArchiveFiles(
-    withProjectTitleInArchiveFiles(
-      files,
-      getRemoteProjectTitleForProjectToml(title)
-    ),
-    projectId,
-    environmentName
-  )
 }
 
 export function projectManifestsEqual(

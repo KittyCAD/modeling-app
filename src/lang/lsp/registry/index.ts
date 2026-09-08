@@ -7,10 +7,12 @@ import {
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { createLspService } from '@src/lang/lsp/service'
 import { authService } from '@src/registry/contracts/auth'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 
 export const lspExtension = defineRegistryItemFactory((ctx) => {
   const lsp = createLspService({
     getAuth: () => ctx.services.get(authService),
+    getUserFeatures: () => ctx.services.get(userFeaturesService),
   })
 
   return {

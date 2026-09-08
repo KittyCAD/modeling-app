@@ -2760,92 +2760,26 @@ description: Operations executed countersunk-plate.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "direction": {
+          "value": {
+            "type": "String",
+            "value": "cw"
+          },
+          "sourceRange": []
+        },
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 1.6,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "bottomCenterArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "centerClearanceCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "leftEndArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "leftSpacingGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerLeftTransition": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerRightTransition": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "rightEndArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "rightSpacingGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "topCenterArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperLeftTransition": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperRightTransition": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }

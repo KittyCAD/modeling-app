@@ -8,8 +8,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 177,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -105,8 +105,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 337,
+      "kind": "Custom",
       "origin": {
         "x": -186.68999999999997,
         "y": 0.0,
@@ -200,6 +200,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -207,10 +209,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -221,10 +223,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -235,10 +237,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -249,10 +251,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -280,10 +282,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -304,10 +306,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -334,10 +336,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -358,10 +360,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -374,17 +376,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -440,8 +442,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -454,6 +456,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -461,10 +465,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -475,10 +479,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -489,10 +493,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -503,10 +507,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -534,10 +538,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -558,10 +562,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -588,10 +592,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -612,10 +616,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -628,17 +632,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -694,8 +698,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -708,6 +712,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -715,10 +721,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -729,10 +735,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -743,10 +749,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -757,10 +763,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -788,10 +794,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -812,10 +818,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -842,10 +848,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -866,10 +872,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -882,17 +888,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -948,8 +954,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -962,6 +968,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -969,10 +977,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -983,10 +991,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -997,10 +1005,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -1011,10 +1019,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -1042,10 +1050,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -1066,10 +1074,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -1096,10 +1104,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -1120,10 +1128,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -1136,17 +1144,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1202,8 +1210,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1218,6 +1226,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1225,10 +1235,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 15806,
-            "end": 15810,
+            "commentStart": 15835,
+            "end": 15839,
             "moduleId": 0,
-            "start": 15806,
+            "start": 15835,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -1239,10 +1249,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 15917,
-            "end": 15922,
+            "commentStart": 15946,
+            "end": 15951,
             "moduleId": 0,
-            "start": 15917,
+            "start": 15946,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1253,10 +1263,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 15998,
-            "end": 16002,
+            "commentStart": 16027,
+            "end": 16031,
             "moduleId": 0,
-            "start": 15998,
+            "start": 16027,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1267,10 +1277,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 16109,
-            "end": 16114,
+            "commentStart": 16138,
+            "end": 16143,
             "moduleId": 0,
-            "start": 16109,
+            "start": 16138,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1298,10 +1308,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.56330238424205,
             "tag": {
-              "commentStart": 15806,
-              "end": 15810,
+              "commentStart": 15835,
+              "end": 15839,
               "moduleId": 0,
-              "start": 15806,
+              "start": 15835,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -1322,10 +1332,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500781253448379
             ],
             "tag": {
-              "commentStart": 15917,
-              "end": 15922,
+              "commentStart": 15946,
+              "end": 15951,
               "moduleId": 0,
-              "start": 15917,
+              "start": 15946,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1352,10 +1362,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.31250000976569553,
             "tag": {
-              "commentStart": 15998,
-              "end": 16002,
+              "commentStart": 16027,
+              "end": 16031,
               "moduleId": 0,
-              "start": 15998,
+              "start": 16027,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1376,10 +1386,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.6250781253448378
             ],
             "tag": {
-              "commentStart": 16109,
-              "end": 16114,
+              "commentStart": 16138,
+              "end": 16143,
               "moduleId": 0,
-              "start": 16109,
+              "start": 16138,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1392,17 +1402,17 @@ description: Variables in memory after executing cold-plate.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 296,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1458,8 +1468,8 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1475,6 +1485,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1482,10 +1494,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1496,10 +1508,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -1510,10 +1522,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -1524,10 +1536,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -1555,10 +1567,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -1579,10 +1591,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -1609,10 +1621,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -1633,10 +1645,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -1649,17 +1661,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1715,8 +1727,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1729,6 +1741,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1736,10 +1750,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -1750,10 +1764,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -1764,10 +1778,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -1778,10 +1792,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -1809,10 +1823,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -1833,10 +1847,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -1863,10 +1877,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -1887,10 +1901,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -1903,17 +1917,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1969,8 +1983,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1983,6 +1997,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1990,10 +2006,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -2004,10 +2020,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -2018,10 +2034,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -2032,10 +2048,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -2063,10 +2079,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -2087,10 +2103,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -2117,10 +2133,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -2141,10 +2157,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -2157,17 +2173,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2223,8 +2239,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2237,6 +2253,8 @@ description: Variables in memory after executing cold-plate.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2244,10 +2262,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15806,
-                "end": 15810,
+                "commentStart": 15835,
+                "end": 15839,
                 "moduleId": 0,
-                "start": 15806,
+                "start": 15835,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -2258,10 +2276,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15917,
-                "end": 15922,
+                "commentStart": 15946,
+                "end": 15951,
                 "moduleId": 0,
-                "start": 15917,
+                "start": 15946,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -2272,10 +2290,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15998,
-                "end": 16002,
+                "commentStart": 16027,
+                "end": 16031,
                 "moduleId": 0,
-                "start": 15998,
+                "start": 16027,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -2286,10 +2304,10 @@ description: Variables in memory after executing cold-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 16109,
-                "end": 16114,
+                "commentStart": 16138,
+                "end": 16143,
                 "moduleId": 0,
-                "start": 16109,
+                "start": 16138,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -2317,10 +2335,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.56330238424205,
                 "tag": {
-                  "commentStart": 15806,
-                  "end": 15810,
+                  "commentStart": 15835,
+                  "end": 15839,
                   "moduleId": 0,
-                  "start": 15806,
+                  "start": 15835,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -2341,10 +2359,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.2500781253448379
                 ],
                 "tag": {
-                  "commentStart": 15917,
-                  "end": 15922,
+                  "commentStart": 15946,
+                  "end": 15951,
                   "moduleId": 0,
-                  "start": 15917,
+                  "start": 15946,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -2371,10 +2389,10 @@ description: Variables in memory after executing cold-plate.kcl
                 ],
                 "radius": 0.31250000976569553,
                 "tag": {
-                  "commentStart": 15998,
-                  "end": 16002,
+                  "commentStart": 16027,
+                  "end": 16031,
                   "moduleId": 0,
-                  "start": 15998,
+                  "start": 16027,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -2395,10 +2413,10 @@ description: Variables in memory after executing cold-plate.kcl
                   0.6250781253448378
                 ],
                 "tag": {
-                  "commentStart": 16109,
-                  "end": 16114,
+                  "commentStart": 16138,
+                  "end": 16143,
                   "moduleId": 0,
-                  "start": 16109,
+                  "start": 16138,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -2411,17 +2429,17 @@ description: Variables in memory after executing cold-plate.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 296,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2477,8 +2495,8 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3181,10 +3199,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.56330238424205,
                   "tag": {
-                    "commentStart": 15806,
-                    "end": 15810,
+                    "commentStart": 15835,
+                    "end": 15839,
                     "moduleId": 0,
-                    "start": 15806,
+                    "start": 15835,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -3205,10 +3223,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500781253448379
                   ],
                   "tag": {
-                    "commentStart": 15917,
-                    "end": 15922,
+                    "commentStart": 15946,
+                    "end": 15951,
                     "moduleId": 0,
-                    "start": 15917,
+                    "start": 15946,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3235,10 +3253,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.31250000976569553,
                   "tag": {
-                    "commentStart": 15998,
-                    "end": 16002,
+                    "commentStart": 16027,
+                    "end": 16031,
                     "moduleId": 0,
-                    "start": 15998,
+                    "start": 16027,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -3259,10 +3277,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.6250781253448378
                   ],
                   "tag": {
-                    "commentStart": 16109,
-                    "end": 16114,
+                    "commentStart": 16138,
+                    "end": 16143,
                     "moduleId": 0,
-                    "start": 16109,
+                    "start": 16138,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3275,17 +3293,17 @@ description: Variables in memory after executing cold-plate.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 296,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -3494,10 +3512,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.56330238424205,
           "tag": {
-            "commentStart": 15806,
-            "end": 15810,
+            "commentStart": 15835,
+            "end": 15839,
             "moduleId": 0,
-            "start": 15806,
+            "start": 15835,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -3518,10 +3536,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500781253448379
           ],
           "tag": {
-            "commentStart": 15917,
-            "end": 15922,
+            "commentStart": 15946,
+            "end": 15951,
             "moduleId": 0,
-            "start": 15917,
+            "start": 15946,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3548,10 +3566,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.31250000976569553,
           "tag": {
-            "commentStart": 15998,
-            "end": 16002,
+            "commentStart": 16027,
+            "end": 16031,
             "moduleId": 0,
-            "start": 15998,
+            "start": 16027,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -3572,10 +3590,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.6250781253448378
           ],
           "tag": {
-            "commentStart": 16109,
-            "end": 16114,
+            "commentStart": 16138,
+            "end": 16143,
             "moduleId": 0,
-            "start": 16109,
+            "start": 16138,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3588,17 +3606,17 @@ description: Variables in memory after executing cold-plate.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 296,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3654,8 +3672,8 @@ description: Variables in memory after executing cold-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "capTopArcCenter": {
@@ -3686,6 +3704,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3693,10 +3713,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4522,
-            "end": 4527,
+            "commentStart": 4551,
+            "end": 4556,
             "moduleId": 0,
-            "start": 4522,
+            "start": 4551,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3707,10 +3727,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4600,
-            "end": 4605,
+            "commentStart": 4629,
+            "end": 4634,
             "moduleId": 0,
-            "start": 4600,
+            "start": 4629,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3721,10 +3741,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4681,
-            "end": 4685,
+            "commentStart": 4710,
+            "end": 4714,
             "moduleId": 0,
-            "start": 4681,
+            "start": 4710,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -3735,10 +3755,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4792,
-            "end": 4797,
+            "commentStart": 4821,
+            "end": 4826,
             "moduleId": 0,
-            "start": 4792,
+            "start": 4821,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3749,10 +3769,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4873,
-            "end": 4878,
+            "commentStart": 4902,
+            "end": 4907,
             "moduleId": 0,
-            "start": 4873,
+            "start": 4902,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3763,10 +3783,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4954,
-            "end": 4959,
+            "commentStart": 4983,
+            "end": 4988,
             "moduleId": 0,
-            "start": 4954,
+            "start": 4983,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3777,10 +3797,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5035,
-            "end": 5039,
+            "commentStart": 5064,
+            "end": 5068,
             "moduleId": 0,
-            "start": 5035,
+            "start": 5064,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -3791,10 +3811,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5146,
-            "end": 5151,
+            "commentStart": 5175,
+            "end": 5180,
             "moduleId": 0,
-            "start": 5146,
+            "start": 5175,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -3805,10 +3825,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5227,
-            "end": 5232,
+            "commentStart": 5256,
+            "end": 5261,
             "moduleId": 0,
-            "start": 5227,
+            "start": 5256,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -3819,10 +3839,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5305,
-            "end": 5311,
+            "commentStart": 5334,
+            "end": 5340,
             "moduleId": 0,
-            "start": 5305,
+            "start": 5334,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -3833,10 +3853,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5384,
-            "end": 5389,
+            "commentStart": 5413,
+            "end": 5418,
             "moduleId": 0,
-            "start": 5384,
+            "start": 5413,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -3847,10 +3867,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5499,
-            "end": 5505,
+            "commentStart": 5528,
+            "end": 5534,
             "moduleId": 0,
-            "start": 5499,
+            "start": 5528,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -3861,10 +3881,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5581,
-            "end": 5587,
+            "commentStart": 5610,
+            "end": 5616,
             "moduleId": 0,
-            "start": 5581,
+            "start": 5610,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -3875,10 +3895,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5660,
-            "end": 5666,
+            "commentStart": 5689,
+            "end": 5695,
             "moduleId": 0,
-            "start": 5660,
+            "start": 5689,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -3889,10 +3909,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5737,
-            "end": 5743,
+            "commentStart": 5766,
+            "end": 5772,
             "moduleId": 0,
-            "start": 5737,
+            "start": 5766,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -3903,10 +3923,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5818,
-            "end": 5824,
+            "commentStart": 5847,
+            "end": 5853,
             "moduleId": 0,
-            "start": 5818,
+            "start": 5847,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -3917,10 +3937,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5902,
-            "end": 5907,
+            "commentStart": 5931,
+            "end": 5936,
             "moduleId": 0,
-            "start": 5902,
+            "start": 5931,
             "type": "TagDeclarator",
             "value": "arc16"
           },
@@ -3931,10 +3951,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6020,
-            "end": 6026,
+            "commentStart": 6049,
+            "end": 6055,
             "moduleId": 0,
-            "start": 6020,
+            "start": 6049,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -3945,10 +3965,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6101,
-            "end": 6107,
+            "commentStart": 6130,
+            "end": 6136,
             "moduleId": 0,
-            "start": 6101,
+            "start": 6130,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -3959,10 +3979,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6182,
-            "end": 6188,
+            "commentStart": 6211,
+            "end": 6217,
             "moduleId": 0,
-            "start": 6182,
+            "start": 6211,
             "type": "TagDeclarator",
             "value": "line19"
           },
@@ -3973,10 +3993,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6266,
-            "end": 6271,
+            "commentStart": 6295,
+            "end": 6300,
             "moduleId": 0,
-            "start": 6266,
+            "start": 6295,
             "type": "TagDeclarator",
             "value": "arc20"
           },
@@ -3987,10 +4007,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6381,
-            "end": 6387,
+            "commentStart": 6410,
+            "end": 6416,
             "moduleId": 0,
-            "start": 6381,
+            "start": 6410,
             "type": "TagDeclarator",
             "value": "line21"
           },
@@ -4001,10 +4021,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6465,
-            "end": 6471,
+            "commentStart": 6494,
+            "end": 6500,
             "moduleId": 0,
-            "start": 6465,
+            "start": 6494,
             "type": "TagDeclarator",
             "value": "line22"
           },
@@ -4015,10 +4035,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6549,
-            "end": 6555,
+            "commentStart": 6578,
+            "end": 6584,
             "moduleId": 0,
-            "start": 6549,
+            "start": 6578,
             "type": "TagDeclarator",
             "value": "line23"
           },
@@ -4029,10 +4049,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6633,
-            "end": 6638,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6633,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "arc24"
           },
@@ -4043,10 +4063,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6748,
-            "end": 6754,
+            "commentStart": 6777,
+            "end": 6783,
             "moduleId": 0,
-            "start": 6748,
+            "start": 6777,
             "type": "TagDeclarator",
             "value": "line25"
           },
@@ -4057,10 +4077,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6832,
-            "end": 6838,
+            "commentStart": 6861,
+            "end": 6867,
             "moduleId": 0,
-            "start": 6832,
+            "start": 6861,
             "type": "TagDeclarator",
             "value": "line26"
           },
@@ -4082,10 +4102,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 4522,
-              "end": 4527,
+              "commentStart": 4551,
+              "end": 4556,
               "moduleId": 0,
-              "start": 4522,
+              "start": 4551,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4106,10 +4126,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 4600,
-              "end": 4605,
+              "commentStart": 4629,
+              "end": 4634,
               "moduleId": 0,
-              "start": 4600,
+              "start": 4629,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4136,10 +4156,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.31250000976422143,
             "tag": {
-              "commentStart": 4681,
-              "end": 4685,
+              "commentStart": 4710,
+              "end": 4714,
               "moduleId": 0,
-              "start": 4681,
+              "start": 4710,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -4160,10 +4180,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.6250390612915998
             ],
             "tag": {
-              "commentStart": 4792,
-              "end": 4797,
+              "commentStart": 4821,
+              "end": 4826,
               "moduleId": 0,
-              "start": 4792,
+              "start": 4821,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4184,10 +4204,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500390612915997
             ],
             "tag": {
-              "commentStart": 4873,
-              "end": 4878,
+              "commentStart": 4902,
+              "end": 4907,
               "moduleId": 0,
-              "start": 4873,
+              "start": 4902,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -4208,10 +4228,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500390612915997
             ],
             "tag": {
-              "commentStart": 4954,
-              "end": 4959,
+              "commentStart": 4983,
+              "end": 4988,
               "moduleId": 0,
-              "start": 4954,
+              "start": 4983,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -4238,10 +4258,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.31250000244147597,
             "tag": {
-              "commentStart": 5035,
-              "end": 5039,
+              "commentStart": 5064,
+              "end": 5068,
               "moduleId": 0,
-              "start": 5035,
+              "start": 5064,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -4262,10 +4282,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.6250523072553298
             ],
             "tag": {
-              "commentStart": 5146,
-              "end": 5151,
+              "commentStart": 5175,
+              "end": 5180,
               "moduleId": 0,
-              "start": 5146,
+              "start": 5175,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -4286,10 +4306,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500523072553298
             ],
             "tag": {
-              "commentStart": 5227,
-              "end": 5232,
+              "commentStart": 5256,
+              "end": 5261,
               "moduleId": 0,
-              "start": 5227,
+              "start": 5256,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -4310,10 +4330,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500523072553298
             ],
             "tag": {
-              "commentStart": 5305,
-              "end": 5311,
+              "commentStart": 5334,
+              "end": 5340,
               "moduleId": 0,
-              "start": 5305,
+              "start": 5334,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -4340,10 +4360,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.6250000074827834,
             "tag": {
-              "commentStart": 5384,
-              "end": 5389,
+              "commentStart": 5413,
+              "end": 5418,
               "moduleId": 0,
-              "start": 5384,
+              "start": 5413,
               "type": "TagDeclarator",
               "value": "arc11"
             },
@@ -4364,10 +4384,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.5625587180767895
             ],
             "tag": {
-              "commentStart": 5499,
-              "end": 5505,
+              "commentStart": 5528,
+              "end": 5534,
               "moduleId": 0,
-              "start": 5499,
+              "start": 5528,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -4388,10 +4408,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.5625587180767895
             ],
             "tag": {
-              "commentStart": 5581,
-              "end": 5587,
+              "commentStart": 5610,
+              "end": 5616,
               "moduleId": 0,
-              "start": 5581,
+              "start": 5610,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -4412,10 +4432,10 @@ description: Variables in memory after executing cold-plate.kcl
               -0.00004192739120217362
             ],
             "tag": {
-              "commentStart": 5660,
-              "end": 5666,
+              "commentStart": 5689,
+              "end": 5695,
               "moduleId": 0,
-              "start": 5660,
+              "start": 5689,
               "type": "TagDeclarator",
               "value": "line14"
             },
@@ -4436,10 +4456,10 @@ description: Variables in memory after executing cold-plate.kcl
               -0.000041927391202173635
             ],
             "tag": {
-              "commentStart": 5737,
-              "end": 5743,
+              "commentStart": 5766,
+              "end": 5772,
               "moduleId": 0,
-              "start": 5737,
+              "start": 5766,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -4460,10 +4480,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.5625587180767895
             ],
             "tag": {
-              "commentStart": 5818,
-              "end": 5824,
+              "commentStart": 5847,
+              "end": 5853,
               "moduleId": 0,
-              "start": 5818,
+              "start": 5847,
               "type": "TagDeclarator",
               "value": "line16"
             },
@@ -4490,10 +4510,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.6250000014978825,
             "tag": {
-              "commentStart": 5902,
-              "end": 5907,
+              "commentStart": 5931,
+              "end": 5936,
               "moduleId": 0,
-              "start": 5902,
+              "start": 5931,
               "type": "TagDeclarator",
               "value": "arc16"
             },
@@ -4514,10 +4534,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.0470585437571553
             ],
             "tag": {
-              "commentStart": 6020,
-              "end": 6026,
+              "commentStart": 6049,
+              "end": 6055,
               "moduleId": 0,
-              "start": 6020,
+              "start": 6049,
               "type": "TagDeclarator",
               "value": "line17"
             },
@@ -4538,10 +4558,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500523072540792
             ],
             "tag": {
-              "commentStart": 6101,
-              "end": 6107,
+              "commentStart": 6130,
+              "end": 6136,
               "moduleId": 0,
-              "start": 6101,
+              "start": 6130,
               "type": "TagDeclarator",
               "value": "line18"
             },
@@ -4562,10 +4582,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500523072540792
             ],
             "tag": {
-              "commentStart": 6182,
-              "end": 6188,
+              "commentStart": 6211,
+              "end": 6217,
               "moduleId": 0,
-              "start": 6182,
+              "start": 6211,
               "type": "TagDeclarator",
               "value": "line19"
             },
@@ -4592,10 +4612,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.3125000010664384,
             "tag": {
-              "commentStart": 6266,
-              "end": 6271,
+              "commentStart": 6295,
+              "end": 6300,
               "moduleId": 0,
-              "start": 6266,
+              "start": 6295,
               "type": "TagDeclarator",
               "value": "arc20"
             },
@@ -4616,10 +4636,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.6250390612933565
             ],
             "tag": {
-              "commentStart": 6381,
-              "end": 6387,
+              "commentStart": 6410,
+              "end": 6416,
               "moduleId": 0,
-              "start": 6381,
+              "start": 6410,
               "type": "TagDeclarator",
               "value": "line21"
             },
@@ -4640,10 +4660,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500390612933565
             ],
             "tag": {
-              "commentStart": 6465,
-              "end": 6471,
+              "commentStart": 6494,
+              "end": 6500,
               "moduleId": 0,
-              "start": 6465,
+              "start": 6494,
               "type": "TagDeclarator",
               "value": "line22"
             },
@@ -4664,10 +4684,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.2500390612933565
             ],
             "tag": {
-              "commentStart": 6549,
-              "end": 6555,
+              "commentStart": 6578,
+              "end": 6584,
               "moduleId": 0,
-              "start": 6549,
+              "start": 6578,
               "type": "TagDeclarator",
               "value": "line23"
             },
@@ -4694,10 +4714,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.31250000244086124,
             "tag": {
-              "commentStart": 6633,
-              "end": 6638,
+              "commentStart": 6662,
+              "end": 6667,
               "moduleId": 0,
-              "start": 6633,
+              "start": 6662,
               "type": "TagDeclarator",
               "value": "arc24"
             },
@@ -4718,10 +4738,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "tag": {
-              "commentStart": 6748,
-              "end": 6754,
+              "commentStart": 6777,
+              "end": 6783,
               "moduleId": 0,
-              "start": 6748,
+              "start": 6777,
               "type": "TagDeclarator",
               "value": "line25"
             },
@@ -4742,10 +4762,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 6832,
-              "end": 6838,
+              "commentStart": 6861,
+              "end": 6867,
               "moduleId": 0,
-              "start": 6832,
+              "start": 6861,
               "type": "TagDeclarator",
               "value": "line26"
             },
@@ -4758,17 +4778,17 @@ description: Variables in memory after executing cold-plate.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4916,8 +4936,8 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8379,10 +8399,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.25
                   ],
                   "tag": {
-                    "commentStart": 4522,
-                    "end": 4527,
+                    "commentStart": 4551,
+                    "end": 4556,
                     "moduleId": 0,
-                    "start": 4522,
+                    "start": 4551,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8403,10 +8423,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.25
                   ],
                   "tag": {
-                    "commentStart": 4600,
-                    "end": 4605,
+                    "commentStart": 4629,
+                    "end": 4634,
                     "moduleId": 0,
-                    "start": 4600,
+                    "start": 4629,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -8433,10 +8453,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.31250000976422143,
                   "tag": {
-                    "commentStart": 4681,
-                    "end": 4685,
+                    "commentStart": 4710,
+                    "end": 4714,
                     "moduleId": 0,
-                    "start": 4681,
+                    "start": 4710,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -8474,10 +8494,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.6250390612915998
                   ],
                   "tag": {
-                    "commentStart": 4792,
-                    "end": 4797,
+                    "commentStart": 4821,
+                    "end": 4826,
                     "moduleId": 0,
-                    "start": 4792,
+                    "start": 4821,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -8498,10 +8518,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500390612915997
                   ],
                   "tag": {
-                    "commentStart": 4873,
-                    "end": 4878,
+                    "commentStart": 4902,
+                    "end": 4907,
                     "moduleId": 0,
-                    "start": 4873,
+                    "start": 4902,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -8522,10 +8542,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500390612915997
                   ],
                   "tag": {
-                    "commentStart": 4954,
-                    "end": 4959,
+                    "commentStart": 4983,
+                    "end": 4988,
                     "moduleId": 0,
-                    "start": 4954,
+                    "start": 4983,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -8552,10 +8572,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.31250000244147597,
                   "tag": {
-                    "commentStart": 5035,
-                    "end": 5039,
+                    "commentStart": 5064,
+                    "end": 5068,
                     "moduleId": 0,
-                    "start": 5035,
+                    "start": 5064,
                     "type": "TagDeclarator",
                     "value": "arc7"
                   },
@@ -8593,10 +8613,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.6250523072553298
                   ],
                   "tag": {
-                    "commentStart": 5146,
-                    "end": 5151,
+                    "commentStart": 5175,
+                    "end": 5180,
                     "moduleId": 0,
-                    "start": 5146,
+                    "start": 5175,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -8617,10 +8637,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500523072553298
                   ],
                   "tag": {
-                    "commentStart": 5227,
-                    "end": 5232,
+                    "commentStart": 5256,
+                    "end": 5261,
                     "moduleId": 0,
-                    "start": 5227,
+                    "start": 5256,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -8641,10 +8661,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500523072553298
                   ],
                   "tag": {
-                    "commentStart": 5305,
-                    "end": 5311,
+                    "commentStart": 5334,
+                    "end": 5340,
                     "moduleId": 0,
-                    "start": 5305,
+                    "start": 5334,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -8671,10 +8691,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.6250000074827834,
                   "tag": {
-                    "commentStart": 5384,
-                    "end": 5389,
+                    "commentStart": 5413,
+                    "end": 5418,
                     "moduleId": 0,
-                    "start": 5384,
+                    "start": 5413,
                     "type": "TagDeclarator",
                     "value": "arc11"
                   },
@@ -8712,10 +8732,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.5625587180767895
                   ],
                   "tag": {
-                    "commentStart": 5499,
-                    "end": 5505,
+                    "commentStart": 5528,
+                    "end": 5534,
                     "moduleId": 0,
-                    "start": 5499,
+                    "start": 5528,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -8736,10 +8756,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.5625587180767895
                   ],
                   "tag": {
-                    "commentStart": 5581,
-                    "end": 5587,
+                    "commentStart": 5610,
+                    "end": 5616,
                     "moduleId": 0,
-                    "start": 5581,
+                    "start": 5610,
                     "type": "TagDeclarator",
                     "value": "line13"
                   },
@@ -8760,10 +8780,10 @@ description: Variables in memory after executing cold-plate.kcl
                     -0.00004192739120217362
                   ],
                   "tag": {
-                    "commentStart": 5660,
-                    "end": 5666,
+                    "commentStart": 5689,
+                    "end": 5695,
                     "moduleId": 0,
-                    "start": 5660,
+                    "start": 5689,
                     "type": "TagDeclarator",
                     "value": "line14"
                   },
@@ -8784,10 +8804,10 @@ description: Variables in memory after executing cold-plate.kcl
                     -0.000041927391202173635
                   ],
                   "tag": {
-                    "commentStart": 5737,
-                    "end": 5743,
+                    "commentStart": 5766,
+                    "end": 5772,
                     "moduleId": 0,
-                    "start": 5737,
+                    "start": 5766,
                     "type": "TagDeclarator",
                     "value": "line15"
                   },
@@ -8808,10 +8828,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.5625587180767895
                   ],
                   "tag": {
-                    "commentStart": 5818,
-                    "end": 5824,
+                    "commentStart": 5847,
+                    "end": 5853,
                     "moduleId": 0,
-                    "start": 5818,
+                    "start": 5847,
                     "type": "TagDeclarator",
                     "value": "line16"
                   },
@@ -8838,10 +8858,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.6250000014978825,
                   "tag": {
-                    "commentStart": 5902,
-                    "end": 5907,
+                    "commentStart": 5931,
+                    "end": 5936,
                     "moduleId": 0,
-                    "start": 5902,
+                    "start": 5931,
                     "type": "TagDeclarator",
                     "value": "arc16"
                   },
@@ -8879,10 +8899,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.0470585437571553
                   ],
                   "tag": {
-                    "commentStart": 6020,
-                    "end": 6026,
+                    "commentStart": 6049,
+                    "end": 6055,
                     "moduleId": 0,
-                    "start": 6020,
+                    "start": 6049,
                     "type": "TagDeclarator",
                     "value": "line17"
                   },
@@ -8903,10 +8923,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500523072540792
                   ],
                   "tag": {
-                    "commentStart": 6101,
-                    "end": 6107,
+                    "commentStart": 6130,
+                    "end": 6136,
                     "moduleId": 0,
-                    "start": 6101,
+                    "start": 6130,
                     "type": "TagDeclarator",
                     "value": "line18"
                   },
@@ -8927,10 +8947,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500523072540792
                   ],
                   "tag": {
-                    "commentStart": 6182,
-                    "end": 6188,
+                    "commentStart": 6211,
+                    "end": 6217,
                     "moduleId": 0,
-                    "start": 6182,
+                    "start": 6211,
                     "type": "TagDeclarator",
                     "value": "line19"
                   },
@@ -8957,10 +8977,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.3125000010664384,
                   "tag": {
-                    "commentStart": 6266,
-                    "end": 6271,
+                    "commentStart": 6295,
+                    "end": 6300,
                     "moduleId": 0,
-                    "start": 6266,
+                    "start": 6295,
                     "type": "TagDeclarator",
                     "value": "arc20"
                   },
@@ -8998,10 +9018,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.6250390612933565
                   ],
                   "tag": {
-                    "commentStart": 6381,
-                    "end": 6387,
+                    "commentStart": 6410,
+                    "end": 6416,
                     "moduleId": 0,
-                    "start": 6381,
+                    "start": 6410,
                     "type": "TagDeclarator",
                     "value": "line21"
                   },
@@ -9022,10 +9042,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500390612933565
                   ],
                   "tag": {
-                    "commentStart": 6465,
-                    "end": 6471,
+                    "commentStart": 6494,
+                    "end": 6500,
                     "moduleId": 0,
-                    "start": 6465,
+                    "start": 6494,
                     "type": "TagDeclarator",
                     "value": "line22"
                   },
@@ -9046,10 +9066,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.2500390612933565
                   ],
                   "tag": {
-                    "commentStart": 6549,
-                    "end": 6555,
+                    "commentStart": 6578,
+                    "end": 6584,
                     "moduleId": 0,
-                    "start": 6549,
+                    "start": 6578,
                     "type": "TagDeclarator",
                     "value": "line23"
                   },
@@ -9076,10 +9096,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.31250000244086124,
                   "tag": {
-                    "commentStart": 6633,
-                    "end": 6638,
+                    "commentStart": 6662,
+                    "end": 6667,
                     "moduleId": 0,
-                    "start": 6633,
+                    "start": 6662,
                     "type": "TagDeclarator",
                     "value": "arc24"
                   },
@@ -9117,10 +9137,10 @@ description: Variables in memory after executing cold-plate.kcl
                     0.625
                   ],
                   "tag": {
-                    "commentStart": 6748,
-                    "end": 6754,
+                    "commentStart": 6777,
+                    "end": 6783,
                     "moduleId": 0,
-                    "start": 6748,
+                    "start": 6777,
                     "type": "TagDeclarator",
                     "value": "line25"
                   },
@@ -9141,10 +9161,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.25
                   ],
                   "tag": {
-                    "commentStart": 6832,
-                    "end": 6838,
+                    "commentStart": 6861,
+                    "end": 6867,
                     "moduleId": 0,
-                    "start": 6832,
+                    "start": 6861,
                     "type": "TagDeclarator",
                     "value": "line26"
                   },
@@ -9157,17 +9177,17 @@ description: Variables in memory after executing cold-plate.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -9341,10 +9361,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.25
           ],
           "tag": {
-            "commentStart": 4522,
-            "end": 4527,
+            "commentStart": 4551,
+            "end": 4556,
             "moduleId": 0,
-            "start": 4522,
+            "start": 4551,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9365,10 +9385,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.25
           ],
           "tag": {
-            "commentStart": 4600,
-            "end": 4605,
+            "commentStart": 4629,
+            "end": 4634,
             "moduleId": 0,
-            "start": 4600,
+            "start": 4629,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9395,10 +9415,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.31250000976422143,
           "tag": {
-            "commentStart": 4681,
-            "end": 4685,
+            "commentStart": 4710,
+            "end": 4714,
             "moduleId": 0,
-            "start": 4681,
+            "start": 4710,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -9419,10 +9439,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.6250390612915998
           ],
           "tag": {
-            "commentStart": 4792,
-            "end": 4797,
+            "commentStart": 4821,
+            "end": 4826,
             "moduleId": 0,
-            "start": 4792,
+            "start": 4821,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9443,10 +9463,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500390612915997
           ],
           "tag": {
-            "commentStart": 4873,
-            "end": 4878,
+            "commentStart": 4902,
+            "end": 4907,
             "moduleId": 0,
-            "start": 4873,
+            "start": 4902,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -9467,10 +9487,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500390612915997
           ],
           "tag": {
-            "commentStart": 4954,
-            "end": 4959,
+            "commentStart": 4983,
+            "end": 4988,
             "moduleId": 0,
-            "start": 4954,
+            "start": 4983,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -9497,10 +9517,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.31250000244147597,
           "tag": {
-            "commentStart": 5035,
-            "end": 5039,
+            "commentStart": 5064,
+            "end": 5068,
             "moduleId": 0,
-            "start": 5035,
+            "start": 5064,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -9521,10 +9541,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.6250523072553298
           ],
           "tag": {
-            "commentStart": 5146,
-            "end": 5151,
+            "commentStart": 5175,
+            "end": 5180,
             "moduleId": 0,
-            "start": 5146,
+            "start": 5175,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -9545,10 +9565,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500523072553298
           ],
           "tag": {
-            "commentStart": 5227,
-            "end": 5232,
+            "commentStart": 5256,
+            "end": 5261,
             "moduleId": 0,
-            "start": 5227,
+            "start": 5256,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -9569,10 +9589,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500523072553298
           ],
           "tag": {
-            "commentStart": 5305,
-            "end": 5311,
+            "commentStart": 5334,
+            "end": 5340,
             "moduleId": 0,
-            "start": 5305,
+            "start": 5334,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -9599,10 +9619,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.6250000074827834,
           "tag": {
-            "commentStart": 5384,
-            "end": 5389,
+            "commentStart": 5413,
+            "end": 5418,
             "moduleId": 0,
-            "start": 5384,
+            "start": 5413,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -9623,10 +9643,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.5625587180767895
           ],
           "tag": {
-            "commentStart": 5499,
-            "end": 5505,
+            "commentStart": 5528,
+            "end": 5534,
             "moduleId": 0,
-            "start": 5499,
+            "start": 5528,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -9647,10 +9667,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.5625587180767895
           ],
           "tag": {
-            "commentStart": 5581,
-            "end": 5587,
+            "commentStart": 5610,
+            "end": 5616,
             "moduleId": 0,
-            "start": 5581,
+            "start": 5610,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -9671,10 +9691,10 @@ description: Variables in memory after executing cold-plate.kcl
             -0.00004192739120217362
           ],
           "tag": {
-            "commentStart": 5660,
-            "end": 5666,
+            "commentStart": 5689,
+            "end": 5695,
             "moduleId": 0,
-            "start": 5660,
+            "start": 5689,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -9695,10 +9715,10 @@ description: Variables in memory after executing cold-plate.kcl
             -0.000041927391202173635
           ],
           "tag": {
-            "commentStart": 5737,
-            "end": 5743,
+            "commentStart": 5766,
+            "end": 5772,
             "moduleId": 0,
-            "start": 5737,
+            "start": 5766,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -9719,10 +9739,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.5625587180767895
           ],
           "tag": {
-            "commentStart": 5818,
-            "end": 5824,
+            "commentStart": 5847,
+            "end": 5853,
             "moduleId": 0,
-            "start": 5818,
+            "start": 5847,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -9749,10 +9769,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.6250000014978825,
           "tag": {
-            "commentStart": 5902,
-            "end": 5907,
+            "commentStart": 5931,
+            "end": 5936,
             "moduleId": 0,
-            "start": 5902,
+            "start": 5931,
             "type": "TagDeclarator",
             "value": "arc16"
           },
@@ -9773,10 +9793,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.0470585437571553
           ],
           "tag": {
-            "commentStart": 6020,
-            "end": 6026,
+            "commentStart": 6049,
+            "end": 6055,
             "moduleId": 0,
-            "start": 6020,
+            "start": 6049,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -9797,10 +9817,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500523072540792
           ],
           "tag": {
-            "commentStart": 6101,
-            "end": 6107,
+            "commentStart": 6130,
+            "end": 6136,
             "moduleId": 0,
-            "start": 6101,
+            "start": 6130,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -9821,10 +9841,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500523072540792
           ],
           "tag": {
-            "commentStart": 6182,
-            "end": 6188,
+            "commentStart": 6211,
+            "end": 6217,
             "moduleId": 0,
-            "start": 6182,
+            "start": 6211,
             "type": "TagDeclarator",
             "value": "line19"
           },
@@ -9851,10 +9871,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.3125000010664384,
           "tag": {
-            "commentStart": 6266,
-            "end": 6271,
+            "commentStart": 6295,
+            "end": 6300,
             "moduleId": 0,
-            "start": 6266,
+            "start": 6295,
             "type": "TagDeclarator",
             "value": "arc20"
           },
@@ -9875,10 +9895,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.6250390612933565
           ],
           "tag": {
-            "commentStart": 6381,
-            "end": 6387,
+            "commentStart": 6410,
+            "end": 6416,
             "moduleId": 0,
-            "start": 6381,
+            "start": 6410,
             "type": "TagDeclarator",
             "value": "line21"
           },
@@ -9899,10 +9919,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500390612933565
           ],
           "tag": {
-            "commentStart": 6465,
-            "end": 6471,
+            "commentStart": 6494,
+            "end": 6500,
             "moduleId": 0,
-            "start": 6465,
+            "start": 6494,
             "type": "TagDeclarator",
             "value": "line22"
           },
@@ -9923,10 +9943,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.2500390612933565
           ],
           "tag": {
-            "commentStart": 6549,
-            "end": 6555,
+            "commentStart": 6578,
+            "end": 6584,
             "moduleId": 0,
-            "start": 6549,
+            "start": 6578,
             "type": "TagDeclarator",
             "value": "line23"
           },
@@ -9953,10 +9973,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.31250000244086124,
           "tag": {
-            "commentStart": 6633,
-            "end": 6638,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6633,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "arc24"
           },
@@ -9977,10 +9997,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.625
           ],
           "tag": {
-            "commentStart": 6748,
-            "end": 6754,
+            "commentStart": 6777,
+            "end": 6783,
             "moduleId": 0,
-            "start": 6748,
+            "start": 6777,
             "type": "TagDeclarator",
             "value": "line25"
           },
@@ -10001,10 +10021,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.25
           ],
           "tag": {
-            "commentStart": 6832,
-            "end": 6838,
+            "commentStart": 6861,
+            "end": 6867,
             "moduleId": 0,
-            "start": 6832,
+            "start": 6861,
             "type": "TagDeclarator",
             "value": "line26"
           },
@@ -10017,17 +10037,17 @@ description: Variables in memory after executing cold-plate.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -10175,8 +10195,8 @@ description: Variables in memory after executing cold-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "copperTubePath": {
@@ -11621,10 +11641,10 @@ description: Variables in memory after executing cold-plate.kcl
                     -3.0
                   ],
                   "tag": {
-                    "commentStart": 11488,
-                    "end": 11493,
+                    "commentStart": 11517,
+                    "end": 11522,
                     "moduleId": 0,
-                    "start": 11488,
+                    "start": 11517,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -11651,10 +11671,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 1.0,
                   "tag": {
-                    "commentStart": 11566,
-                    "end": 11570,
+                    "commentStart": 11595,
+                    "end": 11599,
                     "moduleId": 0,
-                    "start": 11566,
+                    "start": 11595,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -11675,10 +11695,10 @@ description: Variables in memory after executing cold-plate.kcl
                     -1.0
                   ],
                   "tag": {
-                    "commentStart": 11674,
-                    "end": 11679,
+                    "commentStart": 11703,
+                    "end": 11708,
                     "moduleId": 0,
-                    "start": 11674,
+                    "start": 11703,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -11705,10 +11725,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 1.0,
                   "tag": {
-                    "commentStart": 11752,
-                    "end": 11756,
+                    "commentStart": 11781,
+                    "end": 11785,
                     "moduleId": 0,
-                    "start": 11752,
+                    "start": 11781,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -11729,10 +11749,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 11861,
-                    "end": 11866,
+                    "commentStart": 11890,
+                    "end": 11895,
                     "moduleId": 0,
-                    "start": 11861,
+                    "start": 11890,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -11759,10 +11779,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 1.0,
                   "tag": {
-                    "commentStart": 11937,
-                    "end": 11941,
+                    "commentStart": 11966,
+                    "end": 11970,
                     "moduleId": 0,
-                    "start": 11937,
+                    "start": 11966,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -11783,10 +11803,10 @@ description: Variables in memory after executing cold-plate.kcl
                     3.0
                   ],
                   "tag": {
-                    "commentStart": 12042,
-                    "end": 12047,
+                    "commentStart": 12071,
+                    "end": 12076,
                     "moduleId": 0,
-                    "start": 12042,
+                    "start": 12071,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -11799,17 +11819,17 @@ description: Variables in memory after executing cold-plate.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 177,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 15.875,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -15154,10 +15174,10 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "radius": 0.3124999999875002,
           "tag": {
-            "commentStart": 17960,
-            "end": 17971,
+            "commentStart": 17989,
+            "end": 18000,
             "moduleId": 0,
-            "start": 17960,
+            "start": 17989,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -15167,20 +15187,50 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -3.000000000035,
+            0.62500000015
+          ],
+          "from": [
+            -2.7675000000475,
+            0.62500000018
+          ],
+          "radius": 0.23249999998750015,
+          "tag": {
+            "commentStart": 18080,
+            "end": 18091,
+            "moduleId": 0,
+            "start": 18080,
+            "type": "TagDeclarator",
+            "value": "innerCircle"
+          },
+          "to": [
+            -2.7675000000475,
+            0.62500000018
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 337,
+        "kind": "Custom",
         "origin": {
           "x": -186.68999999999997,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -15228,8 +15278,8 @@ description: Variables in memory after executing cold-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "tubeSectionSketch": {
@@ -15622,10 +15672,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.3124999999875002,
                   "tag": {
-                    "commentStart": 17960,
-                    "end": 17971,
+                    "commentStart": 17989,
+                    "end": 18000,
                     "moduleId": 0,
-                    "start": 17960,
+                    "start": 17989,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -15669,10 +15719,10 @@ description: Variables in memory after executing cold-plate.kcl
                   ],
                   "radius": 0.23249999998750015,
                   "tag": {
-                    "commentStart": 18051,
-                    "end": 18062,
+                    "commentStart": 18080,
+                    "end": 18091,
                     "moduleId": 0,
-                    "start": 18051,
+                    "start": 18080,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -15685,17 +15735,17 @@ description: Variables in memory after executing cold-plate.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 337,
+                "kind": "Custom",
                 "origin": {
                   "x": -186.68999999999997,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -16026,6 +16076,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -16033,10 +16085,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 17960,
-            "end": 17971,
+            "commentStart": 17989,
+            "end": 18000,
             "moduleId": 0,
-            "start": 17960,
+            "start": 17989,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -16064,10 +16116,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.3124999999875002,
             "tag": {
-              "commentStart": 17960,
-              "end": 17971,
+              "commentStart": 17989,
+              "end": 18000,
               "moduleId": 0,
-              "start": 17960,
+              "start": 17989,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -16077,20 +16129,50 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -3.000000000035,
+              0.62500000015
+            ],
+            "from": [
+              -2.7675000000475,
+              0.62500000018
+            ],
+            "radius": 0.23249999998750015,
+            "tag": {
+              "commentStart": 18080,
+              "end": 18091,
+              "moduleId": 0,
+              "start": 18080,
+              "type": "TagDeclarator",
+              "value": "innerCircle"
+            },
+            "to": [
+              -2.7675000000475,
+              0.62500000018
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 337,
+          "kind": "Custom",
           "origin": {
             "x": -186.68999999999997,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -16138,8 +16220,8 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -16152,6 +16234,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -16159,10 +16243,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 17960,
-            "end": 17971,
+            "commentStart": 17989,
+            "end": 18000,
             "moduleId": 0,
-            "start": 17960,
+            "start": 17989,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -16190,10 +16274,10 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "radius": 0.3124999999875002,
             "tag": {
-              "commentStart": 17960,
-              "end": 17971,
+              "commentStart": 17989,
+              "end": 18000,
               "moduleId": 0,
-              "start": 17960,
+              "start": 17989,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -16203,20 +16287,50 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -3.000000000035,
+              0.62500000015
+            ],
+            "from": [
+              -2.7675000000475,
+              0.62500000018
+            ],
+            "radius": 0.23249999998750015,
+            "tag": {
+              "commentStart": 18080,
+              "end": 18091,
+              "moduleId": 0,
+              "start": 18080,
+              "type": "TagDeclarator",
+              "value": "innerCircle"
+            },
+            "to": [
+              -2.7675000000475,
+              0.62500000018
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 337,
+          "kind": "Custom",
           "origin": {
             "x": -186.68999999999997,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -16264,8 +16378,8 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

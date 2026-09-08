@@ -1,0 +1,46 @@
+profile = sketch(on = XY) {
+  top = line(start = [var 0.94mm, var 3.48mm], end = [var 5.62mm, var 3.48mm])
+  right = line(start = [var 6.56mm, var 2.54mm], end = [var 6.56mm, var 0mm])
+  bottom = line(start = [var 6.56mm, var 0mm], end = [var 0mm, var 0mm])
+  left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2.54mm])
+
+  horizontal([right.end, ORIGIN])
+  coincident([right.end, bottom.start])
+  coincident([bottom.end, ORIGIN])
+  coincident([bottom.end, left.start])
+  vertical([left.end, ORIGIN])
+
+  // This is the usual tangential fillet: a short, smooth quarter turn between
+  // the top edge and the left wall.
+  left_fillet = arc(start = [var 0.94mm, var 3.48mm], end = [var 0mm, var 2.54mm], center = [var 0.94mm, var 2.54mm])
+  coincident([left_fillet.start, top.start])
+  coincident([left_fillet.end, left.end])
+  tangent([top, left_fillet])
+  tangent([left, left_fillet])
+
+  // Same tangent intent, but this start/end/center ordering makes the default
+  // CCW arc go the long way around the circle, producing the spiky right corner.
+  right_fillet_wrong_way = arc(start = [var 5.62mm, var 3.48mm], end = [var 6.56mm, var 2.54mm], center = [var 5.62mm, var 2.54mm])
+  coincident([right_fillet_wrong_way.start, top.end])
+  coincident([right_fillet_wrong_way.end, right.start])
+  tangent([top, right_fillet_wrong_way])
+  tangent([right, right_fillet_wrong_way])
+
+  perpendicular([right, bottom])
+  perpendicular([bottom, left])
+  equalLength([right, left])
+  distance([bottom.start, bottom.end]) == 6.56mm
+  perpendicular([top, left])
+  distance([bottom, top]) == 3.48mm
+  equalRadius([right_fillet_wrong_way, left_fillet])
+  radius(left_fillet) == 0.94mm
+  distance([top.start, top.end]) == 4.68mm
+
+  centerline = line(start = [var 3.28mm, var 3.48mm], end = [var 3.28mm, var 0mm], construction = true)
+  coincident([centerline.start, top])
+  midpoint(top, point = centerline.start)
+  midpoint(bottom, point = centerline.end)
+  perpendicular([centerline, bottom])
+  perpendicular([top, centerline])
+  distance([left.start, left.end]) == 2.54mm
+}

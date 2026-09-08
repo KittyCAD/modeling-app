@@ -86,7 +86,7 @@ cubeProfile = sketch(on = XY) {
   equalLength([line2, line3])
   distance([line2.start, line2.end]) == 3mm
 }
-cubeRegion = region(point = [0mm, 0mm], sketch = cubeProfile)
+cubeRegion = region(segments = [cubeProfile.line1, cubeProfile.line2])
 cube1 = extrude(cubeRegion, length = 3mm)
 
 // Add a hole to the cube.
@@ -174,7 +174,7 @@ cubeProfile = sketch(on = XY) {
   equalLength([line2, line3])
   distance([line2.start, line2.end]) == 3mm
 }
-cubeRegion = region(point = [0mm, 0mm], sketch = cubeProfile)
+cubeRegion = region(segments = [cubeProfile.line1, cubeProfile.line2])
 cube1 = extrude(cubeRegion, length = 3mm)
 
 // Add a hole to the cube.

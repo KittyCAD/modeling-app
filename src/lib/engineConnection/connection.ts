@@ -58,7 +58,6 @@ export class Connection extends EventTarget {
     pong: number | undefined
   }
   private _pingIntervalId: ReturnType<typeof setInterval> | undefined
-  private clearDisconnectedTimeout: (() => void) | undefined
   timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined
 
   peerConnection: RTCPeerConnection | undefined
@@ -102,6 +101,7 @@ export class Connection extends EventTarget {
   tearDownManager: (options?: ManagerTearDown) => void
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
+  private readonly getCloudProjectId: () => string | undefined
 
   constructor({
     url,
@@ -110,7 +110,9 @@ export class Connection extends EventTarget {
     tearDownManager,
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
+    unitTestGeometryOnly,
     handleMessage,
+    getCloudProjectId,
   }: {
     url: string
     token: string
@@ -118,7 +120,9 @@ export class Connection extends EventTarget {
     tearDownManager: (options?: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestGeometryOnly?: boolean
     handleMessage: (event: MessageEvent<any>) => void
+    getCloudProjectId: () => string | undefined
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -134,6 +138,7 @@ export class Connection extends EventTarget {
     this.tearDownManager = tearDownManager
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
+    this.getCloudProjectId = getCloudProjectId
     this._pingPongSpan = { ping: undefined, pong: undefined }
     this.deferredConnection = null
     this.deferredPeerConnection = null
@@ -151,14 +156,20 @@ export class Connection extends EventTarget {
     })
 
     if (callbackOnUnitTestingConnection) {
-      this.connectUnitTesting(callbackOnUnitTestingConnection)
+      this.connectUnitTesting(
+        callbackOnUnitTestingConnection,
+        unitTestGeometryOnly
+      )
       this.isUsingUnitTestingConnection = true
     }
   }
 
-  connectUnitTesting(callback: (message: string) => void) {
+  connectUnitTesting(
+    callback: (message: string) => void,
+    geometryOnly = false
+  ) {
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao`
+      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnly ? '&webrtc=false' : ''}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -198,6 +209,14 @@ export class Connection extends EventTarget {
 
       switch (resp.type) {
         case 'pong':
+          break
+
+        // Geometry-only sessions do not establish WebRTC, so the session data
+        // response is the successful connection handshake for these tests.
+        case 'modeling_session_data':
+          if (geometryOnly) {
+            callback('auth success')
+          }
           break
 
         // Only fires on successful authentication.
@@ -473,13 +492,11 @@ export class Connection extends EventTarget {
     const onNegotiationNeeded = createOnNegotiationNeeded()
     const onSignalingStateChange = createOnSignalingStateChange()
     const onIceCandidateError = createOnIceCandidateError()
-    const { onConnectionStateChange, clearDisconnectedTimeout } =
-      createOnConnectionStateChange({
-        dispatchEvent: this.dispatchEvent.bind(this),
-        connection: this,
-        tearDownManager: this.tearDownManager.bind(this),
-      })
-    this.clearDisconnectedTimeout = clearDisconnectedTimeout
+    const onConnectionStateChange = createOnConnectionStateChange({
+      dispatchEvent: this.dispatchEvent.bind(this),
+      connection: this,
+      tearDownManager: this.tearDownManager.bind(this),
+    })
     const onTrack = createOnTrack({
       setMediaStream: this.setMediaStream.bind(this),
       setWebrtcStatsCollector: this.setWebrtcStatsCollector.bind(this),
@@ -628,6 +645,7 @@ export class Connection extends EventTarget {
       setApiCallId: (apiCallId) => {
         this.apiCallId = apiCallId
       },
+      getCloudProjectId: this.getCloudProjectId,
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -812,16 +830,23 @@ export class Connection extends EventTarget {
       return
     }
 
-    EngineDebugger.addLog({
-      label: 'connection',
-      message: 'disconnectPeerConnection',
-      metadata: {
-        id: this.id,
-        connectionState: this.peerConnection.connectionState,
-      },
-    })
-
-    this.peerConnection.close()
+    if (this.peerConnection.connectionState === 'closed') {
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectPeerConnection',
+        metadata: { id: this.id },
+      })
+      this.peerConnection.close()
+    } else {
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectPeerConnection',
+        metadata: {
+          id: this.id,
+          connectionState: this.peerConnection.connectionState,
+        },
+      })
+    }
   }
 
   removeAllEventListeners() {
@@ -868,8 +893,6 @@ export class Connection extends EventTarget {
   }
 
   cleanUpTimeouts() {
-    this.clearDisconnectedTimeout?.()
-    this.clearDisconnectedTimeout = undefined
     clearTimeout(this.timeoutToForceConnectId)
     this.timeoutToForceConnectId = undefined
   }

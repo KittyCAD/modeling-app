@@ -1,4 +1,5 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
+import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import fsZds from '@src/lib/fs-zds'
 import type {
   HomeProjectActionsService,
@@ -62,6 +63,10 @@ function createProjectActions({
     canMoveToLibrary: () => true,
     canReviewDuplicateRealizations: (project) =>
       Boolean(project.duplicateRealizations?.length),
+    canSeparateProjectCopies: (project) =>
+      Boolean(
+        project.localProjectPath && project.duplicateProjectIdPaths?.length
+      ),
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
@@ -71,23 +76,30 @@ function createProjectActions({
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn().mockResolvedValue(undefined),
     deleteDuplicateRealizations: vi.fn().mockResolvedValue(undefined),
+    separateProjectCopies: vi.fn().mockResolvedValue(undefined),
   }
 }
 
 function renderProjectCard({
+  density,
   project = cloudProject,
   projectActions = createProjectActions(),
+  projectStatus,
   showCloudSyncUi,
 }: {
+  density?: 'default' | 'compact'
   project?: HomeProjectEntry
   projectActions?: HomeProjectActionsService
+  projectStatus?: ProjectStatus
   showCloudSyncUi?: boolean
 } = {}) {
   render(
     <BrowserRouter>
       <AppProjectCard
+        density={density}
         project={project}
         projectActions={projectActions}
+        projectStatus={projectStatus}
         showCloudSyncUi={showCloudSyncUi}
       />
     </BrowserRouter>
@@ -322,6 +334,115 @@ describe('ProjectCard', () => {
         ['/files/old-cloud-title-copy']
       )
     )
+  })
+
+  test('offers to separate local project folders with the same project id', async () => {
+    const projectActions = createProjectActions()
+    renderProjectCard({
+      projectActions,
+      showCloudSyncUi: false,
+      project: {
+        ...cloudProject,
+        status: 'local',
+        remoteProjectId: undefined,
+        duplicateProjectIdPaths: ['/projects/copied-project'],
+      },
+    })
+
+    const badge = screen.getByTestId('project-duplicate-id-badge')
+    const tooltip = screen.getByRole('tooltip', { hidden: true })
+    expect(badge).toHaveTextContent('Shared history')
+    expect(badge).toHaveClass('pointer-events-auto')
+    expect(tooltip).toHaveTextContent('Project copies share Zookeeper history.')
+    const showTooltip = vi.fn()
+    Object.defineProperty(tooltip, 'showPopover', { value: showTooltip })
+    fireEvent.mouseEnter(badge)
+    expect(showTooltip).toHaveBeenCalledOnce()
+    expect(screen.getByTestId('project-link')).toHaveAccessibleName(
+      /Project copies share Zookeeper history/
+    )
+    expect(screen.queryByTestId('project-copy-warning')).not.toBeInTheDocument()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(
+      screen.getByTestId('project-card-context-separate-project-copies')
+    )
+    expect(screen.getByText('Separate Project Copies')).toBeInTheDocument()
+    expect(screen.getByLabelText('/projects/old-cloud-title')).toBeChecked()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveClass('py-2')
+    const separateButton = screen.getByTestId(
+      'separate-project-copies-confirmation'
+    )
+    expect(separateButton).toHaveClass('py-2', 'bg-primary')
+    expect(within(separateButton).getByLabelText('split')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByLabelText('/projects/copied-project'))
+    fireEvent.click(separateButton)
+
+    await waitFor(() =>
+      expect(projectActions.separateProjectCopies).toHaveBeenCalledWith(
+        expect.objectContaining({
+          localProjectPath: '/projects/old-cloud-title',
+        }),
+        '/projects/copied-project'
+      )
+    )
+  })
+
+  test.each([
+    ['pending_review', 'Pending Review', 'pending-review-badge'],
+    ['published', 'Published', 'published-badge'],
+    ['changes_requested', 'Changes requested', 'changes-requested-badge'],
+    ['rejected', 'Rejected', 'rejected-badge'],
+  ] as const)(
+    'shows the %s Aquarium publication status',
+    (publicationStatus, label, testId) => {
+      renderProjectCard({ projectStatus: { publicationStatus } })
+
+      expect(screen.getByTestId(testId)).toHaveTextContent(label)
+    }
+  )
+
+  test.each([
+    ['private', 'Private'],
+    ['draft', 'Draft'],
+    ['deleted', 'Deleted'],
+  ] as const)(
+    'does not show the %s non-publication status',
+    (publicationStatus, label) => {
+      renderProjectCard({ projectStatus: { publicationStatus } })
+
+      expect(screen.queryByText(label)).not.toBeInTheDocument()
+    }
+  )
+
+  test('shows Aquarium status independently of cloud sync UI', () => {
+    renderProjectCard({
+      projectStatus: { publicationStatus: 'published' },
+      showCloudSyncUi: false,
+    })
+
+    expect(screen.getByTestId('published-badge')).toHaveTextContent('Published')
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('stacks Aquarium and conflict badges on a compact card', () => {
+    renderProjectCard({
+      density: 'compact',
+      project: {
+        ...cloudProject,
+        status: 'conflicted',
+        conflict: {
+          conflictProjectPath: '/projects/old-cloud-title conflict',
+          createdAt: new Date(now).toISOString(),
+          remoteRevision: 'revision-123',
+        },
+      },
+      projectStatus: { publicationStatus: 'pending_review' },
+    })
+
+    expect(screen.getByTestId('pending-review-badge')).toBeInTheDocument()
+    expect(screen.getByTestId('cloud-conflict-badge')).toBeInTheDocument()
   })
 
   test('hides cloud sync project chips when cloud sync UI is disabled', () => {

@@ -50,6 +50,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -57,10 +59,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 475,
-            "end": 480,
+            "commentStart": 538,
+            "end": 543,
             "moduleId": 0,
-            "start": 475,
+            "start": 538,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -71,10 +73,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 562,
-            "end": 567,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 562,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -85,10 +87,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 650,
-            "end": 655,
+            "commentStart": 713,
+            "end": 718,
             "moduleId": 0,
-            "start": 650,
+            "start": 713,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -99,10 +101,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 739,
-            "end": 744,
+            "commentStart": 802,
+            "end": 807,
             "moduleId": 0,
-            "start": 739,
+            "start": 802,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -113,10 +115,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1377,
-            "end": 1389,
+            "commentStart": 1439,
+            "end": 1451,
             "moduleId": 0,
-            "start": 1377,
+            "start": 1439,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -127,10 +129,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1352,
-            "end": 1362,
+            "commentStart": 1414,
+            "end": 1424,
             "moduleId": 0,
-            "start": 1352,
+            "start": 1414,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -162,10 +164,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               49.61
             ],
             "tag": {
-              "commentStart": 475,
-              "end": 480,
+              "commentStart": 538,
+              "end": 543,
               "moduleId": 0,
-              "start": 475,
+              "start": 538,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -186,10 +188,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               49.61
             ],
             "tag": {
-              "commentStart": 562,
-              "end": 567,
+              "commentStart": 625,
+              "end": 630,
               "moduleId": 0,
-              "start": 562,
+              "start": 625,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -210,10 +212,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               -50.39
             ],
             "tag": {
-              "commentStart": 650,
-              "end": 655,
+              "commentStart": 713,
+              "end": 718,
               "moduleId": 0,
-              "start": 650,
+              "start": 713,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -234,10 +236,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
               -50.39
             ],
             "tag": {
-              "commentStart": 739,
-              "end": 744,
+              "commentStart": 802,
+              "end": 807,
               "moduleId": 0,
-              "start": 739,
+              "start": 802,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -250,17 +252,17 @@ description: Variables in memory after executing gdt-tutorial.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -324,8 +326,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -349,10 +351,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 475,
-            "end": 480,
+            "commentStart": 538,
+            "end": 543,
             "moduleId": 0,
-            "start": 475,
+            "start": 538,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -373,10 +375,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 562,
-            "end": 567,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 562,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -397,10 +399,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 650,
-            "end": 655,
+            "commentStart": 713,
+            "end": 718,
             "moduleId": 0,
-            "start": 650,
+            "start": 713,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -421,10 +423,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 739,
-            "end": 744,
+            "commentStart": 802,
+            "end": 807,
             "moduleId": 0,
-            "start": 739,
+            "start": 802,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -437,17 +439,17 @@ description: Variables in memory after executing gdt-tutorial.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -543,10 +545,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 475,
-            "end": 480,
+            "commentStart": 538,
+            "end": 543,
             "moduleId": 0,
-            "start": 475,
+            "start": 538,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -567,10 +569,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             49.61
           ],
           "tag": {
-            "commentStart": 562,
-            "end": 567,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 562,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -591,10 +593,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 650,
-            "end": 655,
+            "commentStart": 713,
+            "end": 718,
             "moduleId": 0,
-            "start": 650,
+            "start": 713,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -615,10 +617,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
             -50.39
           ],
           "tag": {
-            "commentStart": 739,
-            "end": 744,
+            "commentStart": 802,
+            "end": 807,
             "moduleId": 0,
-            "start": 739,
+            "start": 802,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -631,17 +633,17 @@ description: Variables in memory after executing gdt-tutorial.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -705,8 +707,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch001": {
@@ -1211,10 +1213,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     49.61
                   ],
                   "tag": {
-                    "commentStart": 475,
-                    "end": 480,
+                    "commentStart": 538,
+                    "end": 543,
                     "moduleId": 0,
-                    "start": 475,
+                    "start": 538,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1235,10 +1237,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     49.61
                   ],
                   "tag": {
-                    "commentStart": 562,
-                    "end": 567,
+                    "commentStart": 625,
+                    "end": 630,
                     "moduleId": 0,
-                    "start": 562,
+                    "start": 625,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1259,10 +1261,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     -50.39
                   ],
                   "tag": {
-                    "commentStart": 650,
-                    "end": 655,
+                    "commentStart": 713,
+                    "end": 718,
                     "moduleId": 0,
-                    "start": 650,
+                    "start": 713,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1283,10 +1285,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     -50.39
                   ],
                   "tag": {
-                    "commentStart": 739,
-                    "end": 744,
+                    "commentStart": 802,
+                    "end": 807,
                     "moduleId": 0,
-                    "start": 739,
+                    "start": 802,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1299,17 +1301,17 @@ description: Variables in memory after executing gdt-tutorial.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

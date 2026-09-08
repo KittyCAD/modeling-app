@@ -8,8 +8,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 122,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": -57.15,
@@ -41,8 +41,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 122,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": -57.15,
@@ -278,6 +278,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -285,10 +287,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10174,
-            "end": 10179,
+            "commentStart": 10226,
+            "end": 10231,
             "moduleId": 0,
-            "start": 10174,
+            "start": 10226,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -299,10 +301,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10254,
-            "end": 10259,
+            "commentStart": 10306,
+            "end": 10311,
             "moduleId": 0,
-            "start": 10254,
+            "start": 10306,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -313,10 +315,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10377,
-            "end": 10382,
+            "commentStart": 10429,
+            "end": 10434,
             "moduleId": 0,
-            "start": 10377,
+            "start": 10429,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -327,10 +329,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10497,
-            "end": 10502,
+            "commentStart": 10549,
+            "end": 10554,
             "moduleId": 0,
-            "start": 10497,
+            "start": 10549,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -341,10 +343,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10618,
-            "end": 10623,
+            "commentStart": 10670,
+            "end": 10675,
             "moduleId": 0,
-            "start": 10618,
+            "start": 10670,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -355,10 +357,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10743,
-            "end": 10748,
+            "commentStart": 10795,
+            "end": 10800,
             "moduleId": 0,
-            "start": 10743,
+            "start": 10795,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -380,10 +382,10 @@ description: Variables in memory after executing wheel-hub.kcl
               0.000000000000005146797671053602
             ],
             "tag": {
-              "commentStart": 10174,
-              "end": 10179,
+              "commentStart": 10226,
+              "end": 10231,
               "moduleId": 0,
-              "start": 10174,
+              "start": 10226,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -404,10 +406,10 @@ description: Variables in memory after executing wheel-hub.kcl
               0.37407621519321277
             ],
             "tag": {
-              "commentStart": 10254,
-              "end": 10259,
+              "commentStart": 10306,
+              "end": 10311,
               "moduleId": 0,
-              "start": 10254,
+              "start": 10306,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -428,10 +430,10 @@ description: Variables in memory after executing wheel-hub.kcl
               0.37407621519321127
             ],
             "tag": {
-              "commentStart": 10377,
-              "end": 10382,
+              "commentStart": 10429,
+              "end": 10434,
               "moduleId": 0,
-              "start": 10377,
+              "start": 10429,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -452,10 +454,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -0.0000000000000024141541293807955
             ],
             "tag": {
-              "commentStart": 10497,
-              "end": 10502,
+              "commentStart": 10549,
+              "end": 10554,
               "moduleId": 0,
-              "start": 10497,
+              "start": 10549,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -476,10 +478,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -0.37407621519321355
             ],
             "tag": {
-              "commentStart": 10618,
-              "end": 10623,
+              "commentStart": 10670,
+              "end": 10675,
               "moduleId": 0,
-              "start": 10618,
+              "start": 10670,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -500,10 +502,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -0.37407621519321044
             ],
             "tag": {
-              "commentStart": 10743,
-              "end": 10748,
+              "commentStart": 10795,
+              "end": 10800,
               "moduleId": 0,
-              "start": 10743,
+              "start": 10795,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -588,8 +590,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1684,10 +1686,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     0.000000000000005146797671053602
                   ],
                   "tag": {
-                    "commentStart": 10174,
-                    "end": 10179,
+                    "commentStart": 10226,
+                    "end": 10231,
                     "moduleId": 0,
-                    "start": 10174,
+                    "start": 10226,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1708,10 +1710,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     0.37407621519321277
                   ],
                   "tag": {
-                    "commentStart": 10254,
-                    "end": 10259,
+                    "commentStart": 10306,
+                    "end": 10311,
                     "moduleId": 0,
-                    "start": 10254,
+                    "start": 10306,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1732,10 +1734,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     0.37407621519321127
                   ],
                   "tag": {
-                    "commentStart": 10377,
-                    "end": 10382,
+                    "commentStart": 10429,
+                    "end": 10434,
                     "moduleId": 0,
-                    "start": 10377,
+                    "start": 10429,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1756,10 +1758,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -0.0000000000000024141541293807955
                   ],
                   "tag": {
-                    "commentStart": 10497,
-                    "end": 10502,
+                    "commentStart": 10549,
+                    "end": 10554,
                     "moduleId": 0,
-                    "start": 10497,
+                    "start": 10549,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1780,10 +1782,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -0.37407621519321355
                   ],
                   "tag": {
-                    "commentStart": 10618,
-                    "end": 10623,
+                    "commentStart": 10670,
+                    "end": 10675,
                     "moduleId": 0,
-                    "start": 10618,
+                    "start": 10670,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -1804,10 +1806,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -0.37407621519321044
                   ],
                   "tag": {
-                    "commentStart": 10743,
-                    "end": 10748,
+                    "commentStart": 10795,
+                    "end": 10800,
                     "moduleId": 0,
-                    "start": 10743,
+                    "start": 10795,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -1918,10 +1920,10 @@ description: Variables in memory after executing wheel-hub.kcl
             0.000000000000005146797671053602
           ],
           "tag": {
-            "commentStart": 10174,
-            "end": 10179,
+            "commentStart": 10226,
+            "end": 10231,
             "moduleId": 0,
-            "start": 10174,
+            "start": 10226,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1942,10 +1944,10 @@ description: Variables in memory after executing wheel-hub.kcl
             0.37407621519321277
           ],
           "tag": {
-            "commentStart": 10254,
-            "end": 10259,
+            "commentStart": 10306,
+            "end": 10311,
             "moduleId": 0,
-            "start": 10254,
+            "start": 10306,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1966,10 +1968,10 @@ description: Variables in memory after executing wheel-hub.kcl
             0.37407621519321127
           ],
           "tag": {
-            "commentStart": 10377,
-            "end": 10382,
+            "commentStart": 10429,
+            "end": 10434,
             "moduleId": 0,
-            "start": 10377,
+            "start": 10429,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1990,10 +1992,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -0.0000000000000024141541293807955
           ],
           "tag": {
-            "commentStart": 10497,
-            "end": 10502,
+            "commentStart": 10549,
+            "end": 10554,
             "moduleId": 0,
-            "start": 10497,
+            "start": 10549,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2014,10 +2016,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -0.37407621519321355
           ],
           "tag": {
-            "commentStart": 10618,
-            "end": 10623,
+            "commentStart": 10670,
+            "end": 10675,
             "moduleId": 0,
-            "start": 10618,
+            "start": 10670,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2038,10 +2040,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -0.37407621519321044
           ],
           "tag": {
-            "commentStart": 10743,
-            "end": 10748,
+            "commentStart": 10795,
+            "end": 10800,
             "moduleId": 0,
-            "start": 10743,
+            "start": 10795,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2126,8 +2128,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "boltStem": {
@@ -2138,6 +2140,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2145,10 +2149,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12438,
-                "end": 12445,
+                "commentStart": 12499,
+                "end": 12506,
                 "moduleId": 0,
-                "start": 12438,
+                "start": 12499,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2176,10 +2180,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 12438,
-                  "end": 12445,
+                  "commentStart": 12499,
+                  "end": 12506,
                   "moduleId": 0,
-                  "start": 12438,
+                  "start": 12499,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2240,8 +2244,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -2254,6 +2258,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2261,10 +2267,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12438,
-                "end": 12445,
+                "commentStart": 12499,
+                "end": 12506,
                 "moduleId": 0,
-                "start": 12438,
+                "start": 12499,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2292,10 +2298,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 12438,
-                  "end": 12445,
+                  "commentStart": 12499,
+                  "end": 12506,
                   "moduleId": 0,
-                  "start": 12438,
+                  "start": 12499,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2356,8 +2362,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -2370,6 +2376,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2377,10 +2385,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12438,
-                "end": 12445,
+                "commentStart": 12499,
+                "end": 12506,
                 "moduleId": 0,
-                "start": 12438,
+                "start": 12499,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2408,10 +2416,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 12438,
-                  "end": 12445,
+                  "commentStart": 12499,
+                  "end": 12506,
                   "moduleId": 0,
-                  "start": 12438,
+                  "start": 12499,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2472,8 +2480,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -2486,6 +2494,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2493,10 +2503,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12438,
-                "end": 12445,
+                "commentStart": 12499,
+                "end": 12506,
                 "moduleId": 0,
-                "start": 12438,
+                "start": 12499,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2524,10 +2534,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 12438,
-                  "end": 12445,
+                  "commentStart": 12499,
+                  "end": 12506,
                   "moduleId": 0,
-                  "start": 12438,
+                  "start": 12499,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2588,8 +2598,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -2602,6 +2612,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2609,10 +2621,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12438,
-                "end": 12445,
+                "commentStart": 12499,
+                "end": 12506,
                 "moduleId": 0,
-                "start": 12438,
+                "start": 12499,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -2640,10 +2652,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 12438,
-                  "end": 12445,
+                  "commentStart": 12499,
+                  "end": 12506,
                   "moduleId": 0,
-                  "start": 12438,
+                  "start": 12499,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2704,8 +2716,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": "[uuid]",
@@ -2972,10 +2984,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 0.26996625421831055,
                   "tag": {
-                    "commentStart": 12438,
-                    "end": 12445,
+                    "commentStart": 12499,
+                    "end": 12506,
                     "moduleId": 0,
-                    "start": 12438,
+                    "start": 12499,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -3183,10 +3195,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 0.26996625421831055,
           "tag": {
-            "commentStart": 12438,
-            "end": 12445,
+            "commentStart": 12499,
+            "end": 12506,
             "moduleId": 0,
-            "start": 12438,
+            "start": 12499,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3247,8 +3259,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "capEnd001": {
@@ -3271,6 +3283,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3278,10 +3292,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7191,
-            "end": 7202,
+            "commentStart": 7249,
+            "end": 7260,
             "moduleId": 0,
-            "start": 7191,
+            "start": 7249,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -3292,10 +3306,24 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8276,
-            "end": 8288,
+            "commentStart": 7329,
+            "end": 7345,
             "moduleId": 0,
-            "start": 8276,
+            "start": 7329,
+            "type": "TagDeclarator",
+            "value": "centerBoreCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8328,
+            "end": 8340,
+            "moduleId": 0,
+            "start": 8328,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -3306,10 +3334,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8301,
-            "end": 8311,
+            "commentStart": 8353,
+            "end": 8363,
             "moduleId": 0,
-            "start": 8301,
+            "start": 8353,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -3347,10 +3375,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 7191,
-              "end": 7202,
+              "commentStart": 7249,
+              "end": 7260,
               "moduleId": 0,
-              "start": 7191,
+              "start": 7249,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -3360,20 +3388,50 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              1.5,
+              0.0
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 7329,
+              "end": 7345,
+              "moduleId": 0,
+              "start": 7329,
+              "type": "TagDeclarator",
+              "value": "centerBoreCircle"
+            },
+            "to": [
+              1.5,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 122,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": -57.15,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3429,8 +3487,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3459,6 +3517,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3466,10 +3526,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7191,
-            "end": 7202,
+            "commentStart": 7249,
+            "end": 7260,
             "moduleId": 0,
-            "start": 7191,
+            "start": 7249,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -3480,10 +3540,24 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8276,
-            "end": 8288,
+            "commentStart": 7329,
+            "end": 7345,
             "moduleId": 0,
-            "start": 8276,
+            "start": 7329,
+            "type": "TagDeclarator",
+            "value": "centerBoreCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8328,
+            "end": 8340,
+            "moduleId": 0,
+            "start": 8328,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -3494,10 +3568,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8301,
-            "end": 8311,
+            "commentStart": 8353,
+            "end": 8363,
             "moduleId": 0,
-            "start": 8301,
+            "start": 8353,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -3535,10 +3609,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 7191,
-              "end": 7202,
+              "commentStart": 7249,
+              "end": 7260,
               "moduleId": 0,
-              "start": 7191,
+              "start": 7249,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -3548,20 +3622,50 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              1.5,
+              0.0
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 7329,
+              "end": 7345,
+              "moduleId": 0,
+              "start": 7329,
+              "type": "TagDeclarator",
+              "value": "centerBoreCircle"
+            },
+            "to": [
+              1.5,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 122,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": -57.15,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3617,8 +3721,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3675,6 +3779,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3682,10 +3788,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8594,
-            "end": 8601,
+            "commentStart": 8646,
+            "end": 8653,
             "moduleId": 0,
-            "start": 8594,
+            "start": 8646,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3713,10 +3819,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.26996625421831055,
             "tag": {
-              "commentStart": 8594,
-              "end": 8601,
+              "commentStart": 8646,
+              "end": 8653,
               "moduleId": 0,
-              "start": 8594,
+              "start": 8646,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3729,17 +3835,17 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 122,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": -57.15,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3783,8 +3889,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3800,6 +3906,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3807,10 +3915,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -3838,10 +3946,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -3854,17 +3962,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3908,8 +4016,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3922,6 +4030,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3929,10 +4039,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -3960,10 +4070,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -3976,17 +4086,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4030,8 +4140,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4044,6 +4154,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4051,10 +4163,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4082,10 +4194,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4098,17 +4210,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4152,8 +4264,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4166,6 +4278,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4173,10 +4287,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4204,10 +4318,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4220,17 +4334,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4274,8 +4388,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4288,6 +4402,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4295,10 +4411,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4326,10 +4442,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4342,17 +4458,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4396,8 +4512,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4410,6 +4526,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4417,10 +4535,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4448,10 +4566,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4464,17 +4582,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4518,8 +4636,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4532,6 +4650,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4539,10 +4659,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4570,10 +4690,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4586,17 +4706,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4640,8 +4760,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4654,6 +4774,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4661,10 +4783,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4692,10 +4814,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4708,17 +4830,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4762,8 +4884,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4776,6 +4898,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4783,10 +4907,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4814,10 +4938,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4830,17 +4954,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4884,8 +5008,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4898,6 +5022,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4905,10 +5031,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8594,
-                "end": 8601,
+                "commentStart": 8646,
+                "end": 8653,
                 "moduleId": 0,
-                "start": 8594,
+                "start": 8646,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -4936,10 +5062,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 8594,
-                  "end": 8601,
+                  "commentStart": 8646,
+                  "end": 8653,
                   "moduleId": 0,
-                  "start": 8594,
+                  "start": 8646,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4952,17 +5078,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 122,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": -57.15,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5006,8 +5132,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5286,10 +5412,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 0.26996625421831055,
                   "tag": {
-                    "commentStart": 8594,
-                    "end": 8601,
+                    "commentStart": 8646,
+                    "end": 8653,
                     "moduleId": 0,
-                    "start": 8594,
+                    "start": 8646,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -5302,17 +5428,17 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 122,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": -57.15,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5509,10 +5635,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 0.26996625421831055,
           "tag": {
-            "commentStart": 8594,
-            "end": 8601,
+            "commentStart": 8646,
+            "end": 8653,
             "moduleId": 0,
-            "start": 8594,
+            "start": 8646,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -5525,17 +5651,17 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 122,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": -57.15,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5579,8 +5705,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "flangeOuterRadius": {
@@ -5597,8 +5723,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 122,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": -57.15,
@@ -5639,6 +5765,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5646,10 +5774,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3498,
-            "end": 3505,
+            "commentStart": 3556,
+            "end": 3563,
             "moduleId": 0,
-            "start": 3498,
+            "start": 3556,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -5677,10 +5805,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 1.25,
             "tag": {
-              "commentStart": 3498,
-              "end": 3505,
+              "commentStart": 3556,
+              "end": 3563,
               "moduleId": 0,
-              "start": 3498,
+              "start": 3556,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -5693,17 +5821,17 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 51,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5747,8 +5875,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5904,10 +6032,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 1.25,
                   "tag": {
-                    "commentStart": 3498,
-                    "end": 3505,
+                    "commentStart": 3556,
+                    "end": 3563,
                     "moduleId": 0,
-                    "start": 3498,
+                    "start": 3556,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -5920,17 +6048,17 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 51,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -6127,10 +6255,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 1.25,
           "tag": {
-            "commentStart": 3498,
-            "end": 3505,
+            "commentStart": 3556,
+            "end": 3563,
             "moduleId": 0,
-            "start": 3498,
+            "start": 3556,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6143,17 +6271,17 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 51,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -6197,8 +6325,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "hubSpacing": {
@@ -6314,6 +6442,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6321,10 +6451,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4230,
-            "end": 4237,
+            "commentStart": 4288,
+            "end": 4295,
             "moduleId": 0,
-            "start": 4230,
+            "start": 4288,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6352,10 +6482,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.26996625421831055,
             "tag": {
-              "commentStart": 4230,
-              "end": 4237,
+              "commentStart": 4288,
+              "end": 4295,
               "moduleId": 0,
-              "start": 4230,
+              "start": 4288,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -6368,17 +6498,17 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 65,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6422,8 +6552,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6439,6 +6569,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6446,10 +6578,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4230,
-                "end": 4237,
+                "commentStart": 4288,
+                "end": 4295,
                 "moduleId": 0,
-                "start": 4230,
+                "start": 4288,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -6477,10 +6609,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 4230,
-                  "end": 4237,
+                  "commentStart": 4288,
+                  "end": 4295,
                   "moduleId": 0,
-                  "start": 4230,
+                  "start": 4288,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -6493,17 +6625,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 65,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6547,8 +6679,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6561,6 +6693,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6568,10 +6702,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4230,
-                "end": 4237,
+                "commentStart": 4288,
+                "end": 4295,
                 "moduleId": 0,
-                "start": 4230,
+                "start": 4288,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -6599,10 +6733,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 4230,
-                  "end": 4237,
+                  "commentStart": 4288,
+                  "end": 4295,
                   "moduleId": 0,
-                  "start": 4230,
+                  "start": 4288,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -6615,17 +6749,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 65,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6669,8 +6803,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6683,6 +6817,8 @@ description: Variables in memory after executing wheel-hub.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6690,10 +6826,10 @@ description: Variables in memory after executing wheel-hub.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4230,
-                "end": 4237,
+                "commentStart": 4288,
+                "end": 4295,
                 "moduleId": 0,
-                "start": 4230,
+                "start": 4288,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -6721,10 +6857,10 @@ description: Variables in memory after executing wheel-hub.kcl
                 ],
                 "radius": 0.26996625421831055,
                 "tag": {
-                  "commentStart": 4230,
-                  "end": 4237,
+                  "commentStart": 4288,
+                  "end": 4295,
                   "moduleId": 0,
-                  "start": 4230,
+                  "start": 4288,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -6737,17 +6873,17 @@ description: Variables in memory after executing wheel-hub.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 65,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6791,8 +6927,8 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7071,10 +7207,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 0.26996625421831055,
                   "tag": {
-                    "commentStart": 4230,
-                    "end": 4237,
+                    "commentStart": 4288,
+                    "end": 4295,
                     "moduleId": 0,
-                    "start": 4230,
+                    "start": 4288,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -7087,17 +7223,17 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 65,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -7294,10 +7430,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 0.26996625421831055,
           "tag": {
-            "commentStart": 4230,
-            "end": 4237,
+            "commentStart": 4288,
+            "end": 4295,
             "moduleId": 0,
-            "start": 4230,
+            "start": 4288,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7310,17 +7446,17 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 65,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -7364,8 +7500,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "lugLength": {
@@ -7400,6 +7536,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7407,10 +7545,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7191,
-            "end": 7202,
+            "commentStart": 7249,
+            "end": 7260,
             "moduleId": 0,
-            "start": 7191,
+            "start": 7249,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -7421,10 +7559,24 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8276,
-            "end": 8288,
+            "commentStart": 7329,
+            "end": 7345,
             "moduleId": 0,
-            "start": 8276,
+            "start": 7329,
+            "type": "TagDeclarator",
+            "value": "centerBoreCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8328,
+            "end": 8340,
+            "moduleId": 0,
+            "start": 8328,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -7435,10 +7587,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8301,
-            "end": 8311,
+            "commentStart": 8353,
+            "end": 8363,
             "moduleId": 0,
-            "start": 8301,
+            "start": 8353,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -7476,10 +7628,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 7191,
-              "end": 7202,
+              "commentStart": 7249,
+              "end": 7260,
               "moduleId": 0,
-              "start": 7191,
+              "start": 7249,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -7489,20 +7641,50 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              1.5,
+              0.0
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 7329,
+              "end": 7345,
+              "moduleId": 0,
+              "start": 7329,
+              "type": "TagDeclarator",
+              "value": "centerBoreCircle"
+            },
+            "to": [
+              1.5,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 122,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": -57.15,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7558,8 +7740,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -7602,6 +7784,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7609,10 +7793,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7191,
-            "end": 7202,
+            "commentStart": 7249,
+            "end": 7260,
             "moduleId": 0,
-            "start": 7191,
+            "start": 7249,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -7623,10 +7807,24 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8276,
-            "end": 8288,
+            "commentStart": 7329,
+            "end": 7345,
             "moduleId": 0,
-            "start": 8276,
+            "start": 7329,
+            "type": "TagDeclarator",
+            "value": "centerBoreCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8328,
+            "end": 8340,
+            "moduleId": 0,
+            "start": 8328,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -7637,10 +7835,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8301,
-            "end": 8311,
+            "commentStart": 8353,
+            "end": 8363,
             "moduleId": 0,
-            "start": 8301,
+            "start": 8353,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -7678,10 +7876,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 3.0,
             "tag": {
-              "commentStart": 7191,
-              "end": 7202,
+              "commentStart": 7249,
+              "end": 7260,
               "moduleId": 0,
-              "start": 7191,
+              "start": 7249,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -7691,20 +7889,50 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              1.5,
+              0.0
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 7329,
+              "end": 7345,
+              "moduleId": 0,
+              "start": 7329,
+              "type": "TagDeclarator",
+              "value": "centerBoreCircle"
+            },
+            "to": [
+              1.5,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 122,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": -57.15,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7760,8 +7988,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8038,10 +8266,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 3.0,
                   "tag": {
-                    "commentStart": 7191,
-                    "end": 7202,
+                    "commentStart": 7249,
+                    "end": 7260,
                     "moduleId": 0,
-                    "start": 7191,
+                    "start": 7249,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -8085,10 +8313,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 1.5,
                   "tag": {
-                    "commentStart": 7271,
-                    "end": 7287,
+                    "commentStart": 7329,
+                    "end": 7345,
                     "moduleId": 0,
-                    "start": 7271,
+                    "start": 7329,
                     "type": "TagDeclarator",
                     "value": "centerBoreCircle"
                   },
@@ -8101,17 +8329,17 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 122,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": -57.15,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8432,10 +8660,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 3.0,
           "tag": {
-            "commentStart": 7191,
-            "end": 7202,
+            "commentStart": 7249,
+            "end": 7260,
             "moduleId": 0,
-            "start": 7191,
+            "start": 7249,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -8445,20 +8673,50 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            1.5,
+            0.0
+          ],
+          "radius": 1.5,
+          "tag": {
+            "commentStart": 7329,
+            "end": 7345,
+            "moduleId": 0,
+            "start": 7329,
+            "type": "TagDeclarator",
+            "value": "centerBoreCircle"
+          },
+          "to": [
+            1.5,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 122,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": -57.15,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8514,8 +8772,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "outerCircle": {
@@ -8528,6 +8786,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8535,10 +8795,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 940,
-            "end": 948,
+            "commentStart": 998,
+            "end": 1006,
             "moduleId": 0,
-            "start": 940,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "rightArc"
           },
@@ -8549,10 +8809,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1056,
-            "end": 1066,
+            "commentStart": 1114,
+            "end": 1124,
             "moduleId": 0,
-            "start": 1056,
+            "start": 1114,
             "type": "TagDeclarator",
             "value": "upperSlope"
           },
@@ -8563,10 +8823,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1142,
-            "end": 1154,
+            "commentStart": 1200,
+            "end": 1212,
             "moduleId": 0,
-            "start": 1142,
+            "start": 1200,
             "type": "TagDeclarator",
             "value": "upperLeftArc"
           },
@@ -8577,10 +8837,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1264,
-            "end": 1272,
+            "commentStart": 1322,
+            "end": 1330,
             "moduleId": 0,
-            "start": 1264,
+            "start": 1322,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -8591,10 +8851,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1349,
-            "end": 1361,
+            "commentStart": 1407,
+            "end": 1419,
             "moduleId": 0,
-            "start": 1349,
+            "start": 1407,
             "type": "TagDeclarator",
             "value": "lowerLeftArc"
           },
@@ -8605,10 +8865,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1532,
+            "end": 1542,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1532,
             "type": "TagDeclarator",
             "value": "lowerSlope"
           },
@@ -8636,10 +8896,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.6428571428593729,
             "tag": {
-              "commentStart": 940,
-              "end": 948,
+              "commentStart": 998,
+              "end": 1006,
               "moduleId": 0,
-              "start": 940,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "rightArc"
             },
@@ -8660,10 +8920,10 @@ description: Variables in memory after executing wheel-hub.kcl
               0.5567306167198552
             ],
             "tag": {
-              "commentStart": 1056,
-              "end": 1066,
+              "commentStart": 1114,
+              "end": 1124,
               "moduleId": 0,
-              "start": 1056,
+              "start": 1114,
               "type": "TagDeclarator",
               "value": "upperSlope"
             },
@@ -8690,10 +8950,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.6428571428569714,
             "tag": {
-              "commentStart": 1142,
-              "end": 1154,
+              "commentStart": 1200,
+              "end": 1212,
               "moduleId": 0,
-              "start": 1142,
+              "start": 1200,
               "type": "TagDeclarator",
               "value": "upperLeftArc"
             },
@@ -8714,10 +8974,10 @@ description: Variables in memory after executing wheel-hub.kcl
               1.8984374999999796
             ],
             "tag": {
-              "commentStart": 1264,
-              "end": 1272,
+              "commentStart": 1322,
+              "end": 1330,
               "moduleId": 0,
-              "start": 1264,
+              "start": 1322,
               "type": "TagDeclarator",
               "value": "leftWall"
             },
@@ -8744,10 +9004,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.642857142858589,
             "tag": {
-              "commentStart": 1349,
-              "end": 1361,
+              "commentStart": 1407,
+              "end": 1419,
               "moduleId": 0,
-              "start": 1349,
+              "start": 1407,
               "type": "TagDeclarator",
               "value": "lowerLeftArc"
             },
@@ -8768,10 +9028,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -2.4551681167200097
             ],
             "tag": {
-              "commentStart": 1474,
-              "end": 1484,
+              "commentStart": 1532,
+              "end": 1542,
               "moduleId": 0,
-              "start": 1474,
+              "start": 1532,
               "type": "TagDeclarator",
               "value": "lowerSlope"
             },
@@ -8784,17 +9044,17 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8858,8 +9118,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8872,6 +9132,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8879,10 +9141,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 940,
-            "end": 948,
+            "commentStart": 998,
+            "end": 1006,
             "moduleId": 0,
-            "start": 940,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "rightArc"
           },
@@ -8893,10 +9155,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1056,
-            "end": 1066,
+            "commentStart": 1114,
+            "end": 1124,
             "moduleId": 0,
-            "start": 1056,
+            "start": 1114,
             "type": "TagDeclarator",
             "value": "upperSlope"
           },
@@ -8907,10 +9169,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1142,
-            "end": 1154,
+            "commentStart": 1200,
+            "end": 1212,
             "moduleId": 0,
-            "start": 1142,
+            "start": 1200,
             "type": "TagDeclarator",
             "value": "upperLeftArc"
           },
@@ -8921,10 +9183,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1264,
-            "end": 1272,
+            "commentStart": 1322,
+            "end": 1330,
             "moduleId": 0,
-            "start": 1264,
+            "start": 1322,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -8935,10 +9197,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1349,
-            "end": 1361,
+            "commentStart": 1407,
+            "end": 1419,
             "moduleId": 0,
-            "start": 1349,
+            "start": 1407,
             "type": "TagDeclarator",
             "value": "lowerLeftArc"
           },
@@ -8949,10 +9211,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1532,
+            "end": 1542,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1532,
             "type": "TagDeclarator",
             "value": "lowerSlope"
           },
@@ -8980,10 +9242,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.6428571428593729,
             "tag": {
-              "commentStart": 940,
-              "end": 948,
+              "commentStart": 998,
+              "end": 1006,
               "moduleId": 0,
-              "start": 940,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "rightArc"
             },
@@ -9004,10 +9266,10 @@ description: Variables in memory after executing wheel-hub.kcl
               0.5567306167198552
             ],
             "tag": {
-              "commentStart": 1056,
-              "end": 1066,
+              "commentStart": 1114,
+              "end": 1124,
               "moduleId": 0,
-              "start": 1056,
+              "start": 1114,
               "type": "TagDeclarator",
               "value": "upperSlope"
             },
@@ -9034,10 +9296,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.6428571428569714,
             "tag": {
-              "commentStart": 1142,
-              "end": 1154,
+              "commentStart": 1200,
+              "end": 1212,
               "moduleId": 0,
-              "start": 1142,
+              "start": 1200,
               "type": "TagDeclarator",
               "value": "upperLeftArc"
             },
@@ -9058,10 +9320,10 @@ description: Variables in memory after executing wheel-hub.kcl
               1.8984374999999796
             ],
             "tag": {
-              "commentStart": 1264,
-              "end": 1272,
+              "commentStart": 1322,
+              "end": 1330,
               "moduleId": 0,
-              "start": 1264,
+              "start": 1322,
               "type": "TagDeclarator",
               "value": "leftWall"
             },
@@ -9088,10 +9350,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.642857142858589,
             "tag": {
-              "commentStart": 1349,
-              "end": 1361,
+              "commentStart": 1407,
+              "end": 1419,
               "moduleId": 0,
-              "start": 1349,
+              "start": 1407,
               "type": "TagDeclarator",
               "value": "lowerLeftArc"
             },
@@ -9112,10 +9374,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -2.4551681167200097
             ],
             "tag": {
-              "commentStart": 1474,
-              "end": 1484,
+              "commentStart": 1532,
+              "end": 1542,
               "moduleId": 0,
-              "start": 1474,
+              "start": 1532,
               "type": "TagDeclarator",
               "value": "lowerSlope"
             },
@@ -9128,17 +9390,17 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -9202,8 +9464,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -9216,6 +9478,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -9223,10 +9487,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 940,
-            "end": 948,
+            "commentStart": 998,
+            "end": 1006,
             "moduleId": 0,
-            "start": 940,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "rightArc"
           },
@@ -9237,10 +9501,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1056,
-            "end": 1066,
+            "commentStart": 1114,
+            "end": 1124,
             "moduleId": 0,
-            "start": 1056,
+            "start": 1114,
             "type": "TagDeclarator",
             "value": "upperSlope"
           },
@@ -9251,10 +9515,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1142,
-            "end": 1154,
+            "commentStart": 1200,
+            "end": 1212,
             "moduleId": 0,
-            "start": 1142,
+            "start": 1200,
             "type": "TagDeclarator",
             "value": "upperLeftArc"
           },
@@ -9265,10 +9529,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1264,
-            "end": 1272,
+            "commentStart": 1322,
+            "end": 1330,
             "moduleId": 0,
-            "start": 1264,
+            "start": 1322,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -9279,10 +9543,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1349,
-            "end": 1361,
+            "commentStart": 1407,
+            "end": 1419,
             "moduleId": 0,
-            "start": 1349,
+            "start": 1407,
             "type": "TagDeclarator",
             "value": "lowerLeftArc"
           },
@@ -9293,10 +9557,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1532,
+            "end": 1542,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1532,
             "type": "TagDeclarator",
             "value": "lowerSlope"
           },
@@ -9324,10 +9588,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.6428571428593729,
             "tag": {
-              "commentStart": 940,
-              "end": 948,
+              "commentStart": 998,
+              "end": 1006,
               "moduleId": 0,
-              "start": 940,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "rightArc"
             },
@@ -9348,10 +9612,10 @@ description: Variables in memory after executing wheel-hub.kcl
               0.5567306167198552
             ],
             "tag": {
-              "commentStart": 1056,
-              "end": 1066,
+              "commentStart": 1114,
+              "end": 1124,
               "moduleId": 0,
-              "start": 1056,
+              "start": 1114,
               "type": "TagDeclarator",
               "value": "upperSlope"
             },
@@ -9378,10 +9642,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.6428571428569714,
             "tag": {
-              "commentStart": 1142,
-              "end": 1154,
+              "commentStart": 1200,
+              "end": 1212,
               "moduleId": 0,
-              "start": 1142,
+              "start": 1200,
               "type": "TagDeclarator",
               "value": "upperLeftArc"
             },
@@ -9402,10 +9666,10 @@ description: Variables in memory after executing wheel-hub.kcl
               1.8984374999999796
             ],
             "tag": {
-              "commentStart": 1264,
-              "end": 1272,
+              "commentStart": 1322,
+              "end": 1330,
               "moduleId": 0,
-              "start": 1264,
+              "start": 1322,
               "type": "TagDeclarator",
               "value": "leftWall"
             },
@@ -9432,10 +9696,10 @@ description: Variables in memory after executing wheel-hub.kcl
             ],
             "radius": 0.642857142858589,
             "tag": {
-              "commentStart": 1349,
-              "end": 1361,
+              "commentStart": 1407,
+              "end": 1419,
               "moduleId": 0,
-              "start": 1349,
+              "start": 1407,
               "type": "TagDeclarator",
               "value": "lowerLeftArc"
             },
@@ -9456,10 +9720,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -2.4551681167200097
             ],
             "tag": {
-              "commentStart": 1474,
-              "end": 1484,
+              "commentStart": 1532,
+              "end": 1542,
               "moduleId": 0,
-              "start": 1474,
+              "start": 1532,
               "type": "TagDeclarator",
               "value": "lowerSlope"
             },
@@ -9472,17 +9736,17 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -9546,8 +9810,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -9984,10 +10248,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 0.6428571428593729,
                   "tag": {
-                    "commentStart": 940,
-                    "end": 948,
+                    "commentStart": 998,
+                    "end": 1006,
                     "moduleId": 0,
-                    "start": 940,
+                    "start": 998,
                     "type": "TagDeclarator",
                     "value": "rightArc"
                   },
@@ -10008,10 +10272,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     0.5567306167198552
                   ],
                   "tag": {
-                    "commentStart": 1056,
-                    "end": 1066,
+                    "commentStart": 1114,
+                    "end": 1124,
                     "moduleId": 0,
-                    "start": 1056,
+                    "start": 1114,
                     "type": "TagDeclarator",
                     "value": "upperSlope"
                   },
@@ -10038,10 +10302,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 0.6428571428569714,
                   "tag": {
-                    "commentStart": 1142,
-                    "end": 1154,
+                    "commentStart": 1200,
+                    "end": 1212,
                     "moduleId": 0,
-                    "start": 1142,
+                    "start": 1200,
                     "type": "TagDeclarator",
                     "value": "upperLeftArc"
                   },
@@ -10062,10 +10326,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     1.8984374999999796
                   ],
                   "tag": {
-                    "commentStart": 1264,
-                    "end": 1272,
+                    "commentStart": 1322,
+                    "end": 1330,
                     "moduleId": 0,
-                    "start": 1264,
+                    "start": 1322,
                     "type": "TagDeclarator",
                     "value": "leftWall"
                   },
@@ -10092,10 +10356,10 @@ description: Variables in memory after executing wheel-hub.kcl
                   ],
                   "radius": 0.642857142858589,
                   "tag": {
-                    "commentStart": 1349,
-                    "end": 1361,
+                    "commentStart": 1407,
+                    "end": 1419,
                     "moduleId": 0,
-                    "start": 1349,
+                    "start": 1407,
                     "type": "TagDeclarator",
                     "value": "lowerLeftArc"
                   },
@@ -10116,10 +10380,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -2.4551681167200097
                   ],
                   "tag": {
-                    "commentStart": 1474,
-                    "end": 1484,
+                    "commentStart": 1532,
+                    "end": 1542,
                     "moduleId": 0,
-                    "start": 1474,
+                    "start": 1532,
                     "type": "TagDeclarator",
                     "value": "lowerSlope"
                   },
@@ -10132,17 +10396,17 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -10662,10 +10926,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 0.6428571428593729,
           "tag": {
-            "commentStart": 940,
-            "end": 948,
+            "commentStart": 998,
+            "end": 1006,
             "moduleId": 0,
-            "start": 940,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "rightArc"
           },
@@ -10686,10 +10950,10 @@ description: Variables in memory after executing wheel-hub.kcl
             0.5567306167198552
           ],
           "tag": {
-            "commentStart": 1056,
-            "end": 1066,
+            "commentStart": 1114,
+            "end": 1124,
             "moduleId": 0,
-            "start": 1056,
+            "start": 1114,
             "type": "TagDeclarator",
             "value": "upperSlope"
           },
@@ -10716,10 +10980,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 0.6428571428569714,
           "tag": {
-            "commentStart": 1142,
-            "end": 1154,
+            "commentStart": 1200,
+            "end": 1212,
             "moduleId": 0,
-            "start": 1142,
+            "start": 1200,
             "type": "TagDeclarator",
             "value": "upperLeftArc"
           },
@@ -10740,10 +11004,10 @@ description: Variables in memory after executing wheel-hub.kcl
             1.8984374999999796
           ],
           "tag": {
-            "commentStart": 1264,
-            "end": 1272,
+            "commentStart": 1322,
+            "end": 1330,
             "moduleId": 0,
-            "start": 1264,
+            "start": 1322,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -10770,10 +11034,10 @@ description: Variables in memory after executing wheel-hub.kcl
           ],
           "radius": 0.642857142858589,
           "tag": {
-            "commentStart": 1349,
-            "end": 1361,
+            "commentStart": 1407,
+            "end": 1419,
             "moduleId": 0,
-            "start": 1349,
+            "start": 1407,
             "type": "TagDeclarator",
             "value": "lowerLeftArc"
           },
@@ -10794,10 +11058,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -2.4551681167200097
           ],
           "tag": {
-            "commentStart": 1474,
-            "end": 1484,
+            "commentStart": 1532,
+            "end": 1542,
             "moduleId": 0,
-            "start": 1474,
+            "start": 1532,
             "type": "TagDeclarator",
             "value": "lowerSlope"
           },
@@ -10810,17 +11074,17 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10884,8 +11148,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "revolveTrim": {
@@ -10893,6 +11157,8 @@ description: Variables in memory after executing wheel-hub.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -10900,10 +11166,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5377,
-            "end": 5382,
+            "commentStart": 5435,
+            "end": 5440,
             "moduleId": 0,
-            "start": 5377,
+            "start": 5435,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -10914,10 +11180,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5459,
-            "end": 5464,
+            "commentStart": 5517,
+            "end": 5522,
             "moduleId": 0,
-            "start": 5459,
+            "start": 5517,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -10928,10 +11194,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5542,
-            "end": 5547,
+            "commentStart": 5600,
+            "end": 5605,
             "moduleId": 0,
-            "start": 5542,
+            "start": 5600,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -10942,10 +11208,10 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5624,
-            "end": 5629,
+            "commentStart": 5682,
+            "end": 5687,
             "moduleId": 0,
-            "start": 5624,
+            "start": 5682,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -10967,10 +11233,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -0.7499999999999968
             ],
             "tag": {
-              "commentStart": 5377,
-              "end": 5382,
+              "commentStart": 5435,
+              "end": 5440,
               "moduleId": 0,
-              "start": 5377,
+              "start": 5435,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -10991,10 +11257,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -0.4895277334996407
             ],
             "tag": {
-              "commentStart": 5459,
-              "end": 5464,
+              "commentStart": 5517,
+              "end": 5522,
               "moduleId": 0,
-              "start": 5459,
+              "start": 5517,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -11015,10 +11281,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -4.98952773349964
             ],
             "tag": {
-              "commentStart": 5542,
-              "end": 5547,
+              "commentStart": 5600,
+              "end": 5605,
               "moduleId": 0,
-              "start": 5542,
+              "start": 5600,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -11039,10 +11305,10 @@ description: Variables in memory after executing wheel-hub.kcl
               -4.9895277334996395
             ],
             "tag": {
-              "commentStart": 5624,
-              "end": 5629,
+              "commentStart": 5682,
+              "end": 5687,
               "moduleId": 0,
-              "start": 5624,
+              "start": 5682,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -11055,17 +11321,17 @@ description: Variables in memory after executing wheel-hub.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 85,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11121,8 +11387,8 @@ description: Variables in memory after executing wheel-hub.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -11655,10 +11921,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -0.7499999999999968
                   ],
                   "tag": {
-                    "commentStart": 5377,
-                    "end": 5382,
+                    "commentStart": 5435,
+                    "end": 5440,
                     "moduleId": 0,
-                    "start": 5377,
+                    "start": 5435,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -11679,10 +11945,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -0.4895277334996407
                   ],
                   "tag": {
-                    "commentStart": 5459,
-                    "end": 5464,
+                    "commentStart": 5517,
+                    "end": 5522,
                     "moduleId": 0,
-                    "start": 5459,
+                    "start": 5517,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -11703,10 +11969,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -4.98952773349964
                   ],
                   "tag": {
-                    "commentStart": 5542,
-                    "end": 5547,
+                    "commentStart": 5600,
+                    "end": 5605,
                     "moduleId": 0,
-                    "start": 5542,
+                    "start": 5600,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -11727,10 +11993,10 @@ description: Variables in memory after executing wheel-hub.kcl
                     -4.9895277334996395
                   ],
                   "tag": {
-                    "commentStart": 5624,
-                    "end": 5629,
+                    "commentStart": 5682,
+                    "end": 5687,
                     "moduleId": 0,
-                    "start": 5624,
+                    "start": 5682,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -11743,17 +12009,17 @@ description: Variables in memory after executing wheel-hub.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 85,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -12077,10 +12343,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -0.7499999999999968
           ],
           "tag": {
-            "commentStart": 5377,
-            "end": 5382,
+            "commentStart": 5435,
+            "end": 5440,
             "moduleId": 0,
-            "start": 5377,
+            "start": 5435,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -12101,10 +12367,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -0.4895277334996407
           ],
           "tag": {
-            "commentStart": 5459,
-            "end": 5464,
+            "commentStart": 5517,
+            "end": 5522,
             "moduleId": 0,
-            "start": 5459,
+            "start": 5517,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -12125,10 +12391,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -4.98952773349964
           ],
           "tag": {
-            "commentStart": 5542,
-            "end": 5547,
+            "commentStart": 5600,
+            "end": 5605,
             "moduleId": 0,
-            "start": 5542,
+            "start": 5600,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -12149,10 +12415,10 @@ description: Variables in memory after executing wheel-hub.kcl
             -4.9895277334996395
           ],
           "tag": {
-            "commentStart": 5624,
-            "end": 5629,
+            "commentStart": 5682,
+            "end": 5687,
             "moduleId": 0,
-            "start": 5624,
+            "start": 5682,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -12165,17 +12431,17 @@ description: Variables in memory after executing wheel-hub.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 85,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -12231,8 +12497,8 @@ description: Variables in memory after executing wheel-hub.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "upperLeftArc": {

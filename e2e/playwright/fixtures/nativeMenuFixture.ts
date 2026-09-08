@@ -1,7 +1,6 @@
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-
-import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 
 type NativeMenuAction = 'click' | 'getItem'
 
@@ -26,6 +25,23 @@ export class NativeMenuFixture {
       'click'
     )
     expect(clickWasTriggered).toBe(true)
+  }
+
+  /**
+   * Arm an observable renderer or engine result before triggering the native
+   * menu item. Use this for one-shot events that could happen before a test
+   * starts waiting for them; DOM assertions can continue to follow `click`.
+   */
+  async clickAndWait<T>(
+    menuId: string,
+    waitForResult: () => Promise<T>,
+    page = this.requiredTronApp.page
+  ): Promise<T> {
+    const [result] = await Promise.all([
+      waitForResult(),
+      this.click(menuId, page),
+    ])
+    return result
   }
 
   async find(menuId: string, page = this.requiredTronApp.page) {

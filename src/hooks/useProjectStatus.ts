@@ -4,12 +4,15 @@ import type {
 } from '@kittycad/lib'
 import { projects } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
-import type { Project } from '@src/lib/project'
 import { useEffect, useMemo, useState } from 'react'
 
 export type ProjectStatus = {
   publicationStatus: KclProjectPublicationStatus
   feedback?: string
+}
+
+type RemoteProjectReference = {
+  remoteProjectId?: string
 }
 
 /**
@@ -27,6 +30,7 @@ export function useProjectStatus(
       return
     }
 
+    const projectId = cloudProjectId
     let cancelled = false
 
     async function fetchStatus() {
@@ -34,7 +38,7 @@ export function useProjectStatus(
         const client = createKCClient(token)
         const remote = await projects.get_project({
           client,
-          id: cloudProjectId!,
+          id: projectId,
         })
         if (!cancelled) {
           setStatus({
@@ -58,24 +62,29 @@ export function useProjectStatus(
 }
 
 /**
- * Fetches publication statuses for all cloud-linked projects.
+ * Fetches publication statuses when Home contains a remote-linked project.
  * Uses a single `list_projects` call rather than N individual calls.
  */
 export function useProjectStatuses(
-  localProjects: Project[] | undefined,
+  homeProjects: readonly RemoteProjectReference[] | undefined,
   token?: string
 ): Map<string, ProjectStatus> {
   const [remoteProjects, setRemoteProjects] = useState<
     ProjectSummaryResponse[]
   >([])
 
-  const hasCloudProjects = useMemo(() => {
-    if (!localProjects) return false
-    return localProjects.some((p) => !!p.cloudProjectId)
-  }, [localProjects])
-
+  const remoteProjectIdsKey = useMemo(
+    () =>
+      homeProjects
+        ?.flatMap((project) =>
+          project.remoteProjectId ? [project.remoteProjectId] : []
+        )
+        .toSorted()
+        .join(',') ?? '',
+    [homeProjects]
+  )
   useEffect(() => {
-    if (!token || !hasCloudProjects) {
+    if (!token || !remoteProjectIdsKey) {
       setRemoteProjects([])
       return
     }
@@ -99,7 +108,7 @@ export function useProjectStatuses(
     return () => {
       cancelled = true
     }
-  }, [token, hasCloudProjects])
+  }, [token, remoteProjectIdsKey])
 
   return useMemo(() => {
     const map = new Map<string, ProjectStatus>()

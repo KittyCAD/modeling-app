@@ -18,6 +18,7 @@ gdt::concentricity(
   framePlane?: Plane,
   leaderScale?: number(_),
   fontSize?: number(Length),
+  annotationName?: string,
 ): [GdtAnnotation; 1+]
 ```
 
@@ -47,6 +48,7 @@ where appropriate. ISO standards use the name coaxiality for this concept.
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
+| `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
 
 ### Returns
 
@@ -65,7 +67,13 @@ datumSketch = sketch(on = XY) {
   coincident([diameter.start, perimeter.end])
 }
 
-datumCylinder = extrude(region(point = [0mm, 1mm], sketch = datumSketch), length = 10mm)
+datumCylinder = extrude(
+  region(segments = [
+    datumSketch.diameter,
+    datumSketch.perimeter
+  ]),
+  length = 10mm,
+)
 
 controlledSketch = sketch(on = XY) {
   diameter = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
@@ -74,7 +82,13 @@ controlledSketch = sketch(on = XY) {
   coincident([diameter.end, perimeter.end])
 }
 
-controlledCylinder = extrude(region(point = [0mm, -1mm], sketch = controlledSketch), length = 10mm)
+controlledCylinder = extrude(
+  region(segments = [
+    controlledSketch.diameter,
+    controlledSketch.perimeter
+  ]),
+  length = 10mm,
+)
 
 gdt::datum(
   face = datumCylinder.sketch.tags.perimeter,
@@ -104,13 +118,13 @@ datumSketch = sketch(on = XY) {
   perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-datumCylinder = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 10mm)
+datumCylinder = extrude(region(segments = [datumSketch.perimeter]), length = 10mm)
 
 controlledSketch = sketch(on = XY) {
   perimeter = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-controlledCylinder = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 10mm, tagEnd = $top)
+controlledCylinder = extrude(region(segments = [controlledSketch.perimeter]), length = 10mm, tagEnd = $top)
 topEdge = getCommonEdge(faces = [
   controlledCylinder.sketch.tags.perimeter,
   top

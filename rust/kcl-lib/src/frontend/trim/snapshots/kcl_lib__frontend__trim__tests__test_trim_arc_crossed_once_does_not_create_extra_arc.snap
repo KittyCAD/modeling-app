@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/frontend/trim/tests.rs
+assertion_line: 16
+expression: result_normalized
+---
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = YZ) {
+  arc1 = arc(start = [var 1.03mm, var -0.6mm], end = [var 1.34mm, var -3.19mm], center = [var -4.83mm, var -2.61mm])
+  line1 = line(start = [var -1.21mm, var 2.31mm], end = [var -1.17mm, var -0.13mm])
+  line4 = line(start = [var -2.01mm, var -8.09mm], end = [var -9.3mm, var 2.73mm])
+  line2 = line(start = [var -1.49mm, var -1.06mm], end = [var 0mm, var 3.31mm])
+  vertical([line2.end, ORIGIN])
+  line3 = line(start = [var 0mm, var 3.31mm], end = [var 1.34mm, var -3.19mm])
+  coincident([line2.end, line3.start])
+  vertical([line3.start, ORIGIN])
+  arc2 = arc(start = [var -8.07mm, var 0.91mm], end = [var -8.85mm, var -4.14mm], center = [var -5mm, var -2.15mm])
+  coincident([arc1.end, line3.end])
+  point(at = [var -4.81mm, var 5.29mm])
+  point(at = [var -5.43mm, var 2.88mm])
+  point(at = [var -4.78mm, var 0.95mm])
+  coincident([arc2.start, line4])
+}

@@ -94,6 +94,8 @@ export const systemIOMachine = setup({
             projectName: string
             projectPath: string
             requestedProjectName: string
+            currentFilePath?: string | null
+            currentFileContents?: string
           }
         }
       | {
@@ -173,11 +175,17 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            onSuccess?: () => void
           }
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
-          output: { projectName: string; fileName: string; subRoute?: string }
+          output: {
+            projectName: string
+            fileName: string
+            subRoute?: string
+            onProjectLoaderComplete?: () => void
+          }
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
@@ -325,12 +333,17 @@ export const systemIOMachine = setup({
             src: string
             target: string
             requestedProjectName: string
+            requestedFileName?: string
             successMessage?: string
           }
         }
       | {
           type: SystemIOMachineEvents.done_moveRecursiveAndNavigate
-          output: { requestedProjectName: string; target: string }
+          output: {
+            requestedProjectName: string
+            requestedFileName?: string
+            target: string
+          }
         },
   },
   guards: {
@@ -680,12 +693,14 @@ export const systemIOMachine = setup({
           requestedProjectName: string
           requestedFileNameWithExtension: string
           requestedSubRoute?: string
+          onSuccess?: () => void
         }
       }): Promise<{
         message: string
         fileName: string
         projectName: string
         subRoute: string
+        onProjectLoaderComplete?: () => void
       }> => {
         return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
@@ -839,12 +854,14 @@ export const systemIOMachine = setup({
           target: string
           successMessage?: string
           requestedProjectName?: string | undefined
+          requestedFileName?: string | undefined
         }
       }) => {
         return {
           message: '',
           requestedAbsolutePath: '',
           requestedProjectName: '',
+          requestedFileName: input.requestedFileName,
           target: input.target,
         }
       }
@@ -1112,15 +1129,23 @@ export const systemIOMachine = setup({
             SystemIOMachineActions.setFolders,
             assign({
               hasListedProjects: true,
-              requestedProjectName: ({ context }) => {
-                // If we just finished renaming, navigate to the renamed project
-                if (context.pendingRenamedProjectName) {
-                  const newName = context.pendingRenamedProjectName
-                  return { name: newName }
-                }
-                return context.requestedProjectName
-              },
               pendingRenamedProjectName: () => undefined, // clear after redirect
+              requestedProjectName: ({ context }) => {
+                if (context.pendingRenamedProjectName) {
+                  return { name: context.pendingRenamedProjectName }
+                }
+                const pending = context.pendingNavigationAfterFolderRefresh
+                return pending && !pending.file
+                  ? { name: pending.project }
+                  : context.requestedProjectName
+              },
+              requestedFileName: ({ context }) => {
+                const pending = context.pendingNavigationAfterFolderRefresh
+                return pending?.file
+                  ? { project: pending.project, file: pending.file }
+                  : context.requestedFileName
+              },
+              pendingNavigationAfterFolderRefresh: () => undefined,
             }),
           ],
         },
@@ -1179,6 +1204,8 @@ export const systemIOMachine = setup({
             projectName: event.data.projectName,
             projectPath: event.data.projectPath,
             requestedProjectName: event.data.requestedProjectName,
+            currentFilePath: event.data.currentFilePath,
+            currentFileContents: event.data.currentFileContents,
           }
         },
         onDone: {
@@ -1593,12 +1620,15 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
+            onSuccess: event.data.onSuccess,
           }
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
@@ -1610,6 +1640,7 @@ export const systemIOMachine = setup({
                       projectName: string
                       fileName: string
                       subRoute?: string
+                      onProjectLoaderComplete?: () => void
                     }
                   }
                 ).output
@@ -1621,6 +1652,11 @@ export const systemIOMachine = setup({
                   project: output.projectName,
                   file,
                   subRoute: output.subRoute,
+                  ...(output.onProjectLoaderComplete
+                    ? {
+                        onProjectLoaderComplete: output.onProjectLoaderComplete,
+                      }
+                    : {}),
                 }
               },
             }),
@@ -2104,6 +2140,7 @@ export const systemIOMachine = setup({
             src: event.data.src,
             target: event.data.target,
             requestedProjectName: event.data.requestedProjectName,
+            requestedFileName: event.data.requestedFileName,
             successMessage: event.data.successMessage,
           }
         },
@@ -2114,14 +2151,18 @@ export const systemIOMachine = setup({
               lastRecursiveMoveTarget: ({ event }) => {
                 return (event as { output: { target?: string } }).output.target
               },
-              requestedProjectName: ({ event }) => {
-                assertEvent(
-                  event,
-                  SystemIOMachineEvents.done_moveRecursiveAndNavigate
-                )
+              pendingNavigationAfterFolderRefresh: ({ event }) => {
+                const output = (
+                  event as unknown as {
+                    output: {
+                      requestedProjectName: string
+                      requestedFileName?: string
+                    }
+                  }
+                ).output
                 return {
-                  name: (event as { output: { requestedProjectName: string } })
-                    .output.requestedProjectName,
+                  project: output.requestedProjectName,
+                  file: output.requestedFileName,
                 }
               },
             }),

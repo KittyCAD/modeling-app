@@ -65,10 +65,10 @@ description: Variables in memory after executing m4-insert.kcl
             -0.000000000000011476991531054836
           ],
           "tag": {
-            "commentStart": 579,
-            "end": 591,
+            "commentStart": 623,
+            "end": 635,
             "moduleId": 0,
-            "start": 579,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "outerTopWall"
           },
@@ -89,10 +89,10 @@ description: Variables in memory after executing m4-insert.kcl
             -2.2800000000000127
           ],
           "tag": {
-            "commentStart": 667,
-            "end": 678,
+            "commentStart": 711,
+            "end": 722,
             "moduleId": 0,
-            "start": 667,
+            "start": 711,
             "type": "TagDeclarator",
             "value": "topShoulder"
           },
@@ -113,10 +113,10 @@ description: Variables in memory after executing m4-insert.kcl
             -2.2800000000000153
           ],
           "tag": {
-            "commentStart": 810,
-            "end": 823,
+            "commentStart": 854,
+            "end": 867,
             "moduleId": 0,
-            "start": 810,
+            "start": 854,
             "type": "TagDeclarator",
             "value": "upperNeckWall"
           },
@@ -137,10 +137,10 @@ description: Variables in memory after executing m4-insert.kcl
             -3.1328718708050647
           ],
           "tag": {
-            "commentStart": 956,
-            "end": 964,
+            "commentStart": 1000,
+            "end": 1008,
             "moduleId": 0,
-            "start": 956,
+            "start": 1000,
             "type": "TagDeclarator",
             "value": "upperRib"
           },
@@ -161,10 +161,10 @@ description: Variables in memory after executing m4-insert.kcl
             -3.1328718708050656
           ],
           "tag": {
-            "commentStart": 1094,
-            "end": 1101,
+            "commentStart": 1138,
+            "end": 1145,
             "moduleId": 0,
-            "start": 1094,
+            "start": 1138,
             "type": "TagDeclarator",
             "value": "midWall"
           },
@@ -185,10 +185,10 @@ description: Variables in memory after executing m4-insert.kcl
             -5.532871870805065
           ],
           "tag": {
-            "commentStart": 1225,
-            "end": 1235,
+            "commentStart": 1269,
+            "end": 1279,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1269,
             "type": "TagDeclarator",
             "value": "taperFlank"
           },
@@ -209,10 +209,10 @@ description: Variables in memory after executing m4-insert.kcl
             -6.087128129194972
           ],
           "tag": {
-            "commentStart": 1361,
-            "end": 1374,
+            "commentStart": 1405,
+            "end": 1418,
             "moduleId": 0,
-            "start": 1361,
+            "start": 1405,
             "type": "TagDeclarator",
             "value": "lowerNeckWall"
           },
@@ -233,10 +233,10 @@ description: Variables in memory after executing m4-insert.kcl
             -6.940000000000017
           ],
           "tag": {
-            "commentStart": 1506,
-            "end": 1514,
+            "commentStart": 1550,
+            "end": 1558,
             "moduleId": 0,
-            "start": 1506,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "lowerRib"
           },
@@ -257,10 +257,10 @@ description: Variables in memory after executing m4-insert.kcl
             -6.940000000000015
           ],
           "tag": {
-            "commentStart": 1644,
-            "end": 1657,
+            "commentStart": 1688,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1644,
+            "start": 1688,
             "type": "TagDeclarator",
             "value": "lowerBandWall"
           },
@@ -298,10 +298,10 @@ description: Variables in memory after executing m4-insert.kcl
             -0.000000000000010201755659049832
           ],
           "tag": {
-            "commentStart": 1786,
-            "end": 1795,
+            "commentStart": 1830,
+            "end": 1839,
             "moduleId": 0,
-            "start": 1786,
+            "start": 1830,
             "type": "TagDeclarator",
             "value": "topBridge"
           },
@@ -322,10 +322,10 @@ description: Variables in memory after executing m4-insert.kcl
             -0.000000000000008926525542011769
           ],
           "tag": {
-            "commentStart": 1867,
-            "end": 1876,
+            "commentStart": 1911,
+            "end": 1920,
             "moduleId": 0,
-            "start": 1867,
+            "start": 1911,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -346,10 +346,10 @@ description: Variables in memory after executing m4-insert.kcl
             -8.100000000000009
           ],
           "tag": {
-            "commentStart": 1998,
-            "end": 2010,
+            "commentStart": 2042,
+            "end": 2054,
             "moduleId": 0,
-            "start": 1998,
+            "start": 2042,
             "type": "TagDeclarator",
             "value": "bottomBridge"
           },
@@ -362,17 +362,17 @@ description: Variables in memory after executing m4-insert.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -474,6 +474,8 @@ description: Variables in memory after executing m4-insert.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -481,10 +483,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 579,
-            "end": 591,
+            "commentStart": 623,
+            "end": 635,
             "moduleId": 0,
-            "start": 579,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "outerTopWall"
           },
@@ -495,10 +497,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 667,
-            "end": 678,
+            "commentStart": 711,
+            "end": 722,
             "moduleId": 0,
-            "start": 667,
+            "start": 711,
             "type": "TagDeclarator",
             "value": "topShoulder"
           },
@@ -509,10 +511,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 810,
-            "end": 823,
+            "commentStart": 854,
+            "end": 867,
             "moduleId": 0,
-            "start": 810,
+            "start": 854,
             "type": "TagDeclarator",
             "value": "upperNeckWall"
           },
@@ -523,10 +525,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 956,
-            "end": 964,
+            "commentStart": 1000,
+            "end": 1008,
             "moduleId": 0,
-            "start": 956,
+            "start": 1000,
             "type": "TagDeclarator",
             "value": "upperRib"
           },
@@ -537,10 +539,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1094,
-            "end": 1101,
+            "commentStart": 1138,
+            "end": 1145,
             "moduleId": 0,
-            "start": 1094,
+            "start": 1138,
             "type": "TagDeclarator",
             "value": "midWall"
           },
@@ -551,10 +553,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1225,
-            "end": 1235,
+            "commentStart": 1269,
+            "end": 1279,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1269,
             "type": "TagDeclarator",
             "value": "taperFlank"
           },
@@ -565,10 +567,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1361,
-            "end": 1374,
+            "commentStart": 1405,
+            "end": 1418,
             "moduleId": 0,
-            "start": 1361,
+            "start": 1405,
             "type": "TagDeclarator",
             "value": "lowerNeckWall"
           },
@@ -579,10 +581,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1506,
-            "end": 1514,
+            "commentStart": 1550,
+            "end": 1558,
             "moduleId": 0,
-            "start": 1506,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "lowerRib"
           },
@@ -593,10 +595,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1644,
-            "end": 1657,
+            "commentStart": 1688,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1644,
+            "start": 1688,
             "type": "TagDeclarator",
             "value": "lowerBandWall"
           },
@@ -607,10 +609,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1786,
-            "end": 1795,
+            "commentStart": 1830,
+            "end": 1839,
             "moduleId": 0,
-            "start": 1786,
+            "start": 1830,
             "type": "TagDeclarator",
             "value": "topBridge"
           },
@@ -621,10 +623,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1867,
-            "end": 1876,
+            "commentStart": 1911,
+            "end": 1920,
             "moduleId": 0,
-            "start": 1867,
+            "start": 1911,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -635,10 +637,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1998,
-            "end": 2010,
+            "commentStart": 2042,
+            "end": 2054,
             "moduleId": 0,
-            "start": 1998,
+            "start": 2042,
             "type": "TagDeclarator",
             "value": "bottomBridge"
           },
@@ -660,10 +662,10 @@ description: Variables in memory after executing m4-insert.kcl
               -0.000000000000011476991531054836
             ],
             "tag": {
-              "commentStart": 579,
-              "end": 591,
+              "commentStart": 623,
+              "end": 635,
               "moduleId": 0,
-              "start": 579,
+              "start": 623,
               "type": "TagDeclarator",
               "value": "outerTopWall"
             },
@@ -684,10 +686,10 @@ description: Variables in memory after executing m4-insert.kcl
               -2.2800000000000127
             ],
             "tag": {
-              "commentStart": 667,
-              "end": 678,
+              "commentStart": 711,
+              "end": 722,
               "moduleId": 0,
-              "start": 667,
+              "start": 711,
               "type": "TagDeclarator",
               "value": "topShoulder"
             },
@@ -708,10 +710,10 @@ description: Variables in memory after executing m4-insert.kcl
               -2.2800000000000153
             ],
             "tag": {
-              "commentStart": 810,
-              "end": 823,
+              "commentStart": 854,
+              "end": 867,
               "moduleId": 0,
-              "start": 810,
+              "start": 854,
               "type": "TagDeclarator",
               "value": "upperNeckWall"
             },
@@ -732,10 +734,10 @@ description: Variables in memory after executing m4-insert.kcl
               -3.1328718708050647
             ],
             "tag": {
-              "commentStart": 956,
-              "end": 964,
+              "commentStart": 1000,
+              "end": 1008,
               "moduleId": 0,
-              "start": 956,
+              "start": 1000,
               "type": "TagDeclarator",
               "value": "upperRib"
             },
@@ -756,10 +758,10 @@ description: Variables in memory after executing m4-insert.kcl
               -3.1328718708050656
             ],
             "tag": {
-              "commentStart": 1094,
-              "end": 1101,
+              "commentStart": 1138,
+              "end": 1145,
               "moduleId": 0,
-              "start": 1094,
+              "start": 1138,
               "type": "TagDeclarator",
               "value": "midWall"
             },
@@ -780,10 +782,10 @@ description: Variables in memory after executing m4-insert.kcl
               -5.532871870805065
             ],
             "tag": {
-              "commentStart": 1225,
-              "end": 1235,
+              "commentStart": 1269,
+              "end": 1279,
               "moduleId": 0,
-              "start": 1225,
+              "start": 1269,
               "type": "TagDeclarator",
               "value": "taperFlank"
             },
@@ -804,10 +806,10 @@ description: Variables in memory after executing m4-insert.kcl
               -6.087128129194972
             ],
             "tag": {
-              "commentStart": 1361,
-              "end": 1374,
+              "commentStart": 1405,
+              "end": 1418,
               "moduleId": 0,
-              "start": 1361,
+              "start": 1405,
               "type": "TagDeclarator",
               "value": "lowerNeckWall"
             },
@@ -828,10 +830,10 @@ description: Variables in memory after executing m4-insert.kcl
               -6.940000000000017
             ],
             "tag": {
-              "commentStart": 1506,
-              "end": 1514,
+              "commentStart": 1550,
+              "end": 1558,
               "moduleId": 0,
-              "start": 1506,
+              "start": 1550,
               "type": "TagDeclarator",
               "value": "lowerRib"
             },
@@ -852,10 +854,10 @@ description: Variables in memory after executing m4-insert.kcl
               -6.940000000000015
             ],
             "tag": {
-              "commentStart": 1644,
-              "end": 1657,
+              "commentStart": 1688,
+              "end": 1701,
               "moduleId": 0,
-              "start": 1644,
+              "start": 1688,
               "type": "TagDeclarator",
               "value": "lowerBandWall"
             },
@@ -876,10 +878,10 @@ description: Variables in memory after executing m4-insert.kcl
               -0.000000000000010201755659049832
             ],
             "tag": {
-              "commentStart": 1786,
-              "end": 1795,
+              "commentStart": 1830,
+              "end": 1839,
               "moduleId": 0,
-              "start": 1786,
+              "start": 1830,
               "type": "TagDeclarator",
               "value": "topBridge"
             },
@@ -900,10 +902,10 @@ description: Variables in memory after executing m4-insert.kcl
               -0.000000000000008926525542011769
             ],
             "tag": {
-              "commentStart": 1867,
-              "end": 1876,
+              "commentStart": 1911,
+              "end": 1920,
               "moduleId": 0,
-              "start": 1867,
+              "start": 1911,
               "type": "TagDeclarator",
               "value": "innerWall"
             },
@@ -924,10 +926,10 @@ description: Variables in memory after executing m4-insert.kcl
               -8.100000000000009
             ],
             "tag": {
-              "commentStart": 1998,
-              "end": 2010,
+              "commentStart": 2042,
+              "end": 2054,
               "moduleId": 0,
-              "start": 1998,
+              "start": 2042,
               "type": "TagDeclarator",
               "value": "bottomBridge"
             },
@@ -940,17 +942,17 @@ description: Variables in memory after executing m4-insert.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1038,8 +1040,8 @@ description: Variables in memory after executing m4-insert.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1112,10 +1114,10 @@ description: Variables in memory after executing m4-insert.kcl
             -0.000000000000011476991531054836
           ],
           "tag": {
-            "commentStart": 579,
-            "end": 591,
+            "commentStart": 623,
+            "end": 635,
             "moduleId": 0,
-            "start": 579,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "outerTopWall"
           },
@@ -1136,10 +1138,10 @@ description: Variables in memory after executing m4-insert.kcl
             -2.2800000000000127
           ],
           "tag": {
-            "commentStart": 667,
-            "end": 678,
+            "commentStart": 711,
+            "end": 722,
             "moduleId": 0,
-            "start": 667,
+            "start": 711,
             "type": "TagDeclarator",
             "value": "topShoulder"
           },
@@ -1160,10 +1162,10 @@ description: Variables in memory after executing m4-insert.kcl
             -2.2800000000000153
           ],
           "tag": {
-            "commentStart": 810,
-            "end": 823,
+            "commentStart": 854,
+            "end": 867,
             "moduleId": 0,
-            "start": 810,
+            "start": 854,
             "type": "TagDeclarator",
             "value": "upperNeckWall"
           },
@@ -1184,10 +1186,10 @@ description: Variables in memory after executing m4-insert.kcl
             -3.1328718708050647
           ],
           "tag": {
-            "commentStart": 956,
-            "end": 964,
+            "commentStart": 1000,
+            "end": 1008,
             "moduleId": 0,
-            "start": 956,
+            "start": 1000,
             "type": "TagDeclarator",
             "value": "upperRib"
           },
@@ -1208,10 +1210,10 @@ description: Variables in memory after executing m4-insert.kcl
             -3.1328718708050656
           ],
           "tag": {
-            "commentStart": 1094,
-            "end": 1101,
+            "commentStart": 1138,
+            "end": 1145,
             "moduleId": 0,
-            "start": 1094,
+            "start": 1138,
             "type": "TagDeclarator",
             "value": "midWall"
           },
@@ -1232,10 +1234,10 @@ description: Variables in memory after executing m4-insert.kcl
             -5.532871870805065
           ],
           "tag": {
-            "commentStart": 1225,
-            "end": 1235,
+            "commentStart": 1269,
+            "end": 1279,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1269,
             "type": "TagDeclarator",
             "value": "taperFlank"
           },
@@ -1256,10 +1258,10 @@ description: Variables in memory after executing m4-insert.kcl
             -6.087128129194972
           ],
           "tag": {
-            "commentStart": 1361,
-            "end": 1374,
+            "commentStart": 1405,
+            "end": 1418,
             "moduleId": 0,
-            "start": 1361,
+            "start": 1405,
             "type": "TagDeclarator",
             "value": "lowerNeckWall"
           },
@@ -1280,10 +1282,10 @@ description: Variables in memory after executing m4-insert.kcl
             -6.940000000000017
           ],
           "tag": {
-            "commentStart": 1506,
-            "end": 1514,
+            "commentStart": 1550,
+            "end": 1558,
             "moduleId": 0,
-            "start": 1506,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "lowerRib"
           },
@@ -1304,10 +1306,10 @@ description: Variables in memory after executing m4-insert.kcl
             -6.940000000000015
           ],
           "tag": {
-            "commentStart": 1644,
-            "end": 1657,
+            "commentStart": 1688,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1644,
+            "start": 1688,
             "type": "TagDeclarator",
             "value": "lowerBandWall"
           },
@@ -1328,10 +1330,10 @@ description: Variables in memory after executing m4-insert.kcl
             -0.000000000000010201755659049832
           ],
           "tag": {
-            "commentStart": 1786,
-            "end": 1795,
+            "commentStart": 1830,
+            "end": 1839,
             "moduleId": 0,
-            "start": 1786,
+            "start": 1830,
             "type": "TagDeclarator",
             "value": "topBridge"
           },
@@ -1352,10 +1354,10 @@ description: Variables in memory after executing m4-insert.kcl
             -0.000000000000008926525542011769
           ],
           "tag": {
-            "commentStart": 1867,
-            "end": 1876,
+            "commentStart": 1911,
+            "end": 1920,
             "moduleId": 0,
-            "start": 1867,
+            "start": 1911,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -1376,10 +1378,10 @@ description: Variables in memory after executing m4-insert.kcl
             -8.100000000000009
           ],
           "tag": {
-            "commentStart": 1998,
-            "end": 2010,
+            "commentStart": 2042,
+            "end": 2054,
             "moduleId": 0,
-            "start": 1998,
+            "start": 2042,
             "type": "TagDeclarator",
             "value": "bottomBridge"
           },
@@ -1392,17 +1394,17 @@ description: Variables in memory after executing m4-insert.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1490,8 +1492,8 @@ description: Variables in memory after executing m4-insert.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "insertProfileSketch": {
@@ -2237,10 +2239,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -0.000000000000011476991531054836
                   ],
                   "tag": {
-                    "commentStart": 579,
-                    "end": 591,
+                    "commentStart": 623,
+                    "end": 635,
                     "moduleId": 0,
-                    "start": 579,
+                    "start": 623,
                     "type": "TagDeclarator",
                     "value": "outerTopWall"
                   },
@@ -2261,10 +2263,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -2.2800000000000127
                   ],
                   "tag": {
-                    "commentStart": 667,
-                    "end": 678,
+                    "commentStart": 711,
+                    "end": 722,
                     "moduleId": 0,
-                    "start": 667,
+                    "start": 711,
                     "type": "TagDeclarator",
                     "value": "topShoulder"
                   },
@@ -2285,10 +2287,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -2.2800000000000153
                   ],
                   "tag": {
-                    "commentStart": 810,
-                    "end": 823,
+                    "commentStart": 854,
+                    "end": 867,
                     "moduleId": 0,
-                    "start": 810,
+                    "start": 854,
                     "type": "TagDeclarator",
                     "value": "upperNeckWall"
                   },
@@ -2309,10 +2311,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -3.1328718708050647
                   ],
                   "tag": {
-                    "commentStart": 956,
-                    "end": 964,
+                    "commentStart": 1000,
+                    "end": 1008,
                     "moduleId": 0,
-                    "start": 956,
+                    "start": 1000,
                     "type": "TagDeclarator",
                     "value": "upperRib"
                   },
@@ -2333,10 +2335,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -3.1328718708050656
                   ],
                   "tag": {
-                    "commentStart": 1094,
-                    "end": 1101,
+                    "commentStart": 1138,
+                    "end": 1145,
                     "moduleId": 0,
-                    "start": 1094,
+                    "start": 1138,
                     "type": "TagDeclarator",
                     "value": "midWall"
                   },
@@ -2357,10 +2359,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -5.532871870805065
                   ],
                   "tag": {
-                    "commentStart": 1225,
-                    "end": 1235,
+                    "commentStart": 1269,
+                    "end": 1279,
                     "moduleId": 0,
-                    "start": 1225,
+                    "start": 1269,
                     "type": "TagDeclarator",
                     "value": "taperFlank"
                   },
@@ -2381,10 +2383,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -6.087128129194972
                   ],
                   "tag": {
-                    "commentStart": 1361,
-                    "end": 1374,
+                    "commentStart": 1405,
+                    "end": 1418,
                     "moduleId": 0,
-                    "start": 1361,
+                    "start": 1405,
                     "type": "TagDeclarator",
                     "value": "lowerNeckWall"
                   },
@@ -2405,10 +2407,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -6.940000000000017
                   ],
                   "tag": {
-                    "commentStart": 1506,
-                    "end": 1514,
+                    "commentStart": 1550,
+                    "end": 1558,
                     "moduleId": 0,
-                    "start": 1506,
+                    "start": 1550,
                     "type": "TagDeclarator",
                     "value": "lowerRib"
                   },
@@ -2429,10 +2431,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -6.940000000000015
                   ],
                   "tag": {
-                    "commentStart": 1644,
-                    "end": 1657,
+                    "commentStart": 1688,
+                    "end": 1701,
                     "moduleId": 0,
-                    "start": 1644,
+                    "start": 1688,
                     "type": "TagDeclarator",
                     "value": "lowerBandWall"
                   },
@@ -2470,10 +2472,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -0.000000000000010201755659049832
                   ],
                   "tag": {
-                    "commentStart": 1786,
-                    "end": 1795,
+                    "commentStart": 1830,
+                    "end": 1839,
                     "moduleId": 0,
-                    "start": 1786,
+                    "start": 1830,
                     "type": "TagDeclarator",
                     "value": "topBridge"
                   },
@@ -2494,10 +2496,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -0.000000000000008926525542011769
                   ],
                   "tag": {
-                    "commentStart": 1867,
-                    "end": 1876,
+                    "commentStart": 1911,
+                    "end": 1920,
                     "moduleId": 0,
-                    "start": 1867,
+                    "start": 1911,
                     "type": "TagDeclarator",
                     "value": "innerWall"
                   },
@@ -2518,10 +2520,10 @@ description: Variables in memory after executing m4-insert.kcl
                     -8.100000000000009
                   ],
                   "tag": {
-                    "commentStart": 1998,
-                    "end": 2010,
+                    "commentStart": 2042,
+                    "end": 2054,
                     "moduleId": 0,
-                    "start": 1998,
+                    "start": 2042,
                     "type": "TagDeclarator",
                     "value": "bottomBridge"
                   },
@@ -2534,17 +2536,17 @@ description: Variables in memory after executing m4-insert.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3539,6 +3541,8 @@ description: Variables in memory after executing m4-insert.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3546,10 +3550,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 579,
-            "end": 591,
+            "commentStart": 623,
+            "end": 635,
             "moduleId": 0,
-            "start": 579,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "outerTopWall"
           },
@@ -3560,10 +3564,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 667,
-            "end": 678,
+            "commentStart": 711,
+            "end": 722,
             "moduleId": 0,
-            "start": 667,
+            "start": 711,
             "type": "TagDeclarator",
             "value": "topShoulder"
           },
@@ -3574,10 +3578,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 810,
-            "end": 823,
+            "commentStart": 854,
+            "end": 867,
             "moduleId": 0,
-            "start": 810,
+            "start": 854,
             "type": "TagDeclarator",
             "value": "upperNeckWall"
           },
@@ -3588,10 +3592,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 956,
-            "end": 964,
+            "commentStart": 1000,
+            "end": 1008,
             "moduleId": 0,
-            "start": 956,
+            "start": 1000,
             "type": "TagDeclarator",
             "value": "upperRib"
           },
@@ -3602,10 +3606,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1094,
-            "end": 1101,
+            "commentStart": 1138,
+            "end": 1145,
             "moduleId": 0,
-            "start": 1094,
+            "start": 1138,
             "type": "TagDeclarator",
             "value": "midWall"
           },
@@ -3616,10 +3620,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1225,
-            "end": 1235,
+            "commentStart": 1269,
+            "end": 1279,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1269,
             "type": "TagDeclarator",
             "value": "taperFlank"
           },
@@ -3630,10 +3634,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1361,
-            "end": 1374,
+            "commentStart": 1405,
+            "end": 1418,
             "moduleId": 0,
-            "start": 1361,
+            "start": 1405,
             "type": "TagDeclarator",
             "value": "lowerNeckWall"
           },
@@ -3644,10 +3648,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1506,
-            "end": 1514,
+            "commentStart": 1550,
+            "end": 1558,
             "moduleId": 0,
-            "start": 1506,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "lowerRib"
           },
@@ -3658,10 +3662,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1644,
-            "end": 1657,
+            "commentStart": 1688,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1644,
+            "start": 1688,
             "type": "TagDeclarator",
             "value": "lowerBandWall"
           },
@@ -3672,10 +3676,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1786,
-            "end": 1795,
+            "commentStart": 1830,
+            "end": 1839,
             "moduleId": 0,
-            "start": 1786,
+            "start": 1830,
             "type": "TagDeclarator",
             "value": "topBridge"
           },
@@ -3686,10 +3690,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1867,
-            "end": 1876,
+            "commentStart": 1911,
+            "end": 1920,
             "moduleId": 0,
-            "start": 1867,
+            "start": 1911,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -3700,10 +3704,10 @@ description: Variables in memory after executing m4-insert.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1998,
-            "end": 2010,
+            "commentStart": 2042,
+            "end": 2054,
             "moduleId": 0,
-            "start": 1998,
+            "start": 2042,
             "type": "TagDeclarator",
             "value": "bottomBridge"
           },
@@ -3725,10 +3729,10 @@ description: Variables in memory after executing m4-insert.kcl
               -0.000000000000011476991531054836
             ],
             "tag": {
-              "commentStart": 579,
-              "end": 591,
+              "commentStart": 623,
+              "end": 635,
               "moduleId": 0,
-              "start": 579,
+              "start": 623,
               "type": "TagDeclarator",
               "value": "outerTopWall"
             },
@@ -3749,10 +3753,10 @@ description: Variables in memory after executing m4-insert.kcl
               -2.2800000000000127
             ],
             "tag": {
-              "commentStart": 667,
-              "end": 678,
+              "commentStart": 711,
+              "end": 722,
               "moduleId": 0,
-              "start": 667,
+              "start": 711,
               "type": "TagDeclarator",
               "value": "topShoulder"
             },
@@ -3773,10 +3777,10 @@ description: Variables in memory after executing m4-insert.kcl
               -2.2800000000000153
             ],
             "tag": {
-              "commentStart": 810,
-              "end": 823,
+              "commentStart": 854,
+              "end": 867,
               "moduleId": 0,
-              "start": 810,
+              "start": 854,
               "type": "TagDeclarator",
               "value": "upperNeckWall"
             },
@@ -3797,10 +3801,10 @@ description: Variables in memory after executing m4-insert.kcl
               -3.1328718708050647
             ],
             "tag": {
-              "commentStart": 956,
-              "end": 964,
+              "commentStart": 1000,
+              "end": 1008,
               "moduleId": 0,
-              "start": 956,
+              "start": 1000,
               "type": "TagDeclarator",
               "value": "upperRib"
             },
@@ -3821,10 +3825,10 @@ description: Variables in memory after executing m4-insert.kcl
               -3.1328718708050656
             ],
             "tag": {
-              "commentStart": 1094,
-              "end": 1101,
+              "commentStart": 1138,
+              "end": 1145,
               "moduleId": 0,
-              "start": 1094,
+              "start": 1138,
               "type": "TagDeclarator",
               "value": "midWall"
             },
@@ -3845,10 +3849,10 @@ description: Variables in memory after executing m4-insert.kcl
               -5.532871870805065
             ],
             "tag": {
-              "commentStart": 1225,
-              "end": 1235,
+              "commentStart": 1269,
+              "end": 1279,
               "moduleId": 0,
-              "start": 1225,
+              "start": 1269,
               "type": "TagDeclarator",
               "value": "taperFlank"
             },
@@ -3869,10 +3873,10 @@ description: Variables in memory after executing m4-insert.kcl
               -6.087128129194972
             ],
             "tag": {
-              "commentStart": 1361,
-              "end": 1374,
+              "commentStart": 1405,
+              "end": 1418,
               "moduleId": 0,
-              "start": 1361,
+              "start": 1405,
               "type": "TagDeclarator",
               "value": "lowerNeckWall"
             },
@@ -3893,10 +3897,10 @@ description: Variables in memory after executing m4-insert.kcl
               -6.940000000000017
             ],
             "tag": {
-              "commentStart": 1506,
-              "end": 1514,
+              "commentStart": 1550,
+              "end": 1558,
               "moduleId": 0,
-              "start": 1506,
+              "start": 1550,
               "type": "TagDeclarator",
               "value": "lowerRib"
             },
@@ -3917,10 +3921,10 @@ description: Variables in memory after executing m4-insert.kcl
               -6.940000000000015
             ],
             "tag": {
-              "commentStart": 1644,
-              "end": 1657,
+              "commentStart": 1688,
+              "end": 1701,
               "moduleId": 0,
-              "start": 1644,
+              "start": 1688,
               "type": "TagDeclarator",
               "value": "lowerBandWall"
             },
@@ -3941,10 +3945,10 @@ description: Variables in memory after executing m4-insert.kcl
               -0.000000000000010201755659049832
             ],
             "tag": {
-              "commentStart": 1786,
-              "end": 1795,
+              "commentStart": 1830,
+              "end": 1839,
               "moduleId": 0,
-              "start": 1786,
+              "start": 1830,
               "type": "TagDeclarator",
               "value": "topBridge"
             },
@@ -3965,10 +3969,10 @@ description: Variables in memory after executing m4-insert.kcl
               -0.000000000000008926525542011769
             ],
             "tag": {
-              "commentStart": 1867,
-              "end": 1876,
+              "commentStart": 1911,
+              "end": 1920,
               "moduleId": 0,
-              "start": 1867,
+              "start": 1911,
               "type": "TagDeclarator",
               "value": "innerWall"
             },
@@ -3989,10 +3993,10 @@ description: Variables in memory after executing m4-insert.kcl
               -8.100000000000009
             ],
             "tag": {
-              "commentStart": 1998,
-              "end": 2010,
+              "commentStart": 2042,
+              "end": 2054,
               "moduleId": 0,
-              "start": 1998,
+              "start": 2042,
               "type": "TagDeclarator",
               "value": "bottomBridge"
             },
@@ -4005,17 +4009,17 @@ description: Variables in memory after executing m4-insert.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4103,8 +4107,8 @@ description: Variables in memory after executing m4-insert.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,

@@ -289,10 +289,24 @@ pub(crate) async fn inner_subtract(
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
-        let mut solid = solids[0].clone();
-        solid.set_id(solid_out_id);
-        solid.become_new_body(solid_out_id, solid_out_id.into());
-        let new_solids = vec![solid];
+        // Output N new bodies, where N is the number of input target bodies.
+        let new_solids = solids
+            .iter()
+            .enumerate()
+            .map(|(index, solid)| {
+                // The first ID is set by the user, subsequent IDs are not.
+                // This matches the usual production normal execution path.
+                let output_id = if index == 0 {
+                    solid_out_id
+                } else {
+                    exec_state.next_uuid()
+                };
+                let mut new_solid = solid.clone();
+                new_solid.set_id(output_id);
+                new_solid.become_new_body(output_id, output_id.into());
+                new_solid
+            })
+            .collect::<Vec<_>>();
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
         record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
         return Ok(new_solids);

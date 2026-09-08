@@ -5360,144 +5360,19 @@ description: Operations executed multi-axis-robot.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": -5.4999016,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "circle1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle7": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle8": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line10": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line11": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line12": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line13": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line14": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line15": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line16": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line7": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line8": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line9": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }

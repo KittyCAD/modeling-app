@@ -1,0 +1,6 @@
+profile = sketch(on = XY) {
+  base = line(start = [var 0mm, var 0mm], end = [var 32mm, var 0mm])
+  floating = line(start = [var 50mm, var 18mm], end = [var 70mm, var 18mm])
+
+  coincident([floating.start, base.end])
+}

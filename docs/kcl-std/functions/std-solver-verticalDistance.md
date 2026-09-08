@@ -20,6 +20,8 @@ Y coordinate. A positive value places the second point at a greater Y
 than the first, and swapping the points negates the sign. For example,
 `verticalDistance([ORIGIN, point]) == 5mm` places `point` at Y = 5mm,
 while `verticalDistance([point, ORIGIN]) == 5mm` places it at Y = -5mm.
+Negative values are valid: if the second point is below the first, use a
+negative value (or swap the points and use the corresponding positive value).
 
 ### Arguments
 
@@ -44,7 +46,7 @@ profile = sketch(on = XY) {
   verticalDistance([edge1.start, edge4.start]) == 5mm
 }
 
-solid = extrude(region(point = [2mm, 2mm], sketch = profile), length = 2)
+solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 
 ```
 

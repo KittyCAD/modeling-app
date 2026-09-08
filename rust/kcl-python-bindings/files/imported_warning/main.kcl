@@ -1,0 +1,3 @@
+import derived from "derived.kcl"
+
+result = derived()

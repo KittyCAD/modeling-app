@@ -8,8 +8,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -76,6 +76,8 @@ description: Variables in memory after executing rectangle-table.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -83,10 +85,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1244,
+                "end": 1249,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1244,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -97,10 +99,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1314,
+                "end": 1319,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1314,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -111,10 +113,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1425,
+                "end": 1430,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -125,10 +127,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1536,
+                "end": 1541,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1536,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -150,10 +152,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1244,
+                  "end": 1249,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1244,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -174,10 +176,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1314,
+                  "end": 1319,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1314,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -198,10 +200,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1425,
+                  "end": 1430,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -222,10 +224,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1536,
+                  "end": 1541,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1536,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -238,17 +240,17 @@ description: Variables in memory after executing rectangle-table.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 22,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -304,8 +306,8 @@ description: Variables in memory after executing rectangle-table.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -318,6 +320,8 @@ description: Variables in memory after executing rectangle-table.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -325,10 +329,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1244,
+                "end": 1249,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1244,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -339,10 +343,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1314,
+                "end": 1319,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1314,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -353,10 +357,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1425,
+                "end": 1430,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -367,10 +371,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1536,
+                "end": 1541,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1536,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -392,10 +396,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1244,
+                  "end": 1249,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1244,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -416,10 +420,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1314,
+                  "end": 1319,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1314,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -440,10 +444,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1425,
+                  "end": 1430,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -464,10 +468,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1536,
+                  "end": 1541,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1536,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -480,17 +484,17 @@ description: Variables in memory after executing rectangle-table.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 22,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -546,8 +550,8 @@ description: Variables in memory after executing rectangle-table.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -560,6 +564,8 @@ description: Variables in memory after executing rectangle-table.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -567,10 +573,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1244,
+                "end": 1249,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1244,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -581,10 +587,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1314,
+                "end": 1319,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1314,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -595,10 +601,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1425,
+                "end": 1430,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -609,10 +615,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1536,
+                "end": 1541,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1536,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -634,10 +640,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1244,
+                  "end": 1249,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1244,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -658,10 +664,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1314,
+                  "end": 1319,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1314,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -682,10 +688,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1425,
+                  "end": 1430,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -706,10 +712,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1536,
+                  "end": 1541,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1536,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -722,17 +728,17 @@ description: Variables in memory after executing rectangle-table.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 22,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -788,8 +794,8 @@ description: Variables in memory after executing rectangle-table.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -802,6 +808,8 @@ description: Variables in memory after executing rectangle-table.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -809,10 +817,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1244,
+                "end": 1249,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1244,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -823,10 +831,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1314,
+                "end": 1319,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1314,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -837,10 +845,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1425,
+                "end": 1430,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -851,10 +859,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1536,
+                "end": 1541,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1536,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -876,10 +884,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1244,
+                  "end": 1249,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1244,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -900,10 +908,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1314,
+                  "end": 1319,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1314,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -924,10 +932,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1425,
+                  "end": 1430,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -948,10 +956,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1536,
+                  "end": 1541,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1536,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -964,17 +972,17 @@ description: Variables in memory after executing rectangle-table.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 22,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1030,8 +1038,8 @@ description: Variables in memory after executing rectangle-table.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1552,10 +1560,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1229,
-                    "end": 1234,
+                    "commentStart": 1244,
+                    "end": 1249,
                     "moduleId": 0,
-                    "start": 1229,
+                    "start": 1244,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1576,10 +1584,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 1299,
-                    "end": 1304,
+                    "commentStart": 1314,
+                    "end": 1319,
                     "moduleId": 0,
-                    "start": 1299,
+                    "start": 1314,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1600,10 +1608,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 1410,
-                    "end": 1415,
+                    "commentStart": 1425,
+                    "end": 1430,
                     "moduleId": 0,
-                    "start": 1410,
+                    "start": 1425,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1624,10 +1632,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1521,
-                    "end": 1526,
+                    "commentStart": 1536,
+                    "end": 1541,
                     "moduleId": 0,
-                    "start": 1521,
+                    "start": 1536,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1640,17 +1648,17 @@ description: Variables in memory after executing rectangle-table.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 22,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1741,10 +1749,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 466,
-            "end": 471,
+            "commentStart": 481,
+            "end": 486,
             "moduleId": 0,
-            "start": 466,
+            "start": 481,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1765,10 +1773,10 @@ description: Variables in memory after executing rectangle-table.kcl
             1500.0
           ],
           "tag": {
-            "commentStart": 538,
-            "end": 543,
+            "commentStart": 553,
+            "end": 558,
             "moduleId": 0,
-            "start": 538,
+            "start": 553,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1789,10 +1797,10 @@ description: Variables in memory after executing rectangle-table.kcl
             1500.0
           ],
           "tag": {
-            "commentStart": 654,
-            "end": 659,
+            "commentStart": 669,
+            "end": 674,
             "moduleId": 0,
-            "start": 654,
+            "start": 669,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1813,10 +1821,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 769,
-            "end": 774,
+            "commentStart": 784,
+            "end": 789,
             "moduleId": 0,
-            "start": 769,
+            "start": 784,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1829,17 +1837,17 @@ description: Variables in memory after executing rectangle-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 750.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1895,8 +1903,8 @@ description: Variables in memory after executing rectangle-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -1915,10 +1923,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1229,
-            "end": 1234,
+            "commentStart": 1244,
+            "end": 1249,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1244,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1939,10 +1947,10 @@ description: Variables in memory after executing rectangle-table.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 1299,
-            "end": 1304,
+            "commentStart": 1314,
+            "end": 1319,
             "moduleId": 0,
-            "start": 1299,
+            "start": 1314,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1963,10 +1971,10 @@ description: Variables in memory after executing rectangle-table.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 1410,
-            "end": 1415,
+            "commentStart": 1425,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1410,
+            "start": 1425,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1987,10 +1995,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1521,
-            "end": 1526,
+            "commentStart": 1536,
+            "end": 1541,
             "moduleId": 0,
-            "start": 1521,
+            "start": 1536,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2003,17 +2011,17 @@ description: Variables in memory after executing rectangle-table.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 22,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2069,8 +2077,8 @@ description: Variables in memory after executing rectangle-table.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tableHeight": {
@@ -2096,6 +2104,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2103,10 +2113,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 466,
-            "end": 471,
+            "commentStart": 481,
+            "end": 486,
             "moduleId": 0,
-            "start": 466,
+            "start": 481,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2117,10 +2127,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 538,
-            "end": 543,
+            "commentStart": 553,
+            "end": 558,
             "moduleId": 0,
-            "start": 538,
+            "start": 553,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2131,10 +2141,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 654,
-            "end": 659,
+            "commentStart": 669,
+            "end": 674,
             "moduleId": 0,
-            "start": 654,
+            "start": 669,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2145,10 +2155,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 769,
-            "end": 774,
+            "commentStart": 784,
+            "end": 789,
             "moduleId": 0,
-            "start": 769,
+            "start": 784,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2170,10 +2180,10 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 466,
-              "end": 471,
+              "commentStart": 481,
+              "end": 486,
               "moduleId": 0,
-              "start": 466,
+              "start": 481,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2194,10 +2204,10 @@ description: Variables in memory after executing rectangle-table.kcl
               1500.0
             ],
             "tag": {
-              "commentStart": 538,
-              "end": 543,
+              "commentStart": 553,
+              "end": 558,
               "moduleId": 0,
-              "start": 538,
+              "start": 553,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2218,10 +2228,10 @@ description: Variables in memory after executing rectangle-table.kcl
               1500.0
             ],
             "tag": {
-              "commentStart": 654,
-              "end": 659,
+              "commentStart": 669,
+              "end": 674,
               "moduleId": 0,
-              "start": 654,
+              "start": 669,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2242,10 +2252,10 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 769,
-              "end": 774,
+              "commentStart": 784,
+              "end": 789,
               "moduleId": 0,
-              "start": 769,
+              "start": 784,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2258,17 +2268,17 @@ description: Variables in memory after executing rectangle-table.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 750.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2324,8 +2334,8 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2338,8 +2348,8 @@ description: Variables in memory after executing rectangle-table.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2868,10 +2878,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 466,
-                    "end": 471,
+                    "commentStart": 481,
+                    "end": 486,
                     "moduleId": 0,
-                    "start": 466,
+                    "start": 481,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2892,10 +2902,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     1500.0
                   ],
                   "tag": {
-                    "commentStart": 538,
-                    "end": 543,
+                    "commentStart": 553,
+                    "end": 558,
                     "moduleId": 0,
-                    "start": 538,
+                    "start": 553,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2916,10 +2926,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     1500.0
                   ],
                   "tag": {
-                    "commentStart": 654,
-                    "end": 659,
+                    "commentStart": 669,
+                    "end": 674,
                     "moduleId": 0,
-                    "start": 654,
+                    "start": 669,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2940,10 +2950,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 769,
-                    "end": 774,
+                    "commentStart": 784,
+                    "end": 789,
                     "moduleId": 0,
-                    "start": 769,
+                    "start": 784,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2956,17 +2966,17 @@ description: Variables in memory after executing rectangle-table.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 750.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

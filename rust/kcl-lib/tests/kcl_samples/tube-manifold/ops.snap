@@ -4634,116 +4634,19 @@ description: Operations executed tube-manifold.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 2.8,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "beadArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "beadRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "beadSpanGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "endCapGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "frontAxisGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "frontInnerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "frontOuterRun": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "frontWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerEndArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerSideRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerTopRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "mainInnerRun": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "mainOuterRun": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerEndArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerSideRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerTopRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "wallRun": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }

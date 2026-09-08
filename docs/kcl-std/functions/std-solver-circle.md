@@ -48,7 +48,7 @@ profile = sketch(on = XY) {
   coincident([edge4.end, edge1.start])
 }
 
-solid = extrude(region(point = [0mm, 0mm], sketch = profile), length = 2)
+solid = extrude(region(segments = [profile.circle1, profile.edge1]), length = 2)
 
 ```
 

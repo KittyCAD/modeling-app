@@ -1,0 +1,132 @@
+// Walkie Talkie Body
+// The main body of the walkie talkie assembly
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import thickness, chamferLength, screenDepth from "parameters.kcl"
+
+bodySketch = sketch(on = XZ) {
+  line1 = line(start = [var -1.25in, var 2in], end = [var 1.25in, var 2in])
+  line2 = line(start = [var 1.25in, var 2in], end = [var 1.25in, var -2in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.25in, var -2in], end = [var -1.25in, var -2in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.25in, var -2in], end = [var -1.25in, var 2in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+bodyRegion = region(segments = [bodySketch.line1, bodySketch.line2])
+bodyBlank = extrude(bodyRegion, length = thickness)
+body = chamfer(
+  bodyBlank,
+  length = chamferLength,
+  edges = [
+    {
+      sideFaces = [
+        bodyRegion.tags.line1,
+        bodyRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        bodyRegion.tags.line2,
+        bodyRegion.tags.line3
+      ]
+    },
+    {
+      sideFaces = [
+        bodyRegion.tags.line3,
+        bodyRegion.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        bodyRegion.tags.line4,
+        bodyRegion.tags.line1
+      ]
+    }
+  ],
+)
+
+caseIndentSketch = sketch(on = faceOf(body, face = END)) {
+  line1 = line(start = [var -1.125in, var 1.630806in], end = [var -0.880806in, var 1.875in])
+  line2 = line(start = [var -0.880806in, var 1.875in], end = [var 0.880806in, var 1.875in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.880806in, var 1.875in], end = [var 1.125in, var 1.630806in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1.125in, var 1.630806in], end = [var 1.125in, var -1.630806in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 1.125in, var -1.630806in], end = [var 0.880806in, var -1.875in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.880806in, var -1.875in], end = [var -0.880806in, var -1.875in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -0.880806in, var -1.875in], end = [var -1.125in, var -1.630806in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -1.125in, var -1.630806in], end = [var -1.125in, var 1.630806in])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+}
+caseIndentRegion = region(segments = [
+  caseIndentSketch.line1,
+  caseIndentSketch.line2
+])
+caseIndent = extrude(caseIndentRegion, length = -0.0625)
+
+screenCutoutSketch = sketch(on = faceOf(caseIndent, face = START)) {
+  line1 = line(start = [var -0.875in, var 1.25in], end = [var 0.875in, var 1.25in])
+  line2 = line(start = [var 0.875in, var 1.25in], end = [var 0.875in, var 0.25in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.875in, var 0.25in], end = [var -0.875in, var 0.25in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.875in, var 0.25in], end = [var -0.875in, var 1.25in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+screenCutoutRegion = region(segments = [
+  screenCutoutSketch.line1,
+  screenCutoutSketch.line2
+])
+screenCutout = extrude(screenCutoutRegion, length = screenDepth)
+
+speakerBoxSketch = sketch(on = faceOf(caseIndent, face = START)) {
+  line1 = line(start = [var -0.625in, var -0.125in], end = [var 0.625in, var -0.125in])
+  line2 = line(start = [var 0.625in, var -0.125in], end = [var 0.625in, var -1.375in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.625in, var -1.375in], end = [var -0.625in, var -1.375in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.625in, var -1.375in], end = [var -0.625in, var -0.125in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+speakerBoxRegion = region(segments = [
+  speakerBoxSketch.line1,
+  speakerBoxSketch.line2
+])
+speakerBox = extrude(speakerBoxRegion, length = -.5)
+  |> appearance(color = "#277bb0")
+
+hide([
+  bodySketch,
+  caseIndentSketch,
+  screenCutoutSketch,
+  speakerBoxSketch
+])
+
+[
+  body,
+  caseIndent,
+  screenCutout,
+  speakerBox
+]

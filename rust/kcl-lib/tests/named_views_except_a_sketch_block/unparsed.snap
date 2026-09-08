@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_except_a_sketch_block.kcl
+---
+// Pins WHICH artifact an author names when they except a sketch-block variable
+// rather than a region taken from it. The two are different artifacts, so the
+// choice decides what a consumer will act on, and the flowchart snapshot is
+// where that is visible: the view's edge points at the node it stored.
+@settings(experimentalFeatures = allow)
+
+plateSketch = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  edge2 = line(start = [var 40mm, var 0mm], end = [var 40mm, var 20mm])
+  edge3 = line(start = [var 40mm, var 20mm], end = [var 0mm, var 20mm])
+  edge4 = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+plateRegion = region(point = [20mm, 10mm], sketch = plateSketch)
+plate = extrude(plateRegion, length = 5mm)
+
+blockOnly = view::named(
+  "Block only",
+  camera = view::oriented(view::Orientation::Top),
+  baseline = view::Visibility::Hide,
+  except = [plateSketch],
+)

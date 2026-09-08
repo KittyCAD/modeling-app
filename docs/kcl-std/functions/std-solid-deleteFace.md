@@ -159,7 +159,7 @@ boxProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-box = extrude(region(point = [2mm, 2mm], sketch = boxProfile), length = 4mm, tagEnd = $top)
+box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm, tagEnd = $top)
 openBox = deleteFace(box, faces = [top])
 
 ```

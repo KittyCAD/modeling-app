@@ -53,6 +53,6 @@ Some operators can be applied to other types:
 - `+` can be used to concatenate strings, e.g., `'hello' + ' ' + 'world!'`
 - Unary `-` can be used with planes or line-like objects such as axes to produce an object with opposite orientation, e.g., `-XY` is a plain which is aligned with `XY` but whose normal aligns with the negative Z axis.
 - The following operators can be used with solids as shorthand for CSG operations:
-  - `+` or `|` for [`union`](/docs/kcl-std/union).
-  - `-` for [`subtract`](/docs/kcl-std/subtract).
-  - `&` for [`intersect`](/docs/kcl-std/intersect)
+  - `+` or `|` for [`union`](/docs/kcl-std/functions/std-solid-union).
+  - `-` for [`subtract`](/docs/kcl-std/functions/std-solid-subtract).
+  - `&` for [`intersect`](/docs/kcl-std/functions/std-solid-intersect)

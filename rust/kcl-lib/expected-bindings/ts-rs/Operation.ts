@@ -60,7 +60,7 @@ value: string,
 /**
  * The artifact ID of the object it refers to.
  */
-artifact_id: ArtifactId | null, } | { "type": "TagDeclarator", name: string, } | { "type": "GdtAnnotation", artifact_id: ArtifactId, } | { "type": "Plane", artifact_id: ArtifactId, } | { "type": "Face", artifact_id: ArtifactId, } | { "type": "Sketch", value: OpSketch, } | { "type": "Segment", artifact_id: ArtifactId, } | { "type": "Solid", value: OpSolid, } | { "type": "Helix", value: OpHelix, } | { "type": "ImportedGeometry", artifact_id: ArtifactId, } | { "type": "Function", } | { "type": "Module", } | { "type": "Type", } | { "type": "KclNone", } | { "type": "BoundedEdge", };
+artifact_id: ArtifactId | null, } | { "type": "TagDeclarator", name: string, } | { "type": "GdtAnnotation", artifact_id: ArtifactId, } | { "type": "CameraView", } | { "type": "Plane", artifact_id: ArtifactId, } | { "type": "Face", artifact_id: ArtifactId, } | { "type": "Sketch", value: OpSketch, } | { "type": "Segment", artifact_id: ArtifactId, } | { "type": "Solid", value: OpSolid, } | { "type": "Helix", value: OpHelix, } | { "type": "ImportedGeometry", artifact_id: ArtifactId, } | { "type": "Function", } | { "type": "Module", } | { "type": "Type", } | { "type": "KclNone", } | { "type": "BoundedEdge", };
 
 export type OpSketch = { artifactId: ArtifactId, };
 

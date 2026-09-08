@@ -74,6 +74,7 @@ describe('threePointArcToolImpl', () => {
     it('adds coincident constraints for snapped arc endpoints before draft point cleanup', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const deleteObjectsSpy = vi.spyOn(rustContext, 'deleteObjects')
       const center = createPointApiObject({ id: 4, x: 1, y: 0 })
@@ -123,7 +124,7 @@ describe('threePointArcToolImpl', () => {
         7,
         {
           type: 'Coincident',
-          segments: [6, 98],
+          segments: [5, 98],
         },
         expect.anything()
       )
@@ -133,11 +134,36 @@ describe('threePointArcToolImpl', () => {
         7,
         {
           type: 'Coincident',
-          segments: [5, 99],
+          segments: [6, 99],
         },
         expect.anything()
       )
       expect(addConstraintSpy).toHaveBeenCalledTimes(2)
+      expect(editSegmentsSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        [
+          {
+            id: 7,
+            ctor: expect.objectContaining({
+              type: 'Arc',
+              direction: 'cw',
+              start: expect.objectContaining({
+                x: expect.objectContaining({ value: 0 }),
+                y: expect.objectContaining({ value: 0 }),
+              }),
+              end: expect.objectContaining({
+                x: expect.objectContaining({ value: 2 }),
+                y: expect.objectContaining({ value: 0 }),
+              }),
+            }),
+          },
+        ],
+        expect.anything(),
+        false,
+        undefined,
+        true
+      )
       expect(result).toEqual({
         kclSource: { text: 'delete' },
         sceneGraphDelta: {

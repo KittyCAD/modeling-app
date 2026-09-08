@@ -1,0 +1,5 @@
+// A runtime error inside a nested import must surface with its original
+// message and a backtrace through each import site.
+import assemblyValue from "assembly.kcl"
+
+assemblyValue

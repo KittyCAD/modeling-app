@@ -1,0 +1,20 @@
+// Pins what an author sees when a view name repeats because a FUNCTION that
+// declares a view is called more than once, rather than because two literal
+// declarations sit in the file. The name is fixed inside the function, so every
+// call asks for the same name, and only the first can have it.
+//
+// The rendered diagnostic is the whole point of this test: the interpreter adds
+// a source range per frame as the error unwinds, so the snapshot shows whether
+// an author can see which call produced the collision.
+@settings(experimentalFeatures = allow)
+
+fn frontView() {
+  return view::named(
+    "Front",
+    camera = view::oriented(view::Orientation::Front),
+    baseline = view::Visibility::Show,
+  )
+}
+
+first = frontView()
+second = frontView()

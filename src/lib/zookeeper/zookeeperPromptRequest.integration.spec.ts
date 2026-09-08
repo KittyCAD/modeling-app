@@ -143,7 +143,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
         })),
       },
     })
-    const actor = createActor(machine, { input: { apiToken: '' } }).start()
+    const actor = createActor(machine, { input: { apiToken: 'token' } }).start()
     const projectFiles: FileMeta[] = [
       {
         type: 'kcl',

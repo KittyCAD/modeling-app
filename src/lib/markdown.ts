@@ -6,6 +6,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 export const MARKED_OPTIONS: MarkedOptions = {
   gfm: true,
   breaks: true,
+  smartLists: true,
   sanitize: true,
   unescape,
   escape,

@@ -1,9 +1,9 @@
 // Tube manifold
 // A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically referred to by their inner diameters, so the fittings are parameterized by their outer diameters
-// Categories: Automotive, Aerospace
+// Categories: Mechanical Components; Industrial & Manufacturing; Parametric
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 bodyDiameter = 5.8
@@ -163,13 +163,10 @@ bodyProfile = sketch(on = XY) {
 ]) == bodyDiameter / 2 - wallThickness
 }
 
-bodyRegion = region(
-  point = [
-    0in,
-    bodyDiameter / 2 - (wallThickness / 2)
-  ],
-  sketch = bodyProfile,
-)
+bodyRegion = region(segments = [
+  bodyProfile.frontWall,
+  bodyProfile.frontOuterRun
+])
 bodyBlank = revolve(bodyRegion, axis = X)
 hide(bodyProfile)
 

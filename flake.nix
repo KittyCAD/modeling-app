@@ -2,7 +2,9 @@
   description = "zoo.dev modeling-app";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # Keep x86_64-darwin support while using a nixpkgs release with the
+    # identifying User-Agent fix for crates.io downloads.
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
     rust-overlay.url = "github:oxalica/rust-overlay";
   };
 

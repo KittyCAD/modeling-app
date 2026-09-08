@@ -2886,68 +2886,19 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": -0.9675,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": -19.9975,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "boltAxis": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "headTopEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "headTransitionEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "shankSideWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "shankTopEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -3069,80 +3020,15 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 1.0853349,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.6266184,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "bottomFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerLeftFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerRightFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "socketRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "socketReferenceCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "topFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperLeftFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperRightFacet": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }

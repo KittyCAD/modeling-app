@@ -537,10 +537,10 @@ description: Variables in memory after executing dodecahedron.kcl
                     -1000.0
                   ],
                   "tag": {
-                    "commentStart": 599,
-                    "end": 604,
+                    "commentStart": 631,
+                    "end": 636,
                     "moduleId": 0,
-                    "start": 599,
+                    "start": 631,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -561,10 +561,10 @@ description: Variables in memory after executing dodecahedron.kcl
                     1000.0
                   ],
                   "tag": {
-                    "commentStart": 683,
-                    "end": 688,
+                    "commentStart": 715,
+                    "end": 720,
                     "moduleId": 0,
-                    "start": 683,
+                    "start": 715,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -585,10 +585,10 @@ description: Variables in memory after executing dodecahedron.kcl
                     1000.0
                   ],
                   "tag": {
-                    "commentStart": 804,
-                    "end": 809,
+                    "commentStart": 836,
+                    "end": 841,
                     "moduleId": 0,
-                    "start": 804,
+                    "start": 836,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -609,10 +609,10 @@ description: Variables in memory after executing dodecahedron.kcl
                     -1000.0
                   ],
                   "tag": {
-                    "commentStart": 925,
-                    "end": 930,
+                    "commentStart": 957,
+                    "end": 962,
                     "moduleId": 0,
-                    "start": 925,
+                    "start": 957,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -625,17 +625,17 @@ description: Variables in memory after executing dodecahedron.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -717,10 +717,10 @@ description: Variables in memory after executing dodecahedron.kcl
             -1000.0
           ],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -741,10 +741,10 @@ description: Variables in memory after executing dodecahedron.kcl
             1000.0
           ],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -765,10 +765,10 @@ description: Variables in memory after executing dodecahedron.kcl
             1000.0
           ],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -789,10 +789,10 @@ description: Variables in memory after executing dodecahedron.kcl
             -1000.0
           ],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -805,17 +805,17 @@ description: Variables in memory after executing dodecahedron.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -871,8 +871,8 @@ description: Variables in memory after executing dodecahedron.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "cube01": {
@@ -880,6 +880,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -887,10 +889,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -901,10 +903,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -915,10 +917,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -929,10 +931,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -954,10 +956,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -978,10 +980,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1002,10 +1004,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1026,10 +1028,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1042,17 +1044,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1108,8 +1110,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1122,6 +1124,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1129,10 +1133,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1143,10 +1147,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1157,10 +1161,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1171,10 +1175,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1196,10 +1200,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1220,10 +1224,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1244,10 +1248,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1268,10 +1272,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1284,17 +1288,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1350,8 +1354,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1364,6 +1368,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1371,10 +1377,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1385,10 +1391,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1399,10 +1405,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1413,10 +1419,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1438,10 +1444,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1462,10 +1468,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1486,10 +1492,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1510,10 +1516,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1526,17 +1532,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1592,8 +1598,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1606,6 +1612,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1613,10 +1621,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1627,10 +1635,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1641,10 +1649,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1655,10 +1663,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1680,10 +1688,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1704,10 +1712,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1728,10 +1736,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1752,10 +1760,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1768,17 +1776,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1834,8 +1842,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1848,6 +1856,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1855,10 +1865,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1869,10 +1879,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1883,10 +1893,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1897,10 +1907,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1922,10 +1932,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1946,10 +1956,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1970,10 +1980,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1994,10 +2004,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2010,17 +2020,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2076,8 +2086,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2090,6 +2100,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2097,10 +2109,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2111,10 +2123,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2125,10 +2137,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2139,10 +2151,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2164,10 +2176,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2188,10 +2200,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2212,10 +2224,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2236,10 +2248,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2252,17 +2264,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2318,8 +2330,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2332,6 +2344,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2339,10 +2353,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2353,10 +2367,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2367,10 +2381,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2381,10 +2395,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2406,10 +2420,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2430,10 +2444,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2454,10 +2468,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2478,10 +2492,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2494,17 +2508,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2560,8 +2574,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2574,6 +2588,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2581,10 +2597,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2595,10 +2611,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2609,10 +2625,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2623,10 +2639,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2648,10 +2664,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2672,10 +2688,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2696,10 +2712,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2720,10 +2736,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2736,17 +2752,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2802,8 +2818,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2816,6 +2832,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2823,10 +2841,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2837,10 +2855,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2851,10 +2869,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2865,10 +2883,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2890,10 +2908,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2914,10 +2932,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2938,10 +2956,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2962,10 +2980,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2978,17 +2996,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3044,8 +3062,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3058,6 +3076,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3065,10 +3085,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3079,10 +3099,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3093,10 +3113,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3107,10 +3127,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3132,10 +3152,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3156,10 +3176,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3180,10 +3200,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3204,10 +3224,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3220,17 +3240,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3286,8 +3306,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3300,6 +3320,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3307,10 +3329,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3321,10 +3343,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3335,10 +3357,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3349,10 +3371,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3374,10 +3396,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3398,10 +3420,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3422,10 +3444,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3446,10 +3468,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3462,17 +3484,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3528,8 +3550,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3542,6 +3564,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3549,10 +3573,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3563,10 +3587,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3577,10 +3601,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3591,10 +3615,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3616,10 +3640,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3640,10 +3664,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3664,10 +3688,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3688,10 +3712,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3704,17 +3728,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3770,8 +3794,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3793,6 +3817,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3800,10 +3826,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3814,10 +3840,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3828,10 +3854,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3842,10 +3868,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3867,10 +3893,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3891,10 +3917,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3915,10 +3941,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3939,10 +3965,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3955,17 +3981,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4021,8 +4047,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4046,10 +4072,10 @@ description: Variables in memory after executing dodecahedron.kcl
             -1000.0
           ],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4070,10 +4096,10 @@ description: Variables in memory after executing dodecahedron.kcl
             1000.0
           ],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4094,10 +4120,10 @@ description: Variables in memory after executing dodecahedron.kcl
             1000.0
           ],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4118,10 +4144,10 @@ description: Variables in memory after executing dodecahedron.kcl
             -1000.0
           ],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4134,17 +4160,17 @@ description: Variables in memory after executing dodecahedron.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4209,6 +4235,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4216,10 +4244,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4230,10 +4258,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4244,10 +4272,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4258,10 +4286,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4283,10 +4311,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4307,10 +4335,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4331,10 +4359,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4355,10 +4383,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4371,17 +4399,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4437,8 +4465,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4451,6 +4479,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4458,10 +4488,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4472,10 +4502,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4486,10 +4516,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4500,10 +4530,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4525,10 +4555,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4549,10 +4579,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4573,10 +4603,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4597,10 +4627,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4613,17 +4643,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4679,8 +4709,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4693,6 +4723,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4700,10 +4732,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4714,10 +4746,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4728,10 +4760,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4742,10 +4774,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4767,10 +4799,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4791,10 +4823,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4815,10 +4847,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4839,10 +4871,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4855,17 +4887,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4921,8 +4953,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4935,6 +4967,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4942,10 +4976,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4956,10 +4990,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4970,10 +5004,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4984,10 +5018,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5009,10 +5043,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5033,10 +5067,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5057,10 +5091,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5081,10 +5115,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5097,17 +5131,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5163,8 +5197,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5177,6 +5211,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5184,10 +5220,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5198,10 +5234,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5212,10 +5248,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5226,10 +5262,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5251,10 +5287,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5275,10 +5311,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5299,10 +5335,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5323,10 +5359,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5339,17 +5375,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5405,8 +5441,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5419,6 +5455,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5426,10 +5464,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5440,10 +5478,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5454,10 +5492,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5468,10 +5506,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5493,10 +5531,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5517,10 +5555,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5541,10 +5579,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5565,10 +5603,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5581,17 +5619,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5647,8 +5685,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5661,6 +5699,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5668,10 +5708,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5682,10 +5722,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5696,10 +5736,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5710,10 +5750,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5735,10 +5775,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5759,10 +5799,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5783,10 +5823,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5807,10 +5847,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5823,17 +5863,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5889,8 +5929,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5903,6 +5943,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5910,10 +5952,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5924,10 +5966,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5938,10 +5980,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5952,10 +5994,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5977,10 +6019,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6001,10 +6043,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6025,10 +6067,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6049,10 +6091,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6065,17 +6107,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6131,8 +6173,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6145,6 +6187,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6152,10 +6196,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6166,10 +6210,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6180,10 +6224,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6194,10 +6238,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6219,10 +6263,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6243,10 +6287,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6267,10 +6311,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6291,10 +6335,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6307,17 +6351,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6373,8 +6417,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6387,6 +6431,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6394,10 +6440,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 599,
-            "end": 604,
+            "commentStart": 631,
+            "end": 636,
             "moduleId": 0,
-            "start": 599,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6408,10 +6454,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 683,
-            "end": 688,
+            "commentStart": 715,
+            "end": 720,
             "moduleId": 0,
-            "start": 683,
+            "start": 715,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6422,10 +6468,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 804,
-            "end": 809,
+            "commentStart": 836,
+            "end": 841,
             "moduleId": 0,
-            "start": 804,
+            "start": 836,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6436,10 +6482,10 @@ description: Variables in memory after executing dodecahedron.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 925,
-            "end": 930,
+            "commentStart": 957,
+            "end": 962,
             "moduleId": 0,
-            "start": 925,
+            "start": 957,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6461,10 +6507,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 599,
-              "end": 604,
+              "commentStart": 631,
+              "end": 636,
               "moduleId": 0,
-              "start": 599,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6485,10 +6531,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 683,
-              "end": 688,
+              "commentStart": 715,
+              "end": 720,
               "moduleId": 0,
-              "start": 683,
+              "start": 715,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6509,10 +6555,10 @@ description: Variables in memory after executing dodecahedron.kcl
               1000.0
             ],
             "tag": {
-              "commentStart": 804,
-              "end": 809,
+              "commentStart": 836,
+              "end": 841,
               "moduleId": 0,
-              "start": 804,
+              "start": 836,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6533,10 +6579,10 @@ description: Variables in memory after executing dodecahedron.kcl
               -1000.0
             ],
             "tag": {
-              "commentStart": 925,
-              "end": 930,
+              "commentStart": 957,
+              "end": 962,
               "moduleId": 0,
-              "start": 925,
+              "start": 957,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6549,17 +6595,17 @@ description: Variables in memory after executing dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6615,8 +6661,8 @@ description: Variables in memory after executing dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

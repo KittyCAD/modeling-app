@@ -42,7 +42,7 @@ profile = sketch(on = XY) {
   coincident([line2.end, arc1.center])
   midpoint(arc1, point = line2.start)
 }
-solid = extrude(region(point = [1, 2], sketch = profile), length = 5)
+solid = extrude(region(segments = [profile.line1, profile.arc1]), length = 5)
 
 ```
 

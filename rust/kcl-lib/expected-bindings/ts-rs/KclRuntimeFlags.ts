@@ -3,5 +3,9 @@ import type { RuntimeFlag } from "./RuntimeFlag";
 
 /**
  * Maps 1-1 to the KCL related flags added to the Admin portal and TS.
+ *
+ * Fields missing from a deserialized payload become [`RuntimeFlag::Unset`],
+ * so a sender built before a flag existed falls back to Rust-side defaults
+ * instead of failing to parse.
  */
-export type KclRuntimeFlags = { use_new_lexer_parser: RuntimeFlag, };
+export type KclRuntimeFlags = { use_cek_executor: RuntimeFlag, use_new_lexer_parser: RuntimeFlag, };

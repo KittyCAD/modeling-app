@@ -2,7 +2,7 @@
 // The plastic housing that contains the fan and the motor
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -101,7 +101,7 @@ sketch001 = sketch(on = XY) {
   equalRadius([arc4, arc1, arc2, arc3])
   radius(arc3) == 6
 }
-region001 = region(point = [0mm, -62.4975mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line13, sketch001.arc2], direction = CW)
 hidden001 = hide(sketch001)
 extrude001 = extrude(region001, length = 25)
 
@@ -157,7 +157,7 @@ sketch002 = sketch(on = XZ) {
   coincident([line2.start, arc4.end])
   coincident([line2.end, arc5.start])
 }
-region002 = region(point = [116.8825009mm, 12.5495212mm], sketch = sketch002)
+region002 = region(segments = [sketch002.line15, sketch002.line7])
 hidden002 = hide(sketch002)
 revolve001 = revolve(region002, angle = 360deg, axis = Y)
 
@@ -206,7 +206,7 @@ sketch003 = sketch(on = XY) {
   coincident([arc4.center, line4])
 }
 hidden003 = hide(sketch003)
-region003 = region(point = [-1.8127969mm, 5.7222175mm], sketch = sketch003)
+region003 = region(segments = [sketch003.arc1, sketch003.line1])
 extrude002 = extrude(region003, length = 2)
 pattern001 = patternCircular3d(
   extrude002,
@@ -226,7 +226,7 @@ sketch004 = sketch(on = face001) {
   diameter(circle1) == 20
 }
 hidden004 = hide(sketch004)
-region004 = region(point = [-7.5081825mm, -9.3577348mm], sketch = sketch004)
+region004 = region(segments = [sketch004.circle2])
 extrude003 = extrude(region004, length = 12)
 
 // Apply appearance to all

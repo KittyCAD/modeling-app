@@ -39,7 +39,7 @@ profile = sketch(on = XY) {
   inside = point(at = [var 1mm, var 1mm])
 }
 
-solid = extrude(region(point = profile.inside), length = 2)
+solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 
 ```
 

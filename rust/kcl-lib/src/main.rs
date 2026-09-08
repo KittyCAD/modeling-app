@@ -1,6 +1,7 @@
 use std::env;
 use std::fs::File;
 use std::io::Read;
+use std::process::ExitCode;
 
 use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
@@ -13,7 +14,7 @@ use kcl_lib::Program;
 //
 // e.g., `cargo run -- foo.kcl`
 #[tokio::main]
-async fn main() {
+async fn main() -> ExitCode {
     let mut args = env::args();
     args.next();
     let mut filename = args.next().unwrap_or_else(|| "main.kcl".to_owned());
@@ -24,15 +25,23 @@ async fn main() {
         filename += "main.kcl";
     }
 
-    let mut f = File::open(&filename).unwrap();
+    let mut f = match File::open(&filename) {
+        Ok(f) => f,
+        Err(err) => {
+            eprintln!("{err}; {filename}");
+            return ExitCode::FAILURE;
+        }
+    };
     let mut text = String::new();
     f.read_to_string(&mut text).unwrap();
 
     let (program, errs) = Program::parse(&text).unwrap();
-    if !errs.is_empty() {
-        for e in errs {
-            eprintln!("{e:#?}");
+    let mut has_error = false;
+    for e in errs {
+        if e.is_err() {
+            has_error = true;
         }
+        eprintln!("{e:#?}");
     }
     let program = program.unwrap();
 
@@ -48,6 +57,20 @@ async fn main() {
     .await
     .unwrap();
     let mut exec_state = ExecState::new(&ctx);
-    ctx.run(&program, &mut exec_state).await.map_err(|e| e.error).unwrap();
-    println!("{:#?}", exec_state.issues());
+    let result = ctx.run(&program, &mut exec_state).await;
+    for e in exec_state.issues() {
+        if e.is_err() {
+            has_error = true;
+        }
+        eprintln!("{e:#?}");
+    }
+    if let Err(e) = result {
+        eprintln!("{:#?}", e.error);
+        return ExitCode::FAILURE;
+    }
+    if has_error {
+        ExitCode::FAILURE
+    } else {
+        ExitCode::SUCCESS
+    }
 }

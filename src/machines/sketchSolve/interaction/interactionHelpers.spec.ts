@@ -35,7 +35,7 @@ function createConstraintApiObject({
         type === 'Distance'
           ? {
               type,
-              points: [1, 2],
+              segments: [1, 2],
               distance: { value: 10, units: 'Mm' },
               source: {
                 expr: '10',

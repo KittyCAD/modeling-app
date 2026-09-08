@@ -14,6 +14,7 @@ use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::execution::AbstractSegment;
 use crate::execution::BoundedEdge;
+use crate::execution::CameraView;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::Face;
@@ -23,6 +24,7 @@ use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::Helix;
 use crate::execution::ImportedGeometry;
 use crate::execution::Metadata;
+use crate::execution::NamedViewValue;
 use crate::execution::Plane;
 use crate::execution::Segment;
 use crate::execution::SegmentRepr;
@@ -42,6 +44,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::KclNone;
@@ -140,7 +143,7 @@ pub enum KclValue {
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
+    TagDeclarator(BoxNode<TagDeclarator>),
     GdtAnnotation {
         value: Box<GdtAnnotation>,
     },
@@ -165,6 +168,12 @@ pub enum KclValue {
     },
     Helix {
         value: Box<Helix>,
+    },
+    CameraView {
+        value: Box<CameraView>,
+    },
+    NamedView {
+        value: Box<NamedViewValue>,
     },
     ImportedGeometry(ImportedGeometry),
     Function {
@@ -202,10 +211,16 @@ where
 #[derive(Debug, Clone, PartialEq)]
 pub struct NamedParam {
     pub experimental: bool,
+    /// Constraint marking the KCL version in which this parameter was added.
+    /// See [`NamedParam::unavailable_reason`].
+    pub added_in: Option<VersionConstraint>,
     /// If true, this parameter is deprecated regardless of the KCL version.
     pub deprecated: bool,
     /// Constraint marking the KCL version at or after which this parameter is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
+    /// Constraint marking the KCL version at or after which this parameter is
+    /// removed. See [`NamedParam::unavailable_reason`].
+    pub removed_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
     pub ty: Option<Type>,
     /// The `RuntimeType` that `ty` resolved to when the function declaration
@@ -213,6 +228,47 @@ pub struct NamedParam {
     /// is written. `None` when `ty` is `None`. Populated by
     /// [`FunctionSource::resolve_signature_types`].
     pub resolved_ty: Option<RuntimeType>,
+}
+
+/// Why a parameter that the callee declares cannot be passed on the KCL
+/// version governing the current execution. Such a parameter behaves as if
+/// the function never declared it: passing it is an error, and the function
+/// body sees the parameter's default value, which the parser guarantees
+/// exists.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ParamUnavailable<'a> {
+    /// The parameter was added in this KCL version, and the executing version
+    /// is before it.
+    NotYetAdded(&'a VersionConstraint),
+    /// The parameter was removed as of this KCL version, and the executing
+    /// version is at or after it.
+    Removed(&'a VersionConstraint),
+}
+
+impl NamedParam {
+    /// Why this parameter cannot be passed on the KCL version governing the
+    /// current execution, or `None` if it can. A pre-release version such as
+    /// "3.0-preview" counts as the release it precedes.
+    pub(crate) fn unavailable_reason(&self, exec_state: &ExecState) -> Option<ParamUnavailable<'_>> {
+        let version = exec_state.kcl_version().as_str();
+        if let Some(added) = &self.added_in
+            && !crate::execution::annotations::version_ge(version, added)
+        {
+            return Some(ParamUnavailable::NotYetAdded(added));
+        }
+        if let Some(since) = &self.removed_since
+            && crate::execution::annotations::version_ge(version, since)
+        {
+            return Some(ParamUnavailable::Removed(since));
+        }
+        None
+    }
+
+    /// Whether a caller may pass this parameter on the KCL version governing
+    /// the current execution. See [`NamedParam::unavailable_reason`].
+    pub(crate) fn is_available(&self, exec_state: &ExecState) -> bool {
+        self.unavailable_reason(exec_state).is_none()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -238,7 +294,7 @@ pub struct FunctionSource {
     pub include_in_feature_tree: bool,
     pub std_props: Option<StdFnProps>,
     pub body: FunctionBody,
-    pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+    pub ast: BoxNode<FunctionExpression>,
 }
 
 pub struct KclFunctionSourceParams {
@@ -248,12 +304,7 @@ pub struct KclFunctionSourceParams {
 }
 
 impl FunctionSource {
-    pub fn rust(
-        func: crate::std::StdFn,
-        ast: Box<Node<FunctionExpression>>,
-        props: StdFnProps,
-        attrs: FnAttrs,
-    ) -> Self {
+    pub fn rust(func: crate::std::StdFn, ast: BoxNode<FunctionExpression>, props: StdFnProps, attrs: FnAttrs) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
 
         FunctionSource {
@@ -272,7 +323,7 @@ impl FunctionSource {
         }
     }
 
-    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
+    pub fn kcl(ast: BoxNode<FunctionExpression>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
         let KclFunctionSourceParams {
             std_props,
             experimental,
@@ -312,8 +363,10 @@ impl FunctionSource {
                 p.identifier.name.clone(),
                 NamedParam {
                     experimental: p.experimental,
+                    added_in: p.added_in.clone(),
                     deprecated: p.deprecated,
                     deprecated_since: p.deprecated_since.clone(),
+                    removed_since: p.removed_since.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),
                     resolved_ty: None,
@@ -324,8 +377,31 @@ impl FunctionSource {
         (input_arg, named_args)
     }
 
-    pub(crate) fn is_std(&self) -> bool {
+    #[doc(hidden)]
+    pub fn is_std(&self) -> bool {
         self.std_props.is_some()
+    }
+
+    /// Look up a labeled parameter by name, treating parameters that are
+    /// unavailable on the executing KCL version (see
+    /// [`NamedParam::unavailable_reason`]) as if the function never declared
+    /// them.
+    pub(crate) fn active_named_arg<'a>(&'a self, label: &str, exec_state: &ExecState) -> Option<&'a NamedParam> {
+        self.named_args
+            .get(label)
+            .filter(|param| param.is_available(exec_state))
+    }
+
+    /// The labeled parameters a caller may pass on the executing KCL version,
+    /// in declaration order. Parameters unavailable on that version are
+    /// excluded.
+    pub(crate) fn active_named_args<'a>(
+        &'a self,
+        exec_state: &'a ExecState,
+    ) -> impl Iterator<Item = (&'a String, &'a NamedParam)> + 'a {
+        self.named_args
+            .iter()
+            .filter(move |(_, param)| param.is_available(exec_state))
     }
 
     /// Resolve every parameter type and the return type of this function's
@@ -607,6 +683,8 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
+            KclValue::CameraView { value } => to_vec_sr(value.meta()),
+            KclValue::NamedView { value } => to_vec_sr(value.meta()),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
@@ -643,6 +721,8 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
+            KclValue::CameraView { value } => to_vec_sr(value.meta()),
+            KclValue::NamedView { value } => to_vec_sr(value.meta()),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
@@ -695,6 +775,8 @@ impl KclValue {
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Solid { value } => value.meta.clone(),
             KclValue::Helix { value } => value.meta.clone(),
+            KclValue::CameraView { value } => value.meta().to_vec(),
+            KclValue::NamedView { value } => value.meta().to_vec(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
@@ -733,6 +815,8 @@ impl KclValue {
             | KclValue::Sketch { .. }
             | KclValue::Solid { .. }
             | KclValue::Helix { .. }
+            | KclValue::CameraView { .. }
+            | KclValue::NamedView { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
             | KclValue::Module { .. }
@@ -753,6 +837,8 @@ impl KclValue {
             KclValue::Solid { .. } => "a solid".to_owned(),
             KclValue::Sketch { .. } => "a sketch".to_owned(),
             KclValue::Helix { .. } => "a helix".to_owned(),
+            KclValue::CameraView { .. } => "a camera view".to_owned(),
+            KclValue::NamedView { .. } => "a named view".to_owned(),
             KclValue::ImportedGeometry(_) => "an imported geometry".to_owned(),
             KclValue::Function { .. } => "a function".to_owned(),
             KclValue::Plane { .. } => "a plane".to_owned(),
@@ -914,6 +1000,14 @@ impl KclValue {
             ],
             meta,
         }
+    }
+
+    pub fn from_imported_geometries(geometries: Vec<ImportedGeometry>) -> Self {
+        geometries
+            .into_iter()
+            .map(|geometry| GeometryWithImportedGeometry::ImportedGeometry(Box::new(geometry)))
+            .collect::<Vec<_>>()
+            .into()
     }
 
     /// Put the point into a KCL value.
@@ -1270,6 +1364,8 @@ impl KclValue {
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }
+            | KclValue::CameraView { .. }
+            | KclValue::NamedView { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
             | KclValue::Plane { .. }
@@ -1324,6 +1420,39 @@ impl From<Vec<GeometryWithImportedGeometry>> for KclValue {
 mod tests {
     use super::*;
     use crate::exec::UnitType;
+
+    #[test]
+    fn tag_declaration_bindings_do_not_overwrite_each_other() {
+        use kcl_api::TagDeclaratorView;
+        use ts_rs::TS;
+
+        // View dependencies and AST exports share one output directory in CI.
+        // Both definitions must survive regardless of which exporter runs last.
+        for ast_first in [true, false] {
+            let output = tempfile::tempdir().unwrap();
+            let config = ts_rs::Config::default().with_out_dir(output.path());
+            if ast_first {
+                TagDeclarator::export_all(&config).unwrap();
+                kcl_api::BasePathView::export_all(&config).unwrap();
+            } else {
+                kcl_api::BasePathView::export_all(&config).unwrap();
+                TagDeclarator::export_all(&config).unwrap();
+            }
+
+            for (path, expected) in [
+                (
+                    TagDeclarator::output_path().unwrap(),
+                    TagDeclarator::export_to_string(&config).unwrap(),
+                ),
+                (
+                    TagDeclaratorView::output_path().unwrap(),
+                    TagDeclaratorView::export_to_string(&config).unwrap(),
+                ),
+            ] {
+                assert_eq!(std::fs::read_to_string(output.path().join(path)).unwrap(), expected);
+            }
+        }
+    }
 
     #[test]
     fn test_human_friendly_type() {

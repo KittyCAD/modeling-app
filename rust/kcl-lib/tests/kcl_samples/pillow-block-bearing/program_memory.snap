@@ -1,0 +1,122 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing pillow-block-bearing.kcl
+---
+{
+  "__mod_ballBearing": {
+    "type": "Module",
+    "value": 2
+  },
+  "__mod_block": {
+    "type": "Module",
+    "value": 3
+  },
+  "bearingBoreDiameter": {
+    "type": "Number",
+    "value": 1.75,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "bearingOuterDiameter": {
+    "type": "Number",
+    "value": 2.625,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "boltDiameter": {
+    "type": "Number",
+    "value": 0.375,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "boltSpacingX": {
+    "type": "Number",
+    "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "boltSpacingY": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "chainThickness": {
+    "type": "Number",
+    "value": 0.02734375,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "chainWidth": {
+    "type": "Number",
+    "value": 0.109375,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "counterboreDepth": {
+    "type": "Number",
+    "value": 0.1875,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "counterboreDiameter": {
+    "type": "Number",
+    "value": 0.75,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "linkDiameter": {
+    "type": "Number",
+    "value": 0.0546875,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "sphereDia": {
+    "type": "Number",
+    "value": 0.21875,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "stockThickness": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  }
+}

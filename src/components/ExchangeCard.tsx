@@ -2,7 +2,11 @@ import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { Thinking } from '@src/components/Thinking'
+import {
+  ExportDownloadFiles,
+  isExportDownloadFile,
+  Thinking,
+} from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
@@ -389,15 +393,23 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
       <MarkdownText
+        key="response"
         text={props.deltasAggregated}
         className="whitespace-normal"
       />
     ) : null
   }, [props.deltasAggregated])
 
+  const exportDownloadFiles = props.items.flatMap((response) =>
+    'files' in response ? response.files.files.filter(isExportDownloadFile) : []
+  )
+
   const children = [
     maybeError ? <MaybeError key="error" maybeError={maybeError} /> : null,
     deltasAggregatedMarkdown,
+    exportDownloadFiles.length > 0 ? (
+      <ExportDownloadFiles key="downloads" files={exportDownloadFiles} />
+    ) : null,
   ].filter((x: ReactNode) => x !== null)
 
   const shouldShowResponseBubble =

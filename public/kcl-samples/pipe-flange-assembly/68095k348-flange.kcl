@@ -1,0 +1,54 @@
+// Flange
+// Flange used for mating two pipes together in the pipe flange assembly.
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "parameters.kcl"
+
+export fn flange() {
+  baseSketch = sketch(on = XY) {
+    outerCircle = circle(start = [var 3in, var 0in], center = [var 0in, var 0in])
+  }
+  baseRegion = region(segments = [baseSketch.outerCircle])
+  flangeBase = extrude(baseRegion, length = flangeBaseThickness)
+
+  mountingHoleSketch = sketch(on = offsetPlane(XY, offset = -flangeBackHeight)) {
+    mountingHole = circle(start = [var 0.375in, var 2.375in], center = [var 0in, var 2.375in])
+  }
+  mountingHoleRegion = region(segments = [mountingHoleSketch.mountingHole])
+  mountingHoleTool = extrude(mountingHoleRegion, length = flangeTotalThickness)
+    |> patternCircular3d(
+         instances = 4,
+         axis = Z,
+         center = [0, 0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = false,
+       )
+  flangeBaseWithHoles = subtract(flangeBase, tools = mountingHoleTool)
+
+  backSketch = sketch(on = XY) {
+    outerCircle = circle(start = [var 1.81in, var 0in], center = [var 0in, var 0in])
+  }
+  flangeBack = extrude(region(segments = [backSketch.outerCircle]), length = -flangeBackHeight)
+
+  frontSketch = sketch(on = offsetPlane(XY, offset = flangeBaseThickness)) {
+    outerCircle = circle(start = [var 1.53in, var 0in], center = [var 0in, var 0in])
+  }
+  flangeFront = extrude(region(segments = [frontSketch.outerCircle]), length = flangeFrontHeight)
+
+  flangeBody = union([
+    flangeBaseWithHoles,
+    flangeBack,
+    flangeFront
+  ])
+
+  pipeCutSketch = sketch(on = offsetPlane(XY, offset = -flangeBackHeight)) {
+    pipeCutCircle = circle(start = [var 1.22in, var 0in], center = [var 0in, var 0in])
+  }
+  pipeCutTool = extrude(region(segments = [pipeCutSketch.pipeCutCircle]), length = flangeTotalThickness)
+
+  flangeResult = subtract(flangeBody, tools = [pipeCutTool])
+    |> appearance(color = "#bab0b0")
+
+  return flangeResult
+}

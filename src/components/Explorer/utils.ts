@@ -10,6 +10,7 @@ import {
   getParentAbsolutePath,
   getStringAfterLastSeparator,
   joinOSPaths,
+  normalizeFilesystemPathForComparison,
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
@@ -93,6 +94,23 @@ export interface FileExplorerRowContextMenuProps {
   onPaste: () => void
   isCopying: boolean
   rowContextMenuItems: readonly ProjectExplorerRowContextMenuItem[]
+}
+
+export function isPathWithinFileExplorerEntry(
+  path: string | undefined,
+  entryPath: string
+): boolean {
+  if (!path || !entryPath) {
+    return false
+  }
+
+  const normalizedPath = normalizeFilesystemPathForComparison(path)
+  const normalizedEntryPath = normalizeFilesystemPathForComparison(entryPath)
+
+  return (
+    normalizedPath === normalizedEntryPath ||
+    normalizedPath.startsWith(`${normalizedEntryPath}/`)
+  )
 }
 
 /**

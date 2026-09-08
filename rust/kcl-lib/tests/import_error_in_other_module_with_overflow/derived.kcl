@@ -1,0 +1,9 @@
+// Repeat this padding comment until the function starts after byte 100.
+// imported-module padding
+// imported-module padding
+// imported-module padding
+// imported-module padding
+// imported-module padding
+export fn derived() {
+  return PI * 2
+}

@@ -272,6 +272,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -279,10 +281,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5900,
-            "end": 5905,
+            "commentStart": 5914,
+            "end": 5919,
             "moduleId": 0,
-            "start": 5900,
+            "start": 5914,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -293,10 +295,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5981,
-            "end": 5985,
+            "commentStart": 5995,
+            "end": 5999,
             "moduleId": 0,
-            "start": 5981,
+            "start": 5995,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -307,10 +309,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6144,
-            "end": 6148,
+            "commentStart": 6158,
+            "end": 6162,
             "moduleId": 0,
-            "start": 6144,
+            "start": 6158,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -321,10 +323,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6336,
-            "end": 6340,
+            "commentStart": 6350,
+            "end": 6354,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6350,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -335,10 +337,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6512,
-            "end": 6517,
+            "commentStart": 6526,
+            "end": 6531,
             "moduleId": 0,
-            "start": 6512,
+            "start": 6526,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -349,10 +351,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6648,
-            "end": 6653,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6648,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -363,10 +365,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6783,
-            "end": 6788,
+            "commentStart": 6797,
+            "end": 6802,
             "moduleId": 0,
-            "start": 6783,
+            "start": 6797,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -377,10 +379,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6916,
-            "end": 6920,
+            "commentStart": 6930,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6916,
+            "start": 6930,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -391,10 +393,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7090,
-            "end": 7094,
+            "commentStart": 7104,
+            "end": 7108,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7104,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -405,10 +407,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7276,
-            "end": 7281,
+            "commentStart": 7290,
+            "end": 7295,
             "moduleId": 0,
-            "start": 7276,
+            "start": 7290,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -419,10 +421,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7451,
-            "end": 7457,
+            "commentStart": 7465,
+            "end": 7471,
             "moduleId": 0,
-            "start": 7451,
+            "start": 7465,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -433,10 +435,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7587,
-            "end": 7593,
+            "commentStart": 7601,
+            "end": 7607,
             "moduleId": 0,
-            "start": 7587,
+            "start": 7601,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -447,10 +449,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7723,
-            "end": 7729,
+            "commentStart": 7737,
+            "end": 7743,
             "moduleId": 0,
-            "start": 7723,
+            "start": 7737,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -461,10 +463,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7860,
-            "end": 7865,
+            "commentStart": 7874,
+            "end": 7879,
             "moduleId": 0,
-            "start": 7860,
+            "start": 7874,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -475,10 +477,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8040,
-            "end": 8045,
+            "commentStart": 8054,
+            "end": 8059,
             "moduleId": 0,
-            "start": 8040,
+            "start": 8054,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -489,12 +491,124 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8228,
-            "end": 8233,
+            "commentStart": 8242,
+            "end": 8247,
             "moduleId": 0,
-            "start": 8228,
+            "start": 8242,
             "type": "TagDeclarator",
             "value": "arc16"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8462,
+            "end": 8470,
+            "moduleId": 0,
+            "start": 8462,
+            "type": "TagDeclarator",
+            "value": "circle17"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8544,
+            "end": 8552,
+            "moduleId": 0,
+            "start": 8544,
+            "type": "TagDeclarator",
+            "value": "circle18"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8626,
+            "end": 8634,
+            "moduleId": 0,
+            "start": 8626,
+            "type": "TagDeclarator",
+            "value": "circle19"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8708,
+            "end": 8716,
+            "moduleId": 0,
+            "start": 8708,
+            "type": "TagDeclarator",
+            "value": "circle20"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8790,
+            "end": 8798,
+            "moduleId": 0,
+            "start": 8790,
+            "type": "TagDeclarator",
+            "value": "circle21"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8886,
+            "end": 8894,
+            "moduleId": 0,
+            "start": 8886,
+            "type": "TagDeclarator",
+            "value": "circle22"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8977,
+            "end": 8985,
+            "moduleId": 0,
+            "start": 8977,
+            "type": "TagDeclarator",
+            "value": "circle23"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 9069,
+            "end": 9077,
+            "moduleId": 0,
+            "start": 9069,
+            "type": "TagDeclarator",
+            "value": "circle24"
           },
           "type": "extrudeArc"
         }
@@ -514,10 +628,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 5900,
-              "end": 5905,
+              "commentStart": 5914,
+              "end": 5919,
               "moduleId": 0,
-              "start": 5900,
+              "start": 5914,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -544,10 +658,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 5981,
-              "end": 5985,
+              "commentStart": 5995,
+              "end": 5999,
               "moduleId": 0,
-              "start": 5981,
+              "start": 5995,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -574,10 +688,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.900000001737957,
             "tag": {
-              "commentStart": 6144,
-              "end": 6148,
+              "commentStart": 6158,
+              "end": 6162,
               "moduleId": 0,
-              "start": 6144,
+              "start": 6158,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -604,10 +718,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.2999999958832122,
             "tag": {
-              "commentStart": 6336,
-              "end": 6340,
+              "commentStart": 6350,
+              "end": 6354,
               "moduleId": 0,
-              "start": 6336,
+              "start": 6350,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -628,10 +742,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6512,
-              "end": 6517,
+              "commentStart": 6526,
+              "end": 6531,
               "moduleId": 0,
-              "start": 6512,
+              "start": 6526,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -652,10 +766,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6648,
-              "end": 6653,
+              "commentStart": 6662,
+              "end": 6667,
               "moduleId": 0,
-              "start": 6648,
+              "start": 6662,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -676,10 +790,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 6783,
-              "end": 6788,
+              "commentStart": 6797,
+              "end": 6802,
               "moduleId": 0,
-              "start": 6783,
+              "start": 6797,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -706,10 +820,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 6916,
-              "end": 6920,
+              "commentStart": 6930,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6916,
+              "start": 6930,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -736,10 +850,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 1.5000000011648253,
             "tag": {
-              "commentStart": 7090,
-              "end": 7094,
+              "commentStart": 7104,
+              "end": 7108,
               "moduleId": 0,
-              "start": 7090,
+              "start": 7104,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -766,10 +880,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7276,
-              "end": 7281,
+              "commentStart": 7290,
+              "end": 7295,
               "moduleId": 0,
-              "start": 7276,
+              "start": 7290,
               "type": "TagDeclarator",
               "value": "arc10"
             },
@@ -790,10 +904,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7451,
-              "end": 7457,
+              "commentStart": 7465,
+              "end": 7471,
               "moduleId": 0,
-              "start": 7451,
+              "start": 7465,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -814,10 +928,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7587,
-              "end": 7593,
+              "commentStart": 7601,
+              "end": 7607,
               "moduleId": 0,
-              "start": 7587,
+              "start": 7601,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -838,10 +952,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 7723,
-              "end": 7729,
+              "commentStart": 7737,
+              "end": 7743,
               "moduleId": 0,
-              "start": 7723,
+              "start": 7737,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -868,10 +982,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7860,
-              "end": 7865,
+              "commentStart": 7874,
+              "end": 7879,
               "moduleId": 0,
-              "start": 7860,
+              "start": 7874,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -898,10 +1012,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.9000000017379572,
             "tag": {
-              "commentStart": 8040,
-              "end": 8045,
+              "commentStart": 8054,
+              "end": 8059,
               "moduleId": 0,
-              "start": 8040,
+              "start": 8054,
               "type": "TagDeclarator",
               "value": "arc15"
             },
@@ -928,10 +1042,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.3046334582929542,
             "tag": {
-              "commentStart": 8228,
-              "end": 8233,
+              "commentStart": 8242,
+              "end": 8247,
               "moduleId": 0,
-              "start": 8228,
+              "start": 8242,
               "type": "TagDeclarator",
               "value": "arc16"
             },
@@ -941,20 +1055,260 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": {
+              "commentStart": 8462,
+              "end": 8470,
+              "moduleId": 0,
+              "start": 8462,
+              "type": "TagDeclarator",
+              "value": "circle17"
+            },
+            "to": [
+              0.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.0,
+              0.0
+            ],
+            "from": [
+              2.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8544,
+              "end": 8552,
+              "moduleId": 0,
+              "start": 8544,
+              "type": "TagDeclarator",
+              "value": "circle18"
+            },
+            "to": [
+              2.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              4.0,
+              0.0
+            ],
+            "from": [
+              4.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8626,
+              "end": 8634,
+              "moduleId": 0,
+              "start": 8626,
+              "type": "TagDeclarator",
+              "value": "circle19"
+            },
+            "to": [
+              4.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.0,
+              0.0
+            ],
+            "from": [
+              6.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8708,
+              "end": 8716,
+              "moduleId": 0,
+              "start": 8708,
+              "type": "TagDeclarator",
+              "value": "circle20"
+            },
+            "to": [
+              6.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.975,
+              -0.975
+            ],
+            "from": [
+              -0.85,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8790,
+              "end": 8798,
+              "moduleId": 0,
+              "start": 8790,
+              "type": "TagDeclarator",
+              "value": "circle21"
+            },
+            "to": [
+              -0.85,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.975,
+              0.975
+            ],
+            "from": [
+              1.1,
+              0.975
+            ],
+            "radius": 0.1250000000000001,
+            "tag": {
+              "commentStart": 8886,
+              "end": 8894,
+              "moduleId": 0,
+              "start": 8886,
+              "type": "TagDeclarator",
+              "value": "circle22"
+            },
+            "to": [
+              1.1,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              5.025,
+              0.975
+            ],
+            "from": [
+              5.15,
+              0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8977,
+              "end": 8985,
+              "moduleId": 0,
+              "start": 8977,
+              "type": "TagDeclarator",
+              "value": "circle23"
+            },
+            "to": [
+              5.15,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.975,
+              -0.975
+            ],
+            "from": [
+              7.1,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 9069,
+              "end": 9077,
+              "moduleId": 0,
+              "start": 9069,
+              "type": "TagDeclarator",
+              "value": "circle24"
+            },
+            "to": [
+              7.1,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 115,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1090,8 +1444,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1162,6 +1516,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1169,10 +1525,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5900,
-            "end": 5905,
+            "commentStart": 5914,
+            "end": 5919,
             "moduleId": 0,
-            "start": 5900,
+            "start": 5914,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1183,10 +1539,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5981,
-            "end": 5985,
+            "commentStart": 5995,
+            "end": 5999,
             "moduleId": 0,
-            "start": 5981,
+            "start": 5995,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1197,10 +1553,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6144,
-            "end": 6148,
+            "commentStart": 6158,
+            "end": 6162,
             "moduleId": 0,
-            "start": 6144,
+            "start": 6158,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1211,10 +1567,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6336,
-            "end": 6340,
+            "commentStart": 6350,
+            "end": 6354,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6350,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1225,10 +1581,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6512,
-            "end": 6517,
+            "commentStart": 6526,
+            "end": 6531,
             "moduleId": 0,
-            "start": 6512,
+            "start": 6526,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1239,10 +1595,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6648,
-            "end": 6653,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6648,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1253,10 +1609,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6783,
-            "end": 6788,
+            "commentStart": 6797,
+            "end": 6802,
             "moduleId": 0,
-            "start": 6783,
+            "start": 6797,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -1267,10 +1623,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6916,
-            "end": 6920,
+            "commentStart": 6930,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6916,
+            "start": 6930,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -1281,10 +1637,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7090,
-            "end": 7094,
+            "commentStart": 7104,
+            "end": 7108,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7104,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -1295,10 +1651,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7276,
-            "end": 7281,
+            "commentStart": 7290,
+            "end": 7295,
             "moduleId": 0,
-            "start": 7276,
+            "start": 7290,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -1309,10 +1665,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7451,
-            "end": 7457,
+            "commentStart": 7465,
+            "end": 7471,
             "moduleId": 0,
-            "start": 7451,
+            "start": 7465,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -1323,10 +1679,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7587,
-            "end": 7593,
+            "commentStart": 7601,
+            "end": 7607,
             "moduleId": 0,
-            "start": 7587,
+            "start": 7601,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -1337,10 +1693,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7723,
-            "end": 7729,
+            "commentStart": 7737,
+            "end": 7743,
             "moduleId": 0,
-            "start": 7723,
+            "start": 7737,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -1351,10 +1707,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7860,
-            "end": 7865,
+            "commentStart": 7874,
+            "end": 7879,
             "moduleId": 0,
-            "start": 7860,
+            "start": 7874,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -1365,10 +1721,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8040,
-            "end": 8045,
+            "commentStart": 8054,
+            "end": 8059,
             "moduleId": 0,
-            "start": 8040,
+            "start": 8054,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -1379,12 +1735,124 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8228,
-            "end": 8233,
+            "commentStart": 8242,
+            "end": 8247,
             "moduleId": 0,
-            "start": 8228,
+            "start": 8242,
             "type": "TagDeclarator",
             "value": "arc16"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8462,
+            "end": 8470,
+            "moduleId": 0,
+            "start": 8462,
+            "type": "TagDeclarator",
+            "value": "circle17"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8544,
+            "end": 8552,
+            "moduleId": 0,
+            "start": 8544,
+            "type": "TagDeclarator",
+            "value": "circle18"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8626,
+            "end": 8634,
+            "moduleId": 0,
+            "start": 8626,
+            "type": "TagDeclarator",
+            "value": "circle19"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8708,
+            "end": 8716,
+            "moduleId": 0,
+            "start": 8708,
+            "type": "TagDeclarator",
+            "value": "circle20"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8790,
+            "end": 8798,
+            "moduleId": 0,
+            "start": 8790,
+            "type": "TagDeclarator",
+            "value": "circle21"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8886,
+            "end": 8894,
+            "moduleId": 0,
+            "start": 8886,
+            "type": "TagDeclarator",
+            "value": "circle22"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8977,
+            "end": 8985,
+            "moduleId": 0,
+            "start": 8977,
+            "type": "TagDeclarator",
+            "value": "circle23"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 9069,
+            "end": 9077,
+            "moduleId": 0,
+            "start": 9069,
+            "type": "TagDeclarator",
+            "value": "circle24"
           },
           "type": "extrudeArc"
         }
@@ -1404,10 +1872,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 5900,
-              "end": 5905,
+              "commentStart": 5914,
+              "end": 5919,
               "moduleId": 0,
-              "start": 5900,
+              "start": 5914,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1434,10 +1902,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 5981,
-              "end": 5985,
+              "commentStart": 5995,
+              "end": 5999,
               "moduleId": 0,
-              "start": 5981,
+              "start": 5995,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1464,10 +1932,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.900000001737957,
             "tag": {
-              "commentStart": 6144,
-              "end": 6148,
+              "commentStart": 6158,
+              "end": 6162,
               "moduleId": 0,
-              "start": 6144,
+              "start": 6158,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1494,10 +1962,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.2999999958832122,
             "tag": {
-              "commentStart": 6336,
-              "end": 6340,
+              "commentStart": 6350,
+              "end": 6354,
               "moduleId": 0,
-              "start": 6336,
+              "start": 6350,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -1518,10 +1986,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6512,
-              "end": 6517,
+              "commentStart": 6526,
+              "end": 6531,
               "moduleId": 0,
-              "start": 6512,
+              "start": 6526,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -1542,10 +2010,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6648,
-              "end": 6653,
+              "commentStart": 6662,
+              "end": 6667,
               "moduleId": 0,
-              "start": 6648,
+              "start": 6662,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -1566,10 +2034,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 6783,
-              "end": 6788,
+              "commentStart": 6797,
+              "end": 6802,
               "moduleId": 0,
-              "start": 6783,
+              "start": 6797,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -1596,10 +2064,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 6916,
-              "end": 6920,
+              "commentStart": 6930,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6916,
+              "start": 6930,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -1626,10 +2094,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 1.5000000011648253,
             "tag": {
-              "commentStart": 7090,
-              "end": 7094,
+              "commentStart": 7104,
+              "end": 7108,
               "moduleId": 0,
-              "start": 7090,
+              "start": 7104,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -1656,10 +2124,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7276,
-              "end": 7281,
+              "commentStart": 7290,
+              "end": 7295,
               "moduleId": 0,
-              "start": 7276,
+              "start": 7290,
               "type": "TagDeclarator",
               "value": "arc10"
             },
@@ -1680,10 +2148,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7451,
-              "end": 7457,
+              "commentStart": 7465,
+              "end": 7471,
               "moduleId": 0,
-              "start": 7451,
+              "start": 7465,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -1704,10 +2172,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7587,
-              "end": 7593,
+              "commentStart": 7601,
+              "end": 7607,
               "moduleId": 0,
-              "start": 7587,
+              "start": 7601,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -1728,10 +2196,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 7723,
-              "end": 7729,
+              "commentStart": 7737,
+              "end": 7743,
               "moduleId": 0,
-              "start": 7723,
+              "start": 7737,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -1758,10 +2226,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7860,
-              "end": 7865,
+              "commentStart": 7874,
+              "end": 7879,
               "moduleId": 0,
-              "start": 7860,
+              "start": 7874,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -1788,10 +2256,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.9000000017379572,
             "tag": {
-              "commentStart": 8040,
-              "end": 8045,
+              "commentStart": 8054,
+              "end": 8059,
               "moduleId": 0,
-              "start": 8040,
+              "start": 8054,
               "type": "TagDeclarator",
               "value": "arc15"
             },
@@ -1818,10 +2286,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.3046334582929542,
             "tag": {
-              "commentStart": 8228,
-              "end": 8233,
+              "commentStart": 8242,
+              "end": 8247,
               "moduleId": 0,
-              "start": 8228,
+              "start": 8242,
               "type": "TagDeclarator",
               "value": "arc16"
             },
@@ -1831,20 +2299,260 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": {
+              "commentStart": 8462,
+              "end": 8470,
+              "moduleId": 0,
+              "start": 8462,
+              "type": "TagDeclarator",
+              "value": "circle17"
+            },
+            "to": [
+              0.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.0,
+              0.0
+            ],
+            "from": [
+              2.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8544,
+              "end": 8552,
+              "moduleId": 0,
+              "start": 8544,
+              "type": "TagDeclarator",
+              "value": "circle18"
+            },
+            "to": [
+              2.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              4.0,
+              0.0
+            ],
+            "from": [
+              4.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8626,
+              "end": 8634,
+              "moduleId": 0,
+              "start": 8626,
+              "type": "TagDeclarator",
+              "value": "circle19"
+            },
+            "to": [
+              4.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.0,
+              0.0
+            ],
+            "from": [
+              6.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8708,
+              "end": 8716,
+              "moduleId": 0,
+              "start": 8708,
+              "type": "TagDeclarator",
+              "value": "circle20"
+            },
+            "to": [
+              6.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.975,
+              -0.975
+            ],
+            "from": [
+              -0.85,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8790,
+              "end": 8798,
+              "moduleId": 0,
+              "start": 8790,
+              "type": "TagDeclarator",
+              "value": "circle21"
+            },
+            "to": [
+              -0.85,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.975,
+              0.975
+            ],
+            "from": [
+              1.1,
+              0.975
+            ],
+            "radius": 0.1250000000000001,
+            "tag": {
+              "commentStart": 8886,
+              "end": 8894,
+              "moduleId": 0,
+              "start": 8886,
+              "type": "TagDeclarator",
+              "value": "circle22"
+            },
+            "to": [
+              1.1,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              5.025,
+              0.975
+            ],
+            "from": [
+              5.15,
+              0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8977,
+              "end": 8985,
+              "moduleId": 0,
+              "start": 8977,
+              "type": "TagDeclarator",
+              "value": "circle23"
+            },
+            "to": [
+              5.15,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.975,
+              -0.975
+            ],
+            "from": [
+              7.1,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 9069,
+              "end": 9077,
+              "moduleId": 0,
+              "start": 9069,
+              "type": "TagDeclarator",
+              "value": "circle24"
+            },
+            "to": [
+              7.1,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 115,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1980,8 +2688,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2038,6 +2746,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2045,10 +2755,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5900,
-            "end": 5905,
+            "commentStart": 5914,
+            "end": 5919,
             "moduleId": 0,
-            "start": 5900,
+            "start": 5914,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2059,10 +2769,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5981,
-            "end": 5985,
+            "commentStart": 5995,
+            "end": 5999,
             "moduleId": 0,
-            "start": 5981,
+            "start": 5995,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2073,10 +2783,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6144,
-            "end": 6148,
+            "commentStart": 6158,
+            "end": 6162,
             "moduleId": 0,
-            "start": 6144,
+            "start": 6158,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2087,10 +2797,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6336,
-            "end": 6340,
+            "commentStart": 6350,
+            "end": 6354,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6350,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2101,10 +2811,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6512,
-            "end": 6517,
+            "commentStart": 6526,
+            "end": 6531,
             "moduleId": 0,
-            "start": 6512,
+            "start": 6526,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2115,10 +2825,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6648,
-            "end": 6653,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6648,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2129,10 +2839,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6783,
-            "end": 6788,
+            "commentStart": 6797,
+            "end": 6802,
             "moduleId": 0,
-            "start": 6783,
+            "start": 6797,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -2143,10 +2853,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6916,
-            "end": 6920,
+            "commentStart": 6930,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6916,
+            "start": 6930,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -2157,10 +2867,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7090,
-            "end": 7094,
+            "commentStart": 7104,
+            "end": 7108,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7104,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -2171,10 +2881,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7276,
-            "end": 7281,
+            "commentStart": 7290,
+            "end": 7295,
             "moduleId": 0,
-            "start": 7276,
+            "start": 7290,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -2185,10 +2895,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7451,
-            "end": 7457,
+            "commentStart": 7465,
+            "end": 7471,
             "moduleId": 0,
-            "start": 7451,
+            "start": 7465,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -2199,10 +2909,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7587,
-            "end": 7593,
+            "commentStart": 7601,
+            "end": 7607,
             "moduleId": 0,
-            "start": 7587,
+            "start": 7601,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -2213,10 +2923,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7723,
-            "end": 7729,
+            "commentStart": 7737,
+            "end": 7743,
             "moduleId": 0,
-            "start": 7723,
+            "start": 7737,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -2227,10 +2937,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7860,
-            "end": 7865,
+            "commentStart": 7874,
+            "end": 7879,
             "moduleId": 0,
-            "start": 7860,
+            "start": 7874,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -2241,10 +2951,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8040,
-            "end": 8045,
+            "commentStart": 8054,
+            "end": 8059,
             "moduleId": 0,
-            "start": 8040,
+            "start": 8054,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -2255,12 +2965,124 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8228,
-            "end": 8233,
+            "commentStart": 8242,
+            "end": 8247,
             "moduleId": 0,
-            "start": 8228,
+            "start": 8242,
             "type": "TagDeclarator",
             "value": "arc16"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8462,
+            "end": 8470,
+            "moduleId": 0,
+            "start": 8462,
+            "type": "TagDeclarator",
+            "value": "circle17"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8544,
+            "end": 8552,
+            "moduleId": 0,
+            "start": 8544,
+            "type": "TagDeclarator",
+            "value": "circle18"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8626,
+            "end": 8634,
+            "moduleId": 0,
+            "start": 8626,
+            "type": "TagDeclarator",
+            "value": "circle19"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8708,
+            "end": 8716,
+            "moduleId": 0,
+            "start": 8708,
+            "type": "TagDeclarator",
+            "value": "circle20"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8790,
+            "end": 8798,
+            "moduleId": 0,
+            "start": 8790,
+            "type": "TagDeclarator",
+            "value": "circle21"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8886,
+            "end": 8894,
+            "moduleId": 0,
+            "start": 8886,
+            "type": "TagDeclarator",
+            "value": "circle22"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8977,
+            "end": 8985,
+            "moduleId": 0,
+            "start": 8977,
+            "type": "TagDeclarator",
+            "value": "circle23"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 9069,
+            "end": 9077,
+            "moduleId": 0,
+            "start": 9069,
+            "type": "TagDeclarator",
+            "value": "circle24"
           },
           "type": "extrudeArc"
         }
@@ -2280,10 +3102,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 5900,
-              "end": 5905,
+              "commentStart": 5914,
+              "end": 5919,
               "moduleId": 0,
-              "start": 5900,
+              "start": 5914,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2310,10 +3132,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 5981,
-              "end": 5985,
+              "commentStart": 5995,
+              "end": 5999,
               "moduleId": 0,
-              "start": 5981,
+              "start": 5995,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2340,10 +3162,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.900000001737957,
             "tag": {
-              "commentStart": 6144,
-              "end": 6148,
+              "commentStart": 6158,
+              "end": 6162,
               "moduleId": 0,
-              "start": 6144,
+              "start": 6158,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -2370,10 +3192,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.2999999958832122,
             "tag": {
-              "commentStart": 6336,
-              "end": 6340,
+              "commentStart": 6350,
+              "end": 6354,
               "moduleId": 0,
-              "start": 6336,
+              "start": 6350,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -2394,10 +3216,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6512,
-              "end": 6517,
+              "commentStart": 6526,
+              "end": 6531,
               "moduleId": 0,
-              "start": 6512,
+              "start": 6526,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -2418,10 +3240,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6648,
-              "end": 6653,
+              "commentStart": 6662,
+              "end": 6667,
               "moduleId": 0,
-              "start": 6648,
+              "start": 6662,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2442,10 +3264,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 6783,
-              "end": 6788,
+              "commentStart": 6797,
+              "end": 6802,
               "moduleId": 0,
-              "start": 6783,
+              "start": 6797,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -2472,10 +3294,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 6916,
-              "end": 6920,
+              "commentStart": 6930,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6916,
+              "start": 6930,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -2502,10 +3324,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 1.5000000011648253,
             "tag": {
-              "commentStart": 7090,
-              "end": 7094,
+              "commentStart": 7104,
+              "end": 7108,
               "moduleId": 0,
-              "start": 7090,
+              "start": 7104,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -2532,10 +3354,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7276,
-              "end": 7281,
+              "commentStart": 7290,
+              "end": 7295,
               "moduleId": 0,
-              "start": 7276,
+              "start": 7290,
               "type": "TagDeclarator",
               "value": "arc10"
             },
@@ -2556,10 +3378,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7451,
-              "end": 7457,
+              "commentStart": 7465,
+              "end": 7471,
               "moduleId": 0,
-              "start": 7451,
+              "start": 7465,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -2580,10 +3402,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7587,
-              "end": 7593,
+              "commentStart": 7601,
+              "end": 7607,
               "moduleId": 0,
-              "start": 7587,
+              "start": 7601,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -2604,10 +3426,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 7723,
-              "end": 7729,
+              "commentStart": 7737,
+              "end": 7743,
               "moduleId": 0,
-              "start": 7723,
+              "start": 7737,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -2634,10 +3456,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7860,
-              "end": 7865,
+              "commentStart": 7874,
+              "end": 7879,
               "moduleId": 0,
-              "start": 7860,
+              "start": 7874,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -2664,10 +3486,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.9000000017379572,
             "tag": {
-              "commentStart": 8040,
-              "end": 8045,
+              "commentStart": 8054,
+              "end": 8059,
               "moduleId": 0,
-              "start": 8040,
+              "start": 8054,
               "type": "TagDeclarator",
               "value": "arc15"
             },
@@ -2694,10 +3516,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.3046334582929542,
             "tag": {
-              "commentStart": 8228,
-              "end": 8233,
+              "commentStart": 8242,
+              "end": 8247,
               "moduleId": 0,
-              "start": 8228,
+              "start": 8242,
               "type": "TagDeclarator",
               "value": "arc16"
             },
@@ -2707,20 +3529,260 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": {
+              "commentStart": 8462,
+              "end": 8470,
+              "moduleId": 0,
+              "start": 8462,
+              "type": "TagDeclarator",
+              "value": "circle17"
+            },
+            "to": [
+              0.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.0,
+              0.0
+            ],
+            "from": [
+              2.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8544,
+              "end": 8552,
+              "moduleId": 0,
+              "start": 8544,
+              "type": "TagDeclarator",
+              "value": "circle18"
+            },
+            "to": [
+              2.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              4.0,
+              0.0
+            ],
+            "from": [
+              4.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8626,
+              "end": 8634,
+              "moduleId": 0,
+              "start": 8626,
+              "type": "TagDeclarator",
+              "value": "circle19"
+            },
+            "to": [
+              4.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.0,
+              0.0
+            ],
+            "from": [
+              6.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8708,
+              "end": 8716,
+              "moduleId": 0,
+              "start": 8708,
+              "type": "TagDeclarator",
+              "value": "circle20"
+            },
+            "to": [
+              6.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.975,
+              -0.975
+            ],
+            "from": [
+              -0.85,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8790,
+              "end": 8798,
+              "moduleId": 0,
+              "start": 8790,
+              "type": "TagDeclarator",
+              "value": "circle21"
+            },
+            "to": [
+              -0.85,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.975,
+              0.975
+            ],
+            "from": [
+              1.1,
+              0.975
+            ],
+            "radius": 0.1250000000000001,
+            "tag": {
+              "commentStart": 8886,
+              "end": 8894,
+              "moduleId": 0,
+              "start": 8886,
+              "type": "TagDeclarator",
+              "value": "circle22"
+            },
+            "to": [
+              1.1,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              5.025,
+              0.975
+            ],
+            "from": [
+              5.15,
+              0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8977,
+              "end": 8985,
+              "moduleId": 0,
+              "start": 8977,
+              "type": "TagDeclarator",
+              "value": "circle23"
+            },
+            "to": [
+              5.15,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.975,
+              -0.975
+            ],
+            "from": [
+              7.1,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 9069,
+              "end": 9077,
+              "moduleId": 0,
+              "start": 9069,
+              "type": "TagDeclarator",
+              "value": "circle24"
+            },
+            "to": [
+              7.1,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 115,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2856,8 +3918,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2881,10 +3943,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             -1.25
           ],
           "tag": {
-            "commentStart": 5900,
-            "end": 5905,
+            "commentStart": 5914,
+            "end": 5919,
             "moduleId": 0,
-            "start": 5900,
+            "start": 5914,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2911,10 +3973,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.30000000000000004,
           "tag": {
-            "commentStart": 5981,
-            "end": 5985,
+            "commentStart": 5995,
+            "end": 5999,
             "moduleId": 0,
-            "start": 5981,
+            "start": 5995,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2941,10 +4003,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.900000001737957,
           "tag": {
-            "commentStart": 6144,
-            "end": 6148,
+            "commentStart": 6158,
+            "end": 6162,
             "moduleId": 0,
-            "start": 6144,
+            "start": 6158,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2971,10 +4033,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.2999999958832122,
           "tag": {
-            "commentStart": 6336,
-            "end": 6340,
+            "commentStart": 6350,
+            "end": 6354,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6350,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2995,10 +4057,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             -1.25
           ],
           "tag": {
-            "commentStart": 6512,
-            "end": 6517,
+            "commentStart": 6526,
+            "end": 6531,
             "moduleId": 0,
-            "start": 6512,
+            "start": 6526,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3019,10 +4081,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             -1.25
           ],
           "tag": {
-            "commentStart": 6648,
-            "end": 6653,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6648,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3043,10 +4105,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             1.35
           ],
           "tag": {
-            "commentStart": 6783,
-            "end": 6788,
+            "commentStart": 6797,
+            "end": 6802,
             "moduleId": 0,
-            "start": 6783,
+            "start": 6797,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -3073,10 +4135,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.30000000000000004,
           "tag": {
-            "commentStart": 6916,
-            "end": 6920,
+            "commentStart": 6930,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6916,
+            "start": 6930,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -3103,10 +4165,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 1.5000000011648253,
           "tag": {
-            "commentStart": 7090,
-            "end": 7094,
+            "commentStart": 7104,
+            "end": 7108,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7104,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -3133,10 +4195,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.30000000000000004,
           "tag": {
-            "commentStart": 7276,
-            "end": 7281,
+            "commentStart": 7290,
+            "end": 7295,
             "moduleId": 0,
-            "start": 7276,
+            "start": 7290,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -3157,10 +4219,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             1.35
           ],
           "tag": {
-            "commentStart": 7451,
-            "end": 7457,
+            "commentStart": 7465,
+            "end": 7471,
             "moduleId": 0,
-            "start": 7451,
+            "start": 7465,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -3181,10 +4243,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             1.35
           ],
           "tag": {
-            "commentStart": 7587,
-            "end": 7593,
+            "commentStart": 7601,
+            "end": 7607,
             "moduleId": 0,
-            "start": 7587,
+            "start": 7601,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -3205,10 +4267,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             -1.25
           ],
           "tag": {
-            "commentStart": 7723,
-            "end": 7729,
+            "commentStart": 7737,
+            "end": 7743,
             "moduleId": 0,
-            "start": 7723,
+            "start": 7737,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -3235,10 +4297,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.30000000000000004,
           "tag": {
-            "commentStart": 7860,
-            "end": 7865,
+            "commentStart": 7874,
+            "end": 7879,
             "moduleId": 0,
-            "start": 7860,
+            "start": 7874,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -3265,10 +4327,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.9000000017379572,
           "tag": {
-            "commentStart": 8040,
-            "end": 8045,
+            "commentStart": 8054,
+            "end": 8059,
             "moduleId": 0,
-            "start": 8040,
+            "start": 8054,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -3295,10 +4357,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.3046334582929542,
           "tag": {
-            "commentStart": 8228,
-            "end": 8233,
+            "commentStart": 8242,
+            "end": 8247,
             "moduleId": 0,
-            "start": 8228,
+            "start": 8242,
             "type": "TagDeclarator",
             "value": "arc16"
           },
@@ -3308,20 +4370,260 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "type": "Arc",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.7325,
+            0.0
+          ],
+          "radius": 0.7325,
+          "tag": {
+            "commentStart": 8462,
+            "end": 8470,
+            "moduleId": 0,
+            "start": 8462,
+            "type": "TagDeclarator",
+            "value": "circle17"
+          },
+          "to": [
+            0.7325,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            2.0,
+            0.0
+          ],
+          "from": [
+            2.7325,
+            0.0
+          ],
+          "radius": 0.7324999999999999,
+          "tag": {
+            "commentStart": 8544,
+            "end": 8552,
+            "moduleId": 0,
+            "start": 8544,
+            "type": "TagDeclarator",
+            "value": "circle18"
+          },
+          "to": [
+            2.7325,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            4.0,
+            0.0
+          ],
+          "from": [
+            4.7325,
+            0.0
+          ],
+          "radius": 0.7324999999999999,
+          "tag": {
+            "commentStart": 8626,
+            "end": 8634,
+            "moduleId": 0,
+            "start": 8626,
+            "type": "TagDeclarator",
+            "value": "circle19"
+          },
+          "to": [
+            4.7325,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            6.0,
+            0.0
+          ],
+          "from": [
+            6.7325,
+            0.0
+          ],
+          "radius": 0.7324999999999999,
+          "tag": {
+            "commentStart": 8708,
+            "end": 8716,
+            "moduleId": 0,
+            "start": 8708,
+            "type": "TagDeclarator",
+            "value": "circle20"
+          },
+          "to": [
+            6.7325,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.975,
+            -0.975
+          ],
+          "from": [
+            -0.85,
+            -0.975
+          ],
+          "radius": 0.125,
+          "tag": {
+            "commentStart": 8790,
+            "end": 8798,
+            "moduleId": 0,
+            "start": 8790,
+            "type": "TagDeclarator",
+            "value": "circle21"
+          },
+          "to": [
+            -0.85,
+            -0.975
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.975,
+            0.975
+          ],
+          "from": [
+            1.1,
+            0.975
+          ],
+          "radius": 0.1250000000000001,
+          "tag": {
+            "commentStart": 8886,
+            "end": 8894,
+            "moduleId": 0,
+            "start": 8886,
+            "type": "TagDeclarator",
+            "value": "circle22"
+          },
+          "to": [
+            1.1,
+            0.975
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            5.025,
+            0.975
+          ],
+          "from": [
+            5.15,
+            0.975
+          ],
+          "radius": 0.125,
+          "tag": {
+            "commentStart": 8977,
+            "end": 8985,
+            "moduleId": 0,
+            "start": 8977,
+            "type": "TagDeclarator",
+            "value": "circle23"
+          },
+          "to": [
+            5.15,
+            0.975
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            6.975,
+            -0.975
+          ],
+          "from": [
+            7.1,
+            -0.975
+          ],
+          "radius": 0.125,
+          "tag": {
+            "commentStart": 9069,
+            "end": 9077,
+            "moduleId": 0,
+            "start": 9069,
+            "type": "TagDeclarator",
+            "value": "circle24"
+          },
+          "to": [
+            7.1,
+            -0.975
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 115,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3457,8 +4759,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "flangeSketch": {
@@ -6651,10 +7953,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     -1.25
                   ],
                   "tag": {
-                    "commentStart": 5900,
-                    "end": 5905,
+                    "commentStart": 5914,
+                    "end": 5919,
                     "moduleId": 0,
-                    "start": 5900,
+                    "start": 5914,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -6681,10 +7983,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.30000000000000004,
                   "tag": {
-                    "commentStart": 5981,
-                    "end": 5985,
+                    "commentStart": 5995,
+                    "end": 5999,
                     "moduleId": 0,
-                    "start": 5981,
+                    "start": 5995,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -6728,10 +8030,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.900000001737957,
                   "tag": {
-                    "commentStart": 6144,
-                    "end": 6148,
+                    "commentStart": 6158,
+                    "end": 6162,
                     "moduleId": 0,
-                    "start": 6144,
+                    "start": 6158,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -6758,10 +8060,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.2999999958832122,
                   "tag": {
-                    "commentStart": 6336,
-                    "end": 6340,
+                    "commentStart": 6350,
+                    "end": 6354,
                     "moduleId": 0,
-                    "start": 6336,
+                    "start": 6350,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -6799,10 +8101,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     -1.25
                   ],
                   "tag": {
-                    "commentStart": 6512,
-                    "end": 6517,
+                    "commentStart": 6526,
+                    "end": 6531,
                     "moduleId": 0,
-                    "start": 6512,
+                    "start": 6526,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -6823,10 +8125,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     -1.25
                   ],
                   "tag": {
-                    "commentStart": 6648,
-                    "end": 6653,
+                    "commentStart": 6662,
+                    "end": 6667,
                     "moduleId": 0,
-                    "start": 6648,
+                    "start": 6662,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -6847,10 +8149,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     1.35
                   ],
                   "tag": {
-                    "commentStart": 6783,
-                    "end": 6788,
+                    "commentStart": 6797,
+                    "end": 6802,
                     "moduleId": 0,
-                    "start": 6783,
+                    "start": 6797,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -6877,10 +8179,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.30000000000000004,
                   "tag": {
-                    "commentStart": 6916,
-                    "end": 6920,
+                    "commentStart": 6930,
+                    "end": 6934,
                     "moduleId": 0,
-                    "start": 6916,
+                    "start": 6930,
                     "type": "TagDeclarator",
                     "value": "arc8"
                   },
@@ -6924,10 +8226,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 1.5000000011648253,
                   "tag": {
-                    "commentStart": 7090,
-                    "end": 7094,
+                    "commentStart": 7104,
+                    "end": 7108,
                     "moduleId": 0,
-                    "start": 7090,
+                    "start": 7104,
                     "type": "TagDeclarator",
                     "value": "arc9"
                   },
@@ -6971,10 +8273,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.30000000000000004,
                   "tag": {
-                    "commentStart": 7276,
-                    "end": 7281,
+                    "commentStart": 7290,
+                    "end": 7295,
                     "moduleId": 0,
-                    "start": 7276,
+                    "start": 7290,
                     "type": "TagDeclarator",
                     "value": "arc10"
                   },
@@ -7012,10 +8314,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     1.35
                   ],
                   "tag": {
-                    "commentStart": 7451,
-                    "end": 7457,
+                    "commentStart": 7465,
+                    "end": 7471,
                     "moduleId": 0,
-                    "start": 7451,
+                    "start": 7465,
                     "type": "TagDeclarator",
                     "value": "line11"
                   },
@@ -7036,10 +8338,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     1.35
                   ],
                   "tag": {
-                    "commentStart": 7587,
-                    "end": 7593,
+                    "commentStart": 7601,
+                    "end": 7607,
                     "moduleId": 0,
-                    "start": 7587,
+                    "start": 7601,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -7060,10 +8362,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     -1.25
                   ],
                   "tag": {
-                    "commentStart": 7723,
-                    "end": 7729,
+                    "commentStart": 7737,
+                    "end": 7743,
                     "moduleId": 0,
-                    "start": 7723,
+                    "start": 7737,
                     "type": "TagDeclarator",
                     "value": "line13"
                   },
@@ -7090,10 +8392,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.30000000000000004,
                   "tag": {
-                    "commentStart": 7860,
-                    "end": 7865,
+                    "commentStart": 7874,
+                    "end": 7879,
                     "moduleId": 0,
-                    "start": 7860,
+                    "start": 7874,
                     "type": "TagDeclarator",
                     "value": "arc14"
                   },
@@ -7137,10 +8439,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.9000000017379572,
                   "tag": {
-                    "commentStart": 8040,
-                    "end": 8045,
+                    "commentStart": 8054,
+                    "end": 8059,
                     "moduleId": 0,
-                    "start": 8040,
+                    "start": 8054,
                     "type": "TagDeclarator",
                     "value": "arc15"
                   },
@@ -7167,10 +8469,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.3046334582929542,
                   "tag": {
-                    "commentStart": 8228,
-                    "end": 8233,
+                    "commentStart": 8242,
+                    "end": 8247,
                     "moduleId": 0,
-                    "start": 8228,
+                    "start": 8242,
                     "type": "TagDeclarator",
                     "value": "arc16"
                   },
@@ -7214,10 +8516,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.7325,
                   "tag": {
-                    "commentStart": 8448,
-                    "end": 8456,
+                    "commentStart": 8462,
+                    "end": 8470,
                     "moduleId": 0,
-                    "start": 8448,
+                    "start": 8462,
                     "type": "TagDeclarator",
                     "value": "circle17"
                   },
@@ -7261,10 +8563,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.7324999999999999,
                   "tag": {
-                    "commentStart": 8530,
-                    "end": 8538,
+                    "commentStart": 8544,
+                    "end": 8552,
                     "moduleId": 0,
-                    "start": 8530,
+                    "start": 8544,
                     "type": "TagDeclarator",
                     "value": "circle18"
                   },
@@ -7308,10 +8610,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.7324999999999999,
                   "tag": {
-                    "commentStart": 8612,
-                    "end": 8620,
+                    "commentStart": 8626,
+                    "end": 8634,
                     "moduleId": 0,
-                    "start": 8612,
+                    "start": 8626,
                     "type": "TagDeclarator",
                     "value": "circle19"
                   },
@@ -7355,10 +8657,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.7324999999999999,
                   "tag": {
-                    "commentStart": 8694,
-                    "end": 8702,
+                    "commentStart": 8708,
+                    "end": 8716,
                     "moduleId": 0,
-                    "start": 8694,
+                    "start": 8708,
                     "type": "TagDeclarator",
                     "value": "circle20"
                   },
@@ -7402,10 +8704,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.125,
                   "tag": {
-                    "commentStart": 8776,
-                    "end": 8784,
+                    "commentStart": 8790,
+                    "end": 8798,
                     "moduleId": 0,
-                    "start": 8776,
+                    "start": 8790,
                     "type": "TagDeclarator",
                     "value": "circle21"
                   },
@@ -7449,10 +8751,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.1250000000000001,
                   "tag": {
-                    "commentStart": 8872,
-                    "end": 8880,
+                    "commentStart": 8886,
+                    "end": 8894,
                     "moduleId": 0,
-                    "start": 8872,
+                    "start": 8886,
                     "type": "TagDeclarator",
                     "value": "circle22"
                   },
@@ -7496,10 +8798,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.125,
                   "tag": {
-                    "commentStart": 8963,
-                    "end": 8971,
+                    "commentStart": 8977,
+                    "end": 8985,
                     "moduleId": 0,
-                    "start": 8963,
+                    "start": 8977,
                     "type": "TagDeclarator",
                     "value": "circle23"
                   },
@@ -7543,10 +8845,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.125,
                   "tag": {
-                    "commentStart": 9055,
-                    "end": 9063,
+                    "commentStart": 9069,
+                    "end": 9077,
                     "moduleId": 0,
-                    "start": 9055,
+                    "start": 9069,
                     "type": "TagDeclarator",
                     "value": "circle24"
                   },
@@ -7559,17 +8861,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 115,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -7720,6 +9022,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7727,10 +9031,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5900,
-            "end": 5905,
+            "commentStart": 5914,
+            "end": 5919,
             "moduleId": 0,
-            "start": 5900,
+            "start": 5914,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7741,10 +9045,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5981,
-            "end": 5985,
+            "commentStart": 5995,
+            "end": 5999,
             "moduleId": 0,
-            "start": 5981,
+            "start": 5995,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -7755,10 +9059,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6144,
-            "end": 6148,
+            "commentStart": 6158,
+            "end": 6162,
             "moduleId": 0,
-            "start": 6144,
+            "start": 6158,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -7769,10 +9073,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6336,
-            "end": 6340,
+            "commentStart": 6350,
+            "end": 6354,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6350,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -7783,10 +9087,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6512,
-            "end": 6517,
+            "commentStart": 6526,
+            "end": 6531,
             "moduleId": 0,
-            "start": 6512,
+            "start": 6526,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7797,10 +9101,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6648,
-            "end": 6653,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6648,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -7811,10 +9115,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6783,
-            "end": 6788,
+            "commentStart": 6797,
+            "end": 6802,
             "moduleId": 0,
-            "start": 6783,
+            "start": 6797,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -7825,10 +9129,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6916,
-            "end": 6920,
+            "commentStart": 6930,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6916,
+            "start": 6930,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -7839,10 +9143,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7090,
-            "end": 7094,
+            "commentStart": 7104,
+            "end": 7108,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7104,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -7853,10 +9157,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7276,
-            "end": 7281,
+            "commentStart": 7290,
+            "end": 7295,
             "moduleId": 0,
-            "start": 7276,
+            "start": 7290,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -7867,10 +9171,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7451,
-            "end": 7457,
+            "commentStart": 7465,
+            "end": 7471,
             "moduleId": 0,
-            "start": 7451,
+            "start": 7465,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -7881,10 +9185,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7587,
-            "end": 7593,
+            "commentStart": 7601,
+            "end": 7607,
             "moduleId": 0,
-            "start": 7587,
+            "start": 7601,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -7895,10 +9199,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7723,
-            "end": 7729,
+            "commentStart": 7737,
+            "end": 7743,
             "moduleId": 0,
-            "start": 7723,
+            "start": 7737,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -7909,10 +9213,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7860,
-            "end": 7865,
+            "commentStart": 7874,
+            "end": 7879,
             "moduleId": 0,
-            "start": 7860,
+            "start": 7874,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -7923,10 +9227,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8040,
-            "end": 8045,
+            "commentStart": 8054,
+            "end": 8059,
             "moduleId": 0,
-            "start": 8040,
+            "start": 8054,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -7937,12 +9241,124 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8228,
-            "end": 8233,
+            "commentStart": 8242,
+            "end": 8247,
             "moduleId": 0,
-            "start": 8228,
+            "start": 8242,
             "type": "TagDeclarator",
             "value": "arc16"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8462,
+            "end": 8470,
+            "moduleId": 0,
+            "start": 8462,
+            "type": "TagDeclarator",
+            "value": "circle17"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8544,
+            "end": 8552,
+            "moduleId": 0,
+            "start": 8544,
+            "type": "TagDeclarator",
+            "value": "circle18"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8626,
+            "end": 8634,
+            "moduleId": 0,
+            "start": 8626,
+            "type": "TagDeclarator",
+            "value": "circle19"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8708,
+            "end": 8716,
+            "moduleId": 0,
+            "start": 8708,
+            "type": "TagDeclarator",
+            "value": "circle20"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8790,
+            "end": 8798,
+            "moduleId": 0,
+            "start": 8790,
+            "type": "TagDeclarator",
+            "value": "circle21"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8886,
+            "end": 8894,
+            "moduleId": 0,
+            "start": 8886,
+            "type": "TagDeclarator",
+            "value": "circle22"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8977,
+            "end": 8985,
+            "moduleId": 0,
+            "start": 8977,
+            "type": "TagDeclarator",
+            "value": "circle23"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 9069,
+            "end": 9077,
+            "moduleId": 0,
+            "start": 9069,
+            "type": "TagDeclarator",
+            "value": "circle24"
           },
           "type": "extrudeArc"
         }
@@ -7962,10 +9378,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 5900,
-              "end": 5905,
+              "commentStart": 5914,
+              "end": 5919,
               "moduleId": 0,
-              "start": 5900,
+              "start": 5914,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7992,10 +9408,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 5981,
-              "end": 5985,
+              "commentStart": 5995,
+              "end": 5999,
               "moduleId": 0,
-              "start": 5981,
+              "start": 5995,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -8022,10 +9438,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.900000001737957,
             "tag": {
-              "commentStart": 6144,
-              "end": 6148,
+              "commentStart": 6158,
+              "end": 6162,
               "moduleId": 0,
-              "start": 6144,
+              "start": 6158,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -8052,10 +9468,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.2999999958832122,
             "tag": {
-              "commentStart": 6336,
-              "end": 6340,
+              "commentStart": 6350,
+              "end": 6354,
               "moduleId": 0,
-              "start": 6336,
+              "start": 6350,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -8076,10 +9492,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6512,
-              "end": 6517,
+              "commentStart": 6526,
+              "end": 6531,
               "moduleId": 0,
-              "start": 6512,
+              "start": 6526,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -8100,10 +9516,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6648,
-              "end": 6653,
+              "commentStart": 6662,
+              "end": 6667,
               "moduleId": 0,
-              "start": 6648,
+              "start": 6662,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8124,10 +9540,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 6783,
-              "end": 6788,
+              "commentStart": 6797,
+              "end": 6802,
               "moduleId": 0,
-              "start": 6783,
+              "start": 6797,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -8154,10 +9570,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 6916,
-              "end": 6920,
+              "commentStart": 6930,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6916,
+              "start": 6930,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -8184,10 +9600,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 1.5000000011648253,
             "tag": {
-              "commentStart": 7090,
-              "end": 7094,
+              "commentStart": 7104,
+              "end": 7108,
               "moduleId": 0,
-              "start": 7090,
+              "start": 7104,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -8214,10 +9630,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7276,
-              "end": 7281,
+              "commentStart": 7290,
+              "end": 7295,
               "moduleId": 0,
-              "start": 7276,
+              "start": 7290,
               "type": "TagDeclarator",
               "value": "arc10"
             },
@@ -8238,10 +9654,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7451,
-              "end": 7457,
+              "commentStart": 7465,
+              "end": 7471,
               "moduleId": 0,
-              "start": 7451,
+              "start": 7465,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -8262,10 +9678,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7587,
-              "end": 7593,
+              "commentStart": 7601,
+              "end": 7607,
               "moduleId": 0,
-              "start": 7587,
+              "start": 7601,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -8286,10 +9702,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 7723,
-              "end": 7729,
+              "commentStart": 7737,
+              "end": 7743,
               "moduleId": 0,
-              "start": 7723,
+              "start": 7737,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -8316,10 +9732,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7860,
-              "end": 7865,
+              "commentStart": 7874,
+              "end": 7879,
               "moduleId": 0,
-              "start": 7860,
+              "start": 7874,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -8346,10 +9762,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.9000000017379572,
             "tag": {
-              "commentStart": 8040,
-              "end": 8045,
+              "commentStart": 8054,
+              "end": 8059,
               "moduleId": 0,
-              "start": 8040,
+              "start": 8054,
               "type": "TagDeclarator",
               "value": "arc15"
             },
@@ -8376,10 +9792,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.3046334582929542,
             "tag": {
-              "commentStart": 8228,
-              "end": 8233,
+              "commentStart": 8242,
+              "end": 8247,
               "moduleId": 0,
-              "start": 8228,
+              "start": 8242,
               "type": "TagDeclarator",
               "value": "arc16"
             },
@@ -8389,20 +9805,260 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": {
+              "commentStart": 8462,
+              "end": 8470,
+              "moduleId": 0,
+              "start": 8462,
+              "type": "TagDeclarator",
+              "value": "circle17"
+            },
+            "to": [
+              0.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.0,
+              0.0
+            ],
+            "from": [
+              2.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8544,
+              "end": 8552,
+              "moduleId": 0,
+              "start": 8544,
+              "type": "TagDeclarator",
+              "value": "circle18"
+            },
+            "to": [
+              2.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              4.0,
+              0.0
+            ],
+            "from": [
+              4.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8626,
+              "end": 8634,
+              "moduleId": 0,
+              "start": 8626,
+              "type": "TagDeclarator",
+              "value": "circle19"
+            },
+            "to": [
+              4.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.0,
+              0.0
+            ],
+            "from": [
+              6.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8708,
+              "end": 8716,
+              "moduleId": 0,
+              "start": 8708,
+              "type": "TagDeclarator",
+              "value": "circle20"
+            },
+            "to": [
+              6.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.975,
+              -0.975
+            ],
+            "from": [
+              -0.85,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8790,
+              "end": 8798,
+              "moduleId": 0,
+              "start": 8790,
+              "type": "TagDeclarator",
+              "value": "circle21"
+            },
+            "to": [
+              -0.85,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.975,
+              0.975
+            ],
+            "from": [
+              1.1,
+              0.975
+            ],
+            "radius": 0.1250000000000001,
+            "tag": {
+              "commentStart": 8886,
+              "end": 8894,
+              "moduleId": 0,
+              "start": 8886,
+              "type": "TagDeclarator",
+              "value": "circle22"
+            },
+            "to": [
+              1.1,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              5.025,
+              0.975
+            ],
+            "from": [
+              5.15,
+              0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8977,
+              "end": 8985,
+              "moduleId": 0,
+              "start": 8977,
+              "type": "TagDeclarator",
+              "value": "circle23"
+            },
+            "to": [
+              5.15,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.975,
+              -0.975
+            ],
+            "from": [
+              7.1,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 9069,
+              "end": 9077,
+              "moduleId": 0,
+              "start": 9069,
+              "type": "TagDeclarator",
+              "value": "circle24"
+            },
+            "to": [
+              7.1,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 115,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8538,8 +10194,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8582,6 +10238,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8589,10 +10247,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5900,
-            "end": 5905,
+            "commentStart": 5914,
+            "end": 5919,
             "moduleId": 0,
-            "start": 5900,
+            "start": 5914,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8603,10 +10261,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5981,
-            "end": 5985,
+            "commentStart": 5995,
+            "end": 5999,
             "moduleId": 0,
-            "start": 5981,
+            "start": 5995,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -8617,10 +10275,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6144,
-            "end": 6148,
+            "commentStart": 6158,
+            "end": 6162,
             "moduleId": 0,
-            "start": 6144,
+            "start": 6158,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -8631,10 +10289,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6336,
-            "end": 6340,
+            "commentStart": 6350,
+            "end": 6354,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6350,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -8645,10 +10303,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6512,
-            "end": 6517,
+            "commentStart": 6526,
+            "end": 6531,
             "moduleId": 0,
-            "start": 6512,
+            "start": 6526,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8659,10 +10317,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6648,
-            "end": 6653,
+            "commentStart": 6662,
+            "end": 6667,
             "moduleId": 0,
-            "start": 6648,
+            "start": 6662,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8673,10 +10331,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6783,
-            "end": 6788,
+            "commentStart": 6797,
+            "end": 6802,
             "moduleId": 0,
-            "start": 6783,
+            "start": 6797,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -8687,10 +10345,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6916,
-            "end": 6920,
+            "commentStart": 6930,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6916,
+            "start": 6930,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -8701,10 +10359,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7090,
-            "end": 7094,
+            "commentStart": 7104,
+            "end": 7108,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7104,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -8715,10 +10373,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7276,
-            "end": 7281,
+            "commentStart": 7290,
+            "end": 7295,
             "moduleId": 0,
-            "start": 7276,
+            "start": 7290,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -8729,10 +10387,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7451,
-            "end": 7457,
+            "commentStart": 7465,
+            "end": 7471,
             "moduleId": 0,
-            "start": 7451,
+            "start": 7465,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -8743,10 +10401,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7587,
-            "end": 7593,
+            "commentStart": 7601,
+            "end": 7607,
             "moduleId": 0,
-            "start": 7587,
+            "start": 7601,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -8757,10 +10415,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7723,
-            "end": 7729,
+            "commentStart": 7737,
+            "end": 7743,
             "moduleId": 0,
-            "start": 7723,
+            "start": 7737,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -8771,10 +10429,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7860,
-            "end": 7865,
+            "commentStart": 7874,
+            "end": 7879,
             "moduleId": 0,
-            "start": 7860,
+            "start": 7874,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -8785,10 +10443,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8040,
-            "end": 8045,
+            "commentStart": 8054,
+            "end": 8059,
             "moduleId": 0,
-            "start": 8040,
+            "start": 8054,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -8799,12 +10457,124 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8228,
-            "end": 8233,
+            "commentStart": 8242,
+            "end": 8247,
             "moduleId": 0,
-            "start": 8228,
+            "start": 8242,
             "type": "TagDeclarator",
             "value": "arc16"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8462,
+            "end": 8470,
+            "moduleId": 0,
+            "start": 8462,
+            "type": "TagDeclarator",
+            "value": "circle17"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8544,
+            "end": 8552,
+            "moduleId": 0,
+            "start": 8544,
+            "type": "TagDeclarator",
+            "value": "circle18"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8626,
+            "end": 8634,
+            "moduleId": 0,
+            "start": 8626,
+            "type": "TagDeclarator",
+            "value": "circle19"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8708,
+            "end": 8716,
+            "moduleId": 0,
+            "start": 8708,
+            "type": "TagDeclarator",
+            "value": "circle20"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8790,
+            "end": 8798,
+            "moduleId": 0,
+            "start": 8790,
+            "type": "TagDeclarator",
+            "value": "circle21"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8886,
+            "end": 8894,
+            "moduleId": 0,
+            "start": 8886,
+            "type": "TagDeclarator",
+            "value": "circle22"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 8977,
+            "end": 8985,
+            "moduleId": 0,
+            "start": 8977,
+            "type": "TagDeclarator",
+            "value": "circle23"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 9069,
+            "end": 9077,
+            "moduleId": 0,
+            "start": 9069,
+            "type": "TagDeclarator",
+            "value": "circle24"
           },
           "type": "extrudeArc"
         }
@@ -8824,10 +10594,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 5900,
-              "end": 5905,
+              "commentStart": 5914,
+              "end": 5919,
               "moduleId": 0,
-              "start": 5900,
+              "start": 5914,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8854,10 +10624,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 5981,
-              "end": 5985,
+              "commentStart": 5995,
+              "end": 5999,
               "moduleId": 0,
-              "start": 5981,
+              "start": 5995,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -8884,10 +10654,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.900000001737957,
             "tag": {
-              "commentStart": 6144,
-              "end": 6148,
+              "commentStart": 6158,
+              "end": 6162,
               "moduleId": 0,
-              "start": 6144,
+              "start": 6158,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -8914,10 +10684,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.2999999958832122,
             "tag": {
-              "commentStart": 6336,
-              "end": 6340,
+              "commentStart": 6350,
+              "end": 6354,
               "moduleId": 0,
-              "start": 6336,
+              "start": 6350,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -8938,10 +10708,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6512,
-              "end": 6517,
+              "commentStart": 6526,
+              "end": 6531,
               "moduleId": 0,
-              "start": 6512,
+              "start": 6526,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -8962,10 +10732,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 6648,
-              "end": 6653,
+              "commentStart": 6662,
+              "end": 6667,
               "moduleId": 0,
-              "start": 6648,
+              "start": 6662,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8986,10 +10756,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 6783,
-              "end": 6788,
+              "commentStart": 6797,
+              "end": 6802,
               "moduleId": 0,
-              "start": 6783,
+              "start": 6797,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -9016,10 +10786,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 6916,
-              "end": 6920,
+              "commentStart": 6930,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6916,
+              "start": 6930,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -9046,10 +10816,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 1.5000000011648253,
             "tag": {
-              "commentStart": 7090,
-              "end": 7094,
+              "commentStart": 7104,
+              "end": 7108,
               "moduleId": 0,
-              "start": 7090,
+              "start": 7104,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -9076,10 +10846,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7276,
-              "end": 7281,
+              "commentStart": 7290,
+              "end": 7295,
               "moduleId": 0,
-              "start": 7276,
+              "start": 7290,
               "type": "TagDeclarator",
               "value": "arc10"
             },
@@ -9100,10 +10870,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7451,
-              "end": 7457,
+              "commentStart": 7465,
+              "end": 7471,
               "moduleId": 0,
-              "start": 7451,
+              "start": 7465,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -9124,10 +10894,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 7587,
-              "end": 7593,
+              "commentStart": 7601,
+              "end": 7607,
               "moduleId": 0,
-              "start": 7587,
+              "start": 7601,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -9148,10 +10918,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 7723,
-              "end": 7729,
+              "commentStart": 7737,
+              "end": 7743,
               "moduleId": 0,
-              "start": 7723,
+              "start": 7737,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -9178,10 +10948,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.30000000000000004,
             "tag": {
-              "commentStart": 7860,
-              "end": 7865,
+              "commentStart": 7874,
+              "end": 7879,
               "moduleId": 0,
-              "start": 7860,
+              "start": 7874,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -9208,10 +10978,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.9000000017379572,
             "tag": {
-              "commentStart": 8040,
-              "end": 8045,
+              "commentStart": 8054,
+              "end": 8059,
               "moduleId": 0,
-              "start": 8040,
+              "start": 8054,
               "type": "TagDeclarator",
               "value": "arc15"
             },
@@ -9238,10 +11008,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.3046334582929542,
             "tag": {
-              "commentStart": 8228,
-              "end": 8233,
+              "commentStart": 8242,
+              "end": 8247,
               "moduleId": 0,
-              "start": 8228,
+              "start": 8242,
               "type": "TagDeclarator",
               "value": "arc16"
             },
@@ -9251,20 +11021,260 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Arc",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.7325,
+              0.0
+            ],
+            "radius": 0.7325,
+            "tag": {
+              "commentStart": 8462,
+              "end": 8470,
+              "moduleId": 0,
+              "start": 8462,
+              "type": "TagDeclarator",
+              "value": "circle17"
+            },
+            "to": [
+              0.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              2.0,
+              0.0
+            ],
+            "from": [
+              2.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8544,
+              "end": 8552,
+              "moduleId": 0,
+              "start": 8544,
+              "type": "TagDeclarator",
+              "value": "circle18"
+            },
+            "to": [
+              2.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              4.0,
+              0.0
+            ],
+            "from": [
+              4.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8626,
+              "end": 8634,
+              "moduleId": 0,
+              "start": 8626,
+              "type": "TagDeclarator",
+              "value": "circle19"
+            },
+            "to": [
+              4.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.0,
+              0.0
+            ],
+            "from": [
+              6.7325,
+              0.0
+            ],
+            "radius": 0.7324999999999999,
+            "tag": {
+              "commentStart": 8708,
+              "end": 8716,
+              "moduleId": 0,
+              "start": 8708,
+              "type": "TagDeclarator",
+              "value": "circle20"
+            },
+            "to": [
+              6.7325,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.975,
+              -0.975
+            ],
+            "from": [
+              -0.85,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8790,
+              "end": 8798,
+              "moduleId": 0,
+              "start": 8790,
+              "type": "TagDeclarator",
+              "value": "circle21"
+            },
+            "to": [
+              -0.85,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.975,
+              0.975
+            ],
+            "from": [
+              1.1,
+              0.975
+            ],
+            "radius": 0.1250000000000001,
+            "tag": {
+              "commentStart": 8886,
+              "end": 8894,
+              "moduleId": 0,
+              "start": 8886,
+              "type": "TagDeclarator",
+              "value": "circle22"
+            },
+            "to": [
+              1.1,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              5.025,
+              0.975
+            ],
+            "from": [
+              5.15,
+              0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 8977,
+              "end": 8985,
+              "moduleId": 0,
+              "start": 8977,
+              "type": "TagDeclarator",
+              "value": "circle23"
+            },
+            "to": [
+              5.15,
+              0.975
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              6.975,
+              -0.975
+            ],
+            "from": [
+              7.1,
+              -0.975
+            ],
+            "radius": 0.125,
+            "tag": {
+              "commentStart": 9069,
+              "end": 9077,
+              "moduleId": 0,
+              "start": 9069,
+              "type": "TagDeclarator",
+              "value": "circle24"
+            },
+            "to": [
+              7.1,
+              -0.975
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 115,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -9400,8 +11410,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -10151,10 +12161,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     -0.0000000000000000007602840574574377
                   ],
                   "tag": {
-                    "commentStart": 550,
-                    "end": 555,
+                    "commentStart": 608,
+                    "end": 613,
                     "moduleId": 0,
-                    "start": 550,
+                    "start": 608,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -10181,10 +12191,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 3.0000000000000013,
                   "tag": {
-                    "commentStart": 629,
-                    "end": 633,
+                    "commentStart": 687,
+                    "end": 691,
                     "moduleId": 0,
-                    "start": 629,
+                    "start": 687,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -10205,10 +12215,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     6.000000000000019
                   ],
                   "tag": {
-                    "commentStart": 777,
-                    "end": 782,
+                    "commentStart": 835,
+                    "end": 840,
                     "moduleId": 0,
-                    "start": 777,
+                    "start": 835,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -10235,10 +12245,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 3.0000000008395733,
                   "tag": {
-                    "commentStart": 898,
-                    "end": 902,
+                    "commentStart": 956,
+                    "end": 960,
                     "moduleId": 0,
-                    "start": 898,
+                    "start": 956,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -10259,10 +12269,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     10.435314602731205
                   ],
                   "tag": {
-                    "commentStart": 1053,
-                    "end": 1058,
+                    "commentStart": 1111,
+                    "end": 1116,
                     "moduleId": 0,
-                    "start": 1053,
+                    "start": 1111,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -10275,17 +12285,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "in"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -11041,10 +13051,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     0.12
                   ],
                   "tag": {
-                    "commentStart": 3273,
-                    "end": 3278,
+                    "commentStart": 3309,
+                    "end": 3314,
                     "moduleId": 0,
-                    "start": 3273,
+                    "start": 3309,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -11071,10 +13081,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 3.0,
                   "tag": {
-                    "commentStart": 3350,
-                    "end": 3354,
+                    "commentStart": 3386,
+                    "end": 3390,
                     "moduleId": 0,
-                    "start": 3350,
+                    "start": 3386,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -11095,10 +13105,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     8.074423260080664
                   ],
                   "tag": {
-                    "commentStart": 3508,
-                    "end": 3513,
+                    "commentStart": 3544,
+                    "end": 3549,
                     "moduleId": 0,
-                    "start": 3508,
+                    "start": 3544,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -11142,10 +13152,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 3.0000000012419803,
                   "tag": {
-                    "commentStart": 3653,
-                    "end": 3657,
+                    "commentStart": 3689,
+                    "end": 3693,
                     "moduleId": 0,
-                    "start": 3653,
+                    "start": 3689,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -11183,10 +13193,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     12.161489648176152
                   ],
                   "tag": {
-                    "commentStart": 3843,
-                    "end": 3848,
+                    "commentStart": 3879,
+                    "end": 3884,
                     "moduleId": 0,
-                    "start": 3843,
+                    "start": 3879,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -11199,17 +13209,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 61,
+                "kind": "Custom",
                 "origin": {
                   "x": 4.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "in"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": -0.4115143586051088,
                   "y": 0.9114032766354453,
@@ -11293,6 +13303,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -11300,10 +13312,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1863,
-            "end": 1870,
+            "commentStart": 1921,
+            "end": 1928,
             "moduleId": 0,
-            "start": 1863,
+            "start": 1921,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11331,10 +13343,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.812499999995,
             "tag": {
-              "commentStart": 1863,
-              "end": 1870,
+              "commentStart": 1921,
+              "end": 1928,
               "moduleId": 0,
-              "start": 1863,
+              "start": 1921,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -11344,20 +13356,50 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.00000000012250001013569545,
+              -0.00000000007999999968033578
+            ],
+            "from": [
+              0.77249999983,
+              -0.0000000000799999979203356
+            ],
+            "radius": 0.7724999999525,
+            "tag": {
+              "commentStart": 2004,
+              "end": 2011,
+              "moduleId": 0,
+              "start": 2004,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.77249999983,
+              -0.0000000000799999979203356
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 37,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11405,8 +13447,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -11419,6 +13461,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -11426,10 +13470,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1863,
-            "end": 1870,
+            "commentStart": 1921,
+            "end": 1928,
             "moduleId": 0,
-            "start": 1863,
+            "start": 1921,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11457,10 +13501,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.812499999995,
             "tag": {
-              "commentStart": 1863,
-              "end": 1870,
+              "commentStart": 1921,
+              "end": 1928,
               "moduleId": 0,
-              "start": 1863,
+              "start": 1921,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -11470,20 +13514,50 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.00000000012250001013569545,
+              -0.00000000007999999968033578
+            ],
+            "from": [
+              0.77249999983,
+              -0.0000000000799999979203356
+            ],
+            "radius": 0.7724999999525,
+            "tag": {
+              "commentStart": 2004,
+              "end": 2011,
+              "moduleId": 0,
+              "start": 2004,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.77249999983,
+              -0.0000000000799999979203356
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 37,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11531,8 +13605,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -11545,6 +13619,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -11552,10 +13628,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4898,
-            "end": 4905,
+            "commentStart": 4934,
+            "end": 4941,
             "moduleId": 0,
-            "start": 4898,
+            "start": 4934,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11583,10 +13659,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.8125,
             "tag": {
-              "commentStart": 4898,
-              "end": 4905,
+              "commentStart": 4934,
+              "end": 4941,
               "moduleId": 0,
-              "start": 4898,
+              "start": 4934,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -11596,20 +13672,50 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.000000000040000003149614806,
+              0.0
+            ],
+            "from": [
+              0.77249999992,
+              0.0
+            ],
+            "radius": 0.77249999996,
+            "tag": {
+              "commentStart": 5015,
+              "end": 5022,
+              "moduleId": 0,
+              "start": 5015,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.77249999992,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 101,
+          "kind": "Custom",
           "origin": {
             "x": 4.0,
             "y": 0.0,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11657,8 +13763,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -11671,6 +13777,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -11678,10 +13786,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4898,
-            "end": 4905,
+            "commentStart": 4934,
+            "end": 4941,
             "moduleId": 0,
-            "start": 4898,
+            "start": 4934,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11709,10 +13817,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "radius": 0.8125,
             "tag": {
-              "commentStart": 4898,
-              "end": 4905,
+              "commentStart": 4934,
+              "end": 4941,
               "moduleId": 0,
-              "start": 4898,
+              "start": 4934,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -11722,20 +13830,50 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.000000000040000003149614806,
+              0.0
+            ],
+            "from": [
+              0.77249999992,
+              0.0
+            ],
+            "radius": 0.77249999996,
+            "tag": {
+              "commentStart": 5015,
+              "end": 5022,
+              "moduleId": 0,
+              "start": 5015,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.77249999992,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 101,
+          "kind": "Custom",
           "origin": {
             "x": 4.0,
             "y": 0.0,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11783,8 +13921,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -12027,10 +14165,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.812499999995,
           "tag": {
-            "commentStart": 1863,
-            "end": 1870,
+            "commentStart": 1921,
+            "end": 1928,
             "moduleId": 0,
-            "start": 1863,
+            "start": 1921,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12040,20 +14178,50 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.00000000012250001013569545,
+            -0.00000000007999999968033578
+          ],
+          "from": [
+            0.77249999983,
+            -0.0000000000799999979203356
+          ],
+          "radius": 0.7724999999525,
+          "tag": {
+            "commentStart": 2004,
+            "end": 2011,
+            "moduleId": 0,
+            "start": 2004,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.77249999983,
+            -0.0000000000799999979203356
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 37,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "in"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -12101,8 +14269,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "sectionRegion003": {
@@ -12127,10 +14295,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "radius": 0.8125,
           "tag": {
-            "commentStart": 4898,
-            "end": 4905,
+            "commentStart": 4934,
+            "end": 4941,
             "moduleId": 0,
-            "start": 4898,
+            "start": 4934,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12140,20 +14308,50 @@ description: Variables in memory after executing exhaust-manifold.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.000000000040000003149614806,
+            0.0
+          ],
+          "from": [
+            0.77249999992,
+            0.0
+          ],
+          "radius": 0.77249999996,
+          "tag": {
+            "commentStart": 5015,
+            "end": 5022,
+            "moduleId": 0,
+            "start": 5015,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.77249999992,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 101,
+        "kind": "Custom",
         "origin": {
           "x": 4.0,
           "y": 0.0,
           "z": 0.0,
           "units": "in"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -12201,8 +14399,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "sectionSketch001": {
@@ -12715,10 +14913,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.812499999995,
                   "tag": {
-                    "commentStart": 1863,
-                    "end": 1870,
+                    "commentStart": 1921,
+                    "end": 1928,
                     "moduleId": 0,
-                    "start": 1863,
+                    "start": 1921,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -12762,10 +14960,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.7724999999525,
                   "tag": {
-                    "commentStart": 1946,
-                    "end": 1953,
+                    "commentStart": 2004,
+                    "end": 2011,
                     "moduleId": 0,
-                    "start": 1946,
+                    "start": 2004,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -12778,17 +14976,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 37,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "in"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -13114,10 +15312,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.8125,
                   "tag": {
-                    "commentStart": 4898,
-                    "end": 4905,
+                    "commentStart": 4934,
+                    "end": 4941,
                     "moduleId": 0,
-                    "start": 4898,
+                    "start": 4934,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -13161,10 +15359,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   ],
                   "radius": 0.77249999996,
                   "tag": {
-                    "commentStart": 4979,
-                    "end": 4986,
+                    "commentStart": 5015,
+                    "end": 5022,
                     "moduleId": 0,
-                    "start": 4979,
+                    "start": 5015,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -13177,17 +15375,17 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 101,
+                "kind": "Custom",
                 "origin": {
                   "x": 4.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "in"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

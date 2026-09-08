@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_nested_runtime_error/broken.kcl
+---
+export brokenValue = missingName + 1

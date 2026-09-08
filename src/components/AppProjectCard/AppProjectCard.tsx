@@ -3,6 +3,11 @@ import {
   ProjectCard as UiProjectCard,
 } from '@kittycad/ui-components'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
+import { ProjectCopyDialog } from '@src/components/AppProjectCard/ProjectCopyDialog'
+import {
+  AquariumStatusBadge,
+  getAquariumStatusBadge,
+} from '@src/components/AquariumStatusBadge'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
@@ -150,11 +155,12 @@ function AppProjectCard({
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [isReviewingDuplicates, setIsReviewingDuplicates] = useState(false)
+  const [isSeparatingProjectCopies, setIsSeparatingProjectCopies] =
+    useState(false)
   const [selectedDuplicatePaths, setSelectedDuplicatePaths] = useState<
     Set<string>
   >(new Set())
-  const hasChangesRequested =
-    projectStatus?.publicationStatus === 'changes_requested'
+  const aquariumStatusBadge = getAquariumStatusBadge(projectStatus)
   const hasCloudConflict = Boolean(
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
@@ -247,9 +253,15 @@ function AppProjectCard({
   const canOpen = projectActions.canOpen(project)
   const canReviewDuplicateRealizations =
     showCloudSyncUi && projectActions.canReviewDuplicateRealizations(project)
+  const canSeparateProjectCopies =
+    projectActions.canSeparateProjectCopies(project)
   const duplicateRealizations = project.duplicateRealizations ?? []
   const hasDuplicateRealizations =
     showCloudSyncUi && duplicateRealizations.length > 0
+  const hasDuplicateProjectId = Boolean(project.duplicateProjectIdPaths?.length)
+  const projectCopyPaths = project.localProjectPath
+    ? [project.localProjectPath, ...(project.duplicateProjectIdPaths ?? [])]
+    : []
   const canMoveToLibrary = Boolean(
     onMoveToLibrary && projectActions.canMoveToLibrary(project)
   )
@@ -275,8 +287,9 @@ function AppProjectCard({
   const badges = (statusBadgeLabel ||
     hasCloudConflict ||
     hasCloudSyncFailure ||
-    hasChangesRequested ||
-    hasDuplicateRealizations) && (
+    aquariumStatusBadge ||
+    hasDuplicateRealizations ||
+    hasDuplicateProjectId) && (
     <>
       {statusBadgeLabel && (
         <span
@@ -303,13 +316,11 @@ function AppProjectCard({
           <Tooltip>{getCloudSyncFailureTooltip(project)}</Tooltip>
         </span>
       )}
-      {hasChangesRequested && (
-        <span
-          className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10"
-          data-testid="changes-requested-badge"
-        >
-          Changes requested
-        </span>
+      {aquariumStatusBadge && projectStatus && (
+        <AquariumStatusBadge
+          projectStatus={projectStatus}
+          className="whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-none shadow-sm ring-1 ring-inset"
+        />
       )}
       {hasDuplicateRealizations && (
         <span
@@ -317,6 +328,23 @@ function AppProjectCard({
           data-testid="project-duplicate-copies-badge"
         >
           Duplicate copies
+        </span>
+      )}
+      {hasDuplicateProjectId && (
+        <span
+          className="pointer-events-auto rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10"
+          data-testid="project-duplicate-id-badge"
+        >
+          Shared history
+          <span className="sr-only">
+            . Project copies share Zookeeper history. Separate them by
+            right-clicking and selecting "Separate project copies".
+          </span>
+          <Tooltip>
+            Project copies share Zookeeper history. <br />
+            Separate them by right-clicking and selecting "Separate project
+            copies".
+          </Tooltip>
         </span>
       )}
     </>
@@ -430,6 +458,19 @@ function AppProjectCard({
           </ul>
         </DeleteConfirmationDialog>
       )}
+      {isSeparatingProjectCopies && project.localProjectPath && (
+        <ProjectCopyDialog
+          projectPaths={projectCopyPaths}
+          initialKeepProjectPath={project.localProjectPath}
+          onConfirm={(keepProjectPath) => {
+            void projectActions
+              .separateProjectCopies(project, keepProjectPath)
+              .then(() => setIsSeparatingProjectCopies(false))
+              .catch(trap)
+          }}
+          onDismiss={() => setIsSeparatingProjectCopies(false)}
+        />
+      )}
     </>
   )
 
@@ -474,7 +515,7 @@ function AppProjectCard({
               data-testid="project-card-context-move-to-library"
               onClick={() => onMoveToLibrary?.(project)}
             >
-              Move to library
+              Move to another library
             </ContextMenuItem>,
             ...(hasDuplicateRealizations
               ? [
@@ -495,6 +536,19 @@ function AppProjectCard({
                     }}
                   >
                     Review duplicate copies
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(hasDuplicateProjectId
+              ? [
+                  <ContextMenuItem
+                    key="separate-project-copies"
+                    icon="split"
+                    disabled={!canSeparateProjectCopies}
+                    data-testid="project-card-context-separate-project-copies"
+                    onClick={() => setIsSeparatingProjectCopies(true)}
+                  >
+                    Separate project copies
                   </ContextMenuItem>,
                 ]
               : []),

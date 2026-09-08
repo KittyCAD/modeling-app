@@ -4273,56 +4273,15 @@ description: Operations executed helium-tank.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 0.4,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 30.3,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "innerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -8262,136 +8221,26 @@ description: Operations executed helium-tank.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "direction": {
+          "value": {
+            "type": "String",
+            "value": "cw"
+          },
+          "sourceRange": []
+        },
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 5.35,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "arc1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "arc4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerArc10": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerArc2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerArc3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerArc5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerLine1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerLine11": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerLine4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerLine6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerLine8": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerArc10": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerArc2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerArc3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerArc5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerLine1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerLine11": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerLine4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerLine6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerLine8": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }

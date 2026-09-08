@@ -3,7 +3,10 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { getZookeeperProjectReloadBehavior } from '@src/components/openedProjectUtils'
+import {
+  checkOpenedProjectPresence,
+  getZookeeperProjectReloadBehavior,
+} from '@src/components/openedProjectUtils'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
@@ -15,7 +18,6 @@ import { WasmErrToast } from '@src/components/WasmErrToast'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
@@ -24,7 +26,6 @@ import {
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
-  CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   OPFS_CLOUD_FEATURE_FLAG,
   WASM_INIT_FAILED_TOAST_ID,
@@ -35,7 +36,6 @@ import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
@@ -76,7 +76,7 @@ export function OpenedProject() {
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -102,28 +102,45 @@ export function OpenedProject() {
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
-    if (systemIOState !== SystemIOMachineStates.idle) {
+    if (
+      systemIOState !== SystemIOMachineStates.idle ||
+      !projectPath ||
+      !projects
+    ) {
       return
     }
 
     if (
-      projects &&
-      projects.length > 0 &&
-      projects.every((p: Project) => p.name !== projectName) &&
       [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.renamingProject,
         SystemIOMachineStates.importFileFromURL,
-      ].includes(lastOperation) === false
+      ].includes(lastOperation)
     ) {
-      void navigate(PATHS.HOME)
+      return
     }
 
-    if (projects && projects.length === 0) {
-      void navigate(PATHS.HOME)
+    let cancelled = false
+    void checkOpenedProjectPresence({
+      projectPath,
+      projects,
+    }).then((presence) => {
+      if (cancelled) {
+        return
+      }
+      if (presence.type === 'error') {
+        reportRejection(presence.error)
+        return
+      }
+      if (presence.type === 'missing') {
+        void navigate(PATHS.HOME)
+      }
+    })
+
+    return () => {
+      cancelled = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation, systemIOState])
+  }, [lastOperation, navigate, projectPath, projects, systemIOState])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
@@ -181,35 +198,11 @@ export function OpenedProject() {
     registry.signal(statusBarLocalItemsValueSpec).value,
     ['file']
   )
+  const executingPath = project?.executingPathSignal.value?.value
+  const activeFileRoutePath = executingPath
+    ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
+    : undefined
   const authToken = auth.useToken()
-  const currentProject = project?.projectIORefSignal.value
-  const projectStatus = useProjectStatus(
-    currentProject?.cloudProjectId,
-    authToken
-  )
-  const hasChangesRequested =
-    projectStatus?.publicationStatus === 'changes_requested'
-
-  useEffect(() => {
-    if (!hasChangesRequested) {
-      return
-    }
-
-    const message = projectStatus?.feedback
-      ? `Changes requested: ${projectStatus.feedback}. Republishing will put it back into the review queue.`
-      : 'Your Aquarium submission was reviewed and changes were requested. Republishing will put it back into the review queue.'
-
-    toast(message, {
-      id: CHANGES_REQUESTED_TOAST_ID,
-      duration: Number.POSITIVE_INFINITY,
-      icon: '⚠️',
-    })
-
-    return () => {
-      toast.dismiss(CHANGES_REQUESTED_TOAST_ID)
-    }
-  }, [hasChangesRequested, projectStatus?.feedback])
-
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default
@@ -356,6 +349,7 @@ export function OpenedProject() {
           />
         </section>
         <StatusBar
+          activeFileRoutePath={activeFileRoutePath}
           globalItems={[
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),

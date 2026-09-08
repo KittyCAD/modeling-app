@@ -38,7 +38,7 @@ profile = sketch(on = XY) {
   coincident([tangentLine.end, line1.start])
 }
 
-solid = extrude(region(point = [1mm, 1mm], sketch = profile), length = 2)
+solid = extrude(region(segments = [profile.guideArc, profile.tangentLine]), length = 2)
 
 ```
 

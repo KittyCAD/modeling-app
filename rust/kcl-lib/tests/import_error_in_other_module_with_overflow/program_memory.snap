@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_error_in_other_module_with_overflow.kcl
+---
+{
+  "derived": {
+    "type": "Function"
+  },
+  "result": {
+    "type": "Number",
+    "value": 6.283185307179586,
+    "ty": {
+      "type": "Unknown"
+    }
+  }
+}

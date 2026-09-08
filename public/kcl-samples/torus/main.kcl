@@ -1,8 +1,8 @@
 // Torus
 // A torus is defined by its diameter and height.
-// Categories: Maker
+// Categories: Science & Education; Parametric
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 torusInnerDiameter = 20

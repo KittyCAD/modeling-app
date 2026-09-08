@@ -1,6 +1,7 @@
 mod cache;
 
 use kcl_lib::BacktraceItem;
+use kcl_lib::BacktraceItemKind;
 use kcl_lib::ExecError;
 use kcl_lib::ModuleId;
 use kcl_lib::SourceRange;
@@ -21,7 +22,9 @@ macro_rules! kcl_input {
 
 pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> String {
     let path = format!("e2e/executor/outputs/{test_name}.png");
-    twenty_twenty::assert_image(&path, result, MIN_DIFF);
+    if let Err(err) = twenty_twenty::try_assert_image(&path, result, MIN_DIFF) {
+        panic!("Image assertion failed for test {test_name}: {err}");
+    }
 
     path
 }
@@ -453,6 +456,7 @@ model = cube"#;
         vec![BacktraceItem {
             source_range: SourceRange::new(0, 18, ModuleId::default()),
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         }]
     );
 }
@@ -539,6 +543,7 @@ model = cube"#;
         vec![BacktraceItem {
             source_range: SourceRange::new(32, 70, ModuleId::default()),
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         }]
     );
 }
@@ -1436,6 +1441,130 @@ baseExtrusion = extrude(sketch001, length = width)
     assert_out("chamfers_referencing_other_chamfers", &result);
 }
 
+// KCL 3.0 copies of the two tests above: edge cuts are sent to the engine
+// immediately, so every edge lookup is hoisted above the first cut.
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_fillets_referencing_other_fillets_v3() {
+    let code = r#"@settings(kclVersion = "3.0-preview")
+
+// Z-Bracket
+
+// Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
+
+// Define constants
+foot1Length = 4
+height = 4
+foot2Length = 5
+width = 4
+filletRad = 0.25
+thickness = 0.125
+
+cornerFilletRad = 0.5
+
+holeDia = 0.5
+
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-foot1Length, 0])
+  |> line(end = [0, thickness], tag = $cornerFillet1)
+  |> line(end = [foot1Length, 0])
+  |> line(end = [0, height], tag = $fillet1)
+  |> line(end = [foot2Length, 0])
+  |> line(end = [0, -thickness], tag = $cornerFillet2)
+  |> line(end = [-foot2Length+thickness, 0])
+  |> line(end = [0, -height], tag = $fillet2)
+  |> close()
+
+unfilletedExtrusion = extrude(sketch001, length = width)
+
+// Under KCL 3.0, fillets execute immediately, so look up every edge before the
+// first fillet consumes any of them.
+cornerFillet1OppositeEdge = getOppositeEdge(cornerFillet1)
+cornerFillet2OppositeEdge = getOppositeEdge(cornerFillet2)
+fillet1PreviousAdjacentEdge = getPreviousAdjacentEdge(fillet1)
+fillet2PreviousAdjacentEdge = getPreviousAdjacentEdge(fillet2)
+fillet1NextAdjacentEdge = getNextAdjacentEdge(fillet1)
+fillet2NextAdjacentEdge = getNextAdjacentEdge(fillet2)
+
+baseExtrusion = unfilletedExtrusion
+  |> fillet(
+    radius = cornerFilletRad,
+    tags = [cornerFillet1, cornerFillet2, cornerFillet1OppositeEdge, cornerFillet2OppositeEdge],
+  )
+  |> fillet(
+    radius = filletRad,
+    tags = [fillet1PreviousAdjacentEdge, fillet2PreviousAdjacentEdge]
+  )
+  |> fillet(
+   radius = filletRad + thickness,
+   tags = [fillet1NextAdjacentEdge, fillet2NextAdjacentEdge],
+ )
+"#;
+
+    let result = execute_and_snapshot(code, None).await.unwrap();
+    assert_out("fillets_referencing_other_fillets_v3", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_chamfers_referencing_other_chamfers_v3() {
+    let code = r#"@settings(kclVersion = "3.0-preview")
+
+// Z-Bracket
+
+// Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
+
+// Define constants
+foot1Length = 4
+height = 4
+foot2Length = 5
+width = 4
+chamferRad = 0.25
+thickness = 0.125
+
+cornerChamferRad = 0.5
+
+holeDia = 0.5
+
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-foot1Length, 0])
+  |> line(end = [0, thickness], tag = $cornerChamfer1)
+  |> line(end = [foot1Length, 0])
+  |> line(end = [0, height], tag = $chamfer1)
+  |> line(end = [foot2Length, 0])
+  |> line(end = [0, -thickness], tag = $cornerChamfer2)
+  |> line(end = [-foot2Length+thickness, 0])
+  |> line(end = [0, -height], tag = $chamfer2)
+  |> close()
+
+unchamferedExtrusion = extrude(sketch001, length = width)
+
+// Under KCL 3.0, chamfers execute immediately, so look up every edge before
+// the first chamfer consumes any of them.
+cornerChamfer1OppositeEdge = getOppositeEdge(cornerChamfer1)
+cornerChamfer2OppositeEdge = getOppositeEdge(cornerChamfer2)
+chamfer1PreviousAdjacentEdge = getPreviousAdjacentEdge(chamfer1)
+chamfer2PreviousAdjacentEdge = getPreviousAdjacentEdge(chamfer2)
+chamfer1NextAdjacentEdge = getNextAdjacentEdge(chamfer1)
+chamfer2NextAdjacentEdge = getNextAdjacentEdge(chamfer2)
+
+baseExtrusion = unchamferedExtrusion
+  |> chamfer(
+    length = cornerChamferRad,
+    tags = [cornerChamfer1, cornerChamfer2, cornerChamfer1OppositeEdge, cornerChamfer2OppositeEdge],
+    )
+  |> chamfer(
+    length = chamferRad,
+    tags = [chamfer1PreviousAdjacentEdge, chamfer2PreviousAdjacentEdge],
+  )
+  |> chamfer(
+   length = chamferRad + thickness,
+   tags = [chamfer1NextAdjacentEdge, chamfer2NextAdjacentEdge],
+   )
+"#;
+
+    let result = execute_and_snapshot(code, None).await.unwrap();
+    assert_out("chamfers_referencing_other_chamfers_v3", &result);
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_delete_face_on_chamfer_edgecut() {
     let code = r#"@settings(kclVersion = 2.0)
@@ -1725,11 +1854,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 111, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 111, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1756,11 +1887,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1787,11 +1920,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 110, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 110, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1818,11 +1953,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1849,11 +1986,13 @@ extrusion = extrude(sketch001, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(66, 116, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(66, 116, ModuleId::default()),
                 fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1880,11 +2019,13 @@ extrusion = extrude(sketch001, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(66, 117, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(66, 117, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1913,11 +2054,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(95, 130, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(95, 130, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1946,11 +2089,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(95, 132, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(95, 132, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1979,11 +2124,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(95, 133, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(95, 133, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -2019,14 +2166,17 @@ someFunction('INVALID')
             BacktraceItem {
                 source_range: SourceRange::new(46, 55, ModuleId::default()),
                 fn_name: Some("startSketchOn".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(32, 56, ModuleId::default()),
                 fn_name: Some("someFunction".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(60, 83, ModuleId::default()),
                 fn_name: None,
+                kind: BacktraceItemKind::Call,
             },
         ]
     );

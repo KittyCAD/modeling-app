@@ -4,18 +4,25 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import { wasmUrl } from '@src/lang/wasmUtils'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import type { FileEntry } from '@src/lib/project'
-import { err } from '@src/lib/trap'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
 import type { LspService } from '@src/lang/lsp/registry/contract'
 import type { KclLspEditor } from '@src/lang/lsp/types'
+import KclLspWorker from '@src/lang/lsp/worker.ts?worker'
 import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
 import { LspWorker } from '@src/lang/lsp/workerTypes'
-import KclLspWorker from '@src/lang/lsp/worker.ts?worker'
+import { wasmUrl } from '@src/lang/wasmUtils'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import {
+  kclRuntimeFlagsEqual,
+  kclRuntimeFlagsFromUserFeatures,
+  waitForSettledKclRuntimeFlags,
+} from '@src/lib/kclRuntimeFlags'
+import type { FileEntry } from '@src/lib/project'
+import { err, reportRejection } from '@src/lib/trap'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
+import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 import type { Subscription } from 'xstate'
@@ -25,11 +32,16 @@ type LspRuntime = {
   worker: globalThis.Worker
   client: LanguageServerClient
   ready: boolean
+  kclRuntimeFlags: KclRuntimeFlags
+}
+
+type PendingLspStartup = {
+  token: string
+  abortController: AbortController
 }
 
 type ProjectSnapshot = {
   project: { name: string | null; path: string | null } | null
-  file: FileEntry | null
 }
 
 type FileSnapshot = {
@@ -39,16 +51,23 @@ type FileSnapshot = {
 
 type CreateLspServiceOptions = {
   getAuth: () => AuthRegistryService
+  getUserFeatures: () => UserFeaturesRegistryService
 }
 
-export function createLspService({ getAuth }: CreateLspServiceOptions): {
+export function createLspService({
+  getAuth,
+  getUserFeatures,
+}: CreateLspServiceOptions): {
   service: LspService
   dispose: () => void
 } {
   let auth: AuthRegistryService | null = null
   let authSubscription: Subscription | undefined
+  let userFeatures: UserFeaturesRegistryService | null = null
+  let userFeaturesSubscription: Subscription | undefined
   let kclManager: KclLspEditor | null = null
   let runtime: LspRuntime | null = null
+  let pendingStartup: PendingLspStartup | undefined
   let disposeCodeMirrorAttachment: (() => void) | undefined
   let currentProjectSnapshot: ProjectSnapshot | null = null
   let currentFileSnapshot: FileSnapshot | null = null
@@ -57,6 +76,7 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
     attachKclManager: (manager) => {
       kclManager = manager
       ensureAuthSubscription()
+      ensureUserFeaturesSubscription()
       reconcileRuntime()
 
       return () => {
@@ -83,7 +103,7 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       currentFileSnapshot = null
     },
     onProjectOpen: (project, file) => {
-      currentProjectSnapshot = { project, file }
+      currentProjectSnapshot = { project }
       currentFileSnapshot = {
         filePath: file?.path || null,
         projectPath: project?.path || null,
@@ -114,6 +134,9 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
           },
         })
       })
+      if (currentFileSnapshot?.filePath === filePath) {
+        currentFileSnapshot = null
+      }
     },
     onFileCreate: (file) => {
       const documentUri = filePathToUri(file.path)
@@ -166,6 +189,19 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
     })
   }
 
+  function ensureUserFeaturesSubscription(): UserFeaturesRegistryService {
+    if (userFeatures) {
+      return userFeatures
+    }
+
+    const service = getUserFeatures()
+    userFeatures = service
+    userFeaturesSubscription = service.actor.subscribe(() => {
+      reconcileRuntime()
+    })
+    return service
+  }
+
   function reconcileRuntime() {
     const token = getAuthToken()
     if (!kclManager || !token || !canStartWorkerRuntime()) {
@@ -173,12 +209,33 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       return
     }
 
-    if (runtime?.token === token) {
+    if (runtime?.token === token && !runtimeFlagsChanged()) {
+      return
+    }
+
+    if (pendingStartup?.token === token) {
       return
     }
 
     stopRuntime()
     startRuntime(token)
+  }
+
+  /**
+   * True once the runtime was initialized with flags that no longer match the
+   * current user features. Restarting the worker is the only way to apply
+   * them: the LSP's ExecutorContext resolves the KCL executor from the flags
+   * at construction time, inside lsp_run_kcl.
+   */
+  function runtimeFlagsChanged() {
+    if (!runtime || !userFeatures) {
+      return false
+    }
+
+    return !kclRuntimeFlagsEqual(
+      runtime.kclRuntimeFlags,
+      kclRuntimeFlagsFromUserFeatures(userFeatures)
+    )
   }
 
   function canStartWorkerRuntime() {
@@ -188,6 +245,28 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
   }
 
   function startRuntime(token: string) {
+    const abortController = new AbortController()
+    const nextStartup = { token, abortController }
+    pendingStartup = nextStartup
+    const features = ensureUserFeaturesSubscription()
+
+    void (async () => {
+      await waitForSettledKclRuntimeFlags(features, abortController.signal)
+      if (pendingStartup !== nextStartup || abortController.signal.aborted) {
+        return
+      }
+
+      pendingStartup = undefined
+      createRuntime(token, kclRuntimeFlagsFromUserFeatures(features))
+    })().catch((error) => {
+      if (pendingStartup === nextStartup) {
+        pendingStartup = undefined
+      }
+      reportRejection(error)
+    })
+  }
+
+  function createRuntime(token: string, kclRuntimeFlags: KclRuntimeFlags) {
     const lspWorker = new KclLspWorker({ name: LspWorker.Kcl })
     const fromServer = FromServer.create()
     if (err(fromServer)) {
@@ -214,16 +293,19 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
         },
       }),
       ready: false,
+      kclRuntimeFlags,
     }
 
     lspWorker.onmessage = (event) => {
       fromServer.add(event.data)
     }
 
+    runtime = nextRuntime
     const initEvent: KclWorkerOptions = {
       wasmUrl: wasmUrl(),
       token,
       apiBaseUrl: withAPIBaseURL(''),
+      kclRuntimeFlags,
     }
 
     lspWorker.postMessage({
@@ -231,11 +313,11 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       eventType: LspWorkerEventType.Init,
       eventData: initEvent,
     })
-
-    runtime = nextRuntime
   }
 
   function stopRuntime() {
+    pendingStartup?.abortController.abort()
+    pendingStartup = undefined
     detachCodeMirror()
     runtime?.client.close()
     runtime?.worker.terminate()
@@ -261,11 +343,7 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
 
   function replayCurrentProjectState() {
     if (currentProjectSnapshot) {
-      notifyProjectOpen(
-        currentProjectSnapshot.project,
-        currentProjectSnapshot.file
-      )
-      return
+      notifyProjectOpen(currentProjectSnapshot.project, null)
     }
 
     if (currentFileSnapshot) {
@@ -326,6 +404,9 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       authSubscription?.unsubscribe()
       authSubscription = undefined
       auth = null
+      userFeaturesSubscription?.unsubscribe()
+      userFeaturesSubscription = undefined
+      userFeatures = null
       stopRuntime()
       kclManager = null
     },

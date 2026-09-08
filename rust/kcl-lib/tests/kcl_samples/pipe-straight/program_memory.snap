@@ -116,6 +116,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -123,10 +125,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -154,10 +156,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -170,17 +172,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -224,8 +226,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -238,6 +240,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -245,10 +249,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -276,10 +280,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -292,17 +296,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -346,8 +350,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -360,6 +364,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -367,10 +373,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -398,10 +404,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -414,17 +420,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -468,8 +474,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -482,6 +488,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -489,10 +497,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -520,10 +528,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -536,17 +544,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -590,8 +598,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -604,6 +612,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -611,10 +621,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -642,10 +652,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -658,17 +668,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -712,8 +722,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -726,6 +736,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -733,10 +745,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -764,10 +776,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -780,17 +792,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -834,8 +846,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -848,6 +860,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -855,10 +869,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -886,10 +900,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -902,17 +916,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -956,8 +970,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -970,6 +984,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -977,10 +993,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1008,10 +1024,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1024,17 +1040,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1078,8 +1094,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1092,6 +1108,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1099,10 +1117,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1130,10 +1148,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1146,17 +1164,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1200,8 +1218,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1214,6 +1232,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1221,10 +1241,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1252,10 +1272,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1268,17 +1288,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1322,8 +1342,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1336,6 +1356,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1343,10 +1365,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1374,10 +1396,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1390,17 +1412,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1444,8 +1466,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1458,6 +1480,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1465,10 +1489,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1496,10 +1520,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1512,17 +1536,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1566,8 +1590,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1580,6 +1604,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1587,10 +1613,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1618,10 +1644,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1634,17 +1660,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1688,8 +1714,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1702,6 +1728,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1709,10 +1737,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1740,10 +1768,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1756,17 +1784,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1810,8 +1838,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1824,6 +1852,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1831,10 +1861,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1862,10 +1892,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1878,17 +1908,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1932,8 +1962,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1946,6 +1976,8 @@ description: Variables in memory after executing pipe-straight.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1953,10 +1985,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1915,
+                "end": 1922,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1915,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1984,10 +2016,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1915,
+                  "end": 1922,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1915,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2000,17 +2032,17 @@ description: Variables in memory after executing pipe-straight.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2054,8 +2086,8 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2070,6 +2102,8 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2077,10 +2111,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1974,
-            "end": 1981,
+            "commentStart": 1915,
+            "end": 1922,
             "moduleId": 0,
-            "start": 1974,
+            "start": 1915,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2108,10 +2142,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 6.000000000048771,
             "tag": {
-              "commentStart": 1974,
-              "end": 1981,
+              "commentStart": 1915,
+              "end": 1922,
               "moduleId": 0,
-              "start": 1974,
+              "start": 1915,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2124,17 +2158,17 @@ description: Variables in memory after executing pipe-straight.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 24,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2178,8 +2212,8 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2474,10 +2508,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 6.000000000048771,
                   "tag": {
-                    "commentStart": 1974,
-                    "end": 1981,
+                    "commentStart": 1915,
+                    "end": 1922,
                     "moduleId": 0,
-                    "start": 1974,
+                    "start": 1915,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2490,17 +2524,17 @@ description: Variables in memory after executing pipe-straight.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 24,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -2576,10 +2610,10 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "radius": 6.000000000048771,
           "tag": {
-            "commentStart": 1974,
-            "end": 1981,
+            "commentStart": 1915,
+            "end": 1922,
             "moduleId": 0,
-            "start": 1974,
+            "start": 1915,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2592,17 +2626,17 @@ description: Variables in memory after executing pipe-straight.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 24,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2646,8 +2680,8 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "circle1": {
@@ -2660,6 +2694,8 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2667,12 +2703,26 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1312,
+            "end": 1329,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1312,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1455,
+            "end": 1472,
+            "moduleId": 0,
+            "start": 1455,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
           },
           "type": "extrudeArc"
         }
@@ -2698,10 +2748,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1312,
+              "end": 1329,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1312,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -2711,20 +2761,50 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "type": "Circle",
             "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1455,
+              "end": 1472,
+              "moduleId": 0,
+              "start": 1455,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "type": "Circle",
+            "units": "mm"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 12,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2772,8 +2852,8 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2786,6 +2866,8 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2793,12 +2875,26 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1312,
+            "end": 1329,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1312,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1455,
+            "end": 1472,
+            "moduleId": 0,
+            "start": 1455,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
           },
           "type": "extrudeArc"
         }
@@ -2824,10 +2920,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1312,
+              "end": 1329,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1312,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -2837,20 +2933,50 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "type": "Circle",
             "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1455,
+              "end": 1472,
+              "moduleId": 0,
+              "start": 1455,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "type": "Circle",
+            "units": "mm"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 12,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2898,8 +3024,8 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2957,10 +3083,10 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "radius": 65.0,
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1312,
+            "end": 1329,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1312,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
           },
@@ -2970,20 +3096,50 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "type": "Circle",
           "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.00000000000000000025506300303710433,
+            -0.0000000000000000001310786070815444
+          ],
+          "from": [
+            31.129873571889167,
+            -15.997842710759363
+          ],
+          "radius": 35.0,
+          "tag": {
+            "commentStart": 1455,
+            "end": 1472,
+            "moduleId": 0,
+            "start": 1455,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "to": [
+            31.129873571889167,
+            -15.997842710759363
+          ],
+          "type": "Circle",
+          "units": "mm"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 12,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3031,8 +3187,8 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "flangeSketch": {
@@ -3303,10 +3459,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 65.0,
                   "tag": {
-                    "commentStart": 1347,
-                    "end": 1364,
+                    "commentStart": 1312,
+                    "end": 1329,
                     "moduleId": 0,
-                    "start": 1347,
+                    "start": 1312,
                     "type": "TagDeclarator",
                     "value": "flangeOuterCircle"
                   },
@@ -3350,10 +3506,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 35.0,
                   "tag": {
-                    "commentStart": 1490,
-                    "end": 1507,
+                    "commentStart": 1455,
+                    "end": 1472,
                     "moduleId": 0,
-                    "start": 1490,
+                    "start": 1455,
                     "type": "TagDeclarator",
                     "value": "flangeInnerCircle"
                   },
@@ -3366,17 +3522,17 @@ description: Variables in memory after executing pipe-straight.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 12,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -3448,6 +3604,8 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
@@ -3471,10 +3629,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1312,
+              "end": 1329,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1312,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -3484,20 +3642,50 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "type": "Circle",
             "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1455,
+              "end": 1472,
+              "moduleId": 0,
+              "start": 1455,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "type": "Circle",
+            "units": "mm"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 12,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3545,8 +3733,8 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3559,6 +3747,8 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3566,12 +3756,26 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 707,
-            "end": 722,
+            "commentStart": 730,
+            "end": 745,
             "moduleId": 0,
-            "start": 707,
+            "start": 730,
             "type": "TagDeclarator",
             "value": "pipeOuterCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 869,
+            "end": 884,
+            "moduleId": 0,
+            "start": 869,
+            "type": "TagDeclarator",
+            "value": "pipeInnerCircle"
           },
           "type": "extrudeArc"
         }
@@ -3597,10 +3801,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 45.000000005398775,
             "tag": {
-              "commentStart": 707,
-              "end": 722,
+              "commentStart": 730,
+              "end": 745,
               "moduleId": 0,
-              "start": 707,
+              "start": 730,
               "type": "TagDeclarator",
               "value": "pipeOuterCircle"
             },
@@ -3610,20 +3814,50 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "type": "Circle",
             "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0000000005101264330250895,
+              -0.0000000002621572877918648
+            ],
+            "from": [
+              31.129873573929668,
+              -15.99784271180799
+            ],
+            "radius": 35.000000001720636,
+            "tag": {
+              "commentStart": 869,
+              "end": 884,
+              "moduleId": 0,
+              "start": 869,
+              "type": "TagDeclarator",
+              "value": "pipeInnerCircle"
+            },
+            "to": [
+              31.129873573929668,
+              -15.99784271180799
+            ],
+            "type": "Circle",
+            "units": "mm"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3671,8 +3905,8 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3739,10 +3973,10 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "radius": 45.000000005398775,
           "tag": {
-            "commentStart": 707,
-            "end": 722,
+            "commentStart": 730,
+            "end": 745,
             "moduleId": 0,
-            "start": 707,
+            "start": 730,
             "type": "TagDeclarator",
             "value": "pipeOuterCircle"
           },
@@ -3752,20 +3986,50 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "type": "Circle",
           "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0000000005101264330250895,
+            -0.0000000002621572877918648
+          ],
+          "from": [
+            31.129873573929668,
+            -15.99784271180799
+          ],
+          "radius": 35.000000001720636,
+          "tag": {
+            "commentStart": 869,
+            "end": 884,
+            "moduleId": 0,
+            "start": 869,
+            "type": "TagDeclarator",
+            "value": "pipeInnerCircle"
+          },
+          "to": [
+            31.129873573929668,
+            -15.99784271180799
+          ],
+          "type": "Circle",
+          "units": "mm"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3813,8 +4077,8 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "pipeSectionSketch": {
@@ -3845,10 +4109,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 45.000000005398775,
                   "tag": {
-                    "commentStart": 707,
-                    "end": 722,
+                    "commentStart": 730,
+                    "end": 745,
                     "moduleId": 0,
-                    "start": 707,
+                    "start": 730,
                     "type": "TagDeclarator",
                     "value": "pipeOuterCircle"
                   },
@@ -3892,10 +4156,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 35.000000001720636,
                   "tag": {
-                    "commentStart": 846,
-                    "end": 861,
+                    "commentStart": 869,
+                    "end": 884,
                     "moduleId": 0,
-                    "start": 846,
+                    "start": 869,
                     "type": "TagDeclarator",
                     "value": "pipeInnerCircle"
                   },
@@ -3908,17 +4172,17 @@ description: Variables in memory after executing pipe-straight.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -4230,6 +4494,8 @@ description: Variables in memory after executing pipe-straight.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4237,12 +4503,26 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1312,
+            "end": 1329,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1312,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1455,
+            "end": 1472,
+            "moduleId": 0,
+            "start": 1455,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
           },
           "type": "extrudeArc"
         }
@@ -4268,10 +4548,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1312,
+              "end": 1329,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1312,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -4281,20 +4561,50 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "type": "Circle",
             "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1455,
+              "end": 1472,
+              "moduleId": 0,
+              "start": 1455,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "type": "Circle",
+            "units": "mm"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 12,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4342,8 +4652,8 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

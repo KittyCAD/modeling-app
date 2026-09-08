@@ -168,8 +168,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 225,
+      "kind": "Custom",
       "origin": {
         "x": -2100.0,
         "y": 0.0,
@@ -201,8 +201,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 234,
+      "kind": "Custom",
       "origin": {
         "x": 2100.0,
         "y": 0.0,
@@ -330,6 +330,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -337,10 +339,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7240,
-            "end": 7245,
+            "commentStart": 7304,
+            "end": 7309,
             "moduleId": 0,
-            "start": 7240,
+            "start": 7304,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -351,10 +353,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7317,
-            "end": 7322,
+            "commentStart": 7381,
+            "end": 7386,
             "moduleId": 0,
-            "start": 7317,
+            "start": 7381,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -365,10 +367,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7395,
-            "end": 7400,
+            "commentStart": 7459,
+            "end": 7464,
             "moduleId": 0,
-            "start": 7395,
+            "start": 7459,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -379,10 +381,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7474,
-            "end": 7479,
+            "commentStart": 7538,
+            "end": 7543,
             "moduleId": 0,
-            "start": 7474,
+            "start": 7538,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -404,10 +406,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7240,
-              "end": 7245,
+              "commentStart": 7304,
+              "end": 7309,
               "moduleId": 0,
-              "start": 7240,
+              "start": 7304,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -428,10 +430,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 7317,
-              "end": 7322,
+              "commentStart": 7381,
+              "end": 7386,
               "moduleId": 0,
-              "start": 7317,
+              "start": 7381,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -452,10 +454,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 7395,
-              "end": 7400,
+              "commentStart": 7459,
+              "end": 7464,
               "moduleId": 0,
-              "start": 7395,
+              "start": 7459,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -476,10 +478,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7474,
-              "end": 7479,
+              "commentStart": 7538,
+              "end": 7543,
               "moduleId": 0,
-              "start": 7474,
+              "start": 7538,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -492,17 +494,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 97,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -558,8 +560,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1096,10 +1098,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7240,
-                    "end": 7245,
+                    "commentStart": 7304,
+                    "end": 7309,
                     "moduleId": 0,
-                    "start": 7240,
+                    "start": 7304,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1120,10 +1122,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 7317,
-                    "end": 7322,
+                    "commentStart": 7381,
+                    "end": 7386,
                     "moduleId": 0,
-                    "start": 7317,
+                    "start": 7381,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1144,10 +1146,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 7395,
-                    "end": 7400,
+                    "commentStart": 7459,
+                    "end": 7464,
                     "moduleId": 0,
-                    "start": 7395,
+                    "start": 7459,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1168,10 +1170,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7474,
-                    "end": 7479,
+                    "commentStart": 7538,
+                    "end": 7543,
                     "moduleId": 0,
-                    "start": 7474,
+                    "start": 7538,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1184,17 +1186,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 97,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1276,10 +1278,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7240,
-            "end": 7245,
+            "commentStart": 7304,
+            "end": 7309,
             "moduleId": 0,
-            "start": 7240,
+            "start": 7304,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1300,10 +1302,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 7317,
-            "end": 7322,
+            "commentStart": 7381,
+            "end": 7386,
             "moduleId": 0,
-            "start": 7317,
+            "start": 7381,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1324,10 +1326,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 7395,
-            "end": 7400,
+            "commentStart": 7459,
+            "end": 7464,
             "moduleId": 0,
-            "start": 7395,
+            "start": 7459,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1348,10 +1350,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7474,
-            "end": 7479,
+            "commentStart": 7538,
+            "end": 7543,
             "moduleId": 0,
-            "start": 7474,
+            "start": 7538,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1364,17 +1366,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 97,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1430,8 +1432,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassis": {
@@ -1439,6 +1441,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1446,10 +1450,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6088,
-            "end": 6093,
+            "commentStart": 6152,
+            "end": 6157,
             "moduleId": 0,
-            "start": 6088,
+            "start": 6152,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1460,10 +1464,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6153,
-            "end": 6158,
+            "commentStart": 6217,
+            "end": 6222,
             "moduleId": 0,
-            "start": 6153,
+            "start": 6217,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1474,10 +1478,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6218,
-            "end": 6223,
+            "commentStart": 6282,
+            "end": 6287,
             "moduleId": 0,
-            "start": 6218,
+            "start": 6282,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1488,10 +1492,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6283,
-            "end": 6288,
+            "commentStart": 6347,
+            "end": 6352,
             "moduleId": 0,
-            "start": 6283,
+            "start": 6347,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1513,10 +1517,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.7499999963999996
             ],
             "tag": {
-              "commentStart": 6088,
-              "end": 6093,
+              "commentStart": 6152,
+              "end": 6157,
               "moduleId": 0,
-              "start": 6088,
+              "start": 6152,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1537,10 +1541,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.7499999941499995
             ],
             "tag": {
-              "commentStart": 6153,
-              "end": 6158,
+              "commentStart": 6217,
+              "end": 6222,
               "moduleId": 0,
-              "start": 6153,
+              "start": 6217,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1561,10 +1565,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               1.1499999950499995
             ],
             "tag": {
-              "commentStart": 6218,
-              "end": 6223,
+              "commentStart": 6282,
+              "end": 6287,
               "moduleId": 0,
-              "start": 6218,
+              "start": 6282,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1585,10 +1589,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               1.1499999957999996
             ],
             "tag": {
-              "commentStart": 6283,
-              "end": 6288,
+              "commentStart": 6347,
+              "end": 6352,
               "moduleId": 0,
-              "start": 6283,
+              "start": 6347,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1601,17 +1605,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 71,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1667,8 +1671,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2205,10 +2209,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.7499999963999996
                   ],
                   "tag": {
-                    "commentStart": 6088,
-                    "end": 6093,
+                    "commentStart": 6152,
+                    "end": 6157,
                     "moduleId": 0,
-                    "start": 6088,
+                    "start": 6152,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2246,10 +2250,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.7499999941499995
                   ],
                   "tag": {
-                    "commentStart": 6153,
-                    "end": 6158,
+                    "commentStart": 6217,
+                    "end": 6222,
                     "moduleId": 0,
-                    "start": 6153,
+                    "start": 6217,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2287,10 +2291,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.1499999950499995
                   ],
                   "tag": {
-                    "commentStart": 6218,
-                    "end": 6223,
+                    "commentStart": 6282,
+                    "end": 6287,
                     "moduleId": 0,
-                    "start": 6218,
+                    "start": 6282,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2328,10 +2332,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.1499999957999996
                   ],
                   "tag": {
-                    "commentStart": 6283,
-                    "end": 6288,
+                    "commentStart": 6347,
+                    "end": 6352,
                     "moduleId": 0,
-                    "start": 6283,
+                    "start": 6347,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2344,17 +2348,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 71,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2436,10 +2440,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.7499999963999996
           ],
           "tag": {
-            "commentStart": 6088,
-            "end": 6093,
+            "commentStart": 6152,
+            "end": 6157,
             "moduleId": 0,
-            "start": 6088,
+            "start": 6152,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2460,10 +2464,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.7499999941499995
           ],
           "tag": {
-            "commentStart": 6153,
-            "end": 6158,
+            "commentStart": 6217,
+            "end": 6222,
             "moduleId": 0,
-            "start": 6153,
+            "start": 6217,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2484,10 +2488,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             1.1499999950499995
           ],
           "tag": {
-            "commentStart": 6218,
-            "end": 6223,
+            "commentStart": 6282,
+            "end": 6287,
             "moduleId": 0,
-            "start": 6218,
+            "start": 6282,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2508,10 +2512,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             1.1499999957999996
           ],
           "tag": {
-            "commentStart": 6283,
-            "end": 6288,
+            "commentStart": 6347,
+            "end": 6352,
             "moduleId": 0,
-            "start": 6283,
+            "start": 6347,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2524,17 +2528,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 71,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2590,8 +2594,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "chassisWidth": {
@@ -2638,10 +2642,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.3500000000000106
           ],
           "tag": {
-            "commentStart": 3560,
-            "end": 3565,
+            "commentStart": 3624,
+            "end": 3629,
             "moduleId": 0,
-            "start": 3560,
+            "start": 3624,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2662,10 +2666,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.8046633388240976
           ],
           "tag": {
-            "commentStart": 3637,
-            "end": 3642,
+            "commentStart": 3701,
+            "end": 3706,
             "moduleId": 0,
-            "start": 3637,
+            "start": 3701,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2686,10 +2690,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.8046633388241028
           ],
           "tag": {
-            "commentStart": 3753,
-            "end": 3758,
+            "commentStart": 3817,
+            "end": 3822,
             "moduleId": 0,
-            "start": 3753,
+            "start": 3817,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2710,10 +2714,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.3500000000000027
           ],
           "tag": {
-            "commentStart": 3909,
-            "end": 3914,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3909,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2734,10 +2738,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             -0.10466333882410354
           ],
           "tag": {
-            "commentStart": 4025,
-            "end": 4030,
+            "commentStart": 4089,
+            "end": 4094,
             "moduleId": 0,
-            "start": 4025,
+            "start": 4089,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2758,10 +2762,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             -0.10466333882409189
           ],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4207,
+            "end": 4212,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4207,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2774,17 +2778,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 26,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2848,8 +2852,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "cutOutVoid": {
@@ -2857,6 +2861,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2864,10 +2870,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3560,
-            "end": 3565,
+            "commentStart": 3624,
+            "end": 3629,
             "moduleId": 0,
-            "start": 3560,
+            "start": 3624,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2878,10 +2884,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3637,
-            "end": 3642,
+            "commentStart": 3701,
+            "end": 3706,
             "moduleId": 0,
-            "start": 3637,
+            "start": 3701,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2892,10 +2898,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3753,
-            "end": 3758,
+            "commentStart": 3817,
+            "end": 3822,
             "moduleId": 0,
-            "start": 3753,
+            "start": 3817,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2906,10 +2912,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3909,
-            "end": 3914,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3909,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2920,10 +2926,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4025,
-            "end": 4030,
+            "commentStart": 4089,
+            "end": 4094,
             "moduleId": 0,
-            "start": 4025,
+            "start": 4089,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2934,10 +2940,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4207,
+            "end": 4212,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4207,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2959,10 +2965,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3560,
-              "end": 3565,
+              "commentStart": 3624,
+              "end": 3629,
               "moduleId": 0,
-              "start": 3560,
+              "start": 3624,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2983,10 +2989,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3637,
-              "end": 3642,
+              "commentStart": 3701,
+              "end": 3706,
               "moduleId": 0,
-              "start": 3637,
+              "start": 3701,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3007,10 +3013,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3753,
-              "end": 3758,
+              "commentStart": 3817,
+              "end": 3822,
               "moduleId": 0,
-              "start": 3753,
+              "start": 3817,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3031,10 +3037,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 3909,
-              "end": 3914,
+              "commentStart": 3973,
+              "end": 3978,
               "moduleId": 0,
-              "start": 3909,
+              "start": 3973,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3055,10 +3061,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4025,
-              "end": 4030,
+              "commentStart": 4089,
+              "end": 4094,
               "moduleId": 0,
-              "start": 4025,
+              "start": 4089,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3079,10 +3085,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4207,
+              "end": 4212,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4207,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -3095,17 +3101,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3169,8 +3175,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3183,6 +3189,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3190,10 +3198,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11996,
-            "end": 12003,
+            "commentStart": 12060,
+            "end": 12067,
             "moduleId": 0,
-            "start": 11996,
+            "start": 12060,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3221,10 +3229,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "radius": 0.175000000005,
             "tag": {
-              "commentStart": 11996,
-              "end": 12003,
+              "commentStart": 12060,
+              "end": 12067,
               "moduleId": 0,
-              "start": 11996,
+              "start": 12060,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3237,17 +3245,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 204,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3295,8 +3303,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3326,10 +3334,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "radius": 0.175000000005,
           "tag": {
-            "commentStart": 11996,
-            "end": 12003,
+            "commentStart": 12060,
+            "end": 12067,
             "moduleId": 0,
-            "start": 11996,
+            "start": 12060,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3342,17 +3350,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 204,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3400,8 +3408,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderBody": {
@@ -3409,6 +3417,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3416,10 +3426,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2362,
-            "end": 2367,
+            "commentStart": 2426,
+            "end": 2431,
             "moduleId": 0,
-            "start": 2362,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3430,10 +3440,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2427,
-            "end": 2432,
+            "commentStart": 2491,
+            "end": 2496,
             "moduleId": 0,
-            "start": 2427,
+            "start": 2491,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3444,10 +3454,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2492,
-            "end": 2497,
+            "commentStart": 2556,
+            "end": 2561,
             "moduleId": 0,
-            "start": 2492,
+            "start": 2556,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3458,10 +3468,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2557,
-            "end": 2562,
+            "commentStart": 2621,
+            "end": 2626,
             "moduleId": 0,
-            "start": 2557,
+            "start": 2621,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3483,10 +3493,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 2362,
-              "end": 2367,
+              "commentStart": 2426,
+              "end": 2431,
               "moduleId": 0,
-              "start": 2362,
+              "start": 2426,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3507,10 +3517,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 2427,
-              "end": 2432,
+              "commentStart": 2491,
+              "end": 2496,
               "moduleId": 0,
-              "start": 2427,
+              "start": 2491,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3531,10 +3541,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 2492,
-              "end": 2497,
+              "commentStart": 2556,
+              "end": 2561,
               "moduleId": 0,
-              "start": 2492,
+              "start": 2556,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3555,10 +3565,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 2557,
-              "end": 2562,
+              "commentStart": 2621,
+              "end": 2626,
               "moduleId": 0,
-              "start": 2557,
+              "start": 2621,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3571,17 +3581,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3637,8 +3647,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4175,10 +4185,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.3999999993999999
                   ],
                   "tag": {
-                    "commentStart": 2362,
-                    "end": 2367,
+                    "commentStart": 2426,
+                    "end": 2431,
                     "moduleId": 0,
-                    "start": 2362,
+                    "start": 2426,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4216,10 +4226,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.3999999981999999
                   ],
                   "tag": {
-                    "commentStart": 2427,
-                    "end": 2432,
+                    "commentStart": 2491,
+                    "end": 2496,
                     "moduleId": 0,
-                    "start": 2427,
+                    "start": 2491,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4257,10 +4267,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.7500000016500001
                   ],
                   "tag": {
-                    "commentStart": 2492,
-                    "end": 2497,
+                    "commentStart": 2556,
+                    "end": 2561,
                     "moduleId": 0,
-                    "start": 2492,
+                    "start": 2556,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4298,10 +4308,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.7500000004
                   ],
                   "tag": {
-                    "commentStart": 2557,
-                    "end": 2562,
+                    "commentStart": 2621,
+                    "end": 2626,
                     "moduleId": 0,
-                    "start": 2557,
+                    "start": 2621,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -4314,17 +4324,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4406,10 +4416,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.3999999993999999
           ],
           "tag": {
-            "commentStart": 2362,
-            "end": 2367,
+            "commentStart": 2426,
+            "end": 2431,
             "moduleId": 0,
-            "start": 2362,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4430,10 +4440,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.3999999981999999
           ],
           "tag": {
-            "commentStart": 2427,
-            "end": 2432,
+            "commentStart": 2491,
+            "end": 2496,
             "moduleId": 0,
-            "start": 2427,
+            "start": 2491,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4454,10 +4464,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.7500000016500001
           ],
           "tag": {
-            "commentStart": 2492,
-            "end": 2497,
+            "commentStart": 2556,
+            "end": 2561,
             "moduleId": 0,
-            "start": 2492,
+            "start": 2556,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4478,10 +4488,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             0.7500000004
           ],
           "tag": {
-            "commentStart": 2557,
-            "end": 2562,
+            "commentStart": 2621,
+            "end": 2626,
             "moduleId": 0,
-            "start": 2557,
+            "start": 2621,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4494,17 +4504,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4560,8 +4570,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "fenderWidth": {
@@ -4578,6 +4588,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4585,10 +4597,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2362,
-            "end": 2367,
+            "commentStart": 2426,
+            "end": 2431,
             "moduleId": 0,
-            "start": 2362,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4599,10 +4611,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2427,
-            "end": 2432,
+            "commentStart": 2491,
+            "end": 2496,
             "moduleId": 0,
-            "start": 2427,
+            "start": 2491,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4613,10 +4625,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2492,
-            "end": 2497,
+            "commentStart": 2556,
+            "end": 2561,
             "moduleId": 0,
-            "start": 2492,
+            "start": 2556,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4627,10 +4639,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2557,
-            "end": 2562,
+            "commentStart": 2621,
+            "end": 2626,
             "moduleId": 0,
-            "start": 2557,
+            "start": 2621,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4652,10 +4664,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 2362,
-              "end": 2367,
+              "commentStart": 2426,
+              "end": 2431,
               "moduleId": 0,
-              "start": 2362,
+              "start": 2426,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4676,10 +4688,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 2427,
-              "end": 2432,
+              "commentStart": 2491,
+              "end": 2496,
               "moduleId": 0,
-              "start": 2427,
+              "start": 2491,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4700,10 +4712,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 2492,
-              "end": 2497,
+              "commentStart": 2556,
+              "end": 2561,
               "moduleId": 0,
-              "start": 2492,
+              "start": 2556,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4724,10 +4736,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 2557,
-              "end": 2562,
+              "commentStart": 2621,
+              "end": 2626,
               "moduleId": 0,
-              "start": 2557,
+              "start": 2621,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4740,17 +4752,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4806,8 +4818,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4820,6 +4832,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4827,10 +4841,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3560,
-            "end": 3565,
+            "commentStart": 3624,
+            "end": 3629,
             "moduleId": 0,
-            "start": 3560,
+            "start": 3624,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4841,10 +4855,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3637,
-            "end": 3642,
+            "commentStart": 3701,
+            "end": 3706,
             "moduleId": 0,
-            "start": 3637,
+            "start": 3701,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4855,10 +4869,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3753,
-            "end": 3758,
+            "commentStart": 3817,
+            "end": 3822,
             "moduleId": 0,
-            "start": 3753,
+            "start": 3817,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4869,10 +4883,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3909,
-            "end": 3914,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3909,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4883,10 +4897,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4025,
-            "end": 4030,
+            "commentStart": 4089,
+            "end": 4094,
             "moduleId": 0,
-            "start": 4025,
+            "start": 4089,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -4897,10 +4911,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4207,
+            "end": 4212,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4207,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -4922,10 +4936,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3560,
-              "end": 3565,
+              "commentStart": 3624,
+              "end": 3629,
               "moduleId": 0,
-              "start": 3560,
+              "start": 3624,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4946,10 +4960,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3637,
-              "end": 3642,
+              "commentStart": 3701,
+              "end": 3706,
               "moduleId": 0,
-              "start": 3637,
+              "start": 3701,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4970,10 +4984,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3753,
-              "end": 3758,
+              "commentStart": 3817,
+              "end": 3822,
               "moduleId": 0,
-              "start": 3753,
+              "start": 3817,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4994,10 +5008,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 3909,
-              "end": 3914,
+              "commentStart": 3973,
+              "end": 3978,
               "moduleId": 0,
-              "start": 3909,
+              "start": 3973,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5018,10 +5032,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4025,
-              "end": 4030,
+              "commentStart": 4089,
+              "end": 4094,
               "moduleId": 0,
-              "start": 4025,
+              "start": 4089,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -5042,10 +5056,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4207,
+              "end": 4212,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4207,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -5058,17 +5072,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5132,8 +5146,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5146,6 +5160,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5153,10 +5169,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3560,
-            "end": 3565,
+            "commentStart": 3624,
+            "end": 3629,
             "moduleId": 0,
-            "start": 3560,
+            "start": 3624,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5167,10 +5183,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3637,
-            "end": 3642,
+            "commentStart": 3701,
+            "end": 3706,
             "moduleId": 0,
-            "start": 3637,
+            "start": 3701,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5181,10 +5197,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3753,
-            "end": 3758,
+            "commentStart": 3817,
+            "end": 3822,
             "moduleId": 0,
-            "start": 3753,
+            "start": 3817,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5195,10 +5211,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3909,
-            "end": 3914,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3909,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5209,10 +5225,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4025,
-            "end": 4030,
+            "commentStart": 4089,
+            "end": 4094,
             "moduleId": 0,
-            "start": 4025,
+            "start": 4089,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -5223,10 +5239,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4207,
+            "end": 4212,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4207,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -5248,10 +5264,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3560,
-              "end": 3565,
+              "commentStart": 3624,
+              "end": 3629,
               "moduleId": 0,
-              "start": 3560,
+              "start": 3624,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5272,10 +5288,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3637,
-              "end": 3642,
+              "commentStart": 3701,
+              "end": 3706,
               "moduleId": 0,
-              "start": 3637,
+              "start": 3701,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5296,10 +5312,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3753,
-              "end": 3758,
+              "commentStart": 3817,
+              "end": 3822,
               "moduleId": 0,
-              "start": 3753,
+              "start": 3817,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5320,10 +5336,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 3909,
-              "end": 3914,
+              "commentStart": 3973,
+              "end": 3978,
               "moduleId": 0,
-              "start": 3909,
+              "start": 3973,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5344,10 +5360,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4025,
-              "end": 4030,
+              "commentStart": 4089,
+              "end": 4094,
               "moduleId": 0,
-              "start": 4025,
+              "start": 4089,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -5368,10 +5384,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4207,
+              "end": 4212,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4207,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -5384,17 +5400,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5458,8 +5474,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5484,6 +5500,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5491,10 +5509,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14167,
-                "end": 14174,
+                "commentStart": 14205,
+                "end": 14212,
                 "moduleId": 0,
-                "start": 14167,
+                "start": 14205,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -5522,10 +5540,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 14167,
-                  "end": 14174,
+                  "commentStart": 14205,
+                  "end": 14212,
                   "moduleId": 0,
-                  "start": 14167,
+                  "start": 14205,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -5538,17 +5556,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 225,
+              "kind": "Custom",
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5592,8 +5610,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5606,6 +5624,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -5629,10 +5649,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 14167,
-                  "end": 14174,
+                  "commentStart": 14205,
+                  "end": 14212,
                   "moduleId": 0,
-                  "start": 14167,
+                  "start": 14205,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -5645,17 +5665,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 225,
+              "kind": "Custom",
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5699,8 +5719,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5733,8 +5753,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 225,
+      "kind": "Custom",
       "origin": {
         "x": -2100.0,
         "y": 0.0,
@@ -5786,10 +5806,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 14167,
-                "end": 14174,
+                "commentStart": 14205,
+                "end": 14212,
                 "moduleId": 0,
-                "start": 14167,
+                "start": 14205,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -5802,17 +5822,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 225,
+            "kind": "Custom",
             "origin": {
               "x": -2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -5856,8 +5876,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -5882,10 +5902,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 14167,
-                "end": 14174,
+                "commentStart": 14205,
+                "end": 14212,
                 "moduleId": 0,
-                "start": 14167,
+                "start": 14205,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -5898,17 +5918,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 225,
+            "kind": "Custom",
             "origin": {
               "x": -2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -5952,8 +5972,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -6115,10 +6135,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   ],
                   "radius": 0.1599999993650001,
                   "tag": {
-                    "commentStart": 14167,
-                    "end": 14174,
+                    "commentStart": 14205,
+                    "end": 14212,
                     "moduleId": 0,
-                    "start": 14167,
+                    "start": 14205,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -6131,17 +6151,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 225,
+                "kind": "Custom",
                 "origin": {
                   "x": -2100.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -6200,6 +6220,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6207,10 +6229,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10748,
-            "end": 10753,
+            "commentStart": 10812,
+            "end": 10817,
             "moduleId": 0,
-            "start": 10748,
+            "start": 10812,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6221,10 +6243,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10823,
-            "end": 10828,
+            "commentStart": 10887,
+            "end": 10892,
             "moduleId": 0,
-            "start": 10823,
+            "start": 10887,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6235,10 +6257,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10899,
-            "end": 10904,
+            "commentStart": 10963,
+            "end": 10968,
             "moduleId": 0,
-            "start": 10899,
+            "start": 10963,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6249,10 +6271,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10976,
-            "end": 10981,
+            "commentStart": 11040,
+            "end": 11045,
             "moduleId": 0,
-            "start": 10976,
+            "start": 11040,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6274,10 +6296,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.35
             ],
             "tag": {
-              "commentStart": 10748,
-              "end": 10753,
+              "commentStart": 10812,
+              "end": 10817,
               "moduleId": 0,
-              "start": 10748,
+              "start": 10812,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6298,10 +6320,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.85
             ],
             "tag": {
-              "commentStart": 10823,
-              "end": 10828,
+              "commentStart": 10887,
+              "end": 10892,
               "moduleId": 0,
-              "start": 10823,
+              "start": 10887,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6322,10 +6344,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.85
             ],
             "tag": {
-              "commentStart": 10899,
-              "end": 10904,
+              "commentStart": 10963,
+              "end": 10968,
               "moduleId": 0,
-              "start": 10899,
+              "start": 10963,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6346,10 +6368,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.35
             ],
             "tag": {
-              "commentStart": 10976,
-              "end": 10981,
+              "commentStart": 11040,
+              "end": 11045,
               "moduleId": 0,
-              "start": 10976,
+              "start": 11040,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6362,17 +6384,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 177,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6428,8 +6450,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6966,10 +6988,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.35
                   ],
                   "tag": {
-                    "commentStart": 10748,
-                    "end": 10753,
+                    "commentStart": 10812,
+                    "end": 10817,
                     "moduleId": 0,
-                    "start": 10748,
+                    "start": 10812,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -6990,10 +7012,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.85
                   ],
                   "tag": {
-                    "commentStart": 10823,
-                    "end": 10828,
+                    "commentStart": 10887,
+                    "end": 10892,
                     "moduleId": 0,
-                    "start": 10823,
+                    "start": 10887,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7014,10 +7036,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.85
                   ],
                   "tag": {
-                    "commentStart": 10899,
-                    "end": 10904,
+                    "commentStart": 10963,
+                    "end": 10968,
                     "moduleId": 0,
-                    "start": 10899,
+                    "start": 10963,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7038,10 +7060,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.35
                   ],
                   "tag": {
-                    "commentStart": 10976,
-                    "end": 10981,
+                    "commentStart": 11040,
+                    "end": 11045,
                     "moduleId": 0,
-                    "start": 10976,
+                    "start": 11040,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7054,17 +7076,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 177,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -7146,10 +7168,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.35
           ],
           "tag": {
-            "commentStart": 10748,
-            "end": 10753,
+            "commentStart": 10812,
+            "end": 10817,
             "moduleId": 0,
-            "start": 10748,
+            "start": 10812,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7170,10 +7192,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.85
           ],
           "tag": {
-            "commentStart": 10823,
-            "end": 10828,
+            "commentStart": 10887,
+            "end": 10892,
             "moduleId": 0,
-            "start": 10823,
+            "start": 10887,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7194,10 +7216,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.85
           ],
           "tag": {
-            "commentStart": 10899,
-            "end": 10904,
+            "commentStart": 10963,
+            "end": 10968,
             "moduleId": 0,
-            "start": 10899,
+            "start": 10963,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7218,10 +7240,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.35
           ],
           "tag": {
-            "commentStart": 10976,
-            "end": 10981,
+            "commentStart": 11040,
+            "end": 11045,
             "moduleId": 0,
-            "start": 10976,
+            "start": 11040,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7234,17 +7256,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 177,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -7300,8 +7322,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "ladderWidth": {
@@ -7357,6 +7379,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7364,10 +7388,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8409,
-            "end": 8414,
+            "commentStart": 8473,
+            "end": 8478,
             "moduleId": 0,
-            "start": 8409,
+            "start": 8473,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7378,10 +7402,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8488,
-            "end": 8493,
+            "commentStart": 8552,
+            "end": 8557,
             "moduleId": 0,
-            "start": 8488,
+            "start": 8552,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7392,10 +7416,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8565,
-            "end": 8570,
+            "commentStart": 8629,
+            "end": 8634,
             "moduleId": 0,
-            "start": 8565,
+            "start": 8629,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7406,10 +7430,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8640,
-            "end": 8645,
+            "commentStart": 8704,
+            "end": 8709,
             "moduleId": 0,
-            "start": 8640,
+            "start": 8704,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7431,10 +7455,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 8409,
-              "end": 8414,
+              "commentStart": 8473,
+              "end": 8478,
               "moduleId": 0,
-              "start": 8409,
+              "start": 8473,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7455,10 +7479,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 8488,
-              "end": 8493,
+              "commentStart": 8552,
+              "end": 8557,
               "moduleId": 0,
-              "start": 8488,
+              "start": 8552,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7479,10 +7503,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 8565,
-              "end": 8570,
+              "commentStart": 8629,
+              "end": 8634,
               "moduleId": 0,
-              "start": 8565,
+              "start": 8629,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7503,10 +7527,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 8640,
-              "end": 8645,
+              "commentStart": 8704,
+              "end": 8709,
               "moduleId": 0,
-              "start": 8640,
+              "start": 8704,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -7519,17 +7543,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 124,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7585,8 +7609,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8096,10 +8120,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 8409,
-                    "end": 8414,
+                    "commentStart": 8473,
+                    "end": 8478,
                     "moduleId": 0,
-                    "start": 8409,
+                    "start": 8473,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8120,10 +8144,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 8488,
-                    "end": 8493,
+                    "commentStart": 8552,
+                    "end": 8557,
                     "moduleId": 0,
-                    "start": 8488,
+                    "start": 8552,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -8144,10 +8168,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 8565,
-                    "end": 8570,
+                    "commentStart": 8629,
+                    "end": 8634,
                     "moduleId": 0,
-                    "start": 8565,
+                    "start": 8629,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8168,10 +8192,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 8640,
-                    "end": 8645,
+                    "commentStart": 8704,
+                    "end": 8709,
                     "moduleId": 0,
-                    "start": 8640,
+                    "start": 8704,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -8184,17 +8208,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 124,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8276,10 +8300,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 8409,
-            "end": 8414,
+            "commentStart": 8473,
+            "end": 8478,
             "moduleId": 0,
-            "start": 8409,
+            "start": 8473,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8300,10 +8324,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 8488,
-            "end": 8493,
+            "commentStart": 8552,
+            "end": 8557,
             "moduleId": 0,
-            "start": 8488,
+            "start": 8552,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8324,10 +8348,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 8565,
-            "end": 8570,
+            "commentStart": 8629,
+            "end": 8634,
             "moduleId": 0,
-            "start": 8565,
+            "start": 8629,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8348,10 +8372,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 8640,
-            "end": 8645,
+            "commentStart": 8704,
+            "end": 8709,
             "moduleId": 0,
-            "start": 8640,
+            "start": 8704,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8364,17 +8388,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 124,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8430,8 +8454,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "rearLeftCutout": {
@@ -8439,6 +8463,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8446,10 +8472,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3560,
-            "end": 3565,
+            "commentStart": 3624,
+            "end": 3629,
             "moduleId": 0,
-            "start": 3560,
+            "start": 3624,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8460,10 +8486,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3637,
-            "end": 3642,
+            "commentStart": 3701,
+            "end": 3706,
             "moduleId": 0,
-            "start": 3637,
+            "start": 3701,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8474,10 +8500,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3753,
-            "end": 3758,
+            "commentStart": 3817,
+            "end": 3822,
             "moduleId": 0,
-            "start": 3753,
+            "start": 3817,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8488,10 +8514,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3909,
-            "end": 3914,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3909,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8502,10 +8528,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4025,
-            "end": 4030,
+            "commentStart": 4089,
+            "end": 4094,
             "moduleId": 0,
-            "start": 4025,
+            "start": 4089,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8516,10 +8542,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4207,
+            "end": 4212,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4207,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8541,10 +8567,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3560,
-              "end": 3565,
+              "commentStart": 3624,
+              "end": 3629,
               "moduleId": 0,
-              "start": 3560,
+              "start": 3624,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8565,10 +8591,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3637,
-              "end": 3642,
+              "commentStart": 3701,
+              "end": 3706,
               "moduleId": 0,
-              "start": 3637,
+              "start": 3701,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -8589,10 +8615,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3753,
-              "end": 3758,
+              "commentStart": 3817,
+              "end": 3822,
               "moduleId": 0,
-              "start": 3753,
+              "start": 3817,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -8613,10 +8639,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 3909,
-              "end": 3914,
+              "commentStart": 3973,
+              "end": 3978,
               "moduleId": 0,
-              "start": 3909,
+              "start": 3973,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -8637,10 +8663,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4025,
-              "end": 4030,
+              "commentStart": 4089,
+              "end": 4094,
               "moduleId": 0,
-              "start": 4025,
+              "start": 4089,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -8661,10 +8687,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4207,
+              "end": 4212,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4207,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8677,17 +8703,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8751,8 +8777,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8765,6 +8791,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8772,10 +8800,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3560,
-            "end": 3565,
+            "commentStart": 3624,
+            "end": 3629,
             "moduleId": 0,
-            "start": 3560,
+            "start": 3624,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8786,10 +8814,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3637,
-            "end": 3642,
+            "commentStart": 3701,
+            "end": 3706,
             "moduleId": 0,
-            "start": 3637,
+            "start": 3701,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8800,10 +8828,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3753,
-            "end": 3758,
+            "commentStart": 3817,
+            "end": 3822,
             "moduleId": 0,
-            "start": 3753,
+            "start": 3817,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8814,10 +8842,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3909,
-            "end": 3914,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3909,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8828,10 +8856,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4025,
-            "end": 4030,
+            "commentStart": 4089,
+            "end": 4094,
             "moduleId": 0,
-            "start": 4025,
+            "start": 4089,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8842,10 +8870,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4207,
+            "end": 4212,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4207,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8867,10 +8895,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3560,
-              "end": 3565,
+              "commentStart": 3624,
+              "end": 3629,
               "moduleId": 0,
-              "start": 3560,
+              "start": 3624,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8891,10 +8919,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3637,
-              "end": 3642,
+              "commentStart": 3701,
+              "end": 3706,
               "moduleId": 0,
-              "start": 3637,
+              "start": 3701,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -8915,10 +8943,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3753,
-              "end": 3758,
+              "commentStart": 3817,
+              "end": 3822,
               "moduleId": 0,
-              "start": 3753,
+              "start": 3817,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -8939,10 +8967,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 3909,
-              "end": 3914,
+              "commentStart": 3973,
+              "end": 3978,
               "moduleId": 0,
-              "start": 3909,
+              "start": 3973,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -8963,10 +8991,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4025,
-              "end": 4030,
+              "commentStart": 4089,
+              "end": 4094,
               "moduleId": 0,
-              "start": 4025,
+              "start": 4089,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -8987,10 +9015,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4207,
+              "end": 4212,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4207,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -9003,17 +9031,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -9077,8 +9105,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -9091,6 +9119,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -9098,10 +9128,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9684,
-            "end": 9689,
+            "commentStart": 9748,
+            "end": 9753,
             "moduleId": 0,
-            "start": 9684,
+            "start": 9748,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9112,10 +9142,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9761,
-            "end": 9766,
+            "commentStart": 9825,
+            "end": 9830,
             "moduleId": 0,
-            "start": 9761,
+            "start": 9825,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9126,10 +9156,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9837,
-            "end": 9842,
+            "commentStart": 9901,
+            "end": 9906,
             "moduleId": 0,
-            "start": 9837,
+            "start": 9901,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9140,10 +9170,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9912,
-            "end": 9917,
+            "commentStart": 9976,
+            "end": 9981,
             "moduleId": 0,
-            "start": 9912,
+            "start": 9976,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9165,10 +9195,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 9684,
-              "end": 9689,
+              "commentStart": 9748,
+              "end": 9753,
               "moduleId": 0,
-              "start": 9684,
+              "start": 9748,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -9189,10 +9219,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 9761,
-              "end": 9766,
+              "commentStart": 9825,
+              "end": 9830,
               "moduleId": 0,
-              "start": 9761,
+              "start": 9825,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -9213,10 +9243,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 9837,
-              "end": 9842,
+              "commentStart": 9901,
+              "end": 9906,
               "moduleId": 0,
-              "start": 9837,
+              "start": 9901,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -9237,10 +9267,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 9912,
-              "end": 9917,
+              "commentStart": 9976,
+              "end": 9981,
               "moduleId": 0,
-              "start": 9912,
+              "start": 9976,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -9253,17 +9283,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 151,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -9319,8 +9349,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -9848,10 +9878,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 9684,
-                    "end": 9689,
+                    "commentStart": 9748,
+                    "end": 9753,
                     "moduleId": 0,
-                    "start": 9684,
+                    "start": 9748,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -9872,10 +9902,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 9761,
-                    "end": 9766,
+                    "commentStart": 9825,
+                    "end": 9830,
                     "moduleId": 0,
-                    "start": 9761,
+                    "start": 9825,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -9896,10 +9926,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 9837,
-                    "end": 9842,
+                    "commentStart": 9901,
+                    "end": 9906,
                     "moduleId": 0,
-                    "start": 9837,
+                    "start": 9901,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -9920,10 +9950,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 9912,
-                    "end": 9917,
+                    "commentStart": 9976,
+                    "end": 9981,
                     "moduleId": 0,
-                    "start": 9912,
+                    "start": 9976,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -9936,17 +9966,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 151,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -10028,10 +10058,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 9684,
-            "end": 9689,
+            "commentStart": 9748,
+            "end": 9753,
             "moduleId": 0,
-            "start": 9684,
+            "start": 9748,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -10052,10 +10082,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 9761,
-            "end": 9766,
+            "commentStart": 9825,
+            "end": 9830,
             "moduleId": 0,
-            "start": 9761,
+            "start": 9825,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -10076,10 +10106,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 9837,
-            "end": 9842,
+            "commentStart": 9901,
+            "end": 9906,
             "moduleId": 0,
-            "start": 9837,
+            "start": 9901,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -10100,10 +10130,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 9912,
-            "end": 9917,
+            "commentStart": 9976,
+            "end": 9981,
             "moduleId": 0,
-            "start": 9912,
+            "start": 9976,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -10116,17 +10146,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 151,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10182,8 +10212,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "taillightsBody": {
@@ -10194,6 +10224,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -10201,10 +10233,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15041,
-                "end": 15046,
+                "commentStart": 15079,
+                "end": 15084,
                 "moduleId": 0,
-                "start": 15041,
+                "start": 15079,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -10215,10 +10247,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15106,
-                "end": 15111,
+                "commentStart": 15144,
+                "end": 15149,
                 "moduleId": 0,
-                "start": 15106,
+                "start": 15144,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -10229,10 +10261,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15171,
-                "end": 15176,
+                "commentStart": 15209,
+                "end": 15214,
                 "moduleId": 0,
-                "start": 15171,
+                "start": 15209,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -10243,10 +10275,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15236,
-                "end": 15241,
+                "commentStart": 15274,
+                "end": 15279,
                 "moduleId": 0,
-                "start": 15236,
+                "start": 15274,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -10268,10 +10300,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   0.8299999963999997
                 ],
                 "tag": {
-                  "commentStart": 15041,
-                  "end": 15046,
+                  "commentStart": 15079,
+                  "end": 15084,
                   "moduleId": 0,
-                  "start": 15041,
+                  "start": 15079,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -10292,10 +10324,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   0.8299999939099995
                 ],
                 "tag": {
-                  "commentStart": 15106,
-                  "end": 15111,
+                  "commentStart": 15144,
+                  "end": 15149,
                   "moduleId": 0,
-                  "start": 15106,
+                  "start": 15144,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -10316,10 +10348,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 15171,
-                  "end": 15176,
+                  "commentStart": 15209,
+                  "end": 15214,
                   "moduleId": 0,
-                  "start": 15171,
+                  "start": 15209,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -10340,10 +10372,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 15236,
-                  "end": 15241,
+                  "commentStart": 15274,
+                  "end": 15279,
                   "moduleId": 0,
-                  "start": 15236,
+                  "start": 15274,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -10356,17 +10388,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 234,
+              "kind": "Custom",
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10422,8 +10454,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -10436,6 +10468,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -10453,10 +10487,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   0.8299999963999997
                 ],
                 "tag": {
-                  "commentStart": 15041,
-                  "end": 15046,
+                  "commentStart": 15079,
+                  "end": 15084,
                   "moduleId": 0,
-                  "start": 15041,
+                  "start": 15079,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -10477,10 +10511,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   0.8299999939099995
                 ],
                 "tag": {
-                  "commentStart": 15106,
-                  "end": 15111,
+                  "commentStart": 15144,
+                  "end": 15149,
                   "moduleId": 0,
-                  "start": 15106,
+                  "start": 15144,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -10501,10 +10535,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 15171,
-                  "end": 15176,
+                  "commentStart": 15209,
+                  "end": 15214,
                   "moduleId": 0,
-                  "start": 15171,
+                  "start": 15209,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -10525,10 +10559,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 15236,
-                  "end": 15241,
+                  "commentStart": 15274,
+                  "end": 15279,
                   "moduleId": 0,
-                  "start": 15236,
+                  "start": 15274,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -10541,17 +10575,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 234,
+              "kind": "Custom",
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10607,8 +10641,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -10659,8 +10693,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 234,
+      "kind": "Custom",
       "origin": {
         "x": 2100.0,
         "y": 0.0,
@@ -10706,10 +10740,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 0.8299999963999997
               ],
               "tag": {
-                "commentStart": 15041,
-                "end": 15046,
+                "commentStart": 15079,
+                "end": 15084,
                 "moduleId": 0,
-                "start": 15041,
+                "start": 15079,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -10730,10 +10764,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 0.8299999939099995
               ],
               "tag": {
-                "commentStart": 15106,
-                "end": 15111,
+                "commentStart": 15144,
+                "end": 15149,
                 "moduleId": 0,
-                "start": 15106,
+                "start": 15144,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -10754,10 +10788,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 15171,
-                "end": 15176,
+                "commentStart": 15209,
+                "end": 15214,
                 "moduleId": 0,
-                "start": 15171,
+                "start": 15209,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -10778,10 +10812,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 15236,
-                "end": 15241,
+                "commentStart": 15274,
+                "end": 15279,
                 "moduleId": 0,
-                "start": 15236,
+                "start": 15274,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -10794,17 +10828,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 234,
+            "kind": "Custom",
             "origin": {
               "x": 2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -10860,8 +10894,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       },
       {
@@ -10880,10 +10914,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 0.8299999963999997
               ],
               "tag": {
-                "commentStart": 15041,
-                "end": 15046,
+                "commentStart": 15079,
+                "end": 15084,
                 "moduleId": 0,
-                "start": 15041,
+                "start": 15079,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -10904,10 +10938,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 0.8299999939099995
               ],
               "tag": {
-                "commentStart": 15106,
-                "end": 15111,
+                "commentStart": 15144,
+                "end": 15149,
                 "moduleId": 0,
-                "start": 15106,
+                "start": 15144,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -10928,10 +10962,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 15171,
-                "end": 15176,
+                "commentStart": 15209,
+                "end": 15214,
                 "moduleId": 0,
-                "start": 15171,
+                "start": 15209,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -10952,10 +10986,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 15236,
-                "end": 15241,
+                "commentStart": 15274,
+                "end": 15279,
                 "moduleId": 0,
-                "start": 15236,
+                "start": 15274,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -10968,17 +11002,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
             }
           ],
           "on": {
+            "type": "plane",
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "kind": "Custom",
             "objectId": 234,
+            "kind": "Custom",
             "origin": {
               "x": 2100.0,
               "y": 0.0,
               "z": 0.0,
               "units": "mm"
             },
-            "type": "plane",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -11034,8 +11068,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
-          "units": "m"
+          "units": "m",
+          "isClosed": "explicitly"
         }
       }
     ]
@@ -11551,10 +11585,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.8299999963999997
                   ],
                   "tag": {
-                    "commentStart": 15041,
-                    "end": 15046,
+                    "commentStart": 15079,
+                    "end": 15084,
                     "moduleId": 0,
-                    "start": 15041,
+                    "start": 15079,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -11592,10 +11626,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.8299999939099995
                   ],
                   "tag": {
-                    "commentStart": 15106,
-                    "end": 15111,
+                    "commentStart": 15144,
+                    "end": 15149,
                     "moduleId": 0,
-                    "start": 15106,
+                    "start": 15144,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -11633,10 +11667,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.0699999957699997
                   ],
                   "tag": {
-                    "commentStart": 15171,
-                    "end": 15176,
+                    "commentStart": 15209,
+                    "end": 15214,
                     "moduleId": 0,
-                    "start": 15171,
+                    "start": 15209,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -11674,10 +11708,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     1.0699999961199997
                   ],
                   "tag": {
-                    "commentStart": 15236,
-                    "end": 15241,
+                    "commentStart": 15274,
+                    "end": 15279,
                     "moduleId": 0,
-                    "start": 15236,
+                    "start": 15274,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -11690,17 +11724,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 234,
+                "kind": "Custom",
                 "origin": {
                   "x": 2100.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -12768,10 +12802,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.3500000000000106
                   ],
                   "tag": {
-                    "commentStart": 3560,
-                    "end": 3565,
+                    "commentStart": 3624,
+                    "end": 3629,
                     "moduleId": 0,
-                    "start": 3560,
+                    "start": 3624,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -12792,10 +12826,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.8046633388240976
                   ],
                   "tag": {
-                    "commentStart": 3637,
-                    "end": 3642,
+                    "commentStart": 3701,
+                    "end": 3706,
                     "moduleId": 0,
-                    "start": 3637,
+                    "start": 3701,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -12816,10 +12850,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.8046633388241028
                   ],
                   "tag": {
-                    "commentStart": 3753,
-                    "end": 3758,
+                    "commentStart": 3817,
+                    "end": 3822,
                     "moduleId": 0,
-                    "start": 3753,
+                    "start": 3817,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -12840,10 +12874,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     0.3500000000000027
                   ],
                   "tag": {
-                    "commentStart": 3909,
-                    "end": 3914,
+                    "commentStart": 3973,
+                    "end": 3978,
                     "moduleId": 0,
-                    "start": 3909,
+                    "start": 3973,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -12864,10 +12898,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     -0.10466333882410354
                   ],
                   "tag": {
-                    "commentStart": 4025,
-                    "end": 4030,
+                    "commentStart": 4089,
+                    "end": 4094,
                     "moduleId": 0,
-                    "start": 4025,
+                    "start": 4089,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -12888,10 +12922,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                     -0.10466333882409189
                   ],
                   "tag": {
-                    "commentStart": 4143,
-                    "end": 4148,
+                    "commentStart": 4207,
+                    "end": 4212,
                     "moduleId": 0,
-                    "start": 4143,
+                    "start": 4207,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -12904,17 +12938,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 26,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -13005,6 +13039,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13012,12 +13048,26 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11911,
-                "end": 11918,
+                "commentStart": 11975,
+                "end": 11982,
                 "moduleId": 0,
-                "start": 11911,
+                "start": 11975,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 12060,
+                "end": 12067,
+                "moduleId": 0,
+                "start": 12060,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -13043,10 +13093,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11911,
-                  "end": 11918,
+                  "commentStart": 11975,
+                  "end": 11982,
                   "moduleId": 0,
-                  "start": 11911,
+                  "start": 11975,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13056,20 +13106,50 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.00000000015500000415114012,
+                  0.34999999987999997
+                ],
+                "from": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "radius": 0.175000000005,
+                "tag": {
+                  "commentStart": 12060,
+                  "end": 12067,
+                  "moduleId": 0,
+                  "start": 12060,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13117,8 +13197,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13131,6 +13211,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13138,10 +13220,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11996,
-                "end": 12003,
+                "commentStart": 12060,
+                "end": 12067,
                 "moduleId": 0,
-                "start": 11996,
+                "start": 12060,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13169,10 +13251,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11996,
-                  "end": 12003,
+                  "commentStart": 12060,
+                  "end": 12067,
                   "moduleId": 0,
-                  "start": 11996,
+                  "start": 12060,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13185,17 +13267,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13243,8 +13325,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13262,6 +13344,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13269,12 +13353,26 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11911,
-                "end": 11918,
+                "commentStart": 11975,
+                "end": 11982,
                 "moduleId": 0,
-                "start": 11911,
+                "start": 11975,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 12060,
+                "end": 12067,
+                "moduleId": 0,
+                "start": 12060,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -13300,10 +13398,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11911,
-                  "end": 11918,
+                  "commentStart": 11975,
+                  "end": 11982,
                   "moduleId": 0,
-                  "start": 11911,
+                  "start": 11975,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13313,20 +13411,50 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.00000000015500000415114012,
+                  0.34999999987999997
+                ],
+                "from": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "radius": 0.175000000005,
+                "tag": {
+                  "commentStart": 12060,
+                  "end": 12067,
+                  "moduleId": 0,
+                  "start": 12060,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13374,8 +13502,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13388,6 +13516,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13395,10 +13525,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11996,
-                "end": 12003,
+                "commentStart": 12060,
+                "end": 12067,
                 "moduleId": 0,
-                "start": 11996,
+                "start": 12060,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13426,10 +13556,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11996,
-                  "end": 12003,
+                  "commentStart": 12060,
+                  "end": 12067,
                   "moduleId": 0,
-                  "start": 11996,
+                  "start": 12060,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13442,17 +13572,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13500,8 +13630,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13533,10 +13663,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "radius": 0.34999999997,
           "tag": {
-            "commentStart": 11911,
-            "end": 11918,
+            "commentStart": 11975,
+            "end": 11982,
             "moduleId": 0,
-            "start": 11911,
+            "start": 11975,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -13546,20 +13676,50 @@ description: Variables in memory after executing stylized-firetruck.kcl
           ],
           "type": "Circle",
           "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.00000000015500000415114012,
+            0.34999999987999997
+          ],
+          "from": [
+            0.17499999984999998,
+            0.34999999998
+          ],
+          "radius": 0.175000000005,
+          "tag": {
+            "commentStart": 12060,
+            "end": 12067,
+            "moduleId": 0,
+            "start": 12060,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.17499999984999998,
+            0.34999999998
+          ],
+          "type": "Circle",
+          "units": "m"
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 204,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -13607,8 +13767,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "wheelRearLeft": {
@@ -13619,6 +13779,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13626,12 +13788,26 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11911,
-                "end": 11918,
+                "commentStart": 11975,
+                "end": 11982,
                 "moduleId": 0,
-                "start": 11911,
+                "start": 11975,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 12060,
+                "end": 12067,
+                "moduleId": 0,
+                "start": 12060,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -13657,10 +13833,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11911,
-                  "end": 11918,
+                  "commentStart": 11975,
+                  "end": 11982,
                   "moduleId": 0,
-                  "start": 11911,
+                  "start": 11975,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13670,20 +13846,50 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.00000000015500000415114012,
+                  0.34999999987999997
+                ],
+                "from": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "radius": 0.175000000005,
+                "tag": {
+                  "commentStart": 12060,
+                  "end": 12067,
+                  "moduleId": 0,
+                  "start": 12060,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13731,8 +13937,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13745,6 +13951,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13752,10 +13960,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11996,
-                "end": 12003,
+                "commentStart": 12060,
+                "end": 12067,
                 "moduleId": 0,
-                "start": 11996,
+                "start": 12060,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13783,10 +13991,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11996,
-                  "end": 12003,
+                  "commentStart": 12060,
+                  "end": 12067,
                   "moduleId": 0,
-                  "start": 11996,
+                  "start": 12060,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13799,17 +14007,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13857,8 +14065,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13876,6 +14084,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13883,12 +14093,26 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11911,
-                "end": 11918,
+                "commentStart": 11975,
+                "end": 11982,
                 "moduleId": 0,
-                "start": 11911,
+                "start": 11975,
                 "type": "TagDeclarator",
                 "value": "circle1"
+              },
+              "type": "extrudeArc"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 12060,
+                "end": 12067,
+                "moduleId": 0,
+                "start": 12060,
+                "type": "TagDeclarator",
+                "value": "circle2"
               },
               "type": "extrudeArc"
             }
@@ -13914,10 +14138,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11911,
-                  "end": 11918,
+                  "commentStart": 11975,
+                  "end": 11982,
                   "moduleId": 0,
-                  "start": 11911,
+                  "start": 11975,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13927,20 +14151,50 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "type": "Circle",
                 "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "ccw": true,
+                "center": [
+                  -0.00000000015500000415114012,
+                  0.34999999987999997
+                ],
+                "from": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "radius": 0.175000000005,
+                "tag": {
+                  "commentStart": 12060,
+                  "end": 12067,
+                  "moduleId": 0,
+                  "start": 12060,
+                  "type": "TagDeclarator",
+                  "value": "circle2"
+                },
+                "to": [
+                  0.17499999984999998,
+                  0.34999999998
+                ],
+                "type": "Circle",
+                "units": "m"
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13988,8 +14242,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -14002,6 +14256,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -14009,10 +14265,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11996,
-                "end": 12003,
+                "commentStart": 12060,
+                "end": 12067,
                 "moduleId": 0,
-                "start": 11996,
+                "start": 12060,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -14040,10 +14296,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11996,
-                  "end": 12003,
+                  "commentStart": 12060,
+                  "end": 12067,
                   "moduleId": 0,
-                  "start": 11996,
+                  "start": 12060,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -14056,17 +14312,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 204,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14114,8 +14370,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "m"
+            "units": "m",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -14514,10 +14770,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   ],
                   "radius": 0.34999999997,
                   "tag": {
-                    "commentStart": 11911,
-                    "end": 11918,
+                    "commentStart": 11975,
+                    "end": 11982,
                     "moduleId": 0,
-                    "start": 11911,
+                    "start": 11975,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -14561,10 +14817,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
                   ],
                   "radius": 0.175000000005,
                   "tag": {
-                    "commentStart": 11996,
-                    "end": 12003,
+                    "commentStart": 12060,
+                    "end": 12067,
                     "moduleId": 0,
-                    "start": 11996,
+                    "start": 12060,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -14577,17 +14833,17 @@ description: Variables in memory after executing stylized-firetruck.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 204,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -14650,6 +14906,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -14657,12 +14915,26 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11911,
-            "end": 11918,
+            "commentStart": 11975,
+            "end": 11982,
             "moduleId": 0,
-            "start": 11911,
+            "start": 11975,
             "type": "TagDeclarator",
             "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 12060,
+            "end": 12067,
+            "moduleId": 0,
+            "start": 12060,
+            "type": "TagDeclarator",
+            "value": "circle2"
           },
           "type": "extrudeArc"
         }
@@ -14688,10 +14960,10 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "radius": 0.34999999997,
             "tag": {
-              "commentStart": 11911,
-              "end": 11918,
+              "commentStart": 11975,
+              "end": 11982,
               "moduleId": 0,
-              "start": 11911,
+              "start": 11975,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -14701,20 +14973,50 @@ description: Variables in memory after executing stylized-firetruck.kcl
             ],
             "type": "Circle",
             "units": "m"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.00000000015500000415114012,
+              0.34999999987999997
+            ],
+            "from": [
+              0.17499999984999998,
+              0.34999999998
+            ],
+            "radius": 0.175000000005,
+            "tag": {
+              "commentStart": 12060,
+              "end": 12067,
+              "moduleId": 0,
+              "start": 12060,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.17499999984999998,
+              0.34999999998
+            ],
+            "type": "Circle",
+            "units": "m"
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 204,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -14762,8 +15064,8 @@ description: Variables in memory after executing stylized-firetruck.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

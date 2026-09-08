@@ -89,7 +89,7 @@ cubeProfile = sketch(on = XY) {
   distance([line2.start, line2.end]) == 3mm
 }
 
-cube1 = extrude(region(point = [0mm, 0mm], sketch = cubeProfile), length = 3mm)
+cube1 = extrude(region(segments = [cubeProfile.line1, cubeProfile.line2]), length = 3mm)
 
 // Define a custom plane, into which a hole will be cut.
 customPlane = {

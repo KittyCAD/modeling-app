@@ -5,6 +5,31 @@ import { err } from '@src/lib/trap'
 // KCL string representation of default planes
 export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
 
+export function defaultPlaneNameToKcl(
+  plane: DefaultPlaneStr | keyof DefaultPlanes
+): DefaultPlaneStr {
+  switch (plane) {
+    case 'XY':
+    case 'xy':
+      return 'XY'
+    case 'XZ':
+    case 'xz':
+      return 'XZ'
+    case 'YZ':
+    case 'yz':
+      return 'YZ'
+    case '-XY':
+    case 'negXy':
+      return '-XY'
+    case '-XZ':
+    case 'negXz':
+      return '-XZ'
+    case '-YZ':
+    case 'negYz':
+      return '-YZ'
+  }
+}
+
 export function defaultPlaneStrToKey(
   plane: DefaultPlaneStr
 ): keyof DefaultPlanes | Error {

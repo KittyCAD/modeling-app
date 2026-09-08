@@ -1,8 +1,25 @@
 // We do use all the classes in this file currently, but we
 // index into them with styles[position], which CSS Modules doesn't pick up.
 
-import { useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useRef } from 'react'
 import styles from './Tooltip.module.css'
+
+export const RICH_TOOLTIP_SURFACE_CLASS_NAME =
+  '!text-left text-wrap !text-xs !p-0 !pb-2 flex !w-72 flex-col items-stretch'
+
+type TooltipSurfaceProps = React.ComponentPropsWithoutRef<'div'>
+
+export const TooltipSurface = forwardRef<HTMLDivElement, TooltipSurfaceProps>(
+  function TooltipSurface({ className = '', ...props }, ref) {
+    return (
+      <div
+        ref={ref}
+        className={`rounded ${styles.tooltip} ${className}`}
+        {...props}
+      />
+    )
+  }
+)
 
 type TopOrBottom = 'top' | 'bottom'
 type LeftOrRight = 'left' | 'right'
@@ -162,9 +179,7 @@ export default function Tooltip({
       )}
       {...rest}
     >
-      <div className={`rounded ${styles.tooltip} ${contentClassName || ''}`}>
-        {children}
-      </div>
+      <TooltipSurface className={contentClassName}>{children}</TooltipSurface>
     </div>
   )
 }

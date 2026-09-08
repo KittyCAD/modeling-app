@@ -3,6 +3,10 @@ import { uuidv4 } from '@src/lib/utils'
 import { TEST_CODE_GIZMO } from '@e2e/playwright/storageStates'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
   const cases = [
