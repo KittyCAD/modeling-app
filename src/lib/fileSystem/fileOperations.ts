@@ -3,7 +3,6 @@ import {
   fileNameCandidate,
 } from '@src/lib/fileSystem/fileNames'
 import {
-  type DirectoryEntry,
   type FileStat,
   FileSystem,
   type FileSystemError,
@@ -78,7 +77,7 @@ export interface FileOperationsService {
   /** Read a stable snapshot of a directory's immediate membership. */
   readonly readDirectory: (
     path: string
-  ) => Effect.Effect<readonly DirectoryEntry[], FileSystemError>
+  ) => Effect.Effect<readonly string[], FileSystemError>
   /** Read one complete version of a file coordinated with path mutations. */
   readonly readFile: (
     path: string
@@ -510,7 +509,6 @@ export const rename = (source: string, destination: string) =>
 // Keep one canonical definition for filesystem values and failures while
 // exposing them through the application-facing capability.
 export {
-  type DirectoryEntry,
   FileAlreadyExists,
   FileIoFailure,
   type FileKind,
