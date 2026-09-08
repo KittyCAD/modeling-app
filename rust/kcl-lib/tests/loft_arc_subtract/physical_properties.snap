@@ -6,13 +6,13 @@ description: Physical properties loft_arc_subtract.kcl
   "bounding_box": {
     "center": {
       "x": 0.0,
-      "y": -4.5,
-      "z": 0.0
+      "y": -4.95,
+      "z": -1.743895694544268
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 11.0,
-      "z": 100.0
+      "x": 10.0,
+      "y": 10.1,
+      "z": 3.487791389088539
     },
     "unit": "mm"
   },
