@@ -345,7 +345,7 @@ describe('Effect filesystem operations', () => {
     const read = runtime.operations.readDirectory(root)
     setTimeout(finishCreate.open, 0)
 
-    await expect(read).resolves.toEqual([{ name: 'parts', kind: 'directory' }])
+    await expect(read).resolves.toEqual(['parts'])
     await create
     expect(events).toEqual(['create:start', 'create:end', 'read-directory'])
   })
@@ -633,9 +633,9 @@ describe('Effect filesystem operations', () => {
       nodeFileSystem.impl.join(root, 'untitled-2'),
     ])
     await expect(runtime.operations.readDirectory(root)).resolves.toEqual([
-      { name: 'untitled', kind: 'directory' },
-      { name: 'untitled-1', kind: 'directory' },
-      { name: 'untitled-2', kind: 'directory' },
+      'untitled',
+      'untitled-1',
+      'untitled-2',
     ])
   })
 
