@@ -1207,7 +1207,6 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
 
     const disposeThumbnails = effect(() => {
       const service = cloudSync.value
-      const operations = fileOperations.value
       const status = cloudSyncStatus.value
 
       if (!service || !status.enabled) {
@@ -1264,6 +1263,7 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
     // Visibility changes must not reread metadata or compare local manifests.
     const disposeMetadata = effect(() => {
       const service = cloudSync.value
+      const operations = fileOperations.value
       const status = cloudSyncStatus.value
       const nextLoadId = ++loadId
 
