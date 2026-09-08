@@ -5,13 +5,13 @@ description: Physical properties ball-bearing.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
+      "x": -0.00000000006350120429488014,
       "y": 0.0,
       "z": 0.0
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 100.0,
+      "x": 49.52999999984759,
+      "y": 49.52999999984759,
       "z": 12.389208878470034
     },
     "unit": "mm"
