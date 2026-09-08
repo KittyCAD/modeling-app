@@ -1,47 +1,10 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // See zookeeper/text_to_cad/zookeeper_magic_bypass.py
 const ZK_MOCK_REPLY_MARKER =
   'ZOO_MAGIC_STRING_TRIGGER_MOCK_REPLY_D39D279C6F84FA63AD49364FDEFB4A27D0E15BA7FB0975D4D6E003A8A594E460'
 const ZOOKEEPER_TEST_TAGS = ['@desktop', '@web', '@zookeeper']
-const ZOOKEEPER_SESSION_KEY = '__zookeeperSessionBeforePaneClose'
-
-async function rememberZookeeperSession(page: Page) {
-  await page.waitForFunction(
-    (key) => {
-      const actor = window.app.debug.zookeeperManagerActor
-      const snapshot = actor?.getSnapshot()
-      const webSocket = snapshot?.context.ws
-      if (
-        snapshot?.matches('ready' as never) !== true ||
-        webSocket?.readyState !== WebSocket.OPEN
-      ) {
-        return false
-      }
-      Reflect.set(window, key, [actor, webSocket])
-      return true
-    },
-    ZOOKEEPER_SESSION_KEY,
-    { timeout: 60_000 }
-  )
-}
-
-async function expectZookeeperSessionUnchanged(page: Page) {
-  expect(
-    await page.evaluate((key) => {
-      const actor = window.app.debug.zookeeperManagerActor
-      const webSocket = actor?.getSnapshot().context.ws
-      const before = Reflect.get(window, key)
-      return (
-        actor === before?.[0] &&
-        webSocket === before?.[1] &&
-        webSocket?.readyState === WebSocket.OPEN
-      )
-    }, ZOOKEEPER_SESSION_KEY)
-  ).toBe(true)
-}
 
 test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
   test('Happy path: new project, easy prompt, good result', async ({
@@ -53,10 +16,12 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     copilot,
   }) => {
     let holdResponses = false
+    let zookeeperConnectionCount = 0
     let releaseResponses: () => void = () => {
       throw new Error('Zookeeper WebSocket was not intercepted')
     }
     await page.routeWebSocket('**/ws/ml/copilot**', (client) => {
+      zookeeperConnectionCount += 1
       const bufferedMessages: Parameters<typeof client.send>[0][] = []
       const server = client.connectToServer()
       server.onMessage((message) => {
@@ -84,7 +49,7 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await copilot.setMode('fast')
       await copilot.conversationInput.fill(prompt)
-      await rememberZookeeperSession(page)
+      expect(zookeeperConnectionCount).toBe(1)
       holdResponses = true
       await copilot.submitButton.click()
       await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
@@ -99,20 +64,20 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       await expect(
         zookeeperPaneButton.locator('svg[aria-label="loading"]')
       ).toBeVisible()
-      await expectZookeeperSessionUnchanged(page)
+      expect(zookeeperConnectionCount).toBe(1)
       holdResponses = false
       releaseResponses()
       await expect(
         zookeeperPaneButton.locator('svg[aria-label="sparkles"]')
       ).toBeVisible({ timeout: 30_000 })
-      await expectZookeeperSessionUnchanged(page)
+      expect(zookeeperConnectionCount).toBe(1)
 
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(copilot.conversationInput).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
         timeout: 30_000,
       })
-      await expectZookeeperSessionUnchanged(page)
+      expect(zookeeperConnectionCount).toBe(1)
       expect(
         await page.getByTestId('ml-response-chat-bubble').isVisible()
       ).toBe(true)
@@ -121,7 +86,7 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
         timeout: 30_000,
       })
       await scene.settled()
-      await expectZookeeperSessionUnchanged(page)
+      expect(zookeeperConnectionCount).toBe(1)
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
 
       await toolbar.closePane(DefaultLayoutPaneID.Code)

@@ -30,9 +30,7 @@ import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptR
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import type { DebugRegistryService } from '@src/registry/contracts/debug'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
 
@@ -40,7 +38,6 @@ export interface ZookeeperSessionControllerDependencies {
   apiToken: string
   billing: BillingRegistryService
   conversationStore?: ZookeeperConversationStore
-  debug?: DebugRegistryService
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
@@ -131,9 +128,6 @@ class SessionController implements ZookeeperSessionController {
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
     this.actor = createZookeeperManagerActor(deps.apiToken)
-    if (IS_STAGING_OR_DEBUG) {
-      deps.debug?.set('zookeeperManagerActor', this.actor)
-    }
     this.history = new ZookeeperEditPatchHistory(deps.kclManager)
     this.fileRequestProcessor = new ZookeeperFileRequestProcessor({
       getProject: () => this.getProject(),
@@ -421,9 +415,6 @@ class SessionController implements ZookeeperSessionController {
       })
     }
     zookeeperPromptRunningSignal.value = false
-    if (IS_STAGING_OR_DEBUG) {
-      this.deps.debug?.clear('zookeeperManagerActor', this.actor)
-    }
     this.history.finishPending()
     const workerDisposal = this.fileRequestProcessor
       .dispose()

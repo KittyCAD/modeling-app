@@ -25,10 +25,6 @@ import {
   authService,
 } from '@src/registry/contracts/auth'
 import { billingService } from '@src/registry/contracts/billing'
-import {
-  type DebugRegistryService,
-  debugService,
-} from '@src/registry/contracts/debug'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
 import {
   type ProjectSessionService,
@@ -56,7 +52,6 @@ type ZookeeperRuntime = ReturnType<typeof createZookeeperRuntime>
 type ZookeeperRuntimeServices = {
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
-  debug?: ReadonlySignal<DebugRegistryService | undefined>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
   systemIO: ReadonlySignal<SystemIORegistryService | undefined>
@@ -215,7 +210,6 @@ export function createZookeeperRuntime(
 
     const auth = services.auth.value
     const billing = services.billing.value
-    const debug = services.debug?.value
     const settings = services.settings.value
     const systemIO = services.systemIO.value
     const project = currentZdsProject.value
@@ -306,7 +300,6 @@ export function createZookeeperRuntime(
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
           billing,
-          debug,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,
@@ -419,7 +412,6 @@ export const zookeeperPaneRuntimeRegistryItem = defineRegistryItemFactory(
     const runtime = createZookeeperRuntime({
       auth: ctx.services.signal(authService),
       billing: ctx.services.signal(billingService),
-      debug: ctx.services.signal(debugService),
       projectSession: ctx.services.signal(projectSession),
       settings: ctx.services.signal(settingsService),
       systemIO: ctx.services.signal(systemIOService),
