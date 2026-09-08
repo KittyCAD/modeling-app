@@ -1,5 +1,5 @@
 /// ```kcl
 /// x = operation::facing()
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, experimental = true, feature_tree = false)
 export fn facing(@solid: Solid, toolDiameter: number(Length), stepOver: number): number(_) {}

@@ -26,14 +26,6 @@ use kittycad_modeling_cmds::{ModelingCmd, websocket::ModelingCmdReq};
 pub struct Move {
     end: Point3d<f32>,
     point: Option<Point3d<f32>>,
-    trajectory: Trajectory,
-}
-
-#[derive(Debug)]
-pub enum Trajectory {
-    Linear,
-    CircularCw,
-    CircularCcw,
 }
 
 pub fn s_curve(
@@ -65,7 +57,6 @@ pub fn s_curve(
 
     // Push origin
     moves.push(Move {
-        trajectory: Trajectory::Linear,
         end: Point3d {
             x: start_point.x,
             y: start_point.y,
@@ -93,7 +84,6 @@ pub fn s_curve(
             let arc_middle_y = start_point.y + (direction.y * (part_height + overhang + overhang + diff_of_x_rows));
 
             moves.push(Move {
-                trajectory: Trajectory::Linear,
                 end: Point3d {
                     x: x,
                     y: end_y,
@@ -104,7 +94,6 @@ pub fn s_curve(
 
             if i < interval - 1 {
                 moves.push(Move {
-                    trajectory: Trajectory::CircularCw,
                     point: Some(Point3d {
                         x: x_row + diff_of_x_rows,
                         y: arc_middle_y,
@@ -120,8 +109,6 @@ pub fn s_curve(
         } else {
             // -Y
             let x = x_row;
-            let line_start_y = start_point.y;
-            let line_end_y = ((part_height + overhang + overhang) * direction.y) + start_point.y;
 
             // The move end needs to be in the direction going down.
             let y = start_point.y;
@@ -129,7 +116,6 @@ pub fn s_curve(
             let arc_middle_y = -diff_of_x_rows * direction.y + start_point.y;
 
             moves.push(Move {
-                trajectory: Trajectory::Linear,
                 end: Point3d {
                     x: x,
                     y: y,
@@ -139,7 +125,6 @@ pub fn s_curve(
             });
             if i < interval - 1 {
                 moves.push(Move {
-                    trajectory: Trajectory::CircularCcw,
                     point: Some(Point3d {
                         x: x + diff_of_x_rows,
                         y: arc_middle_y,
@@ -159,9 +144,6 @@ pub fn s_curve(
 }
 
 pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    #[cfg(target_arch = "wasm32")]
-    web_sys::console::log_1(&format!("Facing was called!").into());
-
     // Get the 3D Solid
     let solid: Solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
 
@@ -209,7 +191,7 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             let moves = s_curve(
                 part_width as f32,
                 part_height as f32,
-                tool_diameter.n as f32,
+                tool_diameter.to_mm() as f32,
                 origin,
                 direction,
                 step_over.n as f32,
