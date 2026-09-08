@@ -14,13 +14,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Spinner } from '@src/components/Spinner'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { BillingRegistryService } from '@src/lib/billing'
-import {
-  AreaType,
-  type AreaTypeComponentProps,
-  type Layout,
-  type LayoutService,
-  LayoutType,
-} from '@src/lib/layout/types'
+import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
 import type {
   ZookeeperSessionController,
   ZookeeperSessionControllerDependencies,
@@ -30,10 +24,7 @@ import {
   authService,
 } from '@src/registry/contracts/auth'
 import { billingService } from '@src/registry/contracts/billing'
-import {
-  layoutAreaLibraryValueSpec,
-  layoutService,
-} from '@src/registry/contracts/layout'
+import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
 import {
   type ProjectSessionService,
   projectSession,
@@ -60,7 +51,6 @@ type ZookeeperRuntime = ReturnType<typeof createZookeeperRuntime>
 type ZookeeperRuntimeServices = {
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
-  layout: ReadonlySignal<LayoutService | undefined>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
   systemIO: ReadonlySignal<SystemIORegistryService | undefined>
@@ -85,22 +75,6 @@ const loadZookeeperSessionController = () =>
   import('@src/lib/zookeeper/registry/controller')
 
 const CONTROLLER_LOAD_RETRY_DELAY_MS = 1_000
-
-export function hasOpenZookeeperPane(rootLayout: Layout | undefined): boolean {
-  if (!rootLayout) {
-    return false
-  }
-
-  if (rootLayout.type === LayoutType.Simple) {
-    return rootLayout.areaType === AreaType.Zookeeper
-  }
-
-  const children =
-    rootLayout.type === LayoutType.Panes
-      ? rootLayout.activeIndices.map((index) => rootLayout.children[index])
-      : rootLayout.children
-  return children.some(hasOpenZookeeperPane)
-}
 
 const pendingSessionDisposals = new Map<string, Promise<void>>()
 const pendingEditorDisposals = new WeakMap<KclManager, Promise<void>>()
@@ -235,7 +209,6 @@ export function createZookeeperRuntime(
 
     const auth = services.auth.value
     const billing = services.billing.value
-    const paneOpen = hasOpenZookeeperPane(services.layout.value?.signal.value)
     const settings = services.settings.value
     const systemIO = services.systemIO.value
     const project = currentZdsProject.value
@@ -261,11 +234,6 @@ export function createZookeeperRuntime(
       kclManager.path === executingFile?.path
     const apiToken = auth?.token.value ?? ''
     const isLoggedIn = auth?.isLoggedIn.value ?? false
-
-    if (!paneOpen) {
-      deactivate()
-      return
-    }
 
     if (
       activation &&
@@ -443,7 +411,6 @@ export const zookeeperPaneRuntimeRegistryItem = defineRegistryItemFactory(
     const runtime = createZookeeperRuntime({
       auth: ctx.services.signal(authService),
       billing: ctx.services.signal(billingService),
-      layout: ctx.services.signal(layoutService),
       projectSession: ctx.services.signal(projectSession),
       settings: ctx.services.signal(settingsService),
       systemIO: ctx.services.signal(systemIOService),

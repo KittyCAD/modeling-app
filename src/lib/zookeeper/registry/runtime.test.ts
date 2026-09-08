@@ -1,12 +1,6 @@
 import { signal } from '@preact/signals-core'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { BillingRegistryService } from '@src/lib/billing'
-import {
-  AreaType,
-  type Layout,
-  type LayoutService,
-  LayoutType,
-} from '@src/lib/layout/types'
 import type { FileEntry, Project } from '@src/lib/project'
 import type {
   ZookeeperSessionController,
@@ -21,27 +15,6 @@ import { describe, expect, it, vi } from 'vitest'
 
 const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'
 const otherProjectId = 'cba9f0c5-5552-4b50-af44-0fa6fb548a3b'
-
-function zookeeperPaneLayout(open = true): Layout {
-  return {
-    id: 'right-toolbar',
-    label: 'right-toolbar',
-    type: LayoutType.Panes,
-    side: 'inline-end',
-    activeIndices: open ? [0] : [],
-    sizes: [100],
-    splitOrientation: 'block',
-    children: [
-      {
-        id: 'zookeeper',
-        label: 'Zookeeper',
-        type: LayoutType.Simple,
-        areaType: AreaType.Zookeeper,
-        icon: 'sparkles',
-      },
-    ],
-  }
-}
 
 function deferred<T>() {
   let resolve!: (value: T) => void
@@ -86,11 +59,9 @@ function createProject(
 
 function createServices({
   apiToken = 'token',
-  paneOpen = true,
   projectPath = '/project',
 }: {
   apiToken?: string
-  paneOpen?: boolean
   projectPath?: string
 } = {}) {
   const token = signal(apiToken)
@@ -114,7 +85,6 @@ function createServices({
     },
     current: currentSettings,
   } as unknown as SettingsRegistryService
-  const layoutSignal = signal(zookeeperPaneLayout(paneOpen))
 
   return {
     currentProject,
@@ -122,15 +92,11 @@ function createServices({
     services: {
       auth: signal({ isLoggedIn, token } as AuthRegistryService),
       billing: signal({} as BillingRegistryService),
-      layout: signal({ signal: layoutSignal } as LayoutService),
       projectSession: signal(projectSession),
       settings: signal(settings),
       systemIO: signal({} as SystemIORegistryService),
     },
     isLoggedIn,
-    setPaneOpen: (open: boolean) => {
-      layoutSignal.value = zookeeperPaneLayout(open)
-    },
     setSettingsProject: (path: string, id: string) => {
       settingsProjectPath = path
       currentSettings.value = {
@@ -182,7 +148,7 @@ function createControllerLoader(
 }
 
 describe('Zookeeper runtime', () => {
-  it('starts while the pane is open once auth is hydrated', async () => {
+  it('starts without waiting for the pane once auth is hydrated', async () => {
     const { services, token } = createServices({ apiToken: '' })
     const { createZookeeperSessionController, loadController } =
       createControllerLoader()
@@ -202,78 +168,6 @@ describe('Zookeeper runtime', () => {
         projectPath: '/project',
       })
     )
-
-    await runtime.dispose()
-  })
-
-  it('waits for the pane and drains the old session before reopening', async () => {
-    const drain = deferred<undefined>()
-    const { services, setPaneOpen } = createServices({ paneOpen: false })
-    const { controllers, createZookeeperSessionController, loadController } =
-      createControllerLoader((index) =>
-        index === 0 ? drain.promise : Promise.resolve()
-      )
-    const runtime = createZookeeperRuntime(services, loadController)
-
-    await Promise.resolve()
-    expect(loadController).not.toHaveBeenCalled()
-
-    setPaneOpen(true)
-    await vi.waitFor(() => {
-      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
-    })
-    expect(runtime.session.value).toBe(controllers[0]?.controller)
-
-    setPaneOpen(false)
-    await vi.waitFor(() => {
-      expect(controllers[0]?.dispose).toHaveBeenCalledOnce()
-    })
-    expect(runtime.session.value).toBeUndefined()
-
-    setPaneOpen(true)
-    await Promise.resolve()
-    expect(createZookeeperSessionController).toHaveBeenCalledOnce()
-
-    drain.resolve(undefined)
-    await vi.waitFor(() => {
-      expect(createZookeeperSessionController).toHaveBeenCalledTimes(2)
-    })
-    expect(runtime.session.value).toBe(controllers[1]?.controller)
-
-    await runtime.dispose()
-  })
-
-  it('does not create a stale controller if the pane closes during loading', async () => {
-    const { services, setPaneOpen } = createServices()
-    const controllerModule = deferred<{
-      createZookeeperSessionController: (
-        deps: ZookeeperSessionControllerDependencies
-      ) => ZookeeperSessionController
-    }>()
-    const staleFactory = vi.fn(
-      (deps: ZookeeperSessionControllerDependencies) =>
-        createController(deps.projectPath).controller
-    )
-    const freshController = createController('/project')
-    const freshFactory = vi.fn(() => freshController.controller)
-    const loadController = vi
-      .fn()
-      .mockReturnValueOnce(controllerModule.promise)
-      .mockResolvedValue({ createZookeeperSessionController: freshFactory })
-    const runtime = createZookeeperRuntime(services, loadController)
-
-    await vi.waitFor(() => expect(loadController).toHaveBeenCalledOnce())
-    setPaneOpen(false)
-    controllerModule.resolve({ createZookeeperSessionController: staleFactory })
-    await Promise.resolve()
-    await Promise.resolve()
-
-    expect(staleFactory).not.toHaveBeenCalled()
-    expect(runtime.session.value).toBeUndefined()
-
-    setPaneOpen(true)
-    await vi.waitFor(() => expect(freshFactory).toHaveBeenCalledOnce())
-    expect(runtime.session.value).toBe(freshController.controller)
 
     await runtime.dispose()
   })

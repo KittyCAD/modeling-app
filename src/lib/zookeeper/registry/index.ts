@@ -4,10 +4,8 @@ import {
   provide,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
-import {
-  hasOpenZookeeperPane,
-  zookeeperPaneRuntimeRegistryItem,
-} from '@src/lib/zookeeper/registry/runtime'
+import { AreaType, type Layout, LayoutType } from '@src/lib/layout/types'
+import { zookeeperPaneRuntimeRegistryItem } from '@src/lib/zookeeper/registry/runtime'
 import { layoutService } from '@src/registry/contracts/layout'
 import {
   nullableStatusBarItem,
@@ -29,6 +27,22 @@ const ZookeeperCreditsStatusBarItem = () =>
     { fallback: null },
     createElement(ZookeeperCreditsMenu)
   )
+
+function hasOpenZookeeperPane(rootLayout: Layout | undefined): boolean {
+  if (!rootLayout) {
+    return false
+  }
+
+  if (rootLayout.type === LayoutType.Simple) {
+    return rootLayout.areaType === AreaType.Zookeeper
+  }
+
+  const children =
+    rootLayout.type === LayoutType.Panes
+      ? rootLayout.activeIndices.map((index) => rootLayout.children[index])
+      : rootLayout.children
+  return children.some(hasOpenZookeeperPane)
+}
 
 const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
   const layout = ctx.services.signal(layoutService)
