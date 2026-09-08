@@ -337,14 +337,14 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).setOpenedProject(
       project
         ? {
-          projectPath: project.path,
-          ...(project.libraryPath
-            ? { libraryPath: project.libraryPath }
-            : {}),
-          ...(project.libraryType
-            ? { libraryType: project.libraryType }
-            : {}),
-        }
+            projectPath: project.path,
+            ...(project.libraryPath
+              ? { libraryPath: project.libraryPath }
+              : {}),
+            ...(project.libraryType
+              ? { libraryType: project.libraryType }
+              : {}),
+          }
         : undefined
     )
   }
@@ -860,10 +860,10 @@ export class App implements AppSubsystems {
       this.singletons.kclManager.updateTheme(newTheme),
       ...(this.singletons.kclManager.engineCommandManager.connection?.connected
         ? [
-          this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
-            newBackfaceColor
-          ),
-        ]
+            this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
+              newBackfaceColor
+            ),
+          ]
         : []),
     ]).catch(reportRejection)
 
