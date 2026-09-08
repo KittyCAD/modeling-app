@@ -360,14 +360,35 @@ export class App implements AppSubsystems {
     )
   }
 
-  async openProject(projectIORef: Project) {
-    this.disposeProjectHistoryExtensions?.()
+  private fileRouteLoadGeneration = 0
+
+  beginFileRouteLoad(signal: AbortSignal) {
+    const generation = ++this.fileRouteLoadGeneration
+    return () => {
+      if (signal.aborted || generation !== this.fileRouteLoadGeneration) {
+        // React Router models cancelled loaders as rejected AbortErrors.
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new DOMException('Superseded file route load', 'AbortError')
+      }
+    }
+  }
+
+  async openProject(
+    projectIORef: Project,
+    assertCurrent: () => void = () => {}
+  ) {
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
     )
+    assertCurrent()
+
     const projectIORefSignal = signal(ownedProject)
-    this.project = await ZDSProject.open(projectIORefSignal, this)
+    const nextProject = await ZDSProject.open(projectIORefSignal, this)
+    assertCurrent()
+
+    this.disposeProjectHistoryExtensions?.()
+    this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
