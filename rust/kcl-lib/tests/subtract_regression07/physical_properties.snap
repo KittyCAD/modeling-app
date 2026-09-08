@@ -7,12 +7,12 @@ description: Physical properties subtract_regression07.kcl
     "center": {
       "x": 0.0,
       "y": 0.0,
-      "z": 0.7937500000000002
+      "z": 0.11112500000000124
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 100.0,
-      "z": 11.1125
+      "x": 8.79884448,
+      "y": 7.619999999999999,
+      "z": 9.74725
     },
     "unit": "mm"
   },

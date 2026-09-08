@@ -12,6 +12,7 @@ import type { MlCopilotModeId } from '@src/lib/zookeeper/zookeeperManagerMachine
 import {
   hasBeenInterruptedOnLast,
   ZookeeperManagerStates,
+  ZookeeperManagerTransitions,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { S } from '@src/machines/utils'
@@ -78,6 +79,9 @@ export const ZookeeperConversationPane = (props: {
     actor,
     (snapshot) => snapshot.context.attachmentsLoadedForCurrentPrompt
   )
+  const attachmentFetches = useSelector(actor, (snapshot) => {
+    return snapshot.context.attachmentFetches
+  })
   const defaultMode = useSelector(actor, (snapshot) => {
     return snapshot.context.defaultMode
   })
@@ -155,6 +159,13 @@ export const ZookeeperConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
+      attachmentFetches={attachmentFetches}
+      onFetchAttachment={(attachmentRef) => {
+        actor.send({
+          type: ZookeeperManagerTransitions.AttachmentFetch,
+          attachmentRef,
+        })
+      }}
       welcomeMessage={<ZookeeperConversationWelcome />}
       onProcess={(prompt, mode, attachments) => {
         controller.sendOrQueue(prompt, mode, attachments)

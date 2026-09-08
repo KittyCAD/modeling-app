@@ -25,8 +25,12 @@ import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/con
 import type {
   Conversation,
   MlCopilotModeOption,
+  ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import { ZookeeperManagerStates } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  ZookeeperManagerStates,
+  ZookeeperManagerTransitions,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -64,6 +68,7 @@ type FakeSnapshot = {
   value: string
   context: {
     abruptlyClosed: boolean
+    attachmentFetches: Record<string, ZookeeperAttachmentFetchState>
     attachmentsLoadedForCurrentPrompt: boolean
     awaitingResponse: boolean
     accessDeniedCode?: 'payment_method_failed'
@@ -91,6 +96,7 @@ const createFakeActor = (
     value: nextValue,
     context: {
       abruptlyClosed: false,
+      attachmentFetches: {},
       attachmentsLoadedForCurrentPrompt: true,
       awaitingResponse: false,
       setupFailed: false,
@@ -223,6 +229,9 @@ beforeEach(() => {
 
 describe('ZookeeperConversationPane', () => {
   test('maps actor state, controller signals, and visual context to the conversation', () => {
+    const attachmentFetches = {
+      'prompt:0:0': { status: 'loading' as const },
+    }
     const queuedMessage: QueuedMessage = {
       id: 'queued-message',
       text: 'add a fillet',
@@ -240,6 +249,7 @@ describe('ZookeeperConversationPane', () => {
     ]
     const fake = createFakeController({
       actorContext: {
+        attachmentFetches,
         attachmentsLoadedForCurrentPrompt: false,
         accessDeniedCode: 'payment_method_failed',
         awaitingResponse: true,
@@ -279,6 +289,7 @@ describe('ZookeeperConversationPane', () => {
 
     const props = latestConversationProps()
     expect(props.conversation).toBe(completedConversation)
+    expect(props.attachmentFetches).toBe(attachmentFetches)
     expect(props.isLoading).toBe(false)
     expect(props.isLoadingAttachments).toBe(true)
     expect(props.contexts).toEqual([
@@ -367,8 +378,16 @@ describe('ZookeeperConversationPane', () => {
     )
     const props = latestConversationProps()
     const attachment = new File(['model'], 'model.kcl')
+    const attachmentRef = {
+      prompt_id: '00000000-0000-4000-8000-000000000001',
+      seq: 3,
+      index: 1,
+      content_hash:
+        'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    }
 
     props.onProcess('make a cylinder', 'edit', [attachment])
+    props.onFetchAttachment?.(attachmentRef)
     props.onClickClearChat()
     props.onReconnect()
     props.onCheckBilling?.()
@@ -381,6 +400,10 @@ describe('ZookeeperConversationPane', () => {
     expect(fake.sendOrQueue).toHaveBeenCalledWith('make a cylinder', 'edit', [
       attachment,
     ])
+    expect(fake.actor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.AttachmentFetch,
+      attachmentRef,
+    })
     expect(fake.clearConversation).toHaveBeenCalledOnce()
     expect(fake.reconnect).toHaveBeenCalledOnce()
     expect(fake.checkBillingAccess).toHaveBeenCalledOnce()
