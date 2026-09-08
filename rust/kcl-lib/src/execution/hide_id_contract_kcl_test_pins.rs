@@ -126,7 +126,9 @@ impl ObservedIds {
 }
 
 async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf>) -> ObservedIds {
-    let ctx = crate::test_server::new_context(true, current_file).await.unwrap();
+    let ctx = crate::test_server::new_context_geo_only(true, current_file)
+        .await
+        .unwrap();
     let program = crate::Program::parse_no_errs(code).unwrap();
     let mut exec_state = ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await.unwrap();

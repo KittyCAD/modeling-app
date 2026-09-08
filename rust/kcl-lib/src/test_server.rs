@@ -23,22 +23,9 @@ pub struct RequestBody {
     pub test_name: String,
 }
 
-/// Executes a kcl program and takes a snapshot of the result.
-/// This returns the bytes of the snapshot.
-pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> Result<image::DynamicImage, ExecError> {
-    let ctx = new_context(true, current_file).await?;
-    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program, None)
-        .await
-        .map(|(_, _, snap)| snap)
-        .map_err(|err| err.error);
-    ctx.close().await;
-    res
-}
-
 /// Executes a KCL program. Only returns success or error.
 pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
-    let ctx = new_context(true, current_file).await?;
+    let ctx = new_context_geo_only(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute(&ctx, program, None)
         .await
@@ -51,76 +38,145 @@ pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), Ex
 pub struct Snapshot3d {
     /// Bytes of the snapshot.
     pub image: image::DynamicImage,
-    /// Various GLTF files for the resulting export.
-    pub gltf: Vec<RawFile>,
+    /// Glb binary containing mesh and brep data
+    pub glb: Glb,
 }
 
-async fn export_gltf_if_requested<F, Fut>(request_gltf: bool, export: F) -> Result<Vec<RawFile>, KclError>
-where
-    F: FnOnce() -> Fut,
-    Fut: std::future::Future<Output = Result<Vec<RawFile>, KclError>>,
-{
-    if request_gltf { export().await } else { Ok(Vec::new()) }
+/// Execute the kcl and ask the engine to render an image
+/// 2d kcl files can't be exported for local render
+/// Fails if geometry_only = true
+pub async fn execute_locally_and_render_on_engine(
+    ctx: &ExecutorContext,
+    program: Program,
+    deprecation_version_override: Option<&str>,
+) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
+    let (exec_state, env_ref) = do_execute(ctx, program, deprecation_version_override).await?;
+    let snapshot_png_bytes = ctx
+        .prepare_snapshot()
+        .await
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?
+        .contents
+        .0;
+
+    // Decode the snapshot, return it.
+    let img = image::ImageReader::new(std::io::Cursor::new(snapshot_png_bytes))
+        .with_guessed_format()
+        .map_err(|e| ExecError::BadPng(e.to_string()))
+        .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?;
+
+    Ok((exec_state, env_ref, img))
 }
 
-/// Executes a kcl program and takes a snapshot of the result.
-pub async fn execute_and_snapshot_3d(
+/// Execute the kcl then export the resulting glb and CPU render an image locally
+/// cheaper than engine render since we can use the engine in geometry-only mode.
+pub async fn execute_export_and_render_locally(
+    ctx: &ExecutorContext,
+    program: Program,
+    deprecation_version_override: Option<&str>,
+) -> Result<(ExecState, EnvironmentRef, Snapshot3d), ExecErrorWithState> {
+    let (exec_state, env_ref) = do_execute(ctx, program, deprecation_version_override).await?;
+
+    // export glb
+    let glb_blob_files = match ctx
+        .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(
+            kittycad_modeling_cmds::format::gltf::export::Options::builder()
+                .storage(kittycad_modeling_cmds::format::gltf::export::Storage::Binary)
+                .build(),
+        ))
+        .await
+    {
+        Ok(f) => f,
+        Err(err) => {
+            // Close the context to avoid any resource leaks.
+            ctx.close().await;
+            return Err(ExecErrorWithState::new(
+                ExecError::BadExport(format!("Export failed: {err:?}")),
+                exec_state.clone(),
+                None,
+            ));
+        }
+    };
+    if glb_blob_files.len() != 1 {
+        return Err(ExecErrorWithState::new(
+            ExecError::BadExport(format!("Expected 1 glb file, found {}", glb_blob_files.len())),
+            exec_state,
+            None,
+        ));
+    }
+    let glb: Glb = glb_blob_files
+        .into_iter()
+        .next()
+        .unwrap_or_else(|| RawFile {
+            name: String::new(),
+            contents: vec![],
+        })
+        .into();
+    let image = glb_render::render(&glb.bytes)
+        .map_err(|e| ExecErrorWithState::new(ExecError::BadExport(e), exec_state.clone(), None))?;
+
+    let snap_3d = Snapshot3d { image, glb };
+    Ok((exec_state, env_ref, snap_3d))
+}
+
+/// single-file binary blob containing mesh and brep
+pub struct Glb {
+    pub name: String,
+    pub bytes: Vec<u8>,
+}
+
+impl From<RawFile> for Glb {
+    fn from(value: RawFile) -> Self {
+        Glb {
+            name: value.name,
+            bytes: value.contents,
+        }
+    }
+}
+
+pub struct KclDocGraphics {
+    pub image: image::DynamicImage,
+    pub glb: Option<Glb>,
+}
+
+pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
-    request_gltf: bool,
-) -> Result<Snapshot3d, ExecError> {
-    let ctx = new_context(true, current_file).await?;
+    no_3d: bool,
+) -> Result<KclDocGraphics, ExecError> {
+    let ctx = new_context(true, current_file, !no_3d).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let image = do_execute_and_snapshot(&ctx, program, None)
-        .await
-        .map(|(_, _, snap)| snap)
-        .map_err(|err| err.error)?;
-    let gltf_res = export_gltf_if_requested(request_gltf, || {
-        ctx.export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
-    })
-    .await;
-    let gltf = match gltf_res {
-        Err(err) if err.message() == "Nothing to export" => Vec::new(),
-        Err(err) => {
-            eprintln!("Error exporting: {}", err.message());
-            Vec::new()
-        }
-        Ok(x) => x,
+
+    let graphical_result = match no_3d {
+        true => execute_locally_and_render_on_engine(&ctx, program, None)
+            .await
+            .map(|(_, _, image)| KclDocGraphics { image, glb: None })
+            .map_err(|err| err.error)?,
+        false => execute_export_and_render_locally(&ctx, program, None)
+            .await
+            .map(|(_, _, snap_3d)| KclDocGraphics {
+                image: snap_3d.image,
+                glb: Some(snap_3d.glb),
+            })
+            .map_err(|err| err.error)?,
     };
-    ctx.close().await;
-    Ok(Snapshot3d { image, gltf })
+    Ok(graphical_result)
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-#[cfg(test)]
-pub async fn execute_and_snapshot_ast(
-    ast: Program,
+pub async fn execute_and_snapshot_no3d(
+    code: &str,
     current_file: Option<PathBuf>,
-    with_export_step: bool,
-    deprecation_version_override: Option<&str>,
-) -> Result<
-    (
-        ExecState,
-        ExecutorContext,
-        EnvironmentRef,
-        image::DynamicImage,
-        Option<Vec<u8>>,
-    ),
-    ExecErrorWithState,
-> {
-    let result = execute_and_snapshot_ast_with_heartbeats(
-        ast,
-        current_file,
-        with_export_step,
-        deprecation_version_override,
-        None,
-    )
-    .await;
-    if let Ok((_, ctx, _, _, _)) = &result {
-        ctx.close().await;
-    }
-    result
+) -> Result<image::DynamicImage, ExecError> {
+    let ctx = new_context(true, current_file, false).await?;
+    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let res = execute_locally_and_render_on_engine(&ctx, program, None)
+        .await
+        .map(|(_, _, img)| img)
+        .map_err(|err| err.error);
+    ctx.close().await;
+    res
 }
 
 /// Executes a KCL program and takes a snapshot without closing the engine
@@ -130,84 +186,41 @@ pub async fn execute_and_snapshot_ast(
 pub async fn execute_and_snapshot_ast_no_close(
     ast: Program,
     current_file: Option<PathBuf>,
-    with_export_step: bool,
     deprecation_version_override: Option<&str>,
-) -> Result<
-    (
-        ExecState,
-        ExecutorContext,
-        EnvironmentRef,
-        image::DynamicImage,
-        Option<Vec<u8>>,
-    ),
-    ExecErrorWithState,
-> {
-    execute_and_snapshot_ast_with_heartbeats(
-        ast,
-        current_file,
-        with_export_step,
-        deprecation_version_override,
-        Some(5),
-    )
-    .await
+) -> Result<(ExecState, ExecutorContext, EnvironmentRef, Snapshot3d), ExecErrorWithState> {
+    execute_and_snapshot_ast_with_heartbeats(ast, current_file, deprecation_version_override, Some(5)).await
 }
 
 #[cfg(test)]
 async fn execute_and_snapshot_ast_with_heartbeats(
     ast: Program,
     current_file: Option<PathBuf>,
-    with_export_step: bool,
     deprecation_version_override: Option<&str>,
     heartbeats: Option<u64>,
-) -> Result<
-    (
-        ExecState,
-        ExecutorContext,
-        EnvironmentRef,
-        image::DynamicImage,
-        Option<Vec<u8>>,
-    ),
-    ExecErrorWithState,
-> {
-    let ctx = new_context_with_heartbeats(true, current_file, heartbeats).await?;
-    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast, deprecation_version_override).await {
-        Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
-        Err(err) => {
-            // If there was an error executing the program, return it.
-            // Close the context to avoid any resource leaks.
-            ctx.close().await;
-            return Err(err);
-        }
-    };
-    let mut step = None;
-    if with_export_step {
-        let files = match ctx.export_step(true).await {
-            Ok(f) => f,
+) -> Result<(ExecState, ExecutorContext, EnvironmentRef, Snapshot3d), ExecErrorWithState> {
+    let ctx = new_context_with_heartbeats(true, current_file, heartbeats, true).await?;
+    let (exec_state, env, snap_3d) =
+        match execute_export_and_render_locally(&ctx, ast, deprecation_version_override).await {
+            Ok((exec_state, env_ref, snap_3d)) => (exec_state, env_ref, snap_3d),
             Err(err) => {
+                // If there was an error executing the program, return it.
                 // Close the context to avoid any resource leaks.
                 ctx.close().await;
-                return Err(ExecErrorWithState::new(
-                    ExecError::BadExport(format!("Export failed: {err:?}")),
-                    exec_state.clone(),
-                    None,
-                ));
+                return Err(err);
             }
         };
-
-        step = files.into_iter().next().map(|f| f.contents);
-    }
-    Ok((exec_state, ctx, env, img, step))
+    Ok((exec_state, ctx, env, snap_3d))
 }
 
 pub async fn execute_and_snapshot_no_auth(
     code: &str,
     current_file: Option<PathBuf>,
 ) -> Result<(image::DynamicImage, EnvironmentRef), ExecError> {
-    let ctx = new_context(false, current_file).await?;
+    let ctx = new_context_geo_only(false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program, None)
+    let res = execute_export_and_render_locally(&ctx, program, None)
         .await
-        .map(|(_, env_ref, snap)| (snap, env_ref))
+        .map(|(_, env_ref, snap_3d)| (snap_3d.image, env_ref))
         .map_err(|err| err.error);
     ctx.close().await;
     res
@@ -247,37 +260,26 @@ async fn do_execute(
     Ok((exec_state, result.0))
 }
 
-async fn do_execute_and_snapshot(
-    ctx: &ExecutorContext,
-    program: Program,
-    deprecation_version_override: Option<&str>,
-) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
-    let (exec_state, env_ref) = do_execute(ctx, program, deprecation_version_override).await?;
-    let snapshot_png_bytes = ctx
-        .prepare_snapshot()
-        .await
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?
-        .contents
-        .0;
-
-    // Decode the snapshot, return it.
-    let img = image::ImageReader::new(std::io::Cursor::new(snapshot_png_bytes))
-        .with_guessed_format()
-        .map_err(|e| ExecError::BadPng(e.to_string()))
-        .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?;
-
-    Ok((exec_state, env_ref, img))
+pub async fn new_context_geo_only(
+    with_auth: bool,
+    current_file: Option<PathBuf>,
+) -> Result<ExecutorContext, ConnectionError> {
+    new_context_with_heartbeats(with_auth, current_file, None, true).await
 }
 
-pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Result<ExecutorContext, ConnectionError> {
-    new_context_with_heartbeats(with_auth, current_file, None).await
+pub async fn new_context(
+    with_auth: bool,
+    current_file: Option<PathBuf>,
+    geometry_only: bool,
+) -> Result<ExecutorContext, ConnectionError> {
+    new_context_with_heartbeats(with_auth, current_file, None, geometry_only).await
 }
 
 async fn new_context_with_heartbeats(
     with_auth: bool,
     current_file: Option<PathBuf>,
     heartbeats: Option<u64>,
+    geometry_only: bool,
 ) -> Result<ExecutorContext, ConnectionError> {
     let mut client = new_zoo_client(if with_auth { None } else { Some("bad_token".to_string()) }, None)
         .map_err(ConnectionError::CouldNotMakeClient)?;
@@ -299,6 +301,7 @@ async fn new_context_with_heartbeats(
         skip_artifact_graph: false,
         heartbeats,
         default_backface_color: Some("#00D5FF".to_owned()),
+        geometry_only,
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
@@ -320,7 +323,7 @@ pub async fn execute_and_export_step(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context(true, current_file).await?;
+    let ctx = new_context_geo_only(true, current_file).await?;
     let mut exec_state = ExecState::new(&ctx);
     let program = Program::parse_no_errs(code).map_err(|err| {
         ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone(), None)

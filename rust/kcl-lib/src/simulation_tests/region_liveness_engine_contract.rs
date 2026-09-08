@@ -182,7 +182,7 @@ fn argument_range(input: &str, call_prefix: &str) -> SourceRange {
 
 async fn execute_first_operation(file_name: &str) -> Result<(ExecutorContext, ExecState), ExecError> {
     let (path, _, program) = read_fixture(file_name);
-    let ctx = crate::test_server::new_context(true, Some(path)).await?;
+    let ctx = crate::test_server::new_context_geo_only(true, Some(path)).await?;
     let mut exec_state = ExecState::new(&ctx);
 
     if let Err(error) = ctx.run(&program, &mut exec_state).await {

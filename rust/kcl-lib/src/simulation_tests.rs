@@ -634,7 +634,7 @@ async fn unparse_test(test: &Test) {
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
-    execute_test(&Test::new(test_name), render_to_png, false).await
+    execute_test(&Test::new(test_name), render_to_png).await
 }
 
 async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
@@ -736,7 +736,7 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     }))
 }
 
-async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
+async fn execute_test(test: &Test, render_to_png: bool) {
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
@@ -759,14 +759,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
         crate::test_server::execute_and_snapshot_ast_no_close(
             ast.clone(),
             Some(test.entry_point.clone()),
-            export_step,
             test.expected_deprecation_warnings
                 .map(|_| KCL_SAMPLE_DEPRECATION_VERSION),
         )
     })
     .await;
     match exec_res {
-        Ok((exec_state, ctx, env_ref, png, step)) => {
+        Ok((exec_state, ctx, env_ref, snap_3d)) => {
             if let Some(expected_deprecation_warnings) = test.expected_deprecation_warnings {
                 let deprecation_warnings = exec_state
                     .issues()
@@ -797,8 +796,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     fail_path.to_string_lossy()
                 )
             }
+            // rendering to png means the model was exported with mesh and readable brep data.
             if render_to_png
-                && let Err(err) = twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99)
+                && let Err(err) =
+                    twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &snap_3d.image, 0.99)
             {
                 panic!(
                     "Image assertion failed: {err}; input KCL file: {}",
@@ -806,15 +807,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 );
             }
 
-            // Ensure the step has data.
-            if export_step {
-                let Some(step_contents) = step else {
-                    panic!("Step data was not generated");
-                };
-                if step_contents.is_empty() {
-                    panic!("Step data was empty");
-                }
-            }
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Execution success", || {
                     insta::assert_json_snapshot!("execution_success", ())
@@ -2612,6 +2604,27 @@ mod sketch_on_face_end_negative_extrude {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
+    }
+}
+mod mike_stress_test {
+    const TEST_NAME: &str = "mike_stress_test";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute_test(&super::Test::new(TEST_NAME).without_physical_properties(), true).await
     }
 }
 mod pentagon_fillet_sugar {
