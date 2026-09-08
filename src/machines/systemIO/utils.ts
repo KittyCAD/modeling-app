@@ -375,12 +375,14 @@ export const collectProjectFiles = async (args: {
       gitignoreStack: GitignoreStackEntry[]
     ) => {
       const entries = await args.fileOperations.readDirectory(path)
-      for (const { name: entry, kind } of entries) {
+      for (const entry of entries) {
         const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
         const relativePath = (
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
         ).replace(/\\/g, '/')
-        const isDirectory = kind === 'directory'
+        const isDirectory =
+          (await args.fileOperations.stat(absolutePathToFileNameWithExtension))
+            .kind === 'directory'
 
         if (
           isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)

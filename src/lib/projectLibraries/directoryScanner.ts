@@ -170,9 +170,7 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
       let renamed = false
       for (const [projectDirectoryPath, directoryProjects] of syncGroups) {
         const currentProjectDirectoryEntryNames = new Set(
-          (await fileOperations.readDirectory(projectDirectoryPath)).map(
-            ({ name }) => name
-          )
+          await fileOperations.readDirectory(projectDirectoryPath)
         )
 
         for (const project of directoryProjects) {
@@ -295,7 +293,7 @@ export async function readProjectsFromProjectDirectory({
 
   // Gotcha: readdir will list folders even without read/write access to the
   // parent directory path. Each candidate still needs to be stat/read checked.
-  for (const { name: entry, kind } of await fileOperations.readDirectory(
+  for (const entry of await fileOperations.readDirectory(
     projectDirectoryPath
   )) {
     if (signal?.aborted) {
@@ -318,7 +316,7 @@ export async function readProjectsFromProjectDirectory({
       }
       continue
     }
-    if (kind !== 'directory' || stat.kind !== 'directory') {
+    if (stat.kind !== 'directory') {
       continue
     }
 

@@ -43,15 +43,16 @@ export async function collectLocalProjectFilesForCloudSync({
   ) => {
     const entries = await fileOperations.readDirectory(currentPath)
     for (const entry of entries) {
-      if (isCloudSyncExcludedPath(entry.name)) {
+      if (isCloudSyncExcludedPath(entry)) {
         continue
       }
 
-      const absolutePath = fsZds.join(currentPath, entry.name)
+      const absolutePath = fsZds.join(currentPath, entry)
       const relativePath = normalizeRelativePath(
         fsZds.relative(projectRoot, absolutePath)
       )
-      const isDirectory = entry.kind === 'directory'
+      const isDirectory =
+        (await fileOperations.stat(absolutePath)).kind === 'directory'
       if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)) {
         continue
       }

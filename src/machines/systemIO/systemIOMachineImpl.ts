@@ -1003,7 +1003,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       )
 
       for (const entry of entries) {
-        if (entry.name === requestedFolderName) {
+        if (entry === requestedFolderName) {
           return Promise.reject(
             new ExpectedSystemIOError('Folder name already exists.')
           )

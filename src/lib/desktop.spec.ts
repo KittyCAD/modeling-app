@@ -10,11 +10,11 @@ import {
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
 } from '@src/lib/desktop'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { buildTheWorldNode } from '@src/unitTestUtils'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -141,14 +141,7 @@ describe('desktop utilities', () => {
     canReadWrite: async (path: string) =>
       (await mockElectron.canReadWriteDirectory(path)).value,
     exists: mockElectron.exists,
-    readDirectory: async (path: string) =>
-      (await mockElectron.readdir(path)).map((name: string) => ({
-        name,
-        kind:
-          webSafeJoin([path, name]) in mockFileSystem
-            ? ('directory' as const)
-            : ('file' as const),
-      })),
+    readDirectory: mockElectron.readdir,
     readFile: async (path: string) =>
       new TextEncoder().encode(await mockElectron.readFile(path)),
     writeFile: mockElectron.writeFile,

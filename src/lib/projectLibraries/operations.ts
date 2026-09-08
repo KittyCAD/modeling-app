@@ -31,9 +31,7 @@ async function getProjectDirectoryEntryNames(
   projectDirectoryPath: string
 ) {
   try {
-    return (await fileOperations.readDirectory(projectDirectoryPath)).map(
-      ({ name }) => name
-    )
+    return await fileOperations.readDirectory(projectDirectoryPath)
   } catch (error) {
     if (isPathNotFoundError(error)) {
       return []

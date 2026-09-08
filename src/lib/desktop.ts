@@ -417,9 +417,7 @@ export async function listProjects(
   }
 
   // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-  const entries = (await fileOperations.readDirectory(projectDir)).map(
-    (entry) => entry.name
-  )
+  const entries = await fileOperations.readDirectory(projectDir)
 
   const { value: canReadWriteProjectDirectory } = await canReadWriteDirectory(
     fileOperations,
@@ -508,9 +506,7 @@ const collectAllFilesRecursiveFrom = async (
 
   const children = []
 
-  const entries = (await fileOperations.readDirectory(targetPath)).map(
-    (entry) => entry.name
-  )
+  const entries = [...(await fileOperations.readDirectory(targetPath))]
 
   // Sort all entries so files come first and directories last
   // so a top-most KCL file is returned first.
@@ -1245,9 +1241,7 @@ export const listAllEnvironments = async (
   fileOperations: FileOperationsRegistryService
 ) => {
   const environmentFolder = await getEnvironmentConfigurationFolderPath()
-  const files = (await fileOperations.readDirectory(environmentFolder)).map(
-    (entry) => entry.name
-  )
+  const files = await fileOperations.readDirectory(environmentFolder)
   const suffix = '.json'
   return files
     .filter((fileName: string) => {
