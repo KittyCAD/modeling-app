@@ -58,9 +58,14 @@ test.afterEach(async ({ page }) => {
   await page.context().setOffline(false)
 })
 
-for (const failure of ['websocket', 'data-channel']) {
+for (const failure of [
+  'websocket-1000',
+  'websocket-1006',
+  'websocket-native',
+  'data-channel',
+]) {
   test(
-    `${failure} close preserves the scene throughout automatic reconnect`,
+    `${failure} close preserves the scene through recovery`,
     { tag: ['@web', '@skipLocalEngine'] },
     async ({ page, editor }, testInfo) => {
       await setIdleTimeout(page, 0)
@@ -71,6 +76,7 @@ for (const failure of ['websocket', 'data-channel']) {
         const start = manager.start.bind(manager)
         let held = false
         let resume = () => {}
+        let removeCloseListener = () => {}
         const pending = new Promise<void>((resolve) => {
           resume = resolve
         })
@@ -81,23 +87,55 @@ for (const failure of ['websocket', 'data-channel']) {
           return start(...args)
         }
         return {
-          close: (failure: string) => {
-            if (failure === 'websocket') connection.websocket!.close(1000)
-            else connection.unreliableDataChannel!.close()
+          close: async (failure: string, websocketClosedEvent: string) => {
+            if (failure === 'data-channel') {
+              connection.unreliableDataChannel!.close()
+              return null
+            }
+            const websocket = connection.websocket!
+            let closeCode: string | undefined
+            const onClose = (event: Event) => {
+              closeCode = (event as CustomEvent<{ code?: string }>).detail?.code
+            }
+            // A data-channel close can tear down the manager before the socket
+            // close arrives. Only the notification handled by the app counts.
+            manager.addEventListener(websocketClosedEvent, onClose)
+            removeCloseListener = () =>
+              manager.removeEventListener(websocketClosedEvent, onClose)
+            const closed = new Promise<void>((resolve) => {
+              websocket.addEventListener('close', () => resolve(), {
+                once: true,
+              })
+            })
+            if (failure === 'websocket-native') {
+              // The native handshake can report 1006 even after close(1000).
+              websocket.close(1000)
+            } else {
+              // Pin both recovery policies while exercising the real socket
+              // listener, manager teardown, and transport cleanup.
+              websocket.dispatchEvent(
+                new CloseEvent('close', {
+                  code: failure === 'websocket-1006' ? 1006 : 1000,
+                })
+              )
+            }
+            await closed
+            return closeCode
           },
           held: () => held,
           peerState: () => connection.peerConnection?.connectionState,
           resume: () => {
+            removeCloseListener()
             manager.start = start
             resume()
           },
         }
       })
       try {
-        await state.evaluate((state, failure) => state.close(failure), failure)
-        await expect
-          .poll(() => state.evaluate((state) => state.held()))
-          .toBe(true)
+        const closeCode = await state.evaluate(
+          (state, { failure, eventName }) => state.close(failure, eventName),
+          { failure, eventName: EngineConnectionManagerEvents.WebsocketClosed }
+        )
         await expect
           .poll(() => state.evaluate((state) => state.peerState()))
           .toBe('closed')
@@ -111,6 +149,18 @@ for (const failure of ['websocket', 'data-channel']) {
           }
         )
         expect(background).toBeGreaterThan(24)
+        if (closeCode === '1006') {
+          await expect(recovery(page)).toBeVisible()
+          expect(await state.evaluate((state) => state.held())).toBe(false)
+          await recovery(page)
+            .getByRole('button', { name: /Reconnect/ })
+            .click()
+        }
+        await expect
+          .poll(() => state.evaluate((state) => state.held()))
+          .toBe(true)
+        await expect(recovery(page)).not.toBeVisible()
+        await expect(freeze).toBeVisible()
         await page.screenshot({
           path: testInfo.outputPath(`${failure}-reconnecting.png`),
         })
