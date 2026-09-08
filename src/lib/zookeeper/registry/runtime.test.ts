@@ -207,6 +207,26 @@ describe('Zookeeper runtime', () => {
     await runtime.dispose()
   })
 
+  it('ignores incomplete project values until the session is ready', async () => {
+    const { currentProject, projectFixture, services } = createServices()
+    const { createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    currentProject.value = {} as ZDSProject
+    const runtime = createZookeeperRuntime(services, loadController)
+
+    await Promise.resolve()
+    expect(runtime.currentProject.value).toBeUndefined()
+    expect(loadController).not.toHaveBeenCalled()
+
+    currentProject.value = projectFixture.project
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+
+    await runtime.dispose()
+  })
+
   it('updates auth in place without replacing the controller', async () => {
     const { services, token } = createServices()
     const { controllers, createZookeeperSessionController, loadController } =

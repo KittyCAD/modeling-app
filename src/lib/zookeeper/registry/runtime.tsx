@@ -132,7 +132,7 @@ export function createZookeeperRuntime(
     () => services.projectSession.value?.project.value
   )
   const currentProject = computed(
-    () => currentZdsProject.value?.projectIORefSignal.value
+    () => currentZdsProject.value?.projectIORefSignal?.value
   )
   let activation: ZookeeperActivation | undefined
   let disposed = false
@@ -219,7 +219,7 @@ export function createZookeeperRuntime(
     const settings = services.settings.value
     const systemIO = services.systemIO.value
     const project = currentZdsProject.value
-    const projectRef = project?.projectIORefSignal.value
+    const projectRef = project?.projectIORefSignal?.value
     const projectPath = projectRef?.path
     const settingsProjectPath =
       settings?.actor.getSnapshot().context.currentProject?.path
@@ -232,8 +232,8 @@ export function createZookeeperRuntime(
       : activation?.projectPath === projectPath
         ? activation?.projectId
         : undefined
-    const kclManager = project?.executingEditor.value
-    const executingFile = project?.executingFileEntry.value
+    const kclManager = project?.executingEditor?.value
+    const executingFile = project?.executingFileEntry?.value
     const editorReady =
       kclManager !== null &&
       kclManager !== undefined &&
