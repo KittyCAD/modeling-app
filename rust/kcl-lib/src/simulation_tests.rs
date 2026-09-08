@@ -162,11 +162,16 @@ impl TestConfig {
     /// Panic if the file exists but was invalid, or some other IO error.
     fn from_file(test_dir: &Path) -> Option<Self> {
         let test_config_path = test_dir.join("config.toml");
-        let test_config_path_exists = std::fs::exists(&test_config_path).unwrap();
-        if !test_config_path_exists {
-            return None;
-        }
-        let config_str = std::fs::read_to_string(test_config_path).unwrap();
+        let config_str_res = std::fs::read_to_string(test_config_path);
+        let config_str = match config_str_res {
+            Ok(config_str) => config_str,
+            Err(e) => {
+                if e.kind() == std::io::ErrorKind::NotFound {
+                    return None;
+                }
+                panic!("Could not read file: {e}")
+            }
+        };
         let config: TestConfig = toml::from_str(&config_str).unwrap();
         Some(config)
     }
@@ -181,7 +186,7 @@ impl Test {
             name: name.to_owned(),
             entry_point: test_dir.clone().join("input.kcl"),
             input_dir: test_dir.clone(),
-            output_dir: test_dir.clone(),
+            output_dir: test_dir,
             skip_assert_artifact_graph: false,
             snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
@@ -721,6 +726,19 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
+    eprintln!("=========");
+    eprintln!("Running test {}", test.name);
+    if test.input_dir != test.output_dir {
+        eprintln!("\tInput dir: {}", test.input_dir.display());
+        eprintln!("\tOutput dir: {}", test.output_dir.display());
+    } else {
+        eprintln!("\t Test dir: {}", test.output_dir.display());
+    }
+    eprintln!(
+        "\t To accept changes to snapshots, run `just overwrite-sim-test {}`",
+        test.name
+    );
+    eprintln!("=========");
 
     // Run the program.
     let exec_res = execute_with_retries(&RetryConfig::default(), || {
