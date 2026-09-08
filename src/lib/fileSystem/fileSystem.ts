@@ -21,11 +21,6 @@ export interface FileStat {
   readonly createdAt: number
 }
 
-export interface DirectoryEntry {
-  readonly name: string
-  readonly kind: FileKind
-}
-
 export type FileSystemOperation =
   | 'access'
   | 'copy'
@@ -93,7 +88,7 @@ export interface FileSystemService {
   readonly exists: (path: string) => Effect.Effect<boolean, FileSystemError>
   readonly readDirectory: (
     path: string
-  ) => Effect.Effect<readonly DirectoryEntry[], FileSystemError>
+  ) => Effect.Effect<readonly string[], FileSystemError>
   readonly readFile: (
     path: string
   ) => Effect.Effect<Uint8Array, FileSystemError>
@@ -272,20 +267,7 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
     readFile,
     makeDirectory,
     readDirectory: (path) =>
-      tryBacking('read-directory', path, () => backing.readdir(path)).pipe(
-        Effect.flatMap((names) =>
-          Effect.forEach(
-            names,
-            (name) =>
-              stat(backing.join(path, name)).pipe(
-                Effect.map(
-                  (entry): DirectoryEntry => ({ name, kind: entry.kind })
-                )
-              ),
-            { concurrency: 'unbounded' }
-          )
-        )
-      ),
+      tryBacking('read-directory', path, () => backing.readdir(path)),
     copy: (source, destination, overwrite) =>
       tryBacking(
         'copy',

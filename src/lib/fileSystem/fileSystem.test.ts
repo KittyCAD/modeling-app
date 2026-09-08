@@ -58,7 +58,7 @@ describe('Effect filesystem capability', () => {
     })
   })
 
-  it('provides semantic stat and directory entries', async () => {
+  it('provides semantic stat and directory names', async () => {
     const source = nodeFileSystem.impl.join(root, 'main.kcl')
     const program = Effect.gen(function* () {
       yield* writeFile(source, new TextEncoder().encode('1234'))
@@ -90,8 +90,27 @@ describe('Effect filesystem capability', () => {
         changedAt: expect.any(Number),
         createdAt: expect.any(Number),
       },
-      entries: [{ name: 'main.kcl', kind: 'file' }],
+      entries: ['main.kcl'],
     })
+  })
+
+  it('lists names without requiring every entry to be stattable', async () => {
+    const readdir = vi
+      .fn<IZooDesignStudioFS['readdir']>()
+      .mockResolvedValue(['main.kcl', 'dangling-link'])
+    const stat = vi
+      .fn<IZooDesignStudioFS['stat']>()
+      .mockRejectedValue(new Error('ENOENT: dangling symbolic link'))
+    const fileSystem = makeFileSystem({
+      ...nodeFileSystem.impl,
+      readdir,
+      stat,
+    })
+
+    await expect(
+      Effect.runPromise(fileSystem.readDirectory(root))
+    ).resolves.toEqual(['main.kcl', 'dangling-link'])
+    expect(stat).not.toHaveBeenCalled()
   })
 
   it('distinguishes denied access from unexpected access failures', async () => {
