@@ -46,6 +46,7 @@ import {
   isOwnedLineSegment,
   isPointSegment,
   isRadiusConstraint,
+  pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   type ConstraintHoverPopup,
@@ -1571,15 +1572,21 @@ export function createOnDragCallback({
           })
       onUpdateDragSnapping(snappingCandidate)
 
-      const dragTarget =
-        snappingCandidate?.target.type === GRID_TARGET
-          ? new Vector2(...snappingCandidate.position)
-          : twoD
-
-      // Calculate drag vector from last successful drag point to current position
-      const dragVec = dragTarget.clone().sub(getLastSuccessfulDragFromPoint())
-
       const objects = sceneGraphDelta.new_graph.objects
+      const draggedObject =
+        entityUnderCursorId === null ? undefined : objects[entityUnderCursorId]
+      const isGridSnap = snappingCandidate?.target.type === GRID_TARGET
+      const dragTarget = isGridSnap
+        ? new Vector2(...snappingCandidate.position)
+        : twoD
+      // Grid snaps must translate selected owners and coincident points by the
+      // point's actual displacement, without retaining the initial cursor offset.
+      const dragFromPoint =
+        isGridSnap && isPointSegment(draggedObject)
+          ? new Vector2(...pointToCoords2d(draggedObject))
+          : getLastSuccessfulDragFromPoint()
+      const dragVec = dragTarget.clone().sub(dragFromPoint)
+
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
       // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)

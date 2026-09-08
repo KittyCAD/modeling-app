@@ -3399,6 +3399,116 @@ describe('createOnDragCallback', () => {
     )
   })
 
+  it.each(['Arc', 'Circle'])(
+    'keeps a selected %s and its dragged point aligned to the grid through release',
+    async (segmentType) => {
+      const center = createPointApiObject({ id: 1, x: 20, y: 10, owner: 4 })
+      const start = createPointApiObject({ id: 2, x: 30, y: 10, owner: 4 })
+      const end = createPointApiObject({ id: 3, x: 20, y: 20, owner: 4 })
+      const owner =
+        segmentType === 'Arc'
+          ? createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+          : createCircleApiObject({ id: 4, center: 1, start: 2 })
+      const apiObjects = [center, start, owner]
+      if (segmentType === 'Arc') {
+        apiObjects.push(end)
+      }
+      const {
+        onMouseDownSelection,
+        onDragStart,
+        onDrag,
+        onDragEnd,
+        rustContext,
+      } = setUpMoveToolCallbacks({
+        apiObjects,
+        hoveredId: 2,
+        selectedIds: [4],
+        snapToGrid: true,
+      })
+
+      const snappedCenter = createPointApiObject({
+        id: 1,
+        x: 20.25,
+        y: 10.5,
+        owner: 4,
+      })
+      const snappedStart = createPointApiObject({
+        id: 2,
+        x: 30.25,
+        y: 10.5,
+        owner: 4,
+      })
+      const snappedObjects = [
+        createSketchApiObject({ id: 0 }),
+        snappedCenter,
+        snappedStart,
+        owner,
+      ]
+      if (segmentType === 'Arc') {
+        snappedObjects.push(
+          createPointApiObject({
+            id: 3,
+            x: 20.25,
+            y: 20.5,
+            owner: 4,
+          })
+        )
+      }
+      rustContext.editSegments.mockResolvedValue({
+        kclSource: { text: 'snapped owner and point' },
+        sceneGraphDelta: createSceneGraphDelta(snappedObjects),
+        checkpointId: 123,
+      })
+
+      expect(onMouseDownSelection()).toBe(true)
+      // Drag start is reported after crossing the drag threshold, so its cursor
+      // position can differ from the point's actual position.
+      onDragStart({
+        intersectionPoint: {
+          twoD: new Vector2(30.1, 10),
+          threeD: new Vector3(30.1, 10, 0),
+        },
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
+      const dragArgs = {
+        intersectionPoint: {
+          twoD: new Vector2(30.37, 10.62),
+          threeD: new Vector3(30.37, 10.62, 0),
+        },
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      }
+      await onDrag(dragArgs)
+
+      const previewEdits: ExistingSegmentCtor[] =
+        rustContext.editSegments.mock.calls[0]?.[2]
+      const pointEdit = previewEdits.find(({ id }) => id === 2)
+      const ownerEdit = previewEdits.find(({ id }) => id === 4)
+      expect(pointEdit?.ctor).toMatchObject({
+        type: 'Point',
+        position: { x: { value: 30.25 }, y: { value: 10.5 } },
+      })
+      // Rust merges point/owner edits in order. Both must describe the same
+      // snapped point, and the owner must translate without changing its radius.
+      expect(ownerEdit?.ctor).toMatchObject({
+        type: segmentType,
+        start: { x: { value: 30.25 }, y: { value: 10.5 } },
+        center: { x: { value: 20.25 }, y: { value: 10.5 } },
+      })
+      if (segmentType === 'Arc') {
+        expect(ownerEdit?.ctor).toMatchObject({
+          end: { x: { value: 20.25 }, y: { value: 20.5 } },
+        })
+      }
+
+      await onDragEnd(dragArgs)
+      expect(rustContext.editSegments).toHaveBeenCalledTimes(2)
+      expect(rustContext.editSegments.mock.calls[1]?.[2]).toEqual([pointEdit])
+      expect(rustContext.addConstraint).not.toHaveBeenCalled()
+    }
+  )
+
   it('should allow drag snapping for an arc child point when its owner arc remains selected', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()
