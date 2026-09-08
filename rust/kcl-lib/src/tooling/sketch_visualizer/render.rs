@@ -102,11 +102,7 @@ pub(super) fn render_png(
     }
 
     for (point_id, point) in points {
-        let owner_color = point
-            .owner
-            .and_then(|owner| segments.get(&owner))
-            .map(|segment| dof_color(segment.freedom));
-        let color = owner_color.unwrap_or_else(|| dof_color(Some(point.freedom)));
+        let color = dof_color(Some(point.freedom));
         let radius = if contact_point_ids.contains(point_id) {
             CONTACT_POINT_RADIUS
         } else {
@@ -279,5 +275,68 @@ fn interpolate_screen(a: ScreenPoint, b: ScreenPoint, t: f64) -> ScreenPoint {
     ScreenPoint {
         x: a.x + (b.x - a.x) * t,
         y: a.y + (b.y - a.y) * t,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tooling::sketch_visualizer::sampling::sample_circle;
+
+    #[test]
+    fn point_colors_are_independent_of_segment_colors() {
+        let center = SketchVisualizationPoint { x: 0.0, y: 0.0 };
+        let bounds = SketchVisualizationBounds {
+            min: SketchVisualizationPoint { x: -12.0, y: -12.0 },
+            max: SketchVisualizationPoint { x: 12.0, y: 12.0 },
+        };
+        for segment_freedom in [Freedom::Free, Freedom::Fixed, Freedom::Conflict] {
+            for point_freedom in [Freedom::Free, Freedom::Fixed, Freedom::Conflict] {
+                for highlighted in [false, true] {
+                    let segments = BTreeMap::from([(
+                        1,
+                        InternalSegment {
+                            construction: false,
+                            freedom: Some(segment_freedom),
+                            highlighted,
+                            polyline: sample_circle(center, 10.0),
+                        },
+                    )]);
+                    let start = SketchVisualizationPoint { x: 10.0, y: 0.0 };
+                    let points = BTreeMap::from([
+                        (
+                            2,
+                            InternalPoint {
+                                position: center,
+                                freedom: point_freedom,
+                            },
+                        ),
+                        (
+                            3,
+                            InternalPoint {
+                                position: start,
+                                freedom: point_freedom,
+                            },
+                        ),
+                    ]);
+                    let png = render_png(&segments, &points, &BTreeSet::new(), bounds, None).unwrap();
+                    let image = image::load_from_memory(&png).unwrap().into_rgba8();
+                    for position in [center, start] {
+                        let pixel = Transform::new(bounds).point(position);
+                        assert_eq!(
+                            *image.get_pixel(pixel.x as u32, pixel.y as u32),
+                            dof_color(Some(point_freedom)).to_rgba(),
+                            "point={point_freedom:?}, segment={segment_freedom:?}, highlighted={highlighted}"
+                        );
+                    }
+                    let rim = Transform::new(bounds).point(SketchVisualizationPoint { x: -10.0, y: 0.0 });
+                    assert_eq!(
+                        *image.get_pixel(rim.x as u32, rim.y as u32),
+                        dof_color(Some(segment_freedom)).to_rgba(),
+                        "the circle stroke must retain its segment constraint color"
+                    );
+                }
+            }
+        }
     }
 }
