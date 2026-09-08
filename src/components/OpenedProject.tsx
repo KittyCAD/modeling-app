@@ -123,6 +123,7 @@ export function OpenedProject() {
 
     let cancelled = false
     void checkOpenedProjectPresence({
+      fileOperations: app.fileOperations,
       projectPath,
       projects,
     }).then((presence) => {
@@ -141,7 +142,14 @@ export function OpenedProject() {
     return () => {
       cancelled = true
     }
-  }, [lastOperation, navigate, projectPath, projects, systemIOState])
+  }, [
+    app.fileOperations,
+    lastOperation,
+    navigate,
+    projectPath,
+    projects,
+    systemIOState,
+  ])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.

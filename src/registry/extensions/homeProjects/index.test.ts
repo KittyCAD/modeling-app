@@ -751,6 +751,10 @@ describe('home project actions', () => {
     expect(
       projectIdentityMocks.separateProjectsSharingProjectId
     ).toHaveBeenCalledWith({
+      fileOperations: expect.objectContaining({
+        readFile: expect.any(Function),
+        writeFile: expect.any(Function),
+      }),
       projectPaths: ['/projects/original', '/projects/copy'],
       keepProjectPath: '/projects/copy',
     })

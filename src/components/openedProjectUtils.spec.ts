@@ -6,6 +6,8 @@ import {
 } from '@src/components/openedProjectUtils'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
+const fileOperations = { stat: (path: string) => fsZds.stat(path) }
+
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
@@ -25,6 +27,7 @@ describe('opened project presence', () => {
     try {
       expect(
         await checkOpenedProjectPresence({
+          fileOperations,
           projectPath,
           projects: [],
         })
@@ -38,7 +41,7 @@ describe('opened project presence', () => {
     const projectPath = `/tmp/missing-opened-project-${crypto.randomUUID()}`
 
     await expect(
-      checkOpenedProjectPresence({ projectPath, projects: [] })
+      checkOpenedProjectPresence({ fileOperations, projectPath, projects: [] })
     ).resolves.toEqual({ type: 'missing' })
   })
 
@@ -47,6 +50,7 @@ describe('opened project presence', () => {
 
     await expect(
       checkOpenedProjectPresence({
+        fileOperations,
         projectPath: '/Users/max/Repos',
         projects: [{ path: '/Users/max/Repos/' }],
       })
@@ -60,6 +64,7 @@ describe('opened project presence', () => {
 
     await expect(
       checkOpenedProjectPresence({
+        fileOperations,
         projectPath: '/Users/max/Repos',
         projects: [],
       })
