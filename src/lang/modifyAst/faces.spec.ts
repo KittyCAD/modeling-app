@@ -801,6 +801,8 @@ extrude001 = extrude(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    // Let the full sample's engine operations finish before a retry reuses
+    // this suite's shared engine session.
     it('should add a deleteFace call on the bracket', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
@@ -823,7 +825,7 @@ extrude001 = extrude(
         `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line6)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+    }, 30_000)
 
     it('should add a deleteFace call on one inner shell face and a wall', async () => {
       const shell = `sketch001 = startSketchOn(XZ)
