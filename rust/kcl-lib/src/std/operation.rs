@@ -115,11 +115,7 @@ pub fn s_curve(
             let arc_middle_y = -diff_of_x_rows * direction.y + start_point.y;
 
             moves.push(Move {
-                end: Point3d {
-                    x,
-                    y,
-                    z: start_point.z,
-                },
+                end: Point3d { x, y, z: start_point.z },
                 point: None,
             });
             if i < interval - 1 {
