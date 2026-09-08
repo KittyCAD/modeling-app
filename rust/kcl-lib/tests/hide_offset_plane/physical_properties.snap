@@ -5,12 +5,12 @@ description: Physical properties hide_offset_plane.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
+      "x": 500.0,
       "y": 0.0,
       "z": 50.0
     },
     "dimensions": {
-      "x": 100.0,
+      "x": 1100.0,
       "y": 100.0,
       "z": 100.0
     },
