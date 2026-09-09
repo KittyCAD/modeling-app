@@ -204,22 +204,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Primary platform and browser coverage
           - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
             label: ubuntu
             test_script: test:e2e:web
             playwright_cache_path: ~/.cache/ms-playwright
+            primary: true
           - os: namespace-profile-macos-8-cores
             label: macos
             test_script: test:e2e:web
             playwright_cache_path: ~/Library/Caches/ms-playwright
+            primary: true
           - os: namespace-profile-windows-8-cores
             label: windows
             test_script: test:e2e:web
             playwright_cache_path: ~/AppData/Local/ms-playwright
+            primary: true
+          # Supplemental coverage, skipped for external workflow calls
           - os: namespace-profile-macos-8-cores
             label: macos, webkit
             test_script: test:e2e:web:webkit
             playwright_cache_path: ~/Library/Caches/ms-playwright
+            primary: false
+    if: ${{ matrix.primary || github.repository == 'kittycad/modeling-app' }}
     runs-on: ${{ matrix.os }}
     name: e2e:web (${{ matrix.label }})
     env:
