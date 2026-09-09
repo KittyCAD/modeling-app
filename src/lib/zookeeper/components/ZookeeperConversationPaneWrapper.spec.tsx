@@ -1,47 +1,69 @@
-import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
-import type * as SystemIOUtils from '@src/machines/systemIO/utils'
-import { render, waitFor } from '@testing-library/react'
-import { describe, expect, test, vi } from 'vitest'
+import type { Project } from '@src/lib/project'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
+import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/controller'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-const mocks = vi.hoisted(() => {
-  const systemIOSend = vi.fn()
-  const useWatchForNewFileRequestsFromZookeeper = vi.fn()
-  const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
-  const kclManager = {
-    captureEditorHistoryState: vi.fn(() => ({
-      doc: { toString: () => 'initial code' },
-    })),
-    code: 'initial code',
-    engineCommandManager: {},
-    path: '/workspace/demo/main.kcl',
-    zookeeperHistoryRecordingInProgress: false,
-    addGlobalHistoryEvent: vi.fn(),
-    addGlobalHistoryEventWithCodeChange: vi.fn(),
-    updateCodeEditor: vi.fn(),
-  }
+const mocks = vi.hoisted(() => ({
+  browserSaveFile: vi.fn(async () => undefined),
+  contextModeling: { selectionRanges: [] },
+  conversation: { exchanges: [] },
+  markdown: vi.fn(() => '# Conversation'),
+  paneProps: undefined as Record<string, unknown> | undefined,
+  settings: { meta: { id: { current: 'project-id' } } },
+  settingsSend: vi.fn(),
+  user: { id: 'user-id' },
+}))
 
-  return {
-    kclManager,
-    zookeeperSubscribe,
-    systemIOSend,
-    useWatchForNewFileRequestsFromZookeeper,
-    watchCallback: undefined as
-      | ((props: {
-          toolOutput: unknown
-          projectNameCurrentlyOpened: string
-          fileFocusedOnInEditor: { name: string; path: string; children: null }
-          exchangeId: number
-        }) => void)
-      | undefined,
-  }
-})
+vi.mock('@headlessui/react', () => ({
+  Menu: {
+    Item: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  },
+}))
 
 vi.mock('@src/components/layout/Panel', () => ({
-  LayoutPanel: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
+  LayoutPanel: ({
+    children,
+    className,
+    id,
+    title,
+  }: {
+    children: React.ReactNode
+    className: string
+    id: string
+    title: string
+  }) => (
+    <section
+      className={className}
+      data-testid="layout-panel"
+      id={id}
+      title={title}
+    >
+      {children}
+    </section>
   ),
-  LayoutPanelHeader: () => null,
+  LayoutPanelHeader: ({
+    Menu,
+    icon,
+    id,
+    onClose,
+    title,
+  }: {
+    Menu: React.ReactNode
+    icon: string
+    id: string
+    onClose?: () => void
+    title: string
+  }) => (
+    <header data-icon={icon} data-testid="layout-panel-header" id={id}>
+      <span>{title}</span>
+      <button type="button" onClick={onClose}>
+        Close
+      </button>
+      {Menu}
+    </header>
+  ),
 }))
 
 vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
@@ -51,230 +73,126 @@ vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
 }))
 
 vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPane', () => ({
-  ZookeeperConversationPane: () => null,
+  ZookeeperConversationPane: (props: Record<string, unknown>) => {
+    mocks.paneProps = props
+    return <div data-testid="conversation-pane" />
+  },
 }))
 
 vi.mock('@src/hooks/useModelingContext', () => ({
-  useModelingContext: () => ({
-    context: {},
-    send: vi.fn(),
-    theProject: { current: undefined },
-  }),
+  useModelingContext: () => ({ context: mocks.contextModeling }),
 }))
 
 vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     auth: {
-      useToken: () => 'token',
-      useUser: () => undefined,
+      useUser: () => mocks.user,
     },
-    billing: { send: vi.fn() },
     debug: {},
-    project: {
-      name: 'demo',
-      path: '/workspace/demo',
-      executingPath: '/workspace/demo/main.kcl',
-      executingFileEntry: { value: { name: 'main.kcl' } },
-    },
     settings: {
-      actor: { send: vi.fn() },
-      useSettings: () => ({ meta: { id: { current: 'project-id' } } }),
+      actor: { send: mocks.settingsSend },
+      useSettings: () => mocks.settings,
     },
-    systemIOActor: {
-      send: mocks.systemIOSend,
-    },
-  }),
-  useSingletons: () => ({
-    kclManager: mocks.kclManager,
   }),
 }))
 
-vi.mock('@src/lib/fs-zds', () => ({
-  default: {
-    join: (...parts: string[]) =>
-      parts
-        .reduce((left, right) => (left ? `${left}/${right}` : right), '')
-        .replaceAll(/\/+/g, '/'),
-    readFile: vi.fn(async () => 'current disk code'),
-    relative: (from: string, to: string) =>
-      to.startsWith(`${from}/`) ? to.slice(from.length + 1) : to,
-    sep: '/',
-  },
+vi.mock('@src/lib/browserSaveFile', () => ({
+  browserSaveFile: mocks.browserSaveFile,
 }))
 
 vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
-  ZookeeperConversationToMarkdown: vi.fn(() => ''),
-  ZookeeperManagerTransitions: {
-    AuthTokenChanged: 'auth-token-changed',
-  },
-  ZookeeperManagerReactContext: {
-    Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    useActorRef: () => ({
-      getSnapshot: () => ({
-        context: {},
-      }),
-      send: vi.fn(),
-      subscribe: mocks.zookeeperSubscribe,
-    }),
-  },
+  ZookeeperConversationToMarkdown: mocks.markdown,
 }))
-
-vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPaneHooks', () => ({
-  useProjectIdToConversationId: vi.fn(),
-  useWatchForNewFileRequestsFromZookeeper: (
-    ...args: [unknown, unknown, NonNullable<typeof mocks.watchCallback>]
-  ) => {
-    mocks.useWatchForNewFileRequestsFromZookeeper(...args)
-    mocks.watchCallback = args[2]
-  },
-}))
-
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) => {
-  const original = await importOriginal<typeof SystemIOUtils>()
-
-  return {
-    ...original,
-    waitForIdleState: vi.fn(async () => undefined),
-  }
-})
 
 vi.mock('@src/routes/utils', () => ({
   IS_STAGING_OR_DEBUG: false,
 }))
 
-function patchBackedZookeeperEdit(code: string) {
+const project = { name: 'demo', path: '/workspace/demo' } as Project
+const actor = {
+  getSnapshot: () => ({
+    context: {
+      conversation: mocks.conversation,
+      conversationId: 'conversation-123',
+    },
+  }),
+}
+const controller = { actor } as unknown as ZookeeperSessionController
+
+function renderWrapper(onClose = vi.fn()) {
   return {
-    type: 'edit_kcl_code',
-    status_code: 201,
-    project_name: 'demo',
-    outputs: {
-      'main.kcl': code,
-    },
-    zookeeper_edit_patch: {
-      run_id: 'run-1',
-      changed_files: [
-        {
-          path: 'main.kcl',
-          status: 'created',
-          contents: code,
-        },
-      ],
-    },
+    onClose,
+    ...render(
+      <ZookeeperConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        controller={controller}
+        layout={{
+          areaType: AreaType.Zookeeper,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={onClose}
+        theProject={project}
+      />
+    ),
   }
 }
 
-function emitZookeeperFileRequest(code: string) {
-  mocks.watchCallback?.({
-    toolOutput: patchBackedZookeeperEdit(code),
-    projectNameCurrentlyOpened: 'demo',
-    fileFocusedOnInEditor: {
-      name: 'main.kcl',
-      path: '/workspace/demo/main.kcl',
-      children: null,
-    },
-    exchangeId: 0,
-  })
-}
-
-async function flushQueuedWork() {
-  await Promise.resolve()
-  await Promise.resolve()
-  await new Promise((resolve) => setTimeout(resolve, 0))
-}
-
 describe('ZookeeperConversationPaneWrapper', () => {
-  test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
-    mocks.systemIOSend.mockClear()
-    mocks.kclManager.updateCodeEditor.mockClear()
-    mocks.kclManager.path = '/workspace/demo/main.kcl'
-    mocks.watchCallback = undefined
+  beforeEach(() => {
+    mocks.browserSaveFile.mockClear()
+    mocks.markdown.mockClear()
+    mocks.paneProps = undefined
+    mocks.settingsSend.mockClear()
+  })
 
-    render(
-      <ZookeeperConversationPaneWrapper
-        areaConfig={{ hide: () => false }}
-        layout={{
-          areaType: AreaType.Zookeeper,
-          id: 'zookeeper',
-          label: 'Zookeeper',
-          type: LayoutType.Simple,
-        }}
-        onClose={vi.fn()}
-      />
+  test('renders the pane chrome and wires the presentation props', () => {
+    const { onClose } = renderWrapper()
+
+    expect(screen.getByTestId('layout-panel')).toMatchObject({
+      className: 'border-none',
+      id: 'zookeeper-pane',
+      title: 'Zookeeper',
+    })
+    expect(screen.getByTestId('layout-panel-header')).toHaveAttribute(
+      'data-icon',
+      'sparkles'
     )
 
-    expect(mocks.watchCallback).toBeDefined()
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }))
+    expect(onClose).toHaveBeenCalledOnce()
 
-    emitZookeeperFileRequest('intermediate code')
+    expect(mocks.paneProps).toMatchObject({
+      contextModeling: mocks.contextModeling,
+      controller,
+      settings: mocks.settings,
+      showMakeathonAnnouncement: false,
+      theProject: project,
+      user: mocks.user,
+    })
 
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+    const changeMode = mocks.paneProps?.onMlCopilotModeChange as (
+      mode: string
+    ) => void
+    changeMode('text-to-cad')
 
-    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    expect(firstRequest.onSuccess).toEqual(expect.any(Function))
-
-    // The filesystem callback completes before the route/editor refresh callback.
-    // Starting the next edit here can let the older refresh win and leave stale
-    // intermediate KCL visible in the editor.
-    firstRequest.onFileSystemSuccess()
-    await flushQueuedWork()
-
-    emitZookeeperFileRequest('final code')
-    await flushQueuedWork()
-
-    expect(mocks.systemIOSend).toHaveBeenCalledTimes(1)
-
-    // Once the editor refresh has completed, the queued final edit can run.
-    firstRequest.onSuccess()
-
-    expect(mocks.kclManager.updateCodeEditor).toHaveBeenCalledWith(
-      'intermediate code',
-      {
-        shouldAddToHistory: false,
-        shouldClearHistory: false,
-        shouldExecute: true,
-        shouldResetCamera: true,
-        shouldWriteToDisk: false,
-      }
-    )
-
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
-
-    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
-    expect(secondRequest.files[0]).toMatchObject({
-      requestedFileName: 'main.kcl',
-      requestedCode: 'final code',
+    expect(mocks.settingsSend).toHaveBeenCalledWith({
+      type: 'set.app.zookeeperMode',
+      data: { level: 'project', value: 'text-to-cad' },
     })
   })
 
-  test('does not refresh a file that is no longer active or stall later edits', async () => {
-    mocks.systemIOSend.mockClear()
-    mocks.kclManager.updateCodeEditor.mockClear()
-    mocks.kclManager.path = '/workspace/demo/main.kcl'
-    mocks.watchCallback = undefined
+  test('exports the current conversation from the header menu', () => {
+    renderWrapper()
 
-    render(
-      <ZookeeperConversationPaneWrapper
-        areaConfig={{ hide: () => false }}
-        layout={{
-          areaType: AreaType.Zookeeper,
-          id: 'zookeeper',
-          label: 'Zookeeper',
-          type: LayoutType.Simple,
-        }}
-        onClose={vi.fn()}
-      />
+    fireEvent.click(screen.getByRole('button', { name: 'Export conversation' }))
+
+    expect(mocks.markdown).toHaveBeenCalledWith(mocks.conversation)
+    expect(mocks.browserSaveFile).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'text/markdown' }),
+      'conversation-123.md',
+      ''
     )
-
-    emitZookeeperFileRequest('intermediate code')
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
-
-    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    firstRequest.onFileSystemSuccess()
-    mocks.kclManager.path = '/workspace/demo/other.kcl'
-    firstRequest.onSuccess()
-
-    expect(mocks.kclManager.updateCodeEditor).not.toHaveBeenCalled()
-
-    emitZookeeperFileRequest('final code')
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
   })
 })
