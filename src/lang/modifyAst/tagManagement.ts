@@ -264,7 +264,10 @@ function resolveSweepSelectionContext(
     wasmInstance,
     nodeToEdit,
     {
-      lastChildLookup,
+      // Canonical sweeps already identify the shared engine body. Walking
+      // their face sketches can select an unrelated sibling loft or sweep.
+      lastChildLookup:
+        lastChildLookup && selectedBody.type === 'compositeSolid',
       artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )

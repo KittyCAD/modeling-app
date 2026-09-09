@@ -803,6 +803,100 @@ ${name}001 = ${name}(
       }
     )
 
+    it('should keep merged edges on their shared body when a sibling loft follows', async () => {
+      // Legacy face sketches link their profiles through the support cap.
+      const code = `@settings(kclVersion = 2.0)
+
+baseProfile = circle(startSketchOn(XY), center = [0, 0], radius = 20)
+base = extrude(baseProfile, length = 5)
+faceSketch = startSketchOn(base, face = END)
+profile1 = circle(faceSketch, center = [-10, 0], radius = 2, tag = $rim1)
+profile2 = circle(faceSketch, center = [0, 0], radius = 2, tag = $rim2)
+merged = extrude([profile1, profile2], length = 2)
+loftProfile = circle(faceSketch, center = [10, 0], radius = 3)
+topSketch = startSketchOn(offsetPlane(XY, offset = 10))
+topProfile = circle(topSketch, center = [10, 0], radius = 2)
+other = loft([loftProfile, topProfile])`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const sweeps = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'sweep'
+      )
+      expect(sweeps).toHaveLength(4)
+      const base = sweeps[0]
+      const merged = sweeps.filter(
+        (sweep) =>
+          sweep.subType === 'extrusion' &&
+          sweep.codeRef.range[0] >= code.indexOf('merged =')
+      )
+      expect(merged).toHaveLength(2)
+      const edges = merged.map((sweep) => {
+        const edge = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweepEdge' &&
+            artifact.subType === 'opposite' &&
+            artifact.sweepId === sweep.id
+        )
+        if (!edge) throw new Error('Missing merged extrusion top edge')
+        return edge
+      })
+      const selection = createSelectionFromArtifacts(edges, artifactGraph)
+      selection.otherSelections.push({
+        type: 'enginePrimitive',
+        primitiveType: 'edge',
+        entityId: 'selected-primitive-edge',
+        parentEntityId: base.id,
+        primitiveIndex: 0,
+      })
+      const radius = (await stringToKclExpression(
+        '0.23',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      expect(result.pathToNode).toHaveLength(1)
+      const expectedCode = `@settings(kclVersion = 2.0)
+
+baseProfile = circle(startSketchOn(XY), center = [0, 0], radius = 20)
+base = extrude(baseProfile, length = 5)
+faceSketch = startSketchOn(base, face = END)
+profile1 = circle(faceSketch, center = [-10, 0], radius = 2, tag = $rim1)
+profile2 = circle(faceSketch, center = [0, 0], radius = 2, tag = $rim2)
+merged = extrude([profile1, profile2], length = 2, tagEnd = $capEnd001)
+loftProfile = circle(faceSketch, center = [10, 0], radius = 3)
+topSketch = startSketchOn(offsetPlane(XY, offset = 10))
+topProfile = circle(topSketch, center = [10, 0], radius = 2)
+other = loft([loftProfile, topProfile])
+edge001 = edgeId(base, index = 0)
+fillet001 = fillet(
+  base,
+  tags = [
+    getCommonEdge(faces = [rim1, merged[0].faces.capEnd001]),
+    getCommonEdge(faces = [rim2, merged[1].faces.capEnd001]),
+    edge001
+  ],
+  radius = 0.23,
+)`
+      expect(recast(result.modifiedAst, instanceInThisFile)).toEqual(
+        recast(
+          assertParse(expectedCode, instanceInThisFile),
+          instanceInThisFile
+        )
+      )
+      await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+      expect(kclManagerInThisFile.errors).toEqual([])
+    })
+
     it('should add a basic fillet call on a sweepEdge and a segment', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
