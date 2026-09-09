@@ -5,7 +5,7 @@ import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMen
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { toUtf16 } from '@src/lang/errors'
+import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   type Artifact,
@@ -59,7 +59,9 @@ export function BodiesPane(props: AreaTypeComponentProps) {
         hideOperation,
         engineEntityId:
           artifact.type === 'pattern'
-            ? id
+            ? patternIndex === 0
+              ? artifact.sourceId
+              : id
             : artifact.type === 'sweep'
               ? getEngineEntityIdForSweep(artifact, artifactGraph)
               : undefined,
@@ -142,7 +144,10 @@ function BodyItem({
   }
   const selection: Selection = {
     artifact,
-    codeRef,
+    codeRef: {
+      ...codeRef,
+      range: sourceRangeToUtf16(codeRef.range, kclManager.code),
+    },
     ...(engineEntityId ? { engineEntityId } : {}),
     ...(patternIndex !== undefined ? { patternIndex } : {}),
   }
@@ -152,8 +157,10 @@ function BodyItem({
   }
 
   const isSelected = engineEntityId
-    ? modelingContext.selectionRanges.graphSelections.some(
-        (selection) => selection.engineEntityId === engineEntityId
+    ? modelingContext.selectionRanges.graphSelections.some((selection) =>
+        selection.engineEntityId !== undefined
+          ? selection.engineEntityId === engineEntityId
+          : selection.artifact?.id === artifact.id
       )
     : kclManager.editorState.selection.main.from >=
         toUtf16(sourceRange[0], kclManager.code) &&
