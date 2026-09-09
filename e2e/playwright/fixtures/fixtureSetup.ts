@@ -16,6 +16,7 @@ import fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
+import { startRendererCrashDiagnostics } from '@e2e/playwright/fixtures/electronCrashDiagnostics'
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
@@ -285,6 +286,7 @@ export class ElectronZoo {
       }
     }
 
+    await startRendererCrashDiagnostics(this.electron)
     await this.context.tracing.startChunk()
 
     await this.page.evaluate(
