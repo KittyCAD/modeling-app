@@ -43,6 +43,7 @@ import {
   ZookeeperManagerTransitions,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
+import * as SystemIO from '@src/machines/systemIO/utils'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -273,6 +274,7 @@ const createStatefulClearChatActor = () => {
 }
 
 const createStatefulPromptActor = (awaitingResponse = false) => {
+  let sending = false
   let snapshot: FakeZookeeperSnapshot = {
     value: 'ready',
     context: {
@@ -286,25 +288,54 @@ const createStatefulPromptActor = (awaitingResponse = false) => {
       defaultMode: undefined,
       modeOptions: undefined,
     },
-    matches: (state: unknown) => state === snapshot.value,
+    matches: (state: unknown) =>
+      state === snapshot.value ||
+      (sending &&
+        JSON.stringify(state) ===
+          JSON.stringify({
+            [ZookeeperManagerStates.Ready]: {
+              [ZookeeperManagerStates.Request]:
+                ZookeeperManagerTransitions.MessageSend,
+            },
+          })),
   }
   const listeners = new Set<(next: FakeZookeeperSnapshot) => void>()
 
   const actor = {
     getSnapshot: () => snapshot,
-    subscribe: (listener?: (next: FakeZookeeperSnapshot) => void) => {
-      if (listener !== undefined) {
-        listeners.add(listener)
+    subscribe: (
+      listener?:
+        | ((next: FakeZookeeperSnapshot) => void)
+        | { next?: (next: FakeZookeeperSnapshot) => void }
+    ) => {
+      const callback =
+        typeof listener === 'function' ? listener : listener?.next
+      if (callback !== undefined) {
+        listeners.add(callback)
       }
       return {
         unsubscribe: () => {
-          if (listener !== undefined) {
-            listeners.delete(listener)
+          if (callback !== undefined) {
+            listeners.delete(callback)
           }
         },
       }
     },
-    send: vi.fn(),
+    send: vi.fn((event: { type: string }) => {
+      if (event.type === ZookeeperManagerTransitions.MessageSend) sending = true
+    }),
+    finishSending: (conversation?: Conversation) => {
+      sending = false
+      snapshot = {
+        ...snapshot,
+        context: {
+          ...snapshot.context,
+          conversation: conversation ?? snapshot.context.conversation,
+          awaitingResponse: conversation !== undefined,
+        },
+      }
+      for (const listener of listeners) listener(snapshot)
+    },
     setAwaitingResponse: (nextAwaitingResponse: boolean) => {
       snapshot = {
         ...snapshot,
@@ -435,6 +466,155 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('shows a prompt during preparation, queues rapid follow-ups, and replaces it once sent', async () => {
+    const preparation =
+      Promise.withResolvers<
+        Awaited<ReturnType<typeof SystemIO.collectProjectFiles>>
+      >()
+    const collect = vi
+      .spyOn(SystemIO, 'collectProjectFiles')
+      .mockReturnValueOnce(preparation.promise)
+    const actor = createStatefulPromptActor()
+    try {
+      renderPane({
+        zookeeperManagerActor: actor,
+        theProject: { name: 'demo', path: '/tmp/demo' },
+        loaderFile: {
+          name: 'main.kcl',
+          path: '/tmp/demo/main.kcl',
+          children: null,
+        },
+      })
+      fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+        target: { value: 'make a bracket' },
+      })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+      expect(
+        screen.getAllByTestId('ml-request-chat-bubble').at(-1)
+      ).toHaveTextContent('make a bracket')
+      expect(actor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerTransitions.MessageSend,
+        })
+      )
+
+      fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+        target: { value: 'add a hole' },
+      })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+      expect(screen.getByText('Queued')).toBeInTheDocument()
+      expect(screen.getByText('add a hole')).toBeInTheDocument()
+      expect(collect).toHaveBeenCalledTimes(1)
+
+      await act(async () => preparation.resolve([]))
+      expect(actor.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerTransitions.MessageSend,
+        })
+      )
+      // Preparing the actual request can still be in progress after collection.
+      expect(screen.getByText('make a bracket')).toBeInTheDocument()
+      await act(async () =>
+        actor.finishSending({
+          exchanges: [
+            ...completedConversation.exchanges,
+            {
+              request: { type: 'user', content: 'make a bracket' },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        })
+      )
+      expect(screen.getAllByText('make a bracket')).toHaveLength(1)
+      expect(screen.getByText('add a hole')).toBeInTheDocument()
+      expect(collect).toHaveBeenCalledTimes(1)
+    } finally {
+      collect.mockRestore()
+    }
+  })
+
+  test('removes the optimistic prompt if preparing the request fails', async () => {
+    const collect = vi
+      .spyOn(SystemIO, 'collectProjectFiles')
+      .mockResolvedValueOnce([])
+    const actor = createStatefulPromptActor()
+    try {
+      renderPane({
+        zookeeperManagerActor: actor,
+        theProject: { name: 'demo', path: '/tmp/demo' },
+        loaderFile: {
+          name: 'main.kcl',
+          path: '/tmp/demo/main.kcl',
+          children: null,
+        },
+      })
+      fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+        target: { value: 'make a bracket' },
+      })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+      await waitFor(() =>
+        expect(actor.send).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: ZookeeperManagerTransitions.MessageSend,
+          })
+        )
+      )
+      expect(screen.getByText('make a bracket')).toBeInTheDocument()
+      await act(async () => actor.finishSending())
+      expect(screen.queryByText('make a bracket')).not.toBeInTheDocument()
+    } finally {
+      collect.mockRestore()
+    }
+  })
+
+  test('discards a preparing prompt when switching projects', async () => {
+    const preparation =
+      Promise.withResolvers<
+        Awaited<ReturnType<typeof SystemIO.collectProjectFiles>>
+      >()
+    const collect = vi
+      .spyOn(SystemIO, 'collectProjectFiles')
+      .mockReturnValueOnce(preparation.promise)
+    const actor = createStatefulPromptActor()
+    try {
+      const { rerender } = renderPane({
+        zookeeperManagerActor: actor,
+        theProject: { name: 'first', path: '/tmp/first' },
+        loaderFile: {
+          name: 'main.kcl',
+          path: '/tmp/first/main.kcl',
+          children: null,
+        },
+      })
+      fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+        target: { value: 'make a bracket' },
+      })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+      expect(screen.getByText('make a bracket')).toBeInTheDocument()
+      rerender(
+        createPaneElement({
+          zookeeperManagerActor: actor,
+          theProject: { name: 'second', path: '/tmp/second' },
+          loaderFile: {
+            name: 'main.kcl',
+            path: '/tmp/second/main.kcl',
+            children: null,
+          },
+        })
+      )
+      await act(async () => preparation.resolve([]))
+      expect(screen.queryByText('make a bracket')).not.toBeInTheDocument()
+      expect(actor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerTransitions.MessageSend,
+        })
+      )
+    } finally {
+      collect.mockRestore()
+    }
+  })
+
   test('restores an interrupted conversation but waits for the user to resume it', async () => {
     const projectRoot = fsZds.join(
       '/tmp',

@@ -16,7 +16,10 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import type {
+  Exchange,
+  ZookeeperManagerActor,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
@@ -30,7 +33,7 @@ import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
-import type { SnapshotFrom } from 'xstate'
+import { type SnapshotFrom, waitFor } from 'xstate'
 
 type ZookeeperConversationPaneUser = {
   image?: string
@@ -67,6 +70,12 @@ export const ZookeeperConversationPane = (props: {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
   const [queue, setQueue] = useState<QueuedMessage[]>([])
+  const [pendingPrompt, setPendingPrompt] = useState<{
+    exchange: Exchange
+    exchangeCount: number
+    scopeKey: string
+  }>()
+  const pendingPromptRef = useRef(pendingPrompt)
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
@@ -152,6 +161,21 @@ export const ZookeeperConversationPane = (props: {
     conversation = undefined
   }
 
+  const conversationScopeKey = JSON.stringify([
+    props.theProject?.path,
+    conversationId,
+  ])
+  const currentScopeKey = useRef(conversationScopeKey)
+  currentScopeKey.current = conversationScopeKey
+
+  useEffect(() => {
+    pendingPromptRef.current = undefined
+    setPendingPrompt(undefined)
+    return () => {
+      pendingPromptRef.current = undefined
+    }
+  }, [conversationScopeKey])
+
   const onProcess = async (
     request: string,
     mode: MlCopilotModeId | undefined,
@@ -167,35 +191,85 @@ export const ZookeeperConversationPane = (props: {
     }
 
     const project: Project = props.theProject
+    const pending = {
+      exchange: {
+        request: {
+          type: 'user',
+          content: request,
+          // Only names are needed for the optimistic attachment list. The
+          // request actor still owns reading and sending the actual files.
+          additional_files: attachments.map((file) => ({
+            name: file.name,
+            data: [],
+            mimetype: file.type,
+          })),
+        },
+        responses: [],
+        deltasAggregated: '',
+        startedAt: new Date(),
+      } satisfies Exchange,
+      exchangeCount: conversation?.exchanges.length ?? 0,
+      scopeKey: conversationScopeKey,
+    }
+    pendingPromptRef.current = pending
+    setPendingPrompt(pending)
+    const clearGeneration = clearChatOperationGeneration.current
 
-    const projectFiles = await collectProjectFiles({
-      selectedFileContents: props.kclManager.code,
-      selectedFilePath: props.kclManager.path,
-      fileNames: props.kclManager.execState.filenames,
-      projectContext: project,
-    })
+    try {
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: props.kclManager.code,
+        selectedFilePath: props.kclManager.path,
+        fileNames: props.kclManager.execState.filenames,
+        projectContext: project,
+      })
 
-    // Only on initial project creation do we call the create endpoint, which
-    // has more data for initial creations. Improvements to the Zookeeper service
-    // will close this gap in performance.
-    props.zookeeperManagerActor.send({
-      type: ZookeeperManagerTransitions.MessageSend,
-      prompt: request,
-      projectForPromptOutput: project,
-      applicationProjectDirectory: getParentAbsolutePath(project.path),
-      fileSelectedDuringPrompting: {
-        entry: props.loaderFile,
-        content: props.kclManager.code,
-      },
-      projectFiles,
-      selections: props.contextModeling.selectionRanges,
-      artifactGraph: props.kclManager.artifactGraph,
-      kclManager: props.kclManager,
-      engineCommandManager: props.contextModeling.engineCommandManager,
-      wasmInstance: props.contextModeling.wasmInstance,
-      mode,
-      additionalFiles: attachments,
-    })
+      if (
+        pendingPromptRef.current !== pending ||
+        currentScopeKey.current !== pending.scopeKey ||
+        clearChatOperationGeneration.current !== clearGeneration ||
+        isClearingChat.current
+      )
+        return
+
+      // Only on initial project creation do we call the create endpoint, which
+      // has more data for initial creations. Improvements to the Zookeeper service
+      // will close this gap in performance.
+      props.zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.MessageSend,
+        prompt: request,
+        projectForPromptOutput: project,
+        applicationProjectDirectory: getParentAbsolutePath(project.path),
+        fileSelectedDuringPrompting: {
+          entry: props.loaderFile,
+          content: props.kclManager.code,
+        },
+        projectFiles,
+        selections: props.contextModeling.selectionRanges,
+        artifactGraph: props.kclManager.artifactGraph,
+        kclManager: props.kclManager,
+        engineCommandManager: props.contextModeling.engineCommandManager,
+        wasmInstance: props.contextModeling.wasmInstance,
+        mode,
+        additionalFiles: attachments,
+      })
+      // Keep the optimistic turn until the request actor has appended the
+      // real exchange (or failed), including attachment conversion time.
+      await waitFor(
+        props.zookeeperManagerActor,
+        (snapshot) =>
+          !snapshot.matches({
+            [ZookeeperManagerStates.Ready]: {
+              [ZookeeperManagerStates.Request]:
+                ZookeeperManagerTransitions.MessageSend,
+            },
+          })
+      )
+    } finally {
+      if (pendingPromptRef.current === pending) {
+        pendingPromptRef.current = undefined
+        setPendingPrompt(undefined)
+      }
+    }
   }
 
   const needsReconnect = abruptlyClosed || showManualConnect
@@ -385,7 +459,11 @@ export const ZookeeperConversationPane = (props: {
     if (isClearingChat.current) {
       return
     }
-    if (isPromptRunning || isSubmittingFromQueue.current) {
+    if (
+      isPromptRunning ||
+      isSubmittingFromQueue.current ||
+      pendingPromptRef.current
+    ) {
       setQueue((prev) => [
         ...prev,
         {
@@ -438,7 +516,8 @@ export const ZookeeperConversationPane = (props: {
     if (
       !isPromptRunning &&
       queue.length > 0 &&
-      !isSubmittingFromQueue.current
+      !isSubmittingFromQueue.current &&
+      !pendingPromptRef.current
     ) {
       isSubmittingFromQueue.current = true
       let next: QueuedMessage
@@ -465,7 +544,7 @@ export const ZookeeperConversationPane = (props: {
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isClearingChatPending, isPromptRunning, isReady, queue])
+  }, [isClearingChatPending, isPromptRunning, isReady, queue, pendingPrompt])
 
   const onClickClearChat = async () => {
     if (isClearingChat.current) {
@@ -733,6 +812,18 @@ export const ZookeeperConversationPane = (props: {
     sendBillingUsageStarted,
   ])
 
+  const visiblePendingPrompt =
+    pendingPrompt?.scopeKey === conversationScopeKey &&
+    pendingPrompt.exchangeCount === conversation?.exchanges.length
+      ? pendingPrompt
+      : undefined
+  const displayedConversation =
+    visiblePendingPrompt && conversation
+      ? {
+          exchanges: [...conversation.exchanges, visiblePendingPrompt.exchange],
+        }
+      : conversation
+
   return (
     <ZookeeperConversation
       isLoading={conversation === undefined}
@@ -740,7 +831,8 @@ export const ZookeeperConversationPane = (props: {
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
-      conversation={conversation}
+      conversation={displayedConversation}
+      conversationScopeKey={conversationScopeKey}
       attachmentFetches={attachmentFetches}
       onFetchAttachment={(attachmentRef) => {
         props.zookeeperManagerActor.send({

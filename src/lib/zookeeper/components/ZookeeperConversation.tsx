@@ -14,9 +14,11 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
+import { useZookeeperConversationScroll } from '@src/lib/zookeeper/components/useZookeeperConversationScroll'
 import {
   type Conversation,
   type Exchange,
+  isMlCopilotUserRequest,
   isResponseComplete,
   type MlCopilotModeId,
   type MlCopilotModeOption,
@@ -44,6 +46,7 @@ export interface QueuedMessage {
 export interface ZookeeperConversationProps {
   isLoading: boolean
   conversation?: Conversation
+  conversationScopeKey?: string
   contexts: ZookeeperManagerPromptContext[]
   // Callers can provide a local component today, then swap to a remotely
   // authored source later without changing the conversation layout below.
@@ -642,7 +645,6 @@ export const ZookeeperConversationInput = (
 }
 
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
-  const refScroll = useRef<HTMLDivElement>(null)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
   const hasMessages = exchangesLength > 0
   const lastExchange = exchangesLength
@@ -651,23 +653,19 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const isEndOfStream =
     lastExchange?.responses.some(isResponseComplete) ?? false
 
-  // Autoscroll: right after sending a prompt when the new exchange is added
-  useEffect(() => {
-    if (exchangesLength === 0 || !refScroll.current) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+  const latestPromptIndex =
+    props.conversation?.exchanges.findLastIndex((exchange) =>
+      isMlCopilotUserRequest(exchange.request)
+    ) ?? -1
+  const { scrollRef, contentRef, promptRef, spacerRef } =
+    useZookeeperConversationScroll({
+      scopeKey: props.conversationScopeKey,
+      promptIndex: latestPromptIndex,
+      visible:
+        !props.isLoading &&
+        !props.showManualConnect &&
+        !(props.needsReconnect && props.connectionFailed),
     })
-  }, [exchangesLength])
-
-  // Autoscroll: right after Zookeeper completes its turn in the exchange.
-  useEffect(() => {
-    if (!isEndOfStream || !refScroll.current) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
-    })
-  }, [isEndOfStream])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -676,6 +674,9 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
         <ExchangeCard
           key={`exchange-${exchangeIndex}`}
           {...exchange}
+          promptRef={
+            exchangeIndex === latestPromptIndex ? promptRef : undefined
+          }
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
@@ -691,99 +692,109 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
-          <div className="h-full flex flex-col justify-end overflow-auto relative">
+          <div className="flex-1 min-h-0 relative">
             <div
-              className={
-                props.showManualConnect
-                  ? 'h-full min-h-0 overflow-auto'
-                  : 'overflow-auto'
-              }
-              ref={refScroll}
+              className="h-full overflow-auto"
+              style={{ overflowAnchor: 'none' }}
+              ref={scrollRef}
+              data-testid="zookeeper-conversation-scroll"
             >
-              {props.showManualConnect ? (
-                <ConnectionRecovery
-                  className="h-full min-h-[12rem] w-full"
-                  title={props.connectionError ?? 'No internet connection.'}
-                  description="Check your network connection, then click below to try again."
-                  onReconnect={props.onReconnect}
-                  reconnectDisabled={props.isClearingChat}
-                />
-              ) : props.needsReconnect && props.connectionFailed ? (
-                <ZookeeperConnectionErrorBanner
-                  connectionError={props.connectionError}
-                  accessDeniedCode={props.accessDeniedCode}
-                  canClearChat={props.canClearChat}
-                  isClearingChat={props.isClearingChat}
-                  onReconnect={props.onReconnect}
-                  onCheckBilling={props.onCheckBilling}
-                  onOpenBilling={props.onOpenBilling}
-                  onClickClearChat={props.onClickClearChat}
-                />
-              ) : props.isLoading === false ? (
-                <>
-                  {shouldShowWelcomeMessage && (
-                    <div
-                      data-testid="ml-ephant-conversation-welcome-section"
-                      className={
-                        hasMessages
-                          ? 'border-b border-chalkboard-20 dark:border-chalkboard-80'
-                          : undefined
-                      }
-                    >
-                      {props.welcomeMessage}
-                    </div>
-                  )}
-                  {hasMessages ? (
-                    <>
-                      {exchangeCards}
-                      {lastExchange &&
-                      !isEndOfStream &&
-                      props.interruptedTurnAwaitingResume ? (
-                        <div
-                          className="m-4 flex flex-col gap-2 rounded-md border border-ml-green bg-ml-green/10 p-4 text-left dark:border-ml-green dark:bg-ml-green/10"
-                          role="status"
-                        >
-                          <p className="font-semibold">
-                            Zookeeper stopped before finishing this request.
-                          </p>
-                          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-                            Review the current project, then resume when you're
-                            ready.
-                          </p>
-                          <ActionButton
-                            Element="button"
-                            type="button"
-                            aria-label="Resume interrupted request"
-                            className="h-7 w-fit focus-visible:outline-appForeground"
-                            iconStart={{ icon: 'arrowRight' }}
-                            onClick={props.onResumeInterruptedTurn}
-                            disabled={props.isResumingInterruptedTurn}
-                            tabIndex={0}
-                          >
-                            {props.isResumingInterruptedTurn
-                              ? 'Resuming...'
-                              : 'Resume interrupted request'}
-                          </ActionButton>
-                        </div>
-                      ) : lastExchange &&
-                        !isEndOfStream &&
-                        props.isProcessing ? (
-                        <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
-                      ) : null}
-                    </>
-                  ) : null}
-                </>
-              ) : (
-                <div className="text-center p-4">
-                  <Loading isDummy={true} className="!text-ml-green">
-                    {props.loadingMessage && (
-                      <span className="text-chalkboard-100 dark:text-chalkboard-10">
-                        {props.loadingMessage}
-                      </span>
+              <div
+                ref={contentRef}
+                className={
+                  props.showManualConnect
+                    ? 'flex h-full flex-col'
+                    : hasMessages
+                      ? 'flex flex-col'
+                      : 'flex min-h-full flex-col justify-end'
+                }
+              >
+                {props.showManualConnect ? (
+                  <ConnectionRecovery
+                    className="h-full min-h-[12rem] w-full"
+                    title={props.connectionError ?? 'No internet connection.'}
+                    description="Check your network connection, then click below to try again."
+                    onReconnect={props.onReconnect}
+                    reconnectDisabled={props.isClearingChat}
+                  />
+                ) : props.needsReconnect && props.connectionFailed ? (
+                  <ZookeeperConnectionErrorBanner
+                    connectionError={props.connectionError}
+                    accessDeniedCode={props.accessDeniedCode}
+                    canClearChat={props.canClearChat}
+                    isClearingChat={props.isClearingChat}
+                    onReconnect={props.onReconnect}
+                    onCheckBilling={props.onCheckBilling}
+                    onOpenBilling={props.onOpenBilling}
+                    onClickClearChat={props.onClickClearChat}
+                  />
+                ) : props.isLoading === false ? (
+                  <>
+                    {shouldShowWelcomeMessage && (
+                      <div
+                        data-testid="ml-ephant-conversation-welcome-section"
+                        className={
+                          hasMessages
+                            ? 'border-b border-chalkboard-20 dark:border-chalkboard-80'
+                            : undefined
+                        }
+                      >
+                        {props.welcomeMessage}
+                      </div>
                     )}
-                  </Loading>
-                </div>
-              )}
+                    {hasMessages ? (
+                      <>
+                        {exchangeCards}
+                        {lastExchange &&
+                        !isEndOfStream &&
+                        props.interruptedTurnAwaitingResume ? (
+                          <div
+                            className="m-4 flex flex-col gap-2 rounded-md border border-ml-green bg-ml-green/10 p-4 text-left dark:border-ml-green dark:bg-ml-green/10"
+                            role="status"
+                          >
+                            <p className="font-semibold">
+                              Zookeeper stopped before finishing this request.
+                            </p>
+                            <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                              Review the current project, then resume when
+                              you're ready.
+                            </p>
+                            <ActionButton
+                              Element="button"
+                              type="button"
+                              aria-label="Resume interrupted request"
+                              className="h-7 w-fit focus-visible:outline-appForeground"
+                              iconStart={{ icon: 'arrowRight' }}
+                              onClick={props.onResumeInterruptedTurn}
+                              disabled={props.isResumingInterruptedTurn}
+                              tabIndex={0}
+                            >
+                              {props.isResumingInterruptedTurn
+                                ? 'Resuming...'
+                                : 'Resume interrupted request'}
+                            </ActionButton>
+                          </div>
+                        ) : lastExchange &&
+                          !isEndOfStream &&
+                          props.isProcessing ? (
+                          <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
+                        ) : null}
+                      </>
+                    ) : null}
+                  </>
+                ) : (
+                  <div className="text-center p-4">
+                    <Loading isDummy={true} className="!text-ml-green">
+                      {props.loadingMessage && (
+                        <span className="text-chalkboard-100 dark:text-chalkboard-10">
+                          {props.loadingMessage}
+                        </span>
+                      )}
+                    </Loading>
+                  </div>
+                )}
+              </div>
+              <div ref={spacerRef} aria-hidden="true" />
             </div>
           </div>
           {props.queue.length > 0 && (

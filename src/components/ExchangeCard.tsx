@@ -18,6 +18,7 @@ import ms from 'ms'
 import {
   type ComponentProps,
   type ReactNode,
+  type Ref,
   useEffect,
   useMemo,
   useState,
@@ -30,6 +31,7 @@ export type ExchangeCardProps = Exchange & {
   isLastResponse: boolean
   attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
   onFetchAttachment?: (attachmentRef: AttachmentRef) => void
+  promptRef?: Ref<HTMLDivElement>
 }
 
 type MlCopilotServerMessageError = Extract<
@@ -575,12 +577,14 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         {ms(Date.now() - startedAt.getTime(), { long: true })} ago
       </div>
       {isMlCopilotUserRequest(props.request) && (
-        <RequestCard
-          {...props.request}
-          userAvatar={<AvatarUser src={props.userAvatar} />}
-          attachmentFetches={props.attachmentFetches}
-          onFetchAttachment={props.onFetchAttachment}
-        />
+        <div ref={props.promptRef} className="flex flex-col gap-2">
+          <RequestCard
+            {...props.request}
+            userAvatar={<AvatarUser src={props.userAvatar} />}
+            attachmentFetches={props.attachmentFetches}
+            onFetchAttachment={props.onFetchAttachment}
+          />
+        </div>
       )}
       {showFullReasoning && hasReasoningContent && (
         <div>
