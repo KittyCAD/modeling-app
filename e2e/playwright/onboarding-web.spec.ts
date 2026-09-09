@@ -1,3 +1,4 @@
+import { expect, test } from '@e2e/playwright/base-test'
 import {
   type CloudProject,
   opfsPathExists,
@@ -6,8 +7,11 @@ import {
   routeCloudProjects,
   seedCloudSyncState,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
-import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
-import { expect, test } from '@playwright/test'
+import {
+  mockClientErrorReports,
+  setup,
+  waitForWebKitBillingToSettle,
+} from '@e2e/playwright/test-utils'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
 const TUTORIAL_PROJECT_ID = '12902000-0000-4000-8000-000000000001'
@@ -49,6 +53,9 @@ test(
         },
       ],
     })
+    // Avoid interrupting WebKit's in-flight billing request when onboarding
+    // replaces the current document.
+    await waitForWebKitBillingToSettle(page)
 
     await page.goto(
       `/file/${encodeURIComponent(

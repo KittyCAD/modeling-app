@@ -10,8 +10,8 @@ description: Physical properties scrub-daddy-holder.kcl
       "z": 20.75
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 100.0,
+      "x": 60.0,
+      "y": 21.0,
       "z": 41.5
     },
     "unit": "mm"

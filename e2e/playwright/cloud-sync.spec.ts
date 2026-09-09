@@ -1,5 +1,7 @@
+import { expect, test } from '@e2e/playwright/base-test'
 import {
   type CloudProject,
+  cloudProjectResponse,
   createRemoteListGate,
   opfsPathExists,
   PROJECT_DIR,
@@ -16,7 +18,7 @@ import {
   mockClientErrorReports,
   setup,
 } from '@e2e/playwright/test-utils'
-import { expect, type Page, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
@@ -41,6 +43,66 @@ async function expectCloudSyncHomeReady(page: Page) {
     page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
   ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
 }
+
+test(
+  'creates a multi-file sample in Personal Cloud from Home',
+  { tag: ['@web'] },
+  async ({ context, page }, testInfo) => {
+    const createdProject: CloudProject = {
+      id: 'created-sample-project',
+      title: 'Artificial Heart',
+      revision: 'created-sample-rev-1',
+      files: {},
+    }
+    const remoteProjects: CloudProject[] = []
+    const { calls: apiCalls } = await routeCloudProjects(context, {
+      remoteProjects,
+      createProject: () => {
+        remoteProjects.push(createdProject)
+        return createdProject
+      },
+      updateProject: ({ projectId }) => {
+        if (projectId !== createdProject.id) {
+          return undefined
+        }
+
+        createdProject.revision = 'created-sample-rev-2'
+        return { status: 200, body: cloudProjectResponse(createdProject) }
+      },
+    })
+
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await expectCloudFeatureEnabled(page)
+    await expectCloudSyncHomeReady(page)
+
+    await page.getByTestId('home-create-from-sample').click()
+    await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('sample')
+    await page
+      .getByRole('option', { name: 'Artificial Heart', exact: true })
+      .click()
+
+    await expect(page).toHaveURL(/artificial-heart%2Fmain\.kcl$/, {
+      timeout: CLOUD_SYNC_E2E_TIMEOUT,
+    })
+    await expect
+      .poll(() => apiCalls.creates.length, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toBe(1)
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/artificial-heart/housing.kcl`)
+      )
+      .toBe(true)
+    const files = await readOpfsTextFiles(page, {
+      main: `${PROJECT_DIR}/artificial-heart/main.kcl`,
+    })
+    expect(files.main).toContain('import "housing.kcl" as housing')
+    await expect(
+      page.getByText('Unable to determine the project directory.')
+    ).toHaveCount(0)
+  }
+)
 
 test(
   'streams remote-only projects into an empty local list and materializes opened clones',
@@ -246,7 +308,8 @@ test(
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
+    // Open the shared link directly. Visiting Home first interrupts its pending
+    // cloud requests and lazy imports when WebKit navigates to the shared link.
     await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
     await page.getByTestId('continue-to-web-app-button').click()
 

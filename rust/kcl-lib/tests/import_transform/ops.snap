@@ -24,7 +24,7 @@ description: Operations executed import_transform.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
         },
         "sourceRange": []
       },
@@ -89,7 +89,7 @@ description: Operations executed import_transform.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
         },
         "sourceRange": []
       },
@@ -154,7 +154,7 @@ description: Operations executed import_transform.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
         },
         "sourceRange": []
       },

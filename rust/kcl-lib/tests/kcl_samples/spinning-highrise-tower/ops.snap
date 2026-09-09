@@ -1428,11 +1428,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1462,7 +1462,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1508,7 +1508,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
           }
         },
         "sourceRange": []
@@ -1549,7 +1549,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -1577,7 +1577,7 @@ description: Operations executed spinning-highrise-tower.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -2546,11 +2546,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e383621f-755a-5f2e-ada3-608aff393dab"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
               }
             ]
           },
@@ -2580,7 +2580,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
           }
         },
         "sourceRange": []
@@ -2626,7 +2626,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
           }
         },
         "sourceRange": []
@@ -2667,7 +2667,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
           }
         },
         "sourceRange": []
@@ -3621,11 +3621,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ec50dfc5-8660-5f82-906a-6429c34099eb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4593843c-7d41-5ede-b7fa-ab9201f55957"
               }
             ]
           },
@@ -3655,7 +3655,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
           }
         },
         "sourceRange": []
@@ -3701,7 +3701,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef"
           }
         },
         "sourceRange": []
@@ -3742,7 +3742,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
           }
         },
         "sourceRange": []
@@ -3770,7 +3770,7 @@ description: Operations executed spinning-highrise-tower.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -4739,11 +4739,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "40d8c462-7810-5666-bb09-1db7308cf666"
               }
             ]
           },
@@ -4773,7 +4773,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
           }
         },
         "sourceRange": []
@@ -4815,7 +4815,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375"
           }
         },
         "sourceRange": []
@@ -5769,11 +5769,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
               }
             ]
           },
@@ -5803,7 +5803,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966"
           }
         },
         "sourceRange": []
@@ -5849,7 +5849,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
           }
         },
         "sourceRange": []
@@ -5890,7 +5890,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9"
           }
         },
         "sourceRange": []
@@ -6844,11 +6844,11 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511"
               }
             ]
           },
@@ -6878,7 +6878,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
           }
         },
         "sourceRange": []
@@ -6924,7 +6924,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bdd2605a-480e-5ad5-b52f-c6889529c457"
           }
         },
         "sourceRange": []
@@ -6965,7 +6965,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
           }
         },
         "sourceRange": []
@@ -7602,7 +7602,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
           }
         },
         "sourceRange": []
@@ -8257,7 +8257,7 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bdd2605a-480e-5ad5-b52f-c6889529c457"
           }
         },
         "sourceRange": []

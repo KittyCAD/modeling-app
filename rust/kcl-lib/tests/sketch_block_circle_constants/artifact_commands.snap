@@ -5,7 +5,7 @@ description: Artifact commands sketch_block_circle_constants.kcl
 {
   "rust/kcl-lib/tests/sketch_block_circle_constants/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "to": {
           "x": 2.999999999,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "to": {
           "x": 10.999999995,
           "y": 0.0,
@@ -120,11 +120,11 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "segment": {
           "type": "arc",
           "center": {
@@ -145,11 +145,11 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "create_region_from_query_point",
-        "object_id": "[uuid]",
+        "object_id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "query_point": {
           "x": 0.0000000010000000747403698,
           "y": 0.0
@@ -157,11 +157,11 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -173,11 +173,11 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
@@ -186,44 +186,44 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "edge_id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "edge_id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "range": [],
       "command": {
         "type": "create_region_from_query_point",
-        "object_id": "[uuid]",
+        "object_id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "query_point": {
           "x": 7.999999999,
           "y": 0.0
@@ -231,11 +231,11 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -247,11 +247,11 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
@@ -260,36 +260,36 @@ description: Artifact commands sketch_block_circle_constants.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "edge_id": "76e97e85-e537-578b-ac43-e32d1b685418"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "edge_id": "76e97e85-e537-578b-ac43-e32d1b685418"
       }
     }
   ]
