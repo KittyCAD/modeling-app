@@ -1,14 +1,17 @@
-use std::{
-    ffi::OsString,
-    fs,
-    path::PathBuf,
-    time::{Duration, Instant},
-};
+use std::ffi::OsString;
+use std::fs;
+use std::path::PathBuf;
+use std::time::Duration;
+use std::time::Instant;
 
-use bevy_math::{Mat4, Vec3};
-use image::{DynamicImage, ImageFormat, Rgb, RgbImage};
-
-use zoo_brep::{BrepRenderData, extract_zoo_extension};
+use bevy_math::Mat4;
+use bevy_math::Vec3;
+use image::DynamicImage;
+use image::ImageFormat;
+use image::Rgba;
+use image::RgbaImage;
+use zoo_brep::BrepRenderData;
+use zoo_brep::extract_zoo_extension;
 
 pub const HELP: &str = r#"Usage:
   kcl-render <MODEL.glb>
@@ -21,8 +24,8 @@ and faces.png (flat-colored faces with depth-aware edges) in the current
 directory. Both 1024x1024 passes are rasterized directly on the CPU. It does not
 initialize Bevy's renderer or use a GPU."#;
 
-const BACKGROUND: Rgb<u8> = Rgb([255, 255, 255]);
-const EDGE_COLOR: Rgb<u8> = Rgb([0, 107, 184]);
+const BACKGROUND: Rgba<u8> = Rgba([255, 255, 255, 0]);
+const EDGE_COLOR: Rgba<u8> = Rgba([0, 107, 184, 255]);
 const LINE_WIDTH: f32 = 2.5;
 const OUTPUT_SIZE: ImageSize = ImageSize { x: 1280, y: 720 };
 const EDGE_OUTPUT: &str = "edges.png";
@@ -47,7 +50,7 @@ struct BatchRenderOptions {
 pub fn render(glb: &[u8]) -> Result<DynamicImage, String> {
     let edges = load_edges(glb)?;
     let view = ViewProjection::from_edges(&edges, OUTPUT_SIZE.x, OUTPUT_SIZE.y)?;
-    render_image(&glb, &edges, view)
+    render_image(glb, &edges, view)
 }
 
 fn load_edges(glb: &[u8]) -> Result<BrepRenderData, String> {
@@ -60,7 +63,7 @@ fn load_edges(glb: &[u8]) -> Result<BrepRenderData, String> {
 fn render_image(glb: &[u8], edges: &BrepRenderData, view: ViewProjection) -> Result<DynamicImage, String> {
     let mut face_pass = render_faces(glb, view)?;
     draw_depth_tested_edges(&mut face_pass, edges, view);
-    Ok(DynamicImage::ImageRgb8(face_pass.image))
+    Ok(DynamicImage::ImageRgba8(face_pass.image))
 }
 
 pub fn run(args: Vec<OsString>) -> Result<(), String> {
@@ -108,7 +111,7 @@ struct ScreenPoint {
 }
 
 struct FacePass {
-    image: RgbImage,
+    image: RgbaImage,
     depth: Vec<f32>,
 }
 
@@ -161,13 +164,13 @@ impl ViewProjection {
     }
 }
 
-fn render_edges(data: &BrepRenderData, view: ViewProjection) -> RgbImage {
-    let mut image = RgbImage::from_pixel(view.width, view.height, BACKGROUND);
+fn render_edges(data: &BrepRenderData, view: ViewProjection) -> RgbaImage {
+    let mut image = RgbaImage::from_pixel(view.width, view.height, BACKGROUND);
     draw_edges(&mut image, data, view);
     image
 }
 
-fn draw_edges(image: &mut RgbImage, data: &BrepRenderData, view: ViewProjection) {
+fn draw_edges(image: &mut RgbaImage, data: &BrepRenderData, view: ViewProjection) {
     for polyline in &data.edge_polylines {
         for segment in polyline.windows(2) {
             let start = view.project(segment[0]);
@@ -201,7 +204,7 @@ fn render_faces(bytes: &[u8], view: ViewProjection) -> Result<FacePass, String> 
         .blob
         .as_deref()
         .ok_or_else(|| "exported GLB has no binary mesh buffer".to_string())?;
-    let mut image = RgbImage::from_pixel(view.width, view.height, BACKGROUND);
+    let mut image = RgbaImage::from_pixel(view.width, view.height, BACKGROUND);
     let mut depth = vec![f32::INFINITY; view.width as usize * view.height as usize];
     let scene = gltf
         .default_scene()
@@ -218,7 +221,7 @@ fn rasterize_node(
     parent_transform: Mat4,
     blob: &[u8],
     view: ViewProjection,
-    image: &mut RgbImage,
+    image: &mut RgbaImage,
     depth: &mut [f32],
 ) -> Result<(), String> {
     let local_transform = Mat4::from_cols_array_2d(&node.transform().matrix());
@@ -246,7 +249,7 @@ fn rasterize_node(
                 .map(|indices| indices.into_u32().collect::<Vec<_>>())
                 .unwrap_or_else(|| (0..positions.len() as u32).collect());
             let color = material_color(primitive.material());
-            for triangle in indices.chunks_exact(3) {
+            for triangle in indices.as_chunks::<3>().0 {
                 let Some(a) = positions.get(triangle[0] as usize).copied() else {
                     return Err("GLB mesh primitive contains an invalid index".into());
                 };
@@ -266,13 +269,25 @@ fn rasterize_node(
     Ok(())
 }
 
-fn material_color(material: gltf::Material<'_>) -> Rgb<u8> {
+fn material_color(material: gltf::Material<'_>) -> Rgba<u8> {
     let [red, green, blue, alpha] = material.pbr_metallic_roughness().base_color_factor();
-    let composite = |channel: f32| channel * alpha + (1.0 - alpha);
-    Rgb([
-        linear_to_srgb_u8(composite(red)),
-        linear_to_srgb_u8(composite(green)),
-        linear_to_srgb_u8(composite(blue)),
+    let alpha = match material.alpha_mode() {
+        gltf::material::AlphaMode::Opaque => 1.0,
+        gltf::material::AlphaMode::Mask => {
+            if alpha < material.alpha_cutoff().unwrap_or(0.5) {
+                0.0
+            } else {
+                1.0
+            }
+        }
+        gltf::material::AlphaMode::Blend => alpha,
+    };
+    // PNG stores straight alpha: only RGB channels use the sRGB transfer function.
+    Rgba([
+        linear_to_srgb_u8(red),
+        linear_to_srgb_u8(green),
+        linear_to_srgb_u8(blue),
+        (alpha.clamp(0.0, 1.0) * 255.0).round() as u8,
     ])
 }
 
@@ -286,12 +301,24 @@ fn linear_to_srgb_u8(linear: f32) -> u8 {
     (srgb * 255.0).round() as u8
 }
 
-fn draw_triangle(image: &mut RgbImage, depth_buffer: &mut [f32], points: [ScreenPoint; 3], color: Rgb<u8>) {
+fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [ScreenPoint; 3], color: Rgba<u8>) {
+    // Fully transparent fragments must not hide faces or edges behind them.
+    if color[3] == 0 {
+        return;
+    }
     let edge = |a: ScreenPoint, b: ScreenPoint, x: f32, y: f32| (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x);
     let area = edge(points[0], points[1], points[2].x, points[2].y);
     if area.abs() <= f32::EPSILON {
         return;
     }
+    // glTF front faces wind counterclockwise. Projection flips Y, so this
+    // edge function gives front faces positive area and backfaces negative area.
+    let color = if area < 0.0 {
+        let [red, green, blue, alpha] = color.0;
+        Rgba([255 - red, 255 - green, 255 - blue, alpha])
+    } else {
+        color
+    };
     let max_pixel_x = image.width().saturating_sub(1) as f32;
     let max_pixel_y = image.height().saturating_sub(1) as f32;
     let min_x = points
@@ -341,7 +368,7 @@ fn draw_triangle(image: &mut RgbImage, depth_buffer: &mut [f32], points: [Screen
     }
 }
 
-fn draw_line(image: &mut RgbImage, start: (f32, f32), end: (f32, f32), line_width: f32) {
+fn draw_line(image: &mut RgbaImage, start: (f32, f32), end: (f32, f32), line_width: f32) {
     let dx = end.0 - start.0;
     let dy = end.1 - start.1;
     let length_squared = dx * dx + dy * dy;
@@ -376,7 +403,7 @@ fn draw_line(image: &mut RgbImage, start: (f32, f32), end: (f32, f32), line_widt
 }
 
 fn draw_depth_tested_line(
-    image: &mut RgbImage,
+    image: &mut RgbaImage,
     depth_buffer: &[f32],
     start: ScreenPoint,
     end: ScreenPoint,
@@ -450,9 +477,30 @@ mod tests {
     #[test]
     fn renders_glb_bytes() {
         let glb = fs::read(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/output.glb")).unwrap();
-        let image = render(&glb).unwrap().into_rgb8();
+        let image = render(&glb).unwrap().into_rgba8();
         assert_eq!(image.dimensions(), (OUTPUT_SIZE.x, OUTPUT_SIZE.y));
+        assert!(image.pixels().any(|pixel| pixel[3] == 0));
         assert!(image.pixels().any(|pixel| *pixel != BACKGROUND));
+    }
+
+    #[test]
+    fn material_colors_preserve_straight_alpha() {
+        for (mode, alpha, cutoff, expected_alpha) in [
+            ("BLEND", 0.5, 0.5, 128),
+            ("BLEND", 0.0, 0.5, 0),
+            ("BLEND", 1.0, 0.5, 255),
+            ("OPAQUE", 0.5, 0.5, 255),
+            ("MASK", 0.4, 0.5, 0),
+            ("MASK", 0.5, 0.5, 255),
+            ("MASK", 0.5, 0.6, 0),
+        ] {
+            let json = format!(
+                r#"{{"asset":{{"version":"2.0"}},"materials":[{{"alphaMode":"{mode}","alphaCutoff":{cutoff},"pbrMetallicRoughness":{{"baseColorFactor":[1.0,0.5,0.0,{alpha}]}}}}]}}"#
+            );
+            let gltf = gltf::Gltf::from_slice(json.as_bytes()).unwrap();
+            let color = material_color(gltf.materials().next().unwrap());
+            assert_eq!(color, Rgba([255, 188, 0, expected_alpha]), "{json}");
+        }
     }
 
     #[test]
@@ -487,24 +535,56 @@ mod tests {
 
     #[test]
     fn depth_tests_flat_faces() {
-        let mut image = RgbImage::from_pixel(8, 8, BACKGROUND);
+        let mut image = RgbaImage::from_pixel(8, 8, BACKGROUND);
         let mut depth = vec![f32::INFINITY; 64];
         let triangle = |depth| {
             [
                 ScreenPoint { x: 1.0, y: 1.0, depth },
-                ScreenPoint { x: 7.0, y: 1.0, depth },
                 ScreenPoint { x: 1.0, y: 7.0, depth },
+                ScreenPoint { x: 7.0, y: 1.0, depth },
             ]
         };
-        let near = Rgb([1, 2, 3]);
+        draw_triangle(&mut image, &mut depth, triangle(0.0), Rgba([255, 0, 0, 0]));
+        assert!(image.pixels().all(|pixel| *pixel == BACKGROUND));
+        assert!(depth.iter().all(|value| *value == f32::INFINITY));
+        let near = Rgba([1, 2, 3, 128]);
         draw_triangle(&mut image, &mut depth, triangle(1.0), near);
-        draw_triangle(&mut image, &mut depth, triangle(2.0), Rgb([4, 5, 6]));
+        draw_triangle(&mut image, &mut depth, triangle(2.0), Rgba([4, 5, 6, 255]));
         assert_eq!(*image.get_pixel(2, 2), near);
     }
 
     #[test]
+    fn backfaces_invert_rgb_and_preserve_alpha() {
+        let data = BrepRenderData {
+            edge_polylines: vec![vec![-Vec3::ONE, Vec3::ONE]],
+            ..Default::default()
+        };
+        let view = ViewProjection::from_edges(&data, 32, 32).unwrap();
+        // This counterclockwise triangle has a normal pointing toward the camera.
+        let front = [
+            view.project(-view.right - view.up),
+            view.project(view.right - view.up),
+            view.project(view.up),
+        ];
+        for alpha in [128, 255] {
+            let material = Rgba([255, 100, 0, alpha]);
+            for (points, expected) in [
+                (front, material),
+                ([front[0], front[2], front[1]], Rgba([0, 155, 255, alpha])),
+            ] {
+                let mut image = RgbaImage::from_pixel(32, 32, BACKGROUND);
+                let mut depth = vec![f32::INFINITY; 32 * 32];
+                draw_triangle(&mut image, &mut depth, points, material);
+                assert_eq!(*image.get_pixel(16, 16), expected);
+                assert!(depth[16 * 32 + 16].is_finite());
+                assert_eq!(*image.get_pixel(0, 0), BACKGROUND);
+            }
+        }
+    }
+
+    #[test]
     fn hides_edges_behind_the_face_depth_buffer() {
-        let mut image = RgbImage::from_pixel(8, 8, BACKGROUND);
+        let mut image = RgbaImage::from_pixel(8, 8, BACKGROUND);
         let depth = vec![0.0; 64];
         let point = |x, depth| ScreenPoint { x, y: 4.0, depth };
 
