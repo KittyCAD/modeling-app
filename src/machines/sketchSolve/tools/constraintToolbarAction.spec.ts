@@ -17,10 +17,10 @@ describe('constraintToolbarAction', () => {
     const objects = createSceneGraphDelta([pointA, pointB, line]).new_graph
       .objects
     const rustContext = createMockRustContext()
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
     const equipConstraintTool = vi.fn()
 
-    addConstraintMock.mockResolvedValue({
+    addConstraintsMock.mockResolvedValue({
       kclSource: { text: 'horizontal' },
       sceneGraphDelta: createSceneGraphDelta([pointA, pointB, line]),
       checkpointId: 1,
@@ -40,13 +40,80 @@ describe('constraintToolbarAction', () => {
       type: 'applied',
       toolName: 'horizontalConstraintTool',
     })
-    expect(addConstraintMock).toHaveBeenCalledWith(
+    expect(addConstraintsMock).toHaveBeenCalledWith(
       0,
       0,
-      {
-        type: 'Horizontal',
-        line: 10,
-      },
+      [
+        {
+          type: 'Horizontal',
+          line: 10,
+        },
+      ],
+      {},
+      true
+    )
+    expect(equipConstraintTool).not.toHaveBeenCalled()
+  })
+
+  it('applies coincident pairwise to preselected lines instead of equipping the tool', async () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const sceneGraphDelta = createSceneGraphDelta([
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+    ])
+    const rustContext = createMockRustContext()
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
+    const equipConstraintTool = vi.fn()
+
+    addConstraintsMock.mockResolvedValue({
+      kclSource: { text: 'coincident' },
+      sceneGraphDelta,
+      checkpointId: 1,
+    })
+
+    const result = await applyOrEquipConstraintToolFromToolbar({
+      toolName: 'coincidentConstraintTool',
+      selectedIds: [10, 11, 12],
+      objects: sceneGraphDelta.new_graph.objects,
+      rustContext,
+      sketchId: 0,
+      settings: {},
+      equipConstraintTool,
+    })
+
+    expect(result).toMatchObject({
+      type: 'applied',
+      toolName: 'coincidentConstraintTool',
+    })
+    expect(addConstraintsMock).toHaveBeenCalledTimes(1)
+    expect(addConstraintsMock).toHaveBeenCalledWith(
+      0,
+      0,
+      [
+        {
+          type: 'Coincident',
+          segments: [10, 11],
+        },
+        {
+          type: 'Coincident',
+          segments: [10, 12],
+        },
+      ],
       {},
       true
     )
@@ -57,7 +124,7 @@ describe('constraintToolbarAction', () => {
     const point = createPointApiObject({ id: 1 })
     const objects = createSceneGraphDelta([point]).new_graph.objects
     const rustContext = createMockRustContext()
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
     const equipConstraintTool = vi.fn()
 
     const result = await applyOrEquipConstraintToolFromToolbar({
@@ -75,7 +142,7 @@ describe('constraintToolbarAction', () => {
       toolName: 'horizontalConstraintTool',
     })
     expect(equipConstraintTool).toHaveBeenCalledWith('horizontalConstraintTool')
-    expect(addConstraintMock).not.toHaveBeenCalled()
+    expect(addConstraintsMock).not.toHaveBeenCalled()
   })
 
   it('equips symmetric instead of auto-applying so the axis can be confirmed explicitly', async () => {
@@ -102,7 +169,7 @@ describe('constraintToolbarAction', () => {
       axis,
     ]).new_graph.objects
     const rustContext = createMockRustContext()
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
     const equipConstraintTool = vi.fn()
 
     const result = await applyOrEquipConstraintToolFromToolbar({
@@ -119,7 +186,7 @@ describe('constraintToolbarAction', () => {
       type: 'equipped',
       toolName: 'symmetricConstraintTool',
     })
-    expect(addConstraintMock).not.toHaveBeenCalled()
+    expect(addConstraintsMock).not.toHaveBeenCalled()
     expect(equipConstraintTool).toHaveBeenCalledWith('symmetricConstraintTool')
   })
 })

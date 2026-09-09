@@ -286,6 +286,7 @@ export function createMockRustContext(): RustContext {
   return {
     addSegment: vi.fn(),
     addConstraint: vi.fn(),
+    addConstraints: vi.fn(),
     chainSegment: vi.fn(),
     editSegments: vi.fn(),
     editAngleConstraint: vi.fn(),

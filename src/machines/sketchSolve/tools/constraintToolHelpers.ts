@@ -232,13 +232,26 @@ function buildConstraintToolPayloads(
   const objectSelectionIds = getSelectionObjectIds(selectionIds)
 
   switch (toolName) {
-    case 'coincidentConstraintTool':
+    case 'coincidentConstraintTool': {
+      if (match.mode.id === 'line-line') {
+        const [anchorLineId, ...otherLineIds] = objectSelectionIds
+        if (anchorLineId === undefined || otherLineIds.length === 0) {
+          return null
+        }
+
+        return otherLineIds.map((lineId) => ({
+          type: 'Coincident',
+          segments: [anchorLineId, lineId],
+        }))
+      }
+
       return [
         {
           type: 'Coincident',
           segments: toConstraintSegments(selectionIds),
         },
       ]
+    }
     case 'midpointConstraintTool': {
       const midpointPair = toPair(selectionIds)
       if (!midpointPair) {
