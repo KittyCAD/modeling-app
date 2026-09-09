@@ -17,6 +17,7 @@ export const ZOOKEEPER_CLIENT_COMMANDS_FEATURE =
   'zookeeper_client_commands' as Feature
 export const CLIENT_COMMAND_PROTOCOL_VERSION = 1
 export const CLIENT_COMMAND_SCHEMA_REVISION = 1
+export const MAX_COMPLETED_CLIENT_COMMAND_RESPONSES = 128
 
 type JsonValue =
   | null
@@ -48,6 +49,33 @@ export interface ClientCommandResponse {
   status: ClientCommandResponseStatus
   result?: JsonValue
   error?: string
+}
+
+/** Retain a bounded result so a stable request ID cannot execute twice after reconnect. */
+export function rememberClientCommandResponse(
+  responses: Map<string, ClientCommandResponse>,
+  response: ClientCommandResponse
+) {
+  responses.delete(response.request_id)
+  responses.set(response.request_id, response)
+  while (responses.size > MAX_COMPLETED_CLIENT_COMMAND_RESPONSES) {
+    const oldestRequestId = responses.keys().next().value
+    if (oldestRequestId === undefined) {
+      return
+    }
+    responses.delete(oldestRequestId)
+  }
+}
+
+/** Rebind a cached terminal response to the catalog revision of a retry. */
+export function getRememberedClientCommandResponse(
+  responses: ReadonlyMap<string, ClientCommandResponse>,
+  request: ClientCommandRequest
+) {
+  const response = responses.get(request.request_id)
+  return response === undefined
+    ? undefined
+    : { ...response, catalog_revision: request.catalog_revision }
 }
 
 interface ClientCommandDefinition {

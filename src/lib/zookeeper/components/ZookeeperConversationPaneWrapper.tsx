@@ -19,7 +19,9 @@ import {
   type ExecuteClientCommandDependencies,
   executeClientCommand,
   getClientCommandTitle,
+  getRememberedClientCommandResponse,
   isClientCommandAvailable,
+  rememberClientCommandResponse,
   ZOOKEEPER_CLIENT_COMMANDS_FEATURE,
 } from '@src/lib/zookeeper/clientCommands'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
@@ -157,6 +159,7 @@ function useHandleZookeeperClientCommandRequests({
   commandScopes: readonly CommandScope[]
 }) {
   const acknowledgedRequestIds = useRef(new Set<string>())
+  const completedResponses = useRef(new Map<string, ClientCommandResponse>())
   const processingRequestId = useRef<string | undefined>(undefined)
   const pumpQueue = useRef<() => void>(() => undefined)
   const runtimeState = useRef({ commands, activeScopes, commandScopes })
@@ -193,6 +196,18 @@ function useHandleZookeeperClientCommandRequests({
 
       const schema = snapshot.context.clientCommandSchemaUpdate
       for (const request of snapshot.context.clientCommandQueue) {
+        const rememberedResponse = getRememberedClientCommandResponse(
+          completedResponses.current,
+          request
+        )
+        if (rememberedResponse !== undefined) {
+          sendResponse(rememberedResponse)
+          zookeeperManagerActor.send({
+            type: ZookeeperManagerTransitions.ClientCommandFinished,
+            requestId: request.request_id,
+          })
+          return
+        }
         if (acknowledgedRequestIds.current.has(request.request_id)) continue
 
         acknowledgedRequestIds.current.add(request.request_id)
@@ -207,13 +222,15 @@ function useHandleZookeeperClientCommandRequests({
               : undefined
 
         if (rejection) {
-          sendResponse({
+          const response = {
             type: 'client_command_response',
             request_id: request.request_id,
             catalog_revision: request.catalog_revision,
             status: 'rejected',
             error: rejection,
-          })
+          } satisfies ClientCommandResponse
+          rememberClientCommandResponse(completedResponses.current, response)
+          sendResponse(response)
           zookeeperManagerActor.send({
             type: ZookeeperManagerTransitions.ClientCommandFinished,
             requestId: request.request_id,
@@ -257,22 +274,36 @@ function useHandleZookeeperClientCommandRequests({
           await waitForIdleState({ systemIOActor })
         },
       })
-        .then(sendResponse)
+        .then((response) => {
+          rememberClientCommandResponse(completedResponses.current, response)
+          sendResponse(response)
+        })
         .catch((error: unknown) => {
-          sendResponse({
+          const response = {
             type: 'client_command_response',
             request_id: request.request_id,
             catalog_revision: request.catalog_revision,
             status: 'failed',
             error: error instanceof Error ? error.message : String(error),
-          })
+          } satisfies ClientCommandResponse
+          rememberClientCommandResponse(completedResponses.current, response)
+          sendResponse(response)
         })
         .finally(() => {
           processingRequestId.current = undefined
-          zookeeperManagerActor.send({
-            type: ZookeeperManagerTransitions.ClientCommandFinished,
-            requestId: request.request_id,
-          })
+          if (
+            zookeeperManagerActor.getSnapshot().context
+              .activeClientCommandRequestId === request.request_id
+          ) {
+            zookeeperManagerActor.send({
+              type: ZookeeperManagerTransitions.ClientCommandFinished,
+              requestId: request.request_id,
+            })
+          } else {
+            // A reconnect may have queued the same stable request ID while the
+            // original execution was settling. Pump it through the cache.
+            pumpQueue.current()
+          }
         })
     }
 
@@ -304,14 +335,14 @@ function useHandleZookeeperClientCommandRequests({
         return
       }
 
-      ws.send(
-        JSON.stringify({
-          type: 'client_command_response',
-          request_id: request.request_id,
-          catalog_revision: request.catalog_revision,
-          status: 'cancelled',
-        } satisfies ClientCommandResponse)
-      )
+      const response = {
+        type: 'client_command_response',
+        request_id: request.request_id,
+        catalog_revision: request.catalog_revision,
+        status: 'cancelled',
+      } satisfies ClientCommandResponse
+      rememberClientCommandResponse(completedResponses.current, response)
+      ws.send(JSON.stringify(response))
       zookeeperManagerActor.send({
         type: ZookeeperManagerTransitions.ClientCommandFinished,
         requestId,

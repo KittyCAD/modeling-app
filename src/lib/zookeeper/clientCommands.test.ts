@@ -1,12 +1,15 @@
-import { exportSave } from '@src/lib/exportSave'
 import type { Command } from '@src/lib/commandTypes'
+import { exportSave } from '@src/lib/exportSave'
 import {
   CLIENT_COMMAND_SCHEMA_REVISION,
+  type ClientCommandResponse,
   createClientCommandSchemaUpdate,
   type ExecuteClientCommandDependencies,
   executeClientCommand,
+  getRememberedClientCommandResponse,
   isClientCommandAvailable,
   parseClientCommandRequest,
+  rememberClientCommandResponse,
 } from '@src/lib/zookeeper/clientCommands'
 import {
   DEFAULT_COMMAND_SCOPES,
@@ -117,6 +120,30 @@ describe('Zookeeper client commands', () => {
     expect(parseClientCommandRequest({ delta: { delta: 'hello' } })).toBe(
       undefined
     )
+  })
+
+  it('replays a bounded terminal response for a stable request id', () => {
+    const responses = new Map<string, ClientCommandResponse>()
+    rememberClientCommandResponse(responses, {
+      type: 'client_command_response',
+      request_id: exportRequest.request_id,
+      catalog_revision: exportRequest.catalog_revision,
+      status: 'succeeded',
+      result: { file_name: 'main.step' },
+    })
+
+    expect(
+      getRememberedClientCommandResponse(responses, {
+        ...exportRequest,
+        catalog_revision: 2,
+      })
+    ).toEqual({
+      type: 'client_command_response',
+      request_id: exportRequest.request_id,
+      catalog_revision: 2,
+      status: 'succeeded',
+      result: { file_name: 'main.step' },
+    })
   })
 
   it('exports through the active client Engine and waits for the save flow', async () => {
