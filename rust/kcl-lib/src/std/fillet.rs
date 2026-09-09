@@ -133,6 +133,8 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let tangent_chain: Option<bool> = args.get_kw_arg_opt("tangentChain", &RuntimeType::bool(), exec_state)?;
+    let tangent_chain = tangent_chain.unwrap_or(exec_state.kcl_version() > KclVersion::V2);
     let edge_cut_version: EdgeCutVersion = edge_cut_number
         .map(|num| {
             num.try_into().map_err(|()| {
@@ -168,6 +170,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 tolerance,
                 csg_algorithm,
                 edge_cut_version,
+                tangent_chain,
                 tag,
             };
             let value = inner_fillet_with_engine_refs(solid, edge_refs, params, exec_state, args).await?;
@@ -182,6 +185,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 csg_algorithm,
                 tag,
                 edge_cut_version,
+                tangent_chain,
                 exec_state,
                 args,
             )
@@ -209,6 +213,7 @@ async fn inner_fillet(
     csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
     edge_cut_version: EdgeCutVersion,
+    tangent_chain: bool,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -279,6 +284,7 @@ async fn inner_fillet(
                     .strategy(Default::default())
                     .object_id(solid.id)
                     .version(edge_cut_version)
+                    .tangent_chain(tangent_chain)
                     .tolerance(LengthUnit(
                         tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
@@ -318,6 +324,7 @@ struct FilletEdgeRefParams {
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     edge_cut_version: EdgeCutVersion,
+    tangent_chain: bool,
     tag: Option<TagNode>,
 }
 
@@ -375,6 +382,7 @@ async fn inner_fillet_with_engine_refs(
                     .extra_face_ids(extra_face_ids)
                     .use_legacy(params.csg_algorithm.is_legacy())
                     .version(params.edge_cut_version)
+                    .tangent_chain(params.tangent_chain)
                     .build(),
             ),
         )
@@ -437,6 +445,66 @@ mod tests {
             result.issues()
         );
         assert_eq!(emitted_cut_edges_version(&result), EdgeCutVersion::V2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tangent_chain_requires_kcl_3_and_is_sent_to_engine() {
+        let body = r#"
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $edge)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+solid = extrude(profile, length = 10)
+fillet(solid, tags = [edge], radius = 1, tangentChain = true)
+"#;
+
+        let kcl_2_error = parse_execute(&format!("@settings(kclVersion = 2.0)\n{body}"))
+            .await
+            .expect_err("KCL 2.0 should reject tangentChain");
+        assert!(kcl_2_error.to_string().contains("only available in KCL 3.0"));
+
+        let result = parse_execute(&format!("@settings(kclVersion = \"3.0-preview\")\n{body}"))
+            .await
+            .unwrap();
+        let tangent_chain = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command.tangent_chain),
+                _ => None,
+            })
+            .expect("fillet should emit a Solid3dCutEdges command");
+        assert!(tangent_chain);
+
+        let default_body = body.replace(", tangentChain = true", "");
+        let result = parse_execute(&format!("@settings(kclVersion = \"3.0-preview\")\n{default_body}"))
+            .await
+            .unwrap();
+        let tangent_chain = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command.tangent_chain),
+                _ => None,
+            })
+            .expect("fillet should emit a Solid3dCutEdges command");
+        assert!(tangent_chain, "tangentChain should default to true after KCL 2");
+
+        let disabled_body = body.replace("tangentChain = true", "tangentChain = false");
+        let result = parse_execute(&format!("@settings(kclVersion = \"3.0-preview\")\n{disabled_body}"))
+            .await
+            .unwrap();
+        let tangent_chain = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command.tangent_chain),
+                _ => None,
+            })
+            .expect("fillet should emit a Solid3dCutEdges command");
+        assert!(!tangent_chain, "an explicit false should override the default");
     }
 
     /// For a given KCL version, and optional `fillet(version = )` version,
