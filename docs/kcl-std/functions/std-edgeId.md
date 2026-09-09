@@ -9,7 +9,7 @@ Given an edge index, find its ID. In general, you should prefer tagging edges to
 
 ```kcl
 edgeId(
-  @body: Solid,
+  @body: Solid | ImportedGeometry,
   index?: number(_),
   closestTo?: Point3d,
 ): Edge
@@ -21,7 +21,7 @@ edgeId(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges we're trying to find | Yes |
+| `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The body whose edges we're trying to find. | Yes |
 | `index` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Edge to identify. The index is a stable ordering of edges, used when you can't get the usual ID of an edge. | No |
 | `closestTo` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | Query the edge closest to this point. Uses absolute global coordinates. | No |
 

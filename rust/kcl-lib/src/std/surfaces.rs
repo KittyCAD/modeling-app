@@ -1,5 +1,6 @@
 //! Standard library appearance.
 
+use std::collections::BTreeMap;
 use std::collections::HashSet;
 
 use anyhow::Result;
@@ -19,6 +20,7 @@ use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
 use crate::execution::ConsumedSolidOperation;
 use crate::execution::ExecState;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
@@ -127,7 +129,11 @@ pub(crate) async fn query_body_type(
 }
 
 pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let body = args.get_unlabeled_kw_arg(
+        "body",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let faces: Option<Vec<FaceTag>> = args.get_kw_arg_opt(
         "faces",
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
@@ -156,17 +162,16 @@ pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     };
     inner_delete_face(body, faces, face_indices, exec_state, args)
         .await
-        .map(Box::new)
-        .map(|value| KclValue::Solid { value })
+        .map(KclValue::from)
 }
 
 async fn inner_delete_face(
-    mut body: Solid,
+    mut body: GeometryWithImportedGeometry,
     tagged_faces: Option<Vec<FaceTag>>,
     face_indices: Option<Vec<u32>>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Solid, KclError> {
+) -> Result<GeometryWithImportedGeometry, KclError> {
     // Validate args:
     // User has to give us SOMETHING to delete.
     if tagged_faces.is_none() && face_indices.is_none() {
@@ -183,16 +188,21 @@ async fn inner_delete_face(
         return Ok(body);
     }
 
+    let body_id = body.id(&args.ctx).await?;
+    let is_imported_geometry = matches!(&body, GeometryWithImportedGeometry::ImportedGeometry(_));
+
     // Chamfers and fillets are batched until the end of the file so they do not
     // invalidate source edge IDs too early. If deleteFace targets one of those
     // generated faces, the edge cut must be flushed before the delete command
     // references it.
-    exec_state
-        .flush_batch_for_solids(
-            ModelingCmdMeta::from_args(exec_state, &args),
-            std::slice::from_ref(&body),
-        )
-        .await?;
+    if let Some(solid) = body.as_solid() {
+        exec_state
+            .flush_batch_for_solids(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                std::slice::from_ref(solid),
+            )
+            .await?;
+    }
 
     // Combine the list of faces, both tagged and indexed.
     let tagged_faces = tagged_faces.unwrap_or_default();
@@ -211,7 +221,7 @@ async fn inner_delete_face(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::Solid3dGetFaceUuid::builder()
-                        .object_id(body.id)
+                        .object_id(body_id)
                         .face_index(face_index)
                         .build(),
                 ),
@@ -232,36 +242,75 @@ async fn inner_delete_face(
         face_ids.insert(inner_resp.face_id);
     }
 
-    // Now that we've got all the faces, delete them all.
-    let delete_face_response = exec_state
-        .send_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(
-                mcmd::EntityDeleteChildren::builder()
-                    .entity_id(body.id)
-                    .child_entity_ids(face_ids)
-                    .build(),
-            ),
-        )
-        .await?;
+    let mut face_ids_by_parent = BTreeMap::new();
+    if is_imported_geometry {
+        let mut ordered_face_ids = face_ids.into_iter().collect::<Vec<_>>();
+        ordered_face_ids.sort_unstable();
+        for face_id in ordered_face_ids {
+            let parent_response = exec_state
+                .send_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(mcmd::EntityGetParentId::builder().entity_id(face_id).build()),
+                )
+                .await?;
+            let OkWebSocketResponseData::Modeling {
+                modeling_response:
+                    OkModelingCmdResponse::EntityGetParentId(mout::EntityGetParentId {
+                        entity_id: parent_id, ..
+                    }),
+            } = parent_response
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Engine returned invalid response, it should have returned EntityGetParentId but it returned {parent_response:?}"
+                    ),
+                    vec![args.source_range],
+                )));
+            };
+            face_ids_by_parent
+                .entry(parent_id)
+                .or_insert_with(HashSet::new)
+                .insert(face_id);
+        }
+    } else {
+        face_ids_by_parent.insert(body_id, face_ids);
+    }
 
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityDeleteChildren(mout::EntityDeleteChildren { .. }),
-    } = delete_face_response
-    else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Engine returned invalid response, it should have returned EntityDeleteChildren but it returned {delete_face_response:?}"
-            ),
-            vec![args.source_range],
-        )));
-    };
+    // Imported assemblies can place selected faces under different nested
+    // bodies. Delete each face from its immediate parent body.
+    for (parent_id, child_face_ids) in face_ids_by_parent {
+        let delete_face_response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::EntityDeleteChildren::builder()
+                        .entity_id(parent_id)
+                        .child_entity_ids(child_face_ids)
+                        .build(),
+                ),
+            )
+            .await?;
+
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::EntityDeleteChildren(mout::EntityDeleteChildren { .. }),
+        } = delete_face_response
+        else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Engine returned invalid response, it should have returned EntityDeleteChildren but it returned {delete_face_response:?}"
+                ),
+                vec![args.source_range],
+            )));
+        };
+    }
 
     // Return the same body, it just has fewer faces.
     // And it's _probably_ a polysurface now, because if it was a solid before,
     // it's _probably_ a surface after some required face was deleted and the volume
     // is no longer closed. If it was a surface before, it's still a surface.
-    body.best_guess_body_type = Some(BodyType::Surface);
+    if let GeometryWithImportedGeometry::Solid(solid) = &mut body {
+        solid.best_guess_body_type = Some(BodyType::Surface);
+    }
     Ok(body)
 }
 
@@ -299,7 +348,7 @@ async fn resolve_blend_edge(edge: KclValue, exec_state: &mut ExecState, args: &A
         KclValue::TagIdentifier(tag) => {
             let tagged_edge = args.get_tag_engine_info(exec_state, &tag)?;
             Ok(BoundedEdge {
-                face_id: tagged_edge.geometry.id(),
+                face_id: tagged_edge.body_id,
                 edge_id: Some(tagged_edge.id),
                 edge_specifier: None,
                 lower_bound: 0.0,
