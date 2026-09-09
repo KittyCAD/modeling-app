@@ -672,6 +672,24 @@ export fn assert(
 ) {}
 
 
+/// Select a nested body from imported geometry.
+/// Use the child-index path reported by the imported model's topology. The returned body can be
+/// passed to operations and topology functions just like the root imported geometry.
+/// ```kcl,norun
+/// @(targetRepresentation = brep)
+/// import "assembly.step" as assembly
+///
+/// bracket = bodyOf(assembly, path = [3, 7])
+/// bracketFace = faceId(bracket, index = 4)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn bodyOf(
+  /// Imported geometry containing the nested body.
+  @body: ImportedGeometry,
+  /// Child-index path from `body` to the nested body.
+  path: [number(Count); 1+],
+): ImportedGeometry {}
+
 /// Given a face index, find its ID.
 /// In general, you should prefer tagging faces to using this function. Use this function if
 /// you can't tag a face. For example, if the face comes from imported geometry in a .STEP file,
@@ -688,8 +706,8 @@ export fn assert(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn faceId(
-  /// The solid whose faces we're trying to find
-  @body: Solid,
+  /// The body whose faces we're trying to find.
+  @body: Solid | ImportedGeometry,
   /// Face to identify.
   /// The index is a stable ordering of faces, used when you can't get the
   /// usual ID of a face.
@@ -716,8 +734,8 @@ export fn faceId(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn edgeId(
-  /// The solid whose edges we're trying to find
-  @body: Solid,
+  /// The body whose edges we're trying to find.
+  @body: Solid | ImportedGeometry,
   /// Edge to identify.
   /// The index is a stable ordering of edges, used when you can't get the
   /// usual ID of an edge.

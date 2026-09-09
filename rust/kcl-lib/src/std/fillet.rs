@@ -21,6 +21,7 @@ use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::FilletSurface;
 use crate::execution::GeoMeta;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::KclVersion;
 use crate::execution::ModelingCmdMeta;
@@ -126,14 +127,18 @@ pub(super) async fn parse_tagged_edge_inputs(
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let body: GeometryWithImportedGeometry = args.get_unlabeled_kw_arg(
+        "solid",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
-    let edge_cut_version: EdgeCutVersion = edge_cut_number
+    let requested_edge_cut_version: Option<EdgeCutVersion> = edge_cut_number
         .map(|num| {
             num.try_into().map_err(|()| {
                 KclError::new_semantic(KclErrorDetails::new(
@@ -142,8 +147,13 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 ))
             })
         })
-        .transpose()?
-        .unwrap_or_else(|| default_edge_cut_version(exec_state.kcl_version()));
+        .transpose()?;
+    let edge_cut_version = edge_cut_version_for_body(
+        requested_edge_cut_version,
+        &body,
+        exec_state.kcl_version(),
+        args.source_range,
+    )?;
 
     // Edge specifiers are object-shaped payloads, so there is no narrow RuntimeType for them yet.
     // Keep this broad at the boundary and validate the shape in parse_tagged_edge_inputs.
@@ -153,7 +163,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let edge_inputs = parse_tagged_edge_inputs(
         edge_refs,
         tags,
-        Some(solid.as_ref()),
+        body.as_solid(),
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to fillet edges",
@@ -170,12 +180,12 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 edge_cut_version,
                 tag,
             };
-            let value = inner_fillet_with_engine_refs(solid, edge_refs, params, exec_state, args).await?;
-            Ok(KclValue::Solid { value })
+            let value = inner_fillet_with_engine_refs(body, edge_refs, params, exec_state, args).await?;
+            Ok(KclValue::from(value))
         }
         TaggedEdgeInputs::Tags(tags) => {
             let value = inner_fillet(
-                solid,
+                body,
                 radius,
                 tags,
                 tolerance,
@@ -186,7 +196,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 args,
             )
             .await?;
-            Ok(KclValue::Solid { value })
+            Ok(KclValue::from(value))
         }
     }
 }
@@ -200,9 +210,30 @@ pub(super) fn default_edge_cut_version(kcl_version: KclVersion) -> EdgeCutVersio
     }
 }
 
+pub(super) fn edge_cut_version_for_body(
+    requested: Option<EdgeCutVersion>,
+    body: &GeometryWithImportedGeometry,
+    kcl_version: KclVersion,
+    source_range: SourceRange,
+) -> Result<EdgeCutVersion, KclError> {
+    if matches!(body, GeometryWithImportedGeometry::ImportedGeometry(_)) {
+        if let Some(requested) = requested
+            && requested != EdgeCutVersion::V2
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Imported geometry edge cuts require version = 2".to_owned(),
+                vec![source_range],
+            )));
+        }
+        return Ok(EdgeCutVersion::V2);
+    }
+
+    Ok(requested.unwrap_or_else(|| default_edge_cut_version(kcl_version)))
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_fillet(
-    solid: Box<Solid>,
+    mut body: GeometryWithImportedGeometry,
     radius: TyF64,
     tags: Vec<(EdgeReference, SourceRange)>,
     tolerance: Option<TyF64>,
@@ -211,7 +242,7 @@ async fn inner_fillet(
     edge_cut_version: EdgeCutVersion,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<GeometryWithImportedGeometry, KclError> {
     // If you try and tag multiple edges with a tagged fillet, we want to return an
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && tags.len() > 1 {
@@ -228,8 +259,9 @@ async fn inner_fillet(
             backtrace: Default::default(),
         }));
     }
+    reject_tagged_imported_edge_cut(&body, tag.as_ref(), &args)?;
 
-    let mut solid = solid.clone();
+    let body_id = body.id(&args.ctx).await?;
     let mut edge_ids = Vec::new();
     let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
     for (edge_ref, source_range) in &tags {
@@ -240,7 +272,7 @@ async fn inner_fillet(
             EdgeReference::Uuid(_) => String::new(),
         };
         for edge_id in ids {
-            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, body_id, edge_id, &args).await
                 && let [a, b] = face_ids.as_slice()
             {
                 if !tag_identifier.is_empty() {
@@ -268,49 +300,53 @@ async fn inner_fillet(
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
     }
-    exec_state
-        .batch_edge_cut_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(
-                mcmd::Solid3dCutEdges::builder()
-                    .use_legacy(csg_algorithm.is_legacy())
-                    .edge_ids(edge_ids.clone())
-                    .extra_face_ids(extra_face_ids)
-                    .strategy(Default::default())
-                    .object_id(solid.id)
-                    .version(edge_cut_version)
-                    .tolerance(LengthUnit(
-                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
-                    ))
-                    .cut_type(CutTypeV2::Fillet {
-                        radius: LengthUnit(radius.to_mm()),
-                        second_length: None,
-                    })
-                    .build(),
-            ),
-        )
-        .await?;
-
-    let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Fillet {
+    batch_edge_cut_for_body(
+        exec_state,
+        &args,
         id,
-        edge_id,
-        radius: radius.clone(),
-        tag: Box::new(tag.clone()),
-    });
-    solid.edge_cuts.extend(new_edge_cuts);
+        &body,
+        ModelingCmd::from(
+            mcmd::Solid3dCutEdges::builder()
+                .use_legacy(csg_algorithm.is_legacy())
+                .edge_ids(edge_ids.clone())
+                .extra_face_ids(extra_face_ids)
+                .strategy(Default::default())
+                .object_id(body_id)
+                .version(edge_cut_version)
+                .tolerance(LengthUnit(
+                    tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                ))
+                .cut_type(CutTypeV2::Fillet {
+                    radius: LengthUnit(radius.to_mm()),
+                    second_length: None,
+                })
+                .build(),
+        ),
+    )
+    .await?;
 
-    if let Some(ref tag) = tag {
-        solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
-            face_id: id,
-            tag: Some(tag.clone()),
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        }));
+    if let GeometryWithImportedGeometry::Solid(solid) = &mut body {
+        let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Fillet {
+            id,
+            edge_id,
+            radius: radius.clone(),
+            tag: Box::new(tag.clone()),
+        });
+        solid.edge_cuts.extend(new_edge_cuts);
+
+        if let Some(ref tag) = tag {
+            solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
+                face_id: id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
 
-    Ok(solid)
+    Ok(body)
 }
 
 struct FilletEdgeRefParams {
@@ -322,12 +358,12 @@ struct FilletEdgeRefParams {
 }
 
 async fn inner_fillet_with_engine_refs(
-    solid: Box<Solid>,
+    mut body: GeometryWithImportedGeometry,
     edge_references: Vec<kcmc::shared::EdgeSpecifier>,
     params: FilletEdgeRefParams,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<GeometryWithImportedGeometry, KclError> {
     if edge_references.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
@@ -343,8 +379,9 @@ async fn inner_fillet_with_engine_refs(
             backtrace: Default::default(),
         }));
     }
+    reject_tagged_imported_edge_cut(&body, params.tag.as_ref(), &args)?;
 
-    let mut solid = solid.clone();
+    let body_id = body.id(&args.ctx).await?;
 
     let id = exec_state.next_uuid();
     let num_extra_ids = edge_references.len().saturating_sub(1);
@@ -353,47 +390,80 @@ async fn inner_fillet_with_engine_refs(
         extra_face_ids.push(exec_state.next_uuid());
     }
 
-    exec_state
-        .batch_edge_cut_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(
-                mcmd::Solid3dCutEdgeReferences::builder()
-                    .object_id(solid.id)
-                    .edges_references(edge_references.clone())
-                    .cut_type(CutTypeV2::Fillet {
-                        radius: LengthUnit(params.radius.to_mm()),
-                        second_length: None,
-                    })
-                    .tolerance(LengthUnit(
-                        params
-                            .tolerance
-                            .as_ref()
-                            .map(|t| t.to_mm())
-                            .unwrap_or(DEFAULT_TOLERANCE_MM),
-                    ))
-                    .strategy(Default::default())
-                    .extra_face_ids(extra_face_ids)
-                    .use_legacy(params.csg_algorithm.is_legacy())
-                    .version(params.edge_cut_version)
-                    .build(),
-            ),
-        )
-        .await?;
+    batch_edge_cut_for_body(
+        exec_state,
+        &args,
+        id,
+        &body,
+        ModelingCmd::from(
+            mcmd::Solid3dCutEdgeReferences::builder()
+                .object_id(body_id)
+                .edges_references(edge_references.clone())
+                .cut_type(CutTypeV2::Fillet {
+                    radius: LengthUnit(params.radius.to_mm()),
+                    second_length: None,
+                })
+                .tolerance(LengthUnit(
+                    params
+                        .tolerance
+                        .as_ref()
+                        .map(|t| t.to_mm())
+                        .unwrap_or(DEFAULT_TOLERANCE_MM),
+                ))
+                .strategy(Default::default())
+                .extra_face_ids(extra_face_ids)
+                .use_legacy(params.csg_algorithm.is_legacy())
+                .version(params.edge_cut_version)
+                .build(),
+        ),
+    )
+    .await?;
 
-    solid.pending_edge_cut_ids.push(id);
+    if let GeometryWithImportedGeometry::Solid(solid) = &mut body {
+        solid.pending_edge_cut_ids.push(id);
 
-    if let Some(ref tag) = params.tag {
-        solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
-            face_id: id,
-            tag: Some(tag.clone()),
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        }));
+        if let Some(ref tag) = params.tag {
+            solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
+                face_id: id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
 
-    Ok(solid)
+    Ok(body)
+}
+
+pub(super) async fn batch_edge_cut_for_body(
+    exec_state: &mut ExecState,
+    args: &Args,
+    id: uuid::Uuid,
+    body: &GeometryWithImportedGeometry,
+    cmd: ModelingCmd,
+) -> Result<(), KclError> {
+    let meta = ModelingCmdMeta::from_args_id(exec_state, args, id);
+    if matches!(body, GeometryWithImportedGeometry::ImportedGeometry(_)) {
+        exec_state.batch_modeling_cmd(meta, cmd).await
+    } else {
+        exec_state.batch_edge_cut_cmd(meta, cmd).await
+    }
+}
+
+pub(super) fn reject_tagged_imported_edge_cut(
+    body: &GeometryWithImportedGeometry,
+    tag: Option<&TagNode>,
+    args: &Args,
+) -> Result<(), KclError> {
+    if tag.is_some() && matches!(body, GeometryWithImportedGeometry::ImportedGeometry(_)) {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "Tagging the generated face of an imported geometry edge cut is not supported".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -401,6 +471,39 @@ mod tests {
     use super::*;
     use crate::execution::ExecTestResults;
     use crate::execution::parse_execute;
+    use crate::execution::parse_execute_with_project_dir;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fillet_accepts_imported_geometry() {
+        let code = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+@(targetRepresentation = brep)
+import "cube.step" as cube
+
+selectedEdge = edgeId(cube, index = 0)
+result = fillet(cube, tags = [selectedEdge], radius = 1mm)
+"#;
+        let project_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("inputs");
+        let result = parse_execute_with_project_dir(code, Some(crate::TypedPath(project_dir)))
+            .await
+            .unwrap();
+        let body_id = match result.variable("result") {
+            KclValue::ImportedGeometry(value) => value.id,
+            value => panic!("expected fillet to preserve imported geometry, got {value:?}"),
+        };
+        let cut = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command),
+                _ => None,
+            })
+            .expect("fillet should emit a Solid3dCutEdges command");
+        assert_eq!(cut.object_id, body_id);
+        assert_eq!(cut.version, EdgeCutVersion::V2);
+    }
 
     /// Test what version of fillet each KCL version uses by default.
     #[tokio::test(flavor = "multi_thread")]

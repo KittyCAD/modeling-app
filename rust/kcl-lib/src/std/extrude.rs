@@ -812,7 +812,7 @@ async fn inner_extrude(
                         SketchSurface::Face(face) => face.parent_solid.solid_id,
                         SketchSurface::Plane(_) => sketch.id,
                     },
-                    None => face_id,
+                    None => face_tag.body_id().unwrap_or(face_id),
                 };
                 BeingExtruded::Face { face_id, solid_id }
             }

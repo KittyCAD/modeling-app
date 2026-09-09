@@ -147,9 +147,13 @@ export type PointCtor = { position: ApiPoint2d<Expr>, };
  */
 export type PrimitiveFacePlane = { 
 /**
- * Engine ID of the solid which owns the face.
+ * Engine ID of the KCL body used to reference the face.
  */
-solidId: string, index: number, };
+solidId: string, index: number, 
+/**
+ * Child-index path from the KCL body to the engine solid which owns the face.
+ */
+bodyPath?: Array<number> | null, };
 
 export type Radius = { arc: ApiObjectId, radius: Number, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 

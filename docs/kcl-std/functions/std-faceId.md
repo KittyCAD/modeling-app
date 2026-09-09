@@ -9,7 +9,7 @@ Given a face index, find its ID. In general, you should prefer tagging faces to 
 
 ```kcl
 faceId(
-  @body: Solid,
+  @body: Solid | ImportedGeometry,
   index: number(_),
 ): TaggedFace
 ```
@@ -20,7 +20,7 @@ faceId(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose faces we're trying to find | Yes |
+| `body` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The body whose faces we're trying to find. | Yes |
 | `index` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Face to identify. The index is a stable ordering of faces, used when you can't get the usual ID of a face. | Yes |
 
 ### Returns
