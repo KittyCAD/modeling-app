@@ -1,4 +1,5 @@
 ///```kcl
+///@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
 ///stockLength = 100mm
 ///stockWidth = 60mm
 ///stockHeight = 20mm
