@@ -225,9 +225,12 @@ pub enum Plane {
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct PrimitiveFacePlane {
-    /// Engine ID of the solid which owns the face.
+    /// Engine ID of the KCL body used to reference the face.
     pub solid_id: uuid::Uuid,
     pub index: usize,
+    /// Child-index path from the KCL body to the engine solid which owns the face.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub body_path: Option<Vec<usize>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

@@ -852,7 +852,7 @@ async fn inner_extrude(
                         SketchSurface::Face(face) => face.parent_solid.solid_id,
                         SketchSurface::Plane(_) => sketch.id,
                     },
-                    None => face_id,
+                    None => face_tag.body_id().unwrap_or(face_id),
                 };
                 BeingExtruded::Face { face_id, solid_id }
             }
@@ -1407,7 +1407,8 @@ pub(crate) async fn do_post_extrude<'a>(
                             id: surface.get_id(),
                             surface: Some(surface.clone()),
                             path: None,
-                            geometry: geometry.clone(),
+                            body_id: solid.id,
+                            geometry: geometry.clone().into(),
                         },
                     )],
                     meta: vec![Metadata {
