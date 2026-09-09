@@ -2690,8 +2690,7 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       nodeToEdit,
       {
         // Keep canonical sweeps on their own body, just like graph edges.
-        lastChildLookup:
-          primitiveData.bodySelection.artifact?.type === 'compositeSolid',
+        lastChildLookup: primitiveData.bodySelection.artifact?.type !== 'sweep',
         artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )
