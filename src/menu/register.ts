@@ -313,12 +313,12 @@ export function modelingMenuCallbackMostActions({
         type: 'Find and select command',
         data: { name: 'Shell', groupId: 'modeling' },
       })
-    } else if (data.menuLabel === 'Design.Insert from project file') {
+    } else if (data.menuLabel === 'Design.Import from project file') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           groupId: 'code',
-          name: 'Insert',
+          name: 'Import',
         },
       })
     }
