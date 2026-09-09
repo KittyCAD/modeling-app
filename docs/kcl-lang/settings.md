@@ -61,5 +61,9 @@ Valid properties are:
       replaces a cut edge with a new face, so look up an edge (for example with
       `getOppositeEdge` or `getNextAdjacentEdge`) before the `fillet` or `chamfer` that
       consumes it, and store the result in a variable.
+    - Every imported file that declares its own `kclVersion` must declare the same version as
+      the file being executed. Mixing versions in one program is an error that names both
+      files. Imported files that declare no `kclVersion` are fine and run under the executed
+      file's version. The standard library is exempt.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).
