@@ -15,6 +15,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
 use crate::execution::ExecState;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -28,17 +29,21 @@ use crate::std::faces::FaceSpecifier;
 
 /// Find the plane of a given face.
 pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let body = args.get_unlabeled_kw_arg(
+        "solid",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let face = args.get_kw_arg("face", &RuntimeType::tagged_face_or_segment(), exec_state)?;
 
-    inner_plane_of(solid, face, exec_state, &args)
+    inner_plane_of(body, face, exec_state, &args)
         .await
         .map(Box::new)
         .map(|value| KclValue::Plane { value })
 }
 
 pub(crate) async fn inner_plane_of(
-    solid: crate::execution::Solid,
+    mut body: GeometryWithImportedGeometry,
     face: FaceSpecifier,
     exec_state: &mut ExecState,
     args: &Args,
@@ -94,17 +99,85 @@ pub(crate) async fn inner_plane_of(
         });
     }
 
+    body.id(&args.ctx).await?;
+
     // Flush the batch for our fillets/chamfers if there are any.
-    exec_state
-        .flush_batch_for_solids(
-            ModelingCmdMeta::from_args(exec_state, args),
-            std::slice::from_ref(&solid),
-        )
-        .await?;
+    if let Some(solid) = body.as_solid() {
+        exec_state
+            .flush_batch_for_solids(
+                ModelingCmdMeta::from_args(exec_state, args),
+                std::slice::from_ref(solid),
+            )
+            .await?;
+    }
 
     // Query the engine to learn what plane, if any, this face is on.
-    let face_id = face.face_id(&solid, exec_state, args, true).await?;
-    let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane_id);
+    let face_id = face.face_id(&body, exec_state, args, true).await?;
+    let plane_info = face_plane_info(face_id, Some(plane_id), exec_state, args).await?;
+
+    let plane_object_id = exec_state.next_object_id();
+    let plane_object = crate::front::Object {
+        id: plane_object_id,
+        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: ArtifactId::new(plane_id),
+        source: SourceRef::new(args.source_range, args.node_path.clone()),
+    };
+    exec_state.add_scene_object(plane_object, args.source_range);
+
+    Ok(Plane {
+        artifact_id: plane_id.into(),
+        id: plane_id,
+        object_id: Some(plane_object_id),
+        kind: PlaneKind::Custom,
+        info: plane_info,
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    })
+}
+
+pub(crate) async fn face_plane_info(
+    face_id: uuid::Uuid,
+    query_id: Option<uuid::Uuid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<PlaneInfo, KclError> {
+    if args.ctx.no_engine_commands().await {
+        return Ok(PlaneInfo {
+            origin: crate::execution::Point3d {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                units: Some(UnitLength::Millimeters),
+            },
+            x_axis: crate::execution::Point3d {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+                units: None,
+            },
+            y_axis: crate::execution::Point3d {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+                units: None,
+            },
+            z_axis: crate::execution::Point3d {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+                units: None,
+            },
+        });
+    }
+
+    let meta = if let Some(query_id) = query_id {
+        ModelingCmdMeta::from_args_id(exec_state, args, query_id)
+    } else {
+        ModelingCmdMeta::from_args(exec_state, args)
+    };
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar::builder().object_id(face_id).build());
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
     let OkWebSocketResponseData::Modeling {
@@ -158,35 +231,13 @@ pub(crate) async fn inner_plane_of(
 
     // Planes should always be right-handed, but due to an engine bug sometimes they're not.
     // Test for right-handedness: cross(X,Y) is Z
-    let plane_info = crate::execution::PlaneInfo {
+    let plane_info = PlaneInfo {
         origin,
         x_axis,
         y_axis,
         z_axis,
     };
-    let plane_info = plane_info.make_right_handed();
-
-    let plane_object_id = exec_state.next_object_id();
-    let plane_object = crate::front::Object {
-        id: plane_object_id,
-        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-        label: Default::default(),
-        comments: Default::default(),
-        artifact_id: ArtifactId::new(plane_id),
-        source: SourceRef::new(args.source_range, args.node_path.clone()),
-    };
-    exec_state.add_scene_object(plane_object, args.source_range);
-
-    Ok(Plane {
-        artifact_id: plane_id.into(),
-        id: plane_id,
-        object_id: Some(plane_object_id),
-        kind: PlaneKind::Custom,
-        info: plane_info,
-        meta: vec![Metadata {
-            source_range: args.source_range,
-        }],
-    })
+    Ok(plane_info.make_right_handed())
 }
 
 /// Offset a plane by a distance along its normal.

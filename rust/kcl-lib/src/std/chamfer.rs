@@ -18,23 +18,26 @@ use crate::execution::EdgeCut;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::KclVersion;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
-use crate::execution::Solid;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::csg::CsgAlgorithm;
 use crate::std::fillet::EdgeReference;
-use crate::std::fillet::default_edge_cut_version;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let body: GeometryWithImportedGeometry = args.get_unlabeled_kw_arg(
+        "solid",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
     let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
@@ -46,7 +49,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     let tangent_chain: Option<bool> = args.get_kw_arg_opt("tangentChain", &RuntimeType::bool(), exec_state)?;
     let tangent_chain = tangent_chain.unwrap_or(exec_state.kcl_version() >= KclVersion::V3Preview);
-    let edge_cut_version: EdgeCutVersion = edge_cut_number
+    let requested_edge_cut_version: Option<EdgeCutVersion> = edge_cut_number
         .map(|num| {
             num.try_into().map_err(|()| {
                 KclError::new_semantic(KclErrorDetails::new(
@@ -55,8 +58,13 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 ))
             })
         })
-        .transpose()?
-        .unwrap_or_else(|| default_edge_cut_version(exec_state.kcl_version()));
+        .transpose()?;
+    let edge_cut_version = super::fillet::edge_cut_version_for_body(
+        requested_edge_cut_version,
+        &body,
+        exec_state.kcl_version(),
+        args.source_range,
+    )?;
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -68,7 +76,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let edge_inputs = super::fillet::parse_tagged_edge_inputs(
         edge_refs,
         tags,
-        Some(solid.as_ref()),
+        body.as_solid(),
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to chamfer edges",
@@ -79,7 +87,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     match edge_inputs {
         super::fillet::TaggedEdgeInputs::EngineRefs(edge_refs) => {
             let value = inner_chamfer_with_engine_refs(
-                solid,
+                body,
                 length,
                 edge_refs,
                 second_length,
@@ -92,14 +100,14 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 args,
             )
             .await?;
-            Ok(KclValue::Solid { value })
+            Ok(KclValue::from(value))
         }
         super::fillet::TaggedEdgeInputs::Tags(tags) => match edge_cut_version {
             // TODO: When we change the default algorithm to V2, we need to make
             // it so that V0 (default) takes the route below.
             EdgeCutVersion::V0 | EdgeCutVersion::V1 => {
                 let value = inner_chamfer(
-                    solid,
+                    body,
                     length,
                     tags,
                     second_length,
@@ -113,11 +121,11 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     args,
                 )
                 .await?;
-                Ok(KclValue::Solid { value })
+                Ok(KclValue::from(value))
             }
             EdgeCutVersion::V2 | _ => {
                 let value = inner_chamfer_v2(
-                    solid,
+                    body,
                     length,
                     tags,
                     second_length,
@@ -131,7 +139,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     args,
                 )
                 .await?;
-                Ok(KclValue::Solid { value })
+                Ok(KclValue::from(value))
             }
         },
     }
@@ -139,7 +147,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_chamfer(
-    solid: Box<Solid>,
+    mut body: GeometryWithImportedGeometry,
     length: TyF64,
     tags: Vec<(EdgeReference, crate::SourceRange)>,
     second_length: Option<TyF64>,
@@ -151,7 +159,7 @@ async fn inner_chamfer(
     tangent_chain: bool,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<GeometryWithImportedGeometry, KclError> {
     // If you try and tag multiple edges with a tagged chamfer, we want to return an
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && tags.len() > 1 {
@@ -160,6 +168,7 @@ async fn inner_chamfer(
             vec![args.source_range],
         )));
     }
+    super::fillet::reject_tagged_imported_edge_cut(&body, tag.as_ref(), &args)?;
 
     if angle.is_some() && second_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -210,14 +219,14 @@ async fn inner_chamfer(
         }
     };
 
-    let mut solid = solid.clone();
+    let body_id = body.id(&args.ctx).await?;
     let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
     for (edge_ref, source_range) in &tags {
         let edge_id = match edge_ref {
             EdgeReference::Uuid(u) => *u,
             EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
         };
-        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, body_id, edge_id, &args).await
             && let [a, b] = face_ids.as_slice()
         {
             let tag_identifier = match edge_ref {
@@ -245,52 +254,56 @@ async fn inner_chamfer(
         let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
         for edge_id in edge_ids {
             let id = exec_state.next_uuid();
-            exec_state
-                .batch_edge_cut_cmd(
-                    ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                    ModelingCmd::from(
-                        mcmd::Solid3dCutEdges::builder()
-                            .use_legacy(csg_algorithm.is_legacy())
-                            .edge_ids(vec![edge_id])
-                            .extra_face_ids(vec![])
-                            .strategy(strategy)
-                            .object_id(solid.id)
-                            // We can let the user set this in the future.
-                            .tolerance(LengthUnit(DEFAULT_TOLERANCE))
-                            .cut_type(cut_type)
-                            .version(edge_cut_version)
-                            .tangent_chain(tangent_chain)
-                            .build(),
-                    ),
-                )
-                .await?;
-
-            solid.edge_cuts.push(EdgeCut::Chamfer {
+            super::fillet::batch_edge_cut_for_body(
+                exec_state,
+                &args,
                 id,
-                edge_id,
-                length: length.clone(),
-                tag: Box::new(tag.clone()),
-            });
+                &body,
+                ModelingCmd::from(
+                    mcmd::Solid3dCutEdges::builder()
+                        .use_legacy(csg_algorithm.is_legacy())
+                        .edge_ids(vec![edge_id])
+                        .extra_face_ids(vec![])
+                        .strategy(strategy)
+                        .object_id(body_id)
+                        // We can let the user set this in the future.
+                        .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                        .cut_type(cut_type)
+                        .version(edge_cut_version)
+                        .tangent_chain(tangent_chain)
+                        .build(),
+                ),
+            )
+            .await?;
 
-            if let Some(ref tag) = tag {
-                solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-                    face_id: id,
-                    tag: Some(tag.clone()),
-                    geo_meta: GeoMeta {
-                        id,
-                        metadata: args.source_range.into(),
-                    },
-                }));
+            if let GeometryWithImportedGeometry::Solid(solid) = &mut body {
+                solid.edge_cuts.push(EdgeCut::Chamfer {
+                    id,
+                    edge_id,
+                    length: length.clone(),
+                    tag: Box::new(tag.clone()),
+                });
+
+                if let Some(ref tag) = tag {
+                    solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                        face_id: id,
+                        tag: Some(tag.clone()),
+                        geo_meta: GeoMeta {
+                            id,
+                            metadata: args.source_range.into(),
+                        },
+                    }));
+                }
             }
         }
     }
 
-    Ok(solid)
+    Ok(body)
 }
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_chamfer_v2(
-    solid: Box<Solid>,
+    mut body: GeometryWithImportedGeometry,
     length: TyF64,
     tags: Vec<(EdgeReference, crate::SourceRange)>,
     second_length: Option<TyF64>,
@@ -302,7 +315,7 @@ async fn inner_chamfer_v2(
     tangent_chain: bool,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<GeometryWithImportedGeometry, KclError> {
     // If you try and tag multiple edges with a tagged chamfer, we want to return an
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && tags.len() > 1 {
@@ -311,6 +324,7 @@ async fn inner_chamfer_v2(
             vec![args.source_range],
         )));
     }
+    super::fillet::reject_tagged_imported_edge_cut(&body, tag.as_ref(), &args)?;
     if tags.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
@@ -368,7 +382,7 @@ async fn inner_chamfer_v2(
         }
     };
 
-    let mut solid = solid.clone();
+    let body_id = body.id(&args.ctx).await?;
     let mut edge_ids = Vec::new();
     let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
     for (edge_ref, source_range) in &tags {
@@ -379,7 +393,7 @@ async fn inner_chamfer_v2(
             EdgeReference::Uuid(_) => String::new(),
         };
         for edge_id in ids {
-            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, body_id, edge_id, &args).await
                 && let [a, b] = face_ids.as_slice()
             {
                 if !tag_identifier.is_empty() {
@@ -407,51 +421,55 @@ async fn inner_chamfer_v2(
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
     }
-    exec_state
-        .batch_edge_cut_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(
-                mcmd::Solid3dCutEdges::builder()
-                    .use_legacy(csg_algorithm.is_legacy())
-                    .edge_ids(edge_ids.clone())
-                    .extra_face_ids(extra_face_ids)
-                    .strategy(strategy)
-                    .object_id(solid.id)
-                    // We can let the user set this in the future.
-                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
-                    .cut_type(cut_type)
-                    .version(edge_cut_version)
-                    .tangent_chain(tangent_chain)
-                    .build(),
-            ),
-        )
-        .await?;
-
-    let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Chamfer {
+    super::fillet::batch_edge_cut_for_body(
+        exec_state,
+        &args,
         id,
-        edge_id,
-        length: length.clone(),
-        tag: Box::new(tag.clone()),
-    });
-    solid.edge_cuts.extend(new_edge_cuts);
+        &body,
+        ModelingCmd::from(
+            mcmd::Solid3dCutEdges::builder()
+                .use_legacy(csg_algorithm.is_legacy())
+                .edge_ids(edge_ids.clone())
+                .extra_face_ids(extra_face_ids)
+                .strategy(strategy)
+                .object_id(body_id)
+                // We can let the user set this in the future.
+                .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                .cut_type(cut_type)
+                .version(edge_cut_version)
+                .tangent_chain(tangent_chain)
+                .build(),
+        ),
+    )
+    .await?;
 
-    if let Some(ref tag) = tag {
-        solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-            face_id: id,
-            tag: Some(tag.clone()),
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        }));
+    if let GeometryWithImportedGeometry::Solid(solid) = &mut body {
+        let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Chamfer {
+            id,
+            edge_id,
+            length: length.clone(),
+            tag: Box::new(tag.clone()),
+        });
+        solid.edge_cuts.extend(new_edge_cuts);
+
+        if let Some(ref tag) = tag {
+            solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                face_id: id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
 
-    Ok(solid)
+    Ok(body)
 }
 
 #[expect(clippy::too_many_arguments)]
 async fn inner_chamfer_with_engine_refs(
-    solid: Box<Solid>,
+    mut body: GeometryWithImportedGeometry,
     length: TyF64,
     edge_references: Vec<kcmc::shared::EdgeSpecifier>,
     second_length: Option<TyF64>,
@@ -462,13 +480,14 @@ async fn inner_chamfer_with_engine_refs(
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<GeometryWithImportedGeometry, KclError> {
     if tag.is_some() && edge_references.len() > 1 {
         return Err(KclError::new_type(KclErrorDetails::new(
             "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each edgeRef.".to_string(),
             vec![args.source_range],
         )));
     }
+    super::fillet::reject_tagged_imported_edge_cut(&body, tag.as_ref(), &args)?;
 
     if angle.is_some() && second_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -508,40 +527,44 @@ async fn inner_chamfer_with_engine_refs(
         extra_face_ids.push(exec_state.next_uuid());
     }
 
-    let mut solid = solid.clone();
-    exec_state
-        .batch_edge_cut_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(
-                mcmd::Solid3dCutEdgeReferences::builder()
-                    .object_id(solid.id)
-                    .edges_references(edge_references)
-                    .cut_type(cut_type)
-                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
-                    .strategy(strategy)
-                    .extra_face_ids(extra_face_ids)
-                    .use_legacy(csg_algorithm.is_legacy())
-                    .version(edge_cut_version)
-                    .tangent_chain(tangent_chain)
-                    .build(),
-            ),
-        )
-        .await?;
+    let body_id = body.id(&args.ctx).await?;
+    super::fillet::batch_edge_cut_for_body(
+        exec_state,
+        &args,
+        id,
+        &body,
+        ModelingCmd::from(
+            mcmd::Solid3dCutEdgeReferences::builder()
+                .object_id(body_id)
+                .edges_references(edge_references)
+                .cut_type(cut_type)
+                .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                .strategy(strategy)
+                .extra_face_ids(extra_face_ids)
+                .use_legacy(csg_algorithm.is_legacy())
+                .version(edge_cut_version)
+                .tangent_chain(tangent_chain)
+                .build(),
+        ),
+    )
+    .await?;
 
-    solid.pending_edge_cut_ids.push(id);
+    if let GeometryWithImportedGeometry::Solid(solid) = &mut body {
+        solid.pending_edge_cut_ids.push(id);
 
-    if let Some(ref tag) = tag {
-        solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-            face_id: id,
-            tag: Some(tag.clone()),
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        }));
+        if let Some(ref tag) = tag {
+            solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                face_id: id,
+                tag: Some(tag.clone()),
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        }
     }
 
-    Ok(solid)
+    Ok(body)
 }
 
 #[cfg(test)]
@@ -549,11 +572,103 @@ mod tests {
     use super::*;
     use crate::execution::ExecTestResults;
     use crate::execution::parse_execute;
+    use crate::execution::parse_execute_with_project_dir;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn chamfer_accepts_imported_geometry() {
+        let code = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+@(targetRepresentation = brep)
+import "cube.step" as cube
+
+selectedEdge = edgeId(cube, index = 0)
+result = chamfer(cube, tags = [selectedEdge], length = 1mm)
+"#;
+        let project_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("inputs");
+        let result = parse_execute_with_project_dir(code, Some(crate::TypedPath(project_dir)))
+            .await
+            .unwrap();
+        let body_id = match result.variable("result") {
+            KclValue::ImportedGeometry(value) => value.id,
+            value => panic!("expected chamfer to preserve imported geometry, got {value:?}"),
+        };
+        let cut = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Solid3dCutEdges(command) => Some(command),
+                _ => None,
+            })
+            .expect("chamfer should emit a Solid3dCutEdges command");
+        assert_eq!(cut.object_id, body_id);
+        assert_eq!(cut.version, EdgeCutVersion::V2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn chamfer_accepts_face_references_on_nested_imported_bodies() {
+        for kcl_version in ["2.0", "3.0"] {
+            let code = format!(
+                r#"@settings(kclVersion = {kcl_version})
+
+@(targetRepresentation = brep)
+import "cube.step" as cube
+
+body = bodyOf(cube, path = [0])
+faceA = faceId(body, index = 0)
+faceB = faceId(body, index = 1)
+result = chamfer(body, edges = [{{ sideFaces = [faceA, faceB] }}], length = 1mm)
+"#
+            );
+            let project_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("tests")
+                .join("inputs");
+            let result = parse_execute_with_project_dir(&code, Some(crate::TypedPath(project_dir)))
+                .await
+                .unwrap();
+            assert!(
+                result
+                    .issues()
+                    .iter()
+                    .all(|issue| issue.severity != crate::errors::Severity::Error),
+                "issues: {:#?}",
+                result.issues()
+            );
+            let body_id = match result.variable("body") {
+                KclValue::ImportedGeometry(value) => value.id,
+                value => panic!("expected an imported body, got {value:?}"),
+            };
+            assert!(matches!(result.variable("result"), KclValue::ImportedGeometry(value) if value.id == body_id));
+            let face_ids = ["faceA", "faceB"].map(|name| match result.variable(name) {
+                KclValue::TagIdentifier(tag) => {
+                    let info = tag.get_cur_info().unwrap();
+                    assert_eq!(info.body_id, body_id);
+                    info.id
+                }
+                value => panic!("expected an imported face tag, got {value:?}"),
+            });
+            let cut = result
+                .root_module_artifact_commands()
+                .iter()
+                .find_map(|artifact_command| match &artifact_command.command {
+                    ModelingCmd::Solid3dCutEdgeReferences(command) => Some(command),
+                    _ => None,
+                })
+                .expect("chamfer should emit an edge-reference cut");
+            assert_eq!(cut.object_id, body_id);
+            assert_eq!(cut.version, EdgeCutVersion::V2);
+            assert_eq!(cut.tangent_chain, kcl_version != "2.0");
+            assert_eq!(cut.edges_references.len(), 1);
+            assert_eq!(cut.edges_references[0].side_faces, face_ids);
+        }
+    }
 
     /// Test what version of chamfer each KCL version uses by default.
     #[tokio::test(flavor = "multi_thread")]
     async fn chamfer_default_depends_on_kcl_version() {
         assert_eq!(emitted_chamfer_version("2.0", None).await, EdgeCutVersion::V1);
+        assert_eq!(emitted_chamfer_version("3.0", None).await, EdgeCutVersion::V2);
         assert_eq!(
             emitted_chamfer_version("\"3.0-preview\"", None).await,
             EdgeCutVersion::V2

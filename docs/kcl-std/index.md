@@ -11,6 +11,7 @@ layout: manual
 * [**std**](/docs/kcl-std/modules/std)
   * [`assert`](/docs/kcl-std/functions/std-assert)
   * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
+  * [`bodyOf`](/docs/kcl-std/functions/std-bodyOf)
   * [`clone`](/docs/kcl-std/functions/std-clone)
   * [`edgeId`](/docs/kcl-std/functions/std-edgeId)
   * [`faceId`](/docs/kcl-std/functions/std-faceId)
