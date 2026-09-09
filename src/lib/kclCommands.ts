@@ -30,6 +30,7 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { isStepFile } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
+import { findImportedFile } from '@src/lib/importCommand'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
@@ -194,14 +195,46 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       // Keep the persisted shortcut identity stable across the display rename.
       id: 'code:Insert',
       name: 'Import',
+      redirect: ({ argumentsToSubmit }) => {
+        if (typeof argumentsToSubmit.path !== 'string') return
+        const importedFile = findImportedFile(
+          commandProps.kclManager.ast,
+          argumentsToSubmit.path
+        )
+        if (
+          !importedFile ||
+          importedFile.node.selector.type !== 'None' ||
+          !importedFile.node.selector.alias
+        )
+          return
+
+        return {
+          name: 'Clone',
+          groupId: 'modeling',
+          argDefaultValues: {
+            objects: {
+              graphSelections: [importedFile.selection],
+              otherSelections: [],
+            },
+          },
+        }
+      },
       description: 'Import from a file in the current project directory',
       icon: 'import',
       groupId: 'code',
       hide: 'web',
       needsReview: true,
-      reviewValidation: async () => {
+      reviewValidation: async ({ argumentsToSubmit }) => {
         if (commandProps.kclManager.isExecuting) {
           return new Error(EXECUTING_MESSAGE)
+        }
+        if (
+          typeof argumentsToSubmit.path === 'string' &&
+          findImportedFile(commandProps.kclManager.ast, argumentsToSubmit.path)
+        ) {
+          return new Error(
+            'This file is already imported, use the Clone command instead.'
+          )
         }
       },
       args: {
@@ -229,20 +262,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               })
             }
             return providedOptions
-          },
-          validation: async ({ data }) => {
-            const importExists = commandProps.kclManager.ast.body.find(
-              (n) =>
-                n.type === 'ImportStatement' &&
-                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
-                  (n.path.type === 'Foreign' && n.path.path === data.path))
-            )
-            if (importExists) {
-              return 'This file is already imported, use the Clone command instead.'
-              // TODO: see if we can transition to the clone command, see #6515
-            }
-
-            return true
           },
         },
         localName: {

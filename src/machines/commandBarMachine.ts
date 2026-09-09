@@ -4,6 +4,7 @@ import type {
   Command,
   CommandArgument,
   CommandArgumentWithName,
+  CommandRedirect,
   CommandReviewValidationDetails,
   KclCommandValue,
 } from '@src/lib/commandTypes'
@@ -14,7 +15,7 @@ import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import toast from 'react-hot-toast'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import { assertEvent, assign, enqueueActions, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
@@ -61,6 +62,7 @@ export type CommandBarInput = {
 }
 export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
+  commandRedirect?: CommandRedirect
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
   reviewValidationError?: string
@@ -142,6 +144,27 @@ export const commandBarMachine = setup({
     events: {} as CommandBarMachineEvent,
   },
   actions: {
+    'Resolve command redirect': assign({
+      commandRedirect: ({ context }) => {
+        const redirect = context.selectedCommand?.redirect?.(context)
+        return redirect &&
+          context.commands.some(
+            (command) =>
+              command.name === redirect.name &&
+              command.groupId === redirect.groupId
+          )
+          ? redirect
+          : undefined
+      },
+    }),
+    'Redirect command': enqueueActions(({ context, enqueue }) => {
+      if (context.commandRedirect) {
+        enqueue.raise({
+          type: 'Find and select command',
+          data: context.commandRedirect,
+        })
+      }
+    }),
     enqueueValidArgsToSubmit: assign({
       argumentsToSubmit: ({ context, event }) => {
         if (event.type !== 'xstate.done.actor.validateSingleArgument') return {}
@@ -211,6 +234,7 @@ export const commandBarMachine = setup({
     }),
     'Clear selected command': assign({
       selectedCommand: undefined,
+      commandRedirect: undefined,
       reviewValidationError: undefined,
       reviewValidationDetails: undefined,
     }),
@@ -313,6 +337,7 @@ export const commandBarMachine = setup({
     }),
     'Clear argument data': assign({
       selectedCommand: undefined,
+      commandRedirect: undefined,
       currentArgument: undefined,
       argumentsToSubmit: {},
       reviewValidationError: undefined,
@@ -368,6 +393,8 @@ export const commandBarMachine = setup({
     }),
   },
   guards: {
+    'Has command redirect': ({ context }) =>
+      context.commandRedirect !== undefined,
     'Command needs review': ({ context }) =>
       // Edit flows are (for now) always considered to need review
       context.selectedCommand?.needsReview ||
@@ -652,8 +679,17 @@ export const commandBarMachine = setup({
       },
     },
 
+    'Redirecting command': {
+      entry: 'Redirect command',
+    },
+
     'Command selected': {
+      entry: 'Resolve command redirect',
       always: [
+        {
+          target: 'Redirecting command',
+          guard: 'Has command redirect',
+        },
         {
           target: 'Closed',
           guard: 'Command has no arguments',
@@ -752,6 +788,11 @@ export const commandBarMachine = setup({
     },
 
     'Checking Arguments': {
+      entry: 'Resolve command redirect',
+      always: {
+        target: 'Redirecting command',
+        guard: 'Has command redirect',
+      },
       invoke: {
         src: 'Validate all arguments',
         id: 'validateArguments',
