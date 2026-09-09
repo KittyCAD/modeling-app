@@ -10,7 +10,7 @@ description: Operations executed subtract_regression02.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed subtract_regression02.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -91,7 +91,7 @@ description: Operations executed subtract_regression02.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -122,7 +122,7 @@ description: Operations executed subtract_regression02.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab"
               }
             }
           ]
@@ -178,7 +178,7 @@ description: Operations executed subtract_regression02.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []
@@ -188,7 +188,7 @@ description: Operations executed subtract_regression02.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
             }
           },
           "sourceRange": []
@@ -216,7 +216,7 @@ description: Operations executed subtract_regression02.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -247,7 +247,7 @@ description: Operations executed subtract_regression02.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
               }
             }
           ]
@@ -303,7 +303,7 @@ description: Operations executed subtract_regression02.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
           }
         },
         "sourceRange": []
@@ -313,7 +313,7 @@ description: Operations executed subtract_regression02.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
             }
           },
           "sourceRange": []

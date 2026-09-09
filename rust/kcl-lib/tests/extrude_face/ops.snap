@@ -10,7 +10,7 @@ description: Operations executed extrude_face.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed extrude_face.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -80,7 +80,7 @@ description: Operations executed extrude_face.kcl
         "value": {
           "type": "TagIdentifier",
           "value": "c",
-          "artifact_id": "[uuid]"
+          "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
         },
         "sourceRange": []
       },
@@ -136,7 +136,7 @@ description: Operations executed extrude_face.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
           }
         },
         "sourceRange": []

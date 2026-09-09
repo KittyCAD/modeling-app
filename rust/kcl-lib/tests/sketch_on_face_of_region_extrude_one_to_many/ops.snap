@@ -541,15 +541,15 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
               },
               "meta": {
                 "type": "Object",
@@ -557,7 +557,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe"
                     }
                   }
                 }
@@ -590,7 +590,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
           }
         },
         "sourceRange": []
@@ -1379,19 +1379,19 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "53a9149e-1246-5c44-9e3c-558201ff438c"
               },
               "meta": {
                 "type": "Object",
@@ -1399,7 +1399,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
                     }
                   }
                 }
@@ -1432,7 +1432,7 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
           }
         },
         "sourceRange": []
