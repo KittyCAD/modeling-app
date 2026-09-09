@@ -34,9 +34,18 @@ export type DefaultPlaneSelection = {
 }
 
 export type EnginePrimitiveSelection = {
+  /** Order in which this item was added to the current multi-selection. */
+  selectionOrder?: number
   type: 'enginePrimitive'
   entityId: string
+  /** Immediate engine body which owns the selected primitive. */
   parentEntityId?: string
+  /** Nearest engine ancestor which can be expressed as a KCL body. */
+  kclBodyId?: ArtifactId
+  /** Artifact type of the KCL body, used to expose only compatible commands. */
+  kclBodyArtifactType?: Artifact['type']
+  /** Child-index path from the KCL body to the engine body which owns the primitive. */
+  bodyPath?: number[]
   primitiveIndex: number
   primitiveType: EntityType
 }
@@ -80,9 +89,14 @@ export type EdgeRefFromOpArgs = {
 export type EngineTopologyFallback = {
   parentId: string
   primitiveIndex: number
+  kclBodyId?: ArtifactId
+  kclBodyArtifactType?: Artifact['type']
+  bodyPath?: number[]
 }
 
 export interface Selection {
+  /** Order in which this item was added to the current multi-selection. */
+  selectionOrder?: number
   entityRef?: EntityReference
   artifact?: Artifact
   codeRef?: CodeRef

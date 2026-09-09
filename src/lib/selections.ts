@@ -30,14 +30,16 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   createCallExpressionStdLibKw,
   createExpressionStatement,
-  createLabeledArg,
-  createLiteral,
   createLocalName,
   createMemberExpression,
   nonCodeMetaEmpty,
 } from '@src/lang/create'
 import { programTextEqual } from '@src/lang/programTextEqual'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
+  createPrimitiveBodyExpression,
+  createPrimitiveIndexCallExpression,
+} from '@src/lang/modifyAst/enginePrimitiveReference'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
@@ -110,6 +112,9 @@ import type RustContext from '@src/lib/rustContext'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
+  getEnginePrimitiveSelectionFromSelection,
+  getKclBodyIdFromEnginePrimitiveSelection,
+  TOPOLOGY_BODY_ARTIFACT_TYPES,
 } from '@src/lib/primitiveBodySelection'
 import { err, isErr } from '@src/lib/trap'
 import {
@@ -252,6 +257,24 @@ async function resolveSweepParentEntityIdForEdge(
     }
   }
   return undefined
+}
+
+async function getEntityIndexForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<number | undefined> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'entity_get_index',
+      entity_id: entityId,
+    },
+  })
+  if (!isModelingResponse(response)) return undefined
+  const indexResponse = response.resp.data.modeling_response
+  if (indexResponse.type !== 'entity_get_index') return undefined
+  return indexResponse.data.entity_index
 }
 
 async function getResolvableIntersectionInfoForRegion(
@@ -405,17 +428,49 @@ export async function getPrimitiveSelectionForEntity(
 
   const entityGetPrimitiveIndex = primitiveIndexResponse.data
 
-  const parentEntityId = await resolveSweepParentEntityIdForEdge(
+  const parentEntityId = await getParentEntityIdForEntity(
     entityId,
-    engineCommandManager,
-    artifactGraph
+    engineCommandManager
   )
-  if (!parentEntityId) return null
+  let bodyReference = parentEntityId
+    ? await getKclBodyReferenceForPrimitiveParent(
+        parentEntityId,
+        artifactGraph,
+        engineCommandManager
+      )
+    : undefined
+  if (!bodyReference) {
+    const nativeBodyId = await resolveSweepParentEntityIdForEdge(
+      entityId,
+      engineCommandManager,
+      artifactGraph
+    )
+    const nativeBody = nativeBodyId
+      ? artifactGraph.get(nativeBodyId)
+      : undefined
+    if (nativeBody) {
+      bodyReference = {
+        kclBodyId: nativeBody.id,
+        artifactType: nativeBody.type,
+        bodyPath: [],
+      }
+    }
+  }
+  if (!parentEntityId && !bodyReference) return null
 
   return {
     type: 'enginePrimitive',
     entityId,
-    parentEntityId,
+    parentEntityId: parentEntityId ?? bodyReference?.kclBodyId,
+    ...(bodyReference && bodyReference.kclBodyId !== parentEntityId
+      ? { kclBodyId: bodyReference.kclBodyId }
+      : {}),
+    ...(bodyReference
+      ? { kclBodyArtifactType: bodyReference.artifactType }
+      : {}),
+    ...(bodyReference?.bodyPath.length
+      ? { bodyPath: bodyReference.bodyPath }
+      : {}),
     primitiveIndex: entityGetPrimitiveIndex.primitive_index,
     primitiveType: entityGetPrimitiveIndex.entity_type,
   }
@@ -441,7 +496,64 @@ const BODY_REFERENCE_ARTIFACT_TYPES: Artifact['type'][] = [
   'compositeSolid',
   'pattern',
   'helix',
+  'importedGeometry',
 ]
+
+const MAX_ENGINE_PARENT_DEPTH = 32
+
+async function getKclBodyReferenceForPrimitiveParent(
+  parentEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<
+  | {
+      kclBodyId: string
+      artifactType: Artifact['type']
+      bodyPath: number[]
+    }
+  | undefined
+> {
+  const visited = new Set<string>()
+  let candidateId = parentEntityId
+  const bodyPath: number[] = []
+
+  while (visited.size < MAX_ENGINE_PARENT_DEPTH && !visited.has(candidateId)) {
+    visited.add(candidateId)
+
+    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+      candidateId,
+      artifactGraph,
+      { lookUpPatternCopies: true }
+    )
+    if (bodySelection?.artifact) {
+      return {
+        kclBodyId: candidateId,
+        artifactType: bodySelection.artifact.type,
+        bodyPath,
+      }
+    }
+
+    let parentId: string | undefined
+    let childIndex: number | undefined
+    try {
+      const parentAndIndex = await Promise.all([
+        getParentEntityIdForEntity(candidateId, engineCommandManager),
+        getEntityIndexForEntity(candidateId, engineCommandManager),
+      ])
+      parentId = parentAndIndex[0]
+      childIndex = parentAndIndex[1]
+    } catch {
+      return undefined
+    }
+    if (!parentId || childIndex === undefined) {
+      return undefined
+    }
+    bodyPath.unshift(childIndex)
+    candidateId = parentId
+  }
+
+  return undefined
+}
 
 export function isReferenceableEnginePrimitiveSelection(
   selection: EnginePrimitiveSelection
@@ -455,13 +567,16 @@ function isBodyReferenceArtifact(
   artifact: Artifact | undefined
 ): artifact is Extract<
   Artifact,
-  { type: 'sweep' | 'compositeSolid' | 'pattern' | 'helix' }
+  {
+    type: 'sweep' | 'compositeSolid' | 'pattern' | 'helix' | 'importedGeometry'
+  }
 > {
   return (
     artifact?.type === 'sweep' ||
     artifact?.type === 'compositeSolid' ||
     artifact?.type === 'pattern' ||
-    artifact?.type === 'helix'
+    artifact?.type === 'helix' ||
+    artifact?.type === 'importedGeometry'
   )
 }
 
@@ -951,15 +1066,16 @@ function createPrimitiveIndexReferenceExpr({
   kclManager,
   wasmInstance,
 }: SelectionExpressionBuilderContext): Expr | null {
-  if (!primitiveSelection.parentEntityId) {
+  const kclBodyId = getKclBodyIdFromEnginePrimitiveSelection(primitiveSelection)
+  if (!kclBodyId) {
     return null
   }
 
   const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-    primitiveSelection.parentEntityId,
+    kclBodyId,
     artifactGraph,
     {
-      bodyArtifactTypes: BODY_REFERENCE_ARTIFACT_TYPES,
+      bodyArtifactTypes: TOPOLOGY_BODY_ARTIFACT_TYPES,
       codeRefLookup: 'first',
       lookUpPatternCopies: true,
     }
@@ -976,22 +1092,26 @@ function createPrimitiveIndexReferenceExpr({
     undefined,
     {
       lastChildLookup: true,
-      artifactTypeFilter: BODY_REFERENCE_ARTIFACT_TYPES,
+      artifactTypeFilter: TOPOLOGY_BODY_ARTIFACT_TYPES,
     }
   )
   if (err(bodyVariables) || bodyVariables.exprs.length === 0) {
     return null
   }
 
-  const bodyExpr = bodyVariables.exprs[0]
+  const bodyExpr = createPrimitiveBodyExpression(
+    structuredClone(bodyVariables.exprs[0]),
+    primitiveSelection.bodyPath,
+    wasmInstance
+  )
   const functionName =
     primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
-  return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
-    createLabeledArg(
-      'index',
-      createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
-    ),
-  ])
+  return createPrimitiveIndexCallExpression(
+    functionName,
+    bodyExpr,
+    primitiveSelection.primitiveIndex,
+    wasmInstance
+  )
 }
 
 const selectionExpressionApproaches: SelectionExpressionApproach[] = [
@@ -1115,11 +1235,12 @@ function primitiveSelectionForEntityRef({
   entityId: string
   graphSelection: Selection
 }): ReferenceablePrimitiveSelection {
+  const primitive = getEnginePrimitiveSelectionFromSelection(selection)
   return {
+    ...primitive,
     type: 'enginePrimitive',
     entityId,
-    parentEntityId: selection.engineTopologyFallback?.parentId,
-    primitiveIndex: selection.engineTopologyFallback?.primitiveIndex ?? 0,
+    primitiveIndex: primitive?.primitiveIndex ?? 0,
     primitiveType,
     graphSelection,
   }
@@ -1472,6 +1593,9 @@ export { isEnginePrimitiveSelection }
 export {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
+  getEnginePrimitiveSelectionFromSelection,
+  getKclBodyIdFromEnginePrimitiveSelection,
+  TOPOLOGY_BODY_ARTIFACT_TYPES,
 } from '@src/lib/primitiveBodySelection'
 
 export function isEngineRegionSelection(
@@ -1775,12 +1899,14 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  let pickedPrimitive: EnginePrimitiveSelection | null = null
   if (clickEntityId && engineCommandManager) {
     const primitiveSel = await getPrimitiveSelectionForEntity(
       clickEntityId,
       engineCommandManager,
       artifactGraph
     )
+    pickedPrimitive = primitiveSel
     if (
       primitiveSel &&
       (primitiveSel.primitiveType === 'edge' ||
@@ -1892,31 +2018,48 @@ export async function getEventForQueryEntityTypeWithPoint(
   const engineTopologyFallbackEarly =
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
-  if (engineTopologyFallbackEarly && engineCommandManager) {
-    // Faces need their direct engine parent so primitive-index KCL can resolve
-    // the owning solid. Edge references instead walk to an artifact-graph body.
-    const resolvedParentId =
+  if (
+    pickedPrimitive?.parentEntityId &&
+    (entityRef.type === 'face' || entityRef.type === 'edge')
+  ) {
+    engineTopologyFallbackResolved = {
+      parentId: pickedPrimitive.parentEntityId,
+      primitiveIndex: pickedPrimitive.primitiveIndex,
+      kclBodyId: pickedPrimitive.kclBodyId,
+      kclBodyArtifactType: pickedPrimitive.kclBodyArtifactType,
+      bodyPath: pickedPrimitive.bodyPath,
+    }
+  } else if (
+    engineTopologyFallbackEarly &&
+    (entityRef.type === 'face' || entityRef.type === 'edge')
+  ) {
+    const parentId =
       entityRef.type === 'face'
-        ? await getParentEntityIdForEntity(
+        ? ((await getParentEntityIdForEntity(
             entityRef.face_id,
             engineCommandManager
-          )
-        : await resolveSweepParentEntityIdForEdge(
-            engineTopologyFallbackEarly.parentId,
-            engineCommandManager,
-            artifactGraph
-          )
-    if (resolvedParentId) {
-      if (resolvedParentId !== engineTopologyFallbackEarly.parentId) {
-        engineTopologyFallbackResolved = {
-          parentId: resolvedParentId,
-          primitiveIndex: engineTopologyFallbackEarly.primitiveIndex,
-        }
-      }
+          )) ?? engineTopologyFallbackEarly.parentId)
+        : engineTopologyFallbackEarly.parentId
+    const bodyReference = await getKclBodyReferenceForPrimitiveParent(
+      parentId,
+      artifactGraph,
+      engineCommandManager
+    )
+    engineTopologyFallbackResolved = {
+      parentId,
+      primitiveIndex: engineTopologyFallbackEarly.primitiveIndex,
+      ...(bodyReference
+        ? {
+            kclBodyId: bodyReference.kclBodyId,
+            kclBodyArtifactType: bodyReference.artifactType,
+            bodyPath: bodyReference.bodyPath,
+          }
+        : {}),
     }
   }
   const skipRegionSelectionForTopologyEdge =
-    entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
+    (entityRef.type === 'edge' || entityRef.type === 'face') &&
+    engineTopologyFallbackResolved !== undefined
 
   if (entityRef.type === 'region') {
     const regionSelection = await getEngineRegionSelectionFromEntity(
