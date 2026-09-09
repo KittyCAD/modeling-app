@@ -68,22 +68,35 @@ export async function enginelessExecutor(
   return await rustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 
+const artifactExecutions = new WeakMap<KclManager, Promise<undefined>>()
+
 export async function getAstAndArtifactGraph(
   code: string,
   instance: ModuleType,
   kclManager: KclManager
 ) {
-  const ast = assertParse(code, instance)
-  // A timed-out test can leave an execution running in a reused manager.
-  await kclManager.flushPendingEditorExecution()
-  await kclManager.executeAst({ ast })
-  const {
-    artifactGraph,
-    execState: { operations },
-    variables,
-  } = kclManager
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph, operations, variables }
+  const previous = artifactExecutions.get(kclManager)
+  const completion = Promise.withResolvers<undefined>()
+  artifactExecutions.set(kclManager, completion.promise)
+  try {
+    // Timed-out callers can overlap when a reused manager becomes idle.
+    await previous
+    const ast = assertParse(code, instance)
+    await kclManager.flushPendingEditorExecution()
+    await kclManager.executeAst({ ast })
+    const {
+      artifactGraph,
+      execState: { operations },
+      variables,
+    } = kclManager
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    return { ast, artifactGraph, operations, variables }
+  } finally {
+    completion.resolve(undefined)
+    if (artifactExecutions.get(kclManager) === completion.promise) {
+      artifactExecutions.delete(kclManager)
+    }
+  }
 }
 
 export async function getAstAndSketchSelections(
