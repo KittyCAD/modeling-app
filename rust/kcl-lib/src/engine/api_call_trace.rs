@@ -60,7 +60,7 @@ mod tests {
         headers.insert("x-api-call-id", "connection".parse().unwrap());
         trace.record_headers(&headers);
         let snapshot = trace.api_call_ids();
-        trace.clone().record("connection".to_owned());
+        trace.record("connection".to_owned());
         headers.remove("x-api-call-id");
         trace.record_headers(&headers);
         assert_eq!(snapshot, ["connection"]);
