@@ -2195,11 +2195,11 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               }
             ]
           },
@@ -2229,7 +2229,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []
@@ -2278,7 +2278,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30"
           }
         },
         "sourceRange": []
@@ -2304,7 +2304,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
           }
         },
         "sourceRange": []
@@ -2328,19 +2328,19 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5983fe0d-ad46-595e-9b48-dfabc7824ea6"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "de815b4c-817e-5265-b7b5-30ae92f19673"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "acf4900d-8e16-5c01-911d-bb2445b5f458"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b"
               }
             ]
           },
@@ -2369,7 +2369,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3336,7 +3336,7 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
               }
             ]
           },
@@ -3366,7 +3366,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba"
           }
         },
         "sourceRange": []
@@ -3408,7 +3408,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
           }
         },
         "sourceRange": []
@@ -3434,7 +3434,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457"
           }
         },
         "sourceRange": []
@@ -3525,13 +3525,13 @@ description: Operations executed counterdrilled-weldment.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d7578b21-5a90-58ec-b05d-a2d675031806"
               }
             }
           ]
@@ -4547,7 +4547,7 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
               }
             ]
           },
@@ -4577,7 +4577,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
           }
         },
         "sourceRange": []
@@ -4619,7 +4619,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
           }
         },
         "sourceRange": []
@@ -4645,7 +4645,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
           }
         },
         "sourceRange": []
@@ -4736,13 +4736,13 @@ description: Operations executed counterdrilled-weldment.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cfa59c6c-63ae-562e-9e17-7889254a83f8"
               }
             }
           ]
@@ -4832,7 +4832,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
           }
         },
         "sourceRange": []
@@ -4845,25 +4845,25 @@ description: Operations executed counterdrilled-weldment.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e2970b5b-5156-5923-9f19-d4ab1e22a323"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d7578b21-5a90-58ec-b05d-a2d675031806"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "5b010224-2823-5bc8-b783-67a1d63cd2d0"
                 }
               }
             ]
@@ -4894,7 +4894,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483"
           }
         },
         "sourceRange": []
@@ -4907,25 +4907,25 @@ description: Operations executed counterdrilled-weldment.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3a64a61f-1518-5c74-8fe4-362eb7daddf4"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "cfa59c6c-63ae-562e-9e17-7889254a83f8"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "44e7bf43-6dbb-5264-8125-14d3f772a317"
                 }
               }
             ]
@@ -5806,7 +5806,7 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "29f44732-9f58-5550-8e28-aea348bd8ebb"
               }
             ]
           },
@@ -5836,7 +5836,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86"
           }
         },
         "sourceRange": []
@@ -5878,7 +5878,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475"
           }
         },
         "sourceRange": []
@@ -5903,7 +5903,7 @@ description: Operations executed counterdrilled-weldment.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -6926,7 +6926,7 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3"
               }
             ]
           },
@@ -6956,7 +6956,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
           }
         },
         "sourceRange": []
@@ -6998,7 +6998,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46"
           }
         },
         "sourceRange": []
@@ -7027,7 +7027,7 @@ description: Operations executed counterdrilled-weldment.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
               }
             }
           ]
@@ -7042,7 +7042,7 @@ description: Operations executed counterdrilled-weldment.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1f5ca073-184d-543b-9da6-2db6719123a8"
                 }
               }
             ]
@@ -8385,11 +8385,11 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bd2c7879-5553-55c3-bc25-46df0c8081fc"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322"
               }
             ]
           },
@@ -8419,7 +8419,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
           }
         },
         "sourceRange": []
@@ -8468,7 +8468,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "96889f64-587b-51f2-b62f-b230408206cc"
           }
         },
         "sourceRange": []
@@ -8494,7 +8494,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918"
           }
         },
         "sourceRange": []
@@ -9936,11 +9936,11 @@ description: Operations executed counterdrilled-weldment.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "af94b4da-da53-5386-a65f-ed75c251c9ff"
               }
             ]
           },
@@ -9970,7 +9970,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
           }
         },
         "sourceRange": []
@@ -10019,7 +10019,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685"
           }
         },
         "sourceRange": []
@@ -10045,7 +10045,7 @@ description: Operations executed counterdrilled-weldment.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc"
           }
         },
         "sourceRange": []

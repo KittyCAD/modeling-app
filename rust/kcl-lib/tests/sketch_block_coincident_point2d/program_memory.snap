@@ -6,8 +6,8 @@ description: Variables in memory after executing sketch_block_coincident_point2d
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing sketch_block_coincident_point2d
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 2,
                 "kind": {
                   "point": {
@@ -84,8 +84,8 @@ description: Variables in memory after executing sketch_block_coincident_point2d
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -114,7 +114,7 @@ description: Variables in memory after executing sketch_block_coincident_point2d
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p1"

@@ -49,6 +49,7 @@ import {
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -56,7 +57,6 @@ import {
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
-import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -69,6 +69,7 @@ import {
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -339,6 +340,7 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const session = registry.get(projectSession)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
@@ -415,16 +417,14 @@ const Home = () => {
   }, [projectLibraryRealizations, projectLibraryWatchKey])
 
   useEffect(() => {
-    app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
+    session.setCurrentProjectLibraryId(selectedProjectLibraryId)
 
     return () => {
-      if (
-        app.currentProjectLibraryIdSignal.value === selectedProjectLibraryId
-      ) {
-        app.currentProjectLibraryIdSignal.value = undefined
+      if (session.getCurrentProjectLibraryId() === selectedProjectLibraryId) {
+        session.setCurrentProjectLibraryId(undefined)
       }
     }
-  }, [app, selectedProjectLibraryId])
+  }, [session, selectedProjectLibraryId])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
@@ -685,6 +685,9 @@ const Home = () => {
                       name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
+                        ...(selectedProjectLibrary
+                          ? { libraryId: selectedProjectLibrary.id }
+                          : {}),
                       },
                     },
                   })

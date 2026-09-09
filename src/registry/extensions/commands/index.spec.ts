@@ -26,7 +26,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { getKeymapItemScopes } from '@src/registry/contracts/keymap'
+import { getKeymapItemWhen } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -104,6 +104,64 @@ describe('commands extension', () => {
     registry.reconfigure(commandsSlot, [])
 
     expect(commandSystem.actor.getSnapshot().context.commands).toEqual([])
+
+    registry[Symbol.dispose]()
+  })
+
+  it('runs a command selection sent before that command is registered', () => {
+    const commandsSlot = new Slot()
+    const onSubmit = vi.fn()
+    const command: Command = {
+      groupId: 'test',
+      name: 'late-command',
+      scopes: GLOBAL_COMMAND_SCOPES,
+      needsReview: false,
+      onSubmit,
+    }
+    const commandItem = defineRegistryItem({
+      id: 'late-command-item',
+      provides: [provideCommand(command)],
+    })
+
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-wasm-promise',
+        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
+      }),
+      defineRegistryItem({
+        id: 'test-machine-manager',
+        providesServices: [
+          provideService(machineManagerService, {
+            manager: new MachineManager(),
+          }),
+        ],
+      }),
+      commandsExtension,
+      commandsSlot.of(),
+    ])
+
+    const commandSystem = registry.get(commandSystemService)
+    commandSystem.send({
+      type: 'Find and select command',
+      data: {
+        groupId: command.groupId,
+        name: String(command.name),
+      },
+    })
+    commandSystem.send({
+      type: 'Find and select command',
+      data: {
+        groupId: command.groupId,
+        name: String(command.name),
+      },
+    })
+
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    registry.reconfigure(commandsSlot, [commandItem])
+
+    expect(onSubmit).toHaveBeenCalledOnce()
 
     registry[Symbol.dispose]()
   })
@@ -257,12 +315,12 @@ describe('commands extension', () => {
         ?.scopes
     ).toEqual(FILE_COMMAND_SCOPES)
     expect(
-      getKeymapItemScopes(
+      getKeymapItemWhen(
         defaultKeymap.bindings.find((binding) => binding.id === 'view.reset')!
       )
     ).toEqual([MODE_MODELING_COMMAND_SCOPE])
     expect(
-      getKeymapItemScopes(
+      getKeymapItemWhen(
         defaultKeymap.bindings.find(
           (binding) => binding.id === 'view.reset-with-modifier'
         )!

@@ -728,7 +728,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []
@@ -787,19 +787,19 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "meta": {
                 "type": "Object",
@@ -807,7 +807,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
                     }
                   }
                 }
@@ -840,7 +840,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           }
         },
         "sourceRange": []
@@ -994,7 +994,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
           }
         },
         "sourceRange": []
@@ -1053,7 +1053,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               },
               "meta": {
                 "type": "Object",
@@ -1061,7 +1061,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
                     }
                   }
                 }
@@ -1094,7 +1094,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
           }
         },
         "sourceRange": []
@@ -1136,7 +1136,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
           }
         },
         "sourceRange": []
@@ -1149,7 +1149,7 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d"
                 }
               }
             ]
@@ -1183,13 +1183,13 @@ description: Operations executed regression_test_hide_flatten_consumed.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d"
               }
             }
           ]

@@ -5,7 +5,7 @@ description: Artifact commands cold-plate.kcl
 {
   "public/kcl-samples/cold-plate/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "to": {
           "x": 0.0000000000000000004641827796534327,
           "y": 31.75,
@@ -75,18 +75,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -141,11 +141,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "to": {
           "x": 33.33750000000003,
           "y": 15.875992156806634,
@@ -154,11 +154,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -171,11 +171,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -188,11 +188,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -205,11 +205,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -230,11 +230,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "to": {
           "x": 84.13750000000002,
           "y": 15.876328604285376,
@@ -243,11 +243,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -260,11 +260,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -277,11 +277,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -294,11 +294,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -319,11 +319,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "to": {
           "x": 118.26014244950063,
           "y": 14.288991439150452,
@@ -332,11 +332,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -349,11 +349,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -366,11 +366,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -383,11 +383,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -400,11 +400,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -417,11 +417,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -442,11 +442,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "to": {
           "x": -102.79036599590297,
           "y": 26.595287011431743,
@@ -455,11 +455,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -472,11 +472,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -489,11 +489,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -506,11 +506,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -531,11 +531,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "to": {
           "x": -68.26250000000003,
           "y": 15.875992156851254,
@@ -544,11 +544,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -561,11 +561,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -578,11 +578,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -595,11 +595,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -620,11 +620,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "to": {
           "x": -17.4625,
           "y": 15.875,
@@ -633,11 +633,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -650,11 +650,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "segment": {
           "type": "line",
           "end": {
@@ -667,24 +667,24 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -696,11 +696,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "bae7e631-b71d-5980-89ea-29b2140a8a32",
         "distance": 254.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -709,49 +709,49 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+        "edge_id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+        "edge_id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -776,11 +776,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -790,20 +790,20 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "349ba77a-8183-57f6-8580-b06227eac5bd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -815,18 +815,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "to": {
           "x": -186.68999999999997,
           "y": -76.19999999999999,
@@ -835,18 +835,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84468ff1-4b26-5c88-8618-6cea09661aac",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "line",
           "end": {
@@ -859,11 +859,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "arc",
           "center": {
@@ -884,11 +884,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "line",
           "end": {
@@ -901,11 +901,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "arc",
           "center": {
@@ -926,11 +926,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "line",
           "end": {
@@ -943,11 +943,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "arc",
           "center": {
@@ -968,11 +968,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "line",
           "end": {
@@ -985,7 +985,7 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1010,20 +1010,20 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cbd0a735-3417-50fd-a670-41b483234c04",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3160ffad-2e46-5554-be76-1b632140926c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cbd0a735-3417-50fd-a670-41b483234c04",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1035,18 +1035,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3322387d-5b58-56ea-8103-4d2112d432af",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3322387d-5b58-56ea-8103-4d2112d432af",
         "to": {
           "x": 68.26250000000023,
           "y": 31.75198438375888,
@@ -1055,18 +1055,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3322387d-5b58-56ea-8103-4d2112d432af",
         "segment": {
           "type": "arc",
           "center": {
@@ -1087,11 +1087,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3322387d-5b58-56ea-8103-4d2112d432af",
         "segment": {
           "type": "line",
           "end": {
@@ -1104,11 +1104,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3322387d-5b58-56ea-8103-4d2112d432af",
         "segment": {
           "type": "arc",
           "center": {
@@ -1129,11 +1129,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3322387d-5b58-56ea-8103-4d2112d432af",
         "segment": {
           "type": "line",
           "end": {
@@ -1146,24 +1146,24 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "3322387d-5b58-56ea-8103-4d2112d432af",
+        "segment": "5d2a2786-5258-5364-b1b2-b28334229017",
+        "intersection_segment": "5d2a2786-5258-5364-b1b2-b28334229017",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cbd0a735-3417-50fd-a670-41b483234c04",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1175,11 +1175,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
         "distance": 254.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -1188,44 +1188,44 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27284bc1-5676-5b5a-baa2-003a7224d266",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+        "edge_id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "10afce2b-40ff-5ee3-a44b-bd101e341780",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+        "edge_id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
         "transform": [],
         "transforms": [
           [
@@ -1319,11 +1319,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
         "color": {
           "r": 0.41960785,
           "g": 0.14901961,
@@ -1336,11 +1336,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2a07d524-7e15-5219-bc4a-25285a826b63",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2",
         "color": {
           "r": 0.41960785,
           "g": 0.14901961,
@@ -1353,11 +1353,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "240add5c-354d-5058-85d4-743e9f3e98a1",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "3edc8b0a-c205-55ac-9e46-2b51deaeab65",
         "color": {
           "r": 0.41960785,
           "g": 0.14901961,
@@ -1370,11 +1370,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9e05a952-badd-5a9c-897b-a46d38793558",
         "color": {
           "r": 0.41960785,
           "g": 0.14901961,
@@ -1387,16 +1387,16 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4636f241-62ef-5015-8685-79b861e20d6d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3322387d-5b58-56ea-8103-4d2112d432af",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1421,11 +1421,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1bdb8e2-0355-55d0-817d-37899c725e43",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1435,20 +1435,20 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4f747c0-a435-5157-a365-493dbb747de6",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9cbc0821-9ccb-59b5-8a88-96912ec71e5e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1460,18 +1460,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "71136424-dffe-5ef9-9646-f40c0804ce04",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d1e38581-6d4a-5346-9b30-84adae73d10c",
         "to": {
           "x": -68.26250000107949,
           "y": 15.875000004063999,
@@ -1480,18 +1480,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29fea619-5b87-50e6-8f7f-c8ae57816964",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d1e38581-6d4a-5346-9b30-84adae73d10c",
         "segment": {
           "type": "arc",
           "center": {
@@ -1512,11 +1512,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d1e38581-6d4a-5346-9b30-84adae73d10c",
         "to": {
           "x": -70.29450000120649,
           "y": 15.875000004572,
@@ -1525,11 +1525,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d1e38581-6d4a-5346-9b30-84adae73d10c",
         "segment": {
           "type": "arc",
           "center": {
@@ -1550,33 +1550,33 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+        "segment": "29fea619-5b87-50e6-8f7f-c8ae57816964",
+        "intersection_segment": "29fea619-5b87-50e6-8f7f-c8ae57816964",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3355433a-c2e1-52ba-9ff4-900c0ab04482",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5d4e3b5-d221-5969-94e6-77e1453e8c0a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1588,18 +1588,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6163875-a6e3-596d-86e3-93af8ba86db8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "to": {
           "x": -186.68999999999997,
           "y": -76.19999999999999,
@@ -1608,18 +1608,18 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a19efe4-7510-5cd4-a3de-a794693ae355",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70c10df5-b464-5988-aad4-84d4f2013c06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "segment": {
           "type": "line",
           "end": {
@@ -1632,11 +1632,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b3497540-ae83-5eca-a51f-eae165d8cf92",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "segment": {
           "type": "arc",
           "center": {
@@ -1657,11 +1657,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c68f556e-b1c3-571c-8226-f07ddcc9af23",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "segment": {
           "type": "line",
           "end": {
@@ -1674,11 +1674,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0321704-af94-58ee-b6d0-c31f850b1c48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "segment": {
           "type": "arc",
           "center": {
@@ -1699,11 +1699,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5a3fbe3-0465-5b47-9050-932ea87d7329",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "segment": {
           "type": "line",
           "end": {
@@ -1716,11 +1716,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a861a602-02d2-5837-8c84-f8454301adec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "segment": {
           "type": "arc",
           "center": {
@@ -1741,11 +1741,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "65f68220-38a0-517d-9666-f98e36344863",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "segment": {
           "type": "line",
           "end": {
@@ -1758,11 +1758,11 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1774,12 +1774,12 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+        "trajectory": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -1787,53 +1787,53 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff6fd0ca-a481-5cbb-8b3d-176becebb4aa",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e17c17-71fb-5d7e-bb5c-8d09acfb49ed",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bcea99ab-ad5b-5250-892e-7591c3803c32"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "653db6f1-fef4-5443-9478-695b5150f724",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+        "edge_id": "ea0272fc-44b9-5f2a-89b2-f3029febc961"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed4c8a51-b630-5c95-a803-60f4f2af3ef8",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+        "edge_id": "ea0272fc-44b9-5f2a-89b2-f3029febc961"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "46056721-ff45-50b2-bbd3-78b1c64a3a5f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd753f7c-8aac-55dc-a68b-a2b432ee0113",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
         "color": {
           "r": 0.72156864,
           "g": 0.105882354,
@@ -1846,20 +1846,20 @@ description: Artifact commands cold-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8a6268e-3ec6-5e37-880a-4915289c536b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d1e38581-6d4a-5346-9b30-84adae73d10c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b4f33a5-7f96-5152-ad83-cd7424b1901d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "hidden": true
       }
     }

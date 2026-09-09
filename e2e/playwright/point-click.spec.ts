@@ -2272,136 +2272,6 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     })
   })
 
-  // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10779 is in
-  test.fixme(
-    `Translate point-and-click with segment-to-body coercion`,
-    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const initialCode = `sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
-  line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 5mm, var 10mm], end = [var -5mm, var 10mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var -5mm, var 10mm], end = [var -5mm, var -10mm])
-  coincident([line3.end, line4.start])
-  horizontal(line1)
-  vertical(line2)
-  horizontal(line3)
-}
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-box = extrude(region001, length = 30)`
-      const expectedTranslateCode = `translate(box, x = 50)`
-      const segmentToSelect = `line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])`
-
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled()
-      })
-
-      await test.step('Select an edge first (before opening translate)', async () => {
-        await editor.selectText(segmentToSelect)
-        await expect(toolbar.selectionStatus).toContainText('1 edge')
-      })
-
-      await test.step('Open translate via context menu and verify coercion', async () => {
-        await toolbar.translateButton.click()
-
-        // When translate opens with a segment selected, it should coerce to the parent body
-        // The segment belongs to the 'profile' path, which is extruded into 'box'
-        // So the selection should coerce from segment to its parent sweep
-        await cmdBar.expectState({
-          commandName: 'Translate',
-          currentArgKey: 'objects',
-          currentArgValue: '',
-          headerArguments: {
-            Objects: '',
-            X: '5',
-          },
-          highlightedHeaderArg: 'objects',
-          stage: 'arguments',
-        })
-
-        await expect(page.getByText('1 sweep selected')).toBeVisible()
-        await expect(toolbar.selectionStatus).toContainText('1 sweep')
-      })
-
-      await test.step('Complete command flow', async () => {
-        await test.step('Progress to the prepopulated x argument', async () => {
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            currentArgKey: 'x',
-            currentArgValue: '5',
-            headerArguments: {
-              Objects: '1 sweep',
-              X: '5',
-            },
-            highlightedHeaderArg: 'x',
-            commandName: 'Translate',
-          })
-        })
-
-        await test.step('Clear the default x translation', async () => {
-          await cmdBar.clearNonRequiredButton.click()
-          await cmdBar.expectState({
-            stage: 'review',
-            headerArguments: {
-              Objects: '1 sweep',
-            },
-            commandName: 'Translate',
-            reviewValidationError:
-              'semantic: Expected `x`, `y`, or `z` to be provided.',
-          })
-        })
-
-        await test.step('Add x translation', async () => {
-          await cmdBar.clickOptionalArgument('x')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            currentArgKey: 'x',
-            currentArgValue: '5',
-            headerArguments: {
-              Objects: '1 sweep',
-              X: '',
-            },
-            highlightedHeaderArg: 'x',
-            commandName: 'Translate',
-          })
-          await page.keyboard.insertText('50')
-          await cmdBar.progressCmdBar()
-        })
-
-        await test.step('Review and submit', async () => {
-          await cmdBar.expectState({
-            stage: 'review',
-            headerArguments: {
-              Objects: '1 sweep',
-              X: '50',
-            },
-            commandName: 'Translate',
-          })
-          await cmdBar.submit()
-          await scene.settled()
-        })
-      })
-
-      await test.step('Verify code was added correctly', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.openPane(DefaultLayoutPaneID.Code)
-        await editor.expectEditor.toContain(expectedTranslateCode)
-        await editor.expectState({
-          diagnostics: [],
-          activeLines: [expectedTranslateCode],
-          highlightedCode: '',
-        })
-      })
-    }
-  )
-
   test(`Translate helix point-and-click`, async ({
     page,
     homePage,
@@ -3216,7 +3086,7 @@ solid001 = extrude(region001, length = 5)`
         })
 
         await test.step('Edit arc degrees', async () => {
-          await page.getByRole('button', { name: 'ArcDegrees' }).click()
+          await page.getByRole('button', { name: 'Arc degrees' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
@@ -3251,7 +3121,7 @@ solid001 = extrude(region001, length = 5)`
         })
 
         await test.step('Edit rotate duplicates', async () => {
-          await page.getByRole('button', { name: 'RotateDuplicates' }).click()
+          await page.getByRole('button', { name: 'Rotate duplicates' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
@@ -3285,7 +3155,7 @@ solid001 = extrude(region001, length = 5)`
         })
 
         await test.step('Edit use original', async () => {
-          await page.getByRole('button', { name: 'UseOriginal' }).click()
+          await page.getByRole('button', { name: 'Use original' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
@@ -3632,7 +3502,7 @@ solid001 = extrude(region001, length = 5)`
         })
 
         await test.step('Edit use original parameter', async () => {
-          await page.getByRole('button', { name: 'UseOriginal' }).click()
+          await page.getByRole('button', { name: 'Use original' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Linear 3D',
@@ -4022,7 +3892,7 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Edit frame position', async () => {
-          await page.getByRole('button', { name: 'FramePosition' }).click()
+          await page.getByRole('button', { name: 'Frame position' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
@@ -4056,7 +3926,7 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Edit frame plane', async () => {
-          await page.getByRole('button', { name: 'FramePlane' }).click()
+          await page.getByRole('button', { name: 'Frame plane' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
@@ -4088,7 +3958,7 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Edit font size', async () => {
-          await page.getByRole('button', { name: 'FontSize' }).click()
+          await page.getByRole('button', { name: 'Font size' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
@@ -4392,7 +4262,7 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Edit frame position', async () => {
-          await page.getByRole('button', { name: 'FramePosition' }).click()
+          await page.getByRole('button', { name: 'Frame position' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
@@ -4424,7 +4294,7 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Edit frame plane', async () => {
-          await page.getByRole('button', { name: 'FramePlane' }).click()
+          await page.getByRole('button', { name: 'Frame plane' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
@@ -4454,7 +4324,7 @@ extrude001 = extrude(region001, length = 30)`
         })
 
         await test.step('Edit font size', async () => {
-          await page.getByRole('button', { name: 'FontSize' }).click()
+          await page.getByRole('button', { name: 'Font size' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
@@ -4710,7 +4580,7 @@ hole001 = hole::hole(
         },
         commandName: 'Hole',
       })
-      await page.getByRole('button', { name: 'CutAt' }).click()
+      await page.getByRole('button', { name: 'Cut at' }).click()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'cutAt',
@@ -4742,7 +4612,7 @@ hole001 = hole::hole(
           HoleBottom: 'flat',
         },
       })
-      await page.getByRole('button', { name: 'HoleType' }).click()
+      await page.getByRole('button', { name: 'Hole type' }).click()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'holeType',
@@ -4935,7 +4805,7 @@ hole001 = hole::hole(
         },
         highlightedHeaderArg: 'gearHeight',
       })
-      await page.getByRole('button', { name: 'HelixAngle' }).click()
+      await page.getByRole('button', { name: 'Helix angle' }).click()
       await cmdBar.expectState({
         stage: 'arguments',
         commandName: 'Helical Gear',
@@ -5390,7 +5260,7 @@ hole001 = hole::hole(
         },
         highlightedHeaderArg: 'gearHeight',
       })
-      await page.getByRole('button', { name: 'nTeeth' }).click()
+      await page.getByRole('button', { name: 'N teeth' }).click()
       await cmdBar.expectState({
         stage: 'arguments',
         commandName: 'Ring Gear',

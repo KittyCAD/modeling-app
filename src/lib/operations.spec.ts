@@ -179,6 +179,11 @@ function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
   return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
 }
 
+const EMPTY_SELECTIONS = {
+  graphSelections: [],
+  otherSelections: [],
+}
+
 /** Stands in for the global app instance that holds the user's feature flags. */
 function stubUserFeatures(features: string[]) {
   const previousApp = window.app
@@ -576,10 +581,10 @@ describe('operations.test.ts', () => {
   }
 
   describe('Extrude edit flow', () => {
-    it('continues when the unlabeled selection cannot be retrieved', async () => {
+    it('continues when selections cannot be retrieved', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
-        'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10)'
+        'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10, to = missingFace, direction = missingEdge)'
       const operation = stdlib('extrude')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -592,6 +597,18 @@ describe('operations.test.ts', () => {
         length: {
           value: { type: 'Number', value: 10, ty: { type: 'Any' } },
           sourceRange: rangeOfText(code, '10'),
+        },
+        to: {
+          value: {
+            type: 'TagIdentifier',
+            value: 'missingFace',
+            artifact_id: 'missing-face-id',
+          },
+          sourceRange: rangeOfText(code, 'missingFace'),
+        },
+        direction: {
+          value: { type: 'Object', value: {} },
+          sourceRange: rangeOfText(code, 'missingEdge'),
         },
       }
 
@@ -610,12 +627,13 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         sketches?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        to?: typeof EMPTY_SELECTIONS
+        direction?: typeof EMPTY_SELECTIONS
         length?: { valueText: string }
       }
-      expect(argDefaultValues.sketches).toEqual({
-        graphSelections: [],
-        otherSelections: [],
-      })
+      expect(argDefaultValues.sketches).toEqual(EMPTY_SELECTIONS)
+      expect(argDefaultValues.to).toEqual(EMPTY_SELECTIONS)
+      expect(argDefaultValues.direction).toEqual(EMPTY_SELECTIONS)
       expect(argDefaultValues.length?.valueText).toBe('10')
     })
 
@@ -796,6 +814,49 @@ describe('operations.test.ts', () => {
   })
 
   describe('Sweep edit flow', () => {
+    it('continues when the path selection cannot be retrieved', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'sweep001 = sweep(profile001, path = missingPath)'
+      const operation = stdlib('sweep')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'profile-path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        path: {
+          value: {
+            type: 'Sketch',
+            value: { artifactId: 'missing-path-id' },
+          },
+          sourceRange: rangeOfText(code, 'missingPath'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([pathArtifact('profile-path-id')]),
+        rustContext,
+      })
+      if (isErr(result)) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        path?: typeof EMPTY_SELECTIONS
+      }
+      expect(argDefaultValues.path).toEqual(EMPTY_SELECTIONS)
+    })
+
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
@@ -991,6 +1052,52 @@ describe('operations.test.ts', () => {
   })
 
   describe('GDT edit flow', () => {
+    it('continues when geometry selections cannot be retrieved', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'gdt::straightness(faces = [missingFace], tolerance = 0.1mm)'
+      const operation = stdlib('gdt::straightness')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.labeledArgs = {
+        faces: {
+          value: {
+            type: 'Array',
+            value: [
+              {
+                type: 'TagIdentifier',
+                value: 'missingFace',
+                artifact_id: 'missing-face-id',
+              },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[missingFace]'),
+        },
+        tolerance: {
+          value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '0.1mm'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: new Map(),
+        rustContext,
+      })
+      if (isErr(result)) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        objects?: typeof EMPTY_SELECTIONS
+      }
+      expect(argDefaultValues.objects).toEqual(EMPTY_SELECTIONS)
+    })
+
     it.each([
       {
         operationName: 'gdt::profile',

@@ -268,7 +268,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           displayName: 'Representation',
           description:
             'Choose how this STEP file should be represented in your model.',
-          status: 'experimental',
           inputType: 'options',
           required: (context) => isStepFile(context.argumentsToSubmit.path),
           hidden: (context) => !isStepFile(context.argumentsToSubmit.path),
@@ -295,33 +294,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
-        let ast = commandProps.kclManager.ast
         const { path, localName } = data
         const representation = isStepFile(path)
           ? (data.representation ?? DEFAULT_IMPORT_REPRESENTATION)
           : undefined
 
-        if (
-          representation &&
-          commandProps.kclManager.fileSettings.experimentalFeatures?.type !==
-            'Allow'
-        ) {
-          const astWithExperimentalFeatures = setExperimentalFeatures(
-            commandProps.kclManager.code,
-            { type: 'Allow' },
-            commandProps.wasmInstance
-          )
-          if (err(astWithExperimentalFeatures)) {
-            toast.error(
-              `Failed to enable experimental features for STEP import: ${astWithExperimentalFeatures.message}`
-            )
-            return astWithExperimentalFeatures
-          }
-          ast = astWithExperimentalFeatures
-        }
-
         const { modifiedAst, pathToNode } = addModuleImport({
-          ast,
+          ast: commandProps.kclManager.ast,
           path,
           localName,
           representation,

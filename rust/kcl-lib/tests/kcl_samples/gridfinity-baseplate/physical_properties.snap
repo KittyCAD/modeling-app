@@ -6,13 +6,13 @@ description: Physical properties gridfinity-baseplate.kcl
   "bounding_box": {
     "center": {
       "x": 42.0,
-      "y": 38.1425,
-      "z": 0.0
+      "y": 63.0,
+      "z": 2.325
     },
     "dimensions": {
       "x": 84.57,
-      "y": 176.285,
-      "z": 100.0
+      "y": 126.57,
+      "z": 5.58
     },
     "unit": "mm"
   },

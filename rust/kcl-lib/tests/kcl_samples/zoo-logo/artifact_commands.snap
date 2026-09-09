@@ -5,7 +5,7 @@ description: Artifact commands zoo-logo.kcl
 {
   "public/kcl-samples/zoo-logo/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ab72285-638e-584b-93ee-09ce363c6f80",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b4079ec8-53e1-53e1-a48a-2e161d481653",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 0.6349999999999997,
           "y": 0.6350000000000002,
@@ -75,18 +75,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -167,11 +167,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -184,11 +184,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -201,11 +201,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -218,11 +218,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -235,11 +235,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -252,11 +252,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -269,11 +269,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -286,11 +286,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -303,11 +303,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -320,11 +320,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -337,11 +337,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -354,7 +354,7 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -379,20 +379,20 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bafe463f-179b-5af2-b6bf-b1c3a9b52863",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6744e4b-8ee3-5af6-8f58-5e6f72e67cb9",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -404,18 +404,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "348d6486-d6e2-5249-9bed-72165da137b7",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4cb3dcaa-1018-5228-95ea-1d2a846e59c5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "348d6486-d6e2-5249-9bed-72165da137b7",
         "to": {
           "x": 44.46834426389047,
           "y": 22.80777228122406,
@@ -424,18 +424,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e77b727-aace-5f98-8900-bdd4ef915c29",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4a58bb1-6e9a-567c-9a22-4e8a1d8a3d75",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "348d6486-d6e2-5249-9bed-72165da137b7",
         "segment": {
           "type": "arc",
           "center": {
@@ -456,11 +456,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "239c31b0-218e-5845-9593-0fdf899053a7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "348d6486-d6e2-5249-9bed-72165da137b7",
         "to": {
           "x": 40.44662798024872,
           "y": 18.49500957804989,
@@ -469,11 +469,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "348d6486-d6e2-5249-9bed-72165da137b7",
         "segment": {
           "type": "arc",
           "center": {
@@ -494,11 +494,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "348d6486-d6e2-5249-9bed-72165da137b7",
         "segment": {
           "type": "line",
           "end": {
@@ -511,11 +511,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6047020-81f7-5abc-8462-2bb06d43a2c1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "348d6486-d6e2-5249-9bed-72165da137b7",
         "to": {
           "x": 40.44662798024872,
           "y": 18.49500957804989,
@@ -524,11 +524,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d34a0ded-ed1b-5139-836b-e00b779bd892",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "348d6486-d6e2-5249-9bed-72165da137b7",
         "segment": {
           "type": "line",
           "end": {
@@ -541,7 +541,7 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e1d52290-2e9c-50ce-8a87-e455736e4180",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -566,20 +566,20 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f700ab8c-8587-5c4e-982e-ec0048b40486",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e1d52290-2e9c-50ce-8a87-e455736e4180",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fa3f1a0-30fc-547d-849f-0423087f2fdd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e1d52290-2e9c-50ce-8a87-e455736e4180",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -591,18 +591,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f50ad8e-5fa0-5c54-9936-1ef3fc2a6201",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "to": {
           "x": 29.0900557361097,
           "y": 2.592227718775793,
@@ -611,18 +611,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "995c1511-baee-530c-a63f-42e6a13144d1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a22bce-a2ca-552b-9fe8-88c683c0bcea",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "segment": {
           "type": "arc",
           "center": {
@@ -643,11 +643,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b70ae62c-b736-5ea2-b21c-839920bedf57",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "to": {
           "x": 33.11177201975145,
           "y": 6.9049904219499485,
@@ -656,11 +656,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "80a8b4e9-24bb-51f6-9da1-58ae390711da",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "segment": {
           "type": "arc",
           "center": {
@@ -681,11 +681,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "206b89d0-9a30-505f-aa7a-3ed39f7ec074",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "to": {
           "x": 29.0900557361097,
           "y": 2.592227718775793,
@@ -694,11 +694,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3d07e9d-17ad-5efd-b1f4-ce371e198cc0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "segment": {
           "type": "line",
           "end": {
@@ -711,11 +711,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55f329b8-bc42-5001-8952-15fd1e14ec98",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "to": {
           "x": 42.304266382361405,
           "y": 16.762733743491147,
@@ -724,11 +724,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "188afc7c-cc3c-5261-9579-6d88bdfa08ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "segment": {
           "type": "line",
           "end": {
@@ -741,7 +741,7 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe4df66a-9a38-54ee-a1c3-c53441ecf11a",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -766,20 +766,20 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "07456668-75e8-5145-9868-f9ef8d761421",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fe4df66a-9a38-54ee-a1c3-c53441ecf11a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b19c878-a585-50cc-a2ae-2cd1a79891c4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fe4df66a-9a38-54ee-a1c3-c53441ecf11a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -791,18 +791,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0776c43-3492-52d5-ba16-5349fad27ac1",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ea90e713-f5bd-5105-9353-dcae3a737111",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "to": {
           "x": 71.18914426389034,
           "y": 22.807772281224093,
@@ -811,18 +811,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c47a147-e81f-5112-99b2-56216f0ac334",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c371237-88fa-53b2-ba88-3c244cad140c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "segment": {
           "type": "arc",
           "center": {
@@ -843,11 +843,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c61afde-57bc-5630-af39-7bd69d1f09ff",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "to": {
           "x": 67.16742798024856,
           "y": 18.495009578049892,
@@ -856,11 +856,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9666db41-263f-5de1-b191-fdcb3bbe6c16",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "segment": {
           "type": "arc",
           "center": {
@@ -881,11 +881,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "592e8e86-f853-598a-be0e-c68ec53c2ca1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "segment": {
           "type": "line",
           "end": {
@@ -898,11 +898,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "767b7579-515e-5e1c-8ff9-c02c86201a41",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "to": {
           "x": 67.16742798024856,
           "y": 18.495009578049892,
@@ -911,11 +911,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98c9f5ab-4aca-55eb-93aa-519eb3cd3203",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "segment": {
           "type": "line",
           "end": {
@@ -928,7 +928,7 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bfc72445-2a9b-5e11-8bd8-a55f8b73642a",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -953,20 +953,20 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42a3be28-c58f-5085-b31e-c356feab8105",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "bfc72445-2a9b-5e11-8bd8-a55f8b73642a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "239bd26c-4e92-583e-a1f7-add1dff8fcf4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "bfc72445-2a9b-5e11-8bd8-a55f8b73642a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -978,18 +978,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8d89f5e-6cc7-5aac-9fc6-939685adc783",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "to": {
           "x": 55.81085573610964,
           "y": 2.5922277187759044,
@@ -998,18 +998,18 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d838c7a-1e07-5196-8e2c-b72cc7badbc9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "988e3a7a-9ffa-5232-a3f3-e48ac03f1a51",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "segment": {
           "type": "arc",
           "center": {
@@ -1030,11 +1030,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "496f75c5-a21a-5fa9-8e83-c16b4cec7355",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "to": {
           "x": 59.832572019751424,
           "y": 6.9049904219501075,
@@ -1043,11 +1043,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8bfc9eae-7eed-5702-8240-a1ffa41b7b28",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "segment": {
           "type": "arc",
           "center": {
@@ -1068,11 +1068,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b1c5319-c2dd-5e5c-ae9d-a5805e3c0f19",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "to": {
           "x": 55.81085573610964,
           "y": 2.5922277187759044,
@@ -1081,11 +1081,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e015730-f652-518d-af40-3dcc3891483a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "segment": {
           "type": "line",
           "end": {
@@ -1098,11 +1098,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f76042fd-3ec5-5ab4-a9fe-cc6027635d53",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "to": {
           "x": 69.02506638236125,
           "y": 16.762733743491143,
@@ -1111,11 +1111,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "04aadc85-c55a-51c0-8e9f-4d33e796bf53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "segment": {
           "type": "line",
           "end": {
@@ -1128,121 +1128,121 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fec7e183-89c4-56b6-9b3e-a77011dc0654",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+        "segment": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "intersection_segment": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7e440f08-f96b-582a-99a3-698ba9233cb0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "348d6486-d6e2-5249-9bed-72165da137b7",
+        "segment": "d4a58bb1-6e9a-567c-9a22-4e8a1d8a3d75",
+        "intersection_segment": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b58f4d26-33b7-52df-b124-06c5aef2752e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
+        "segment": "90a22bce-a2ca-552b-9fe8-88c683c0bcea",
+        "intersection_segment": "80a8b4e9-24bb-51f6-9da1-58ae390711da",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "85d6b8dc-4222-5d2c-b48e-2fb6533ea84f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "b0776c43-3492-52d5-ba16-5349fad27ac1",
+        "segment": "2c371237-88fa-53b2-ba88-3c244cad140c",
+        "intersection_segment": "9666db41-263f-5de1-b191-fdcb3bbe6c16",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ebf2ae8-ff45-567a-a7ce-e2769c8e776c",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
+        "segment": "988e3a7a-9ffa-5232-a3f3-e48ac03f1a51",
+        "intersection_segment": "8bfc9eae-7eed-5702-8240-a1ffa41b7b28",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4672d1f9-b003-53c2-a872-2e09d728a772",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55c8ede7-35f1-5629-91c0-f58e866349dc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "348d6486-d6e2-5249-9bed-72165da137b7",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eca424cc-3dff-51cb-b419-2882bb2af1b7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e6486410-ccae-52b7-8847-ca5cd06c7c5e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7380e890-864d-5ac0-9f97-81b1d524898d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b0776c43-3492-52d5-ba16-5349fad27ac1",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7c191a8-0bef-530f-80af-ae7aaa2c4f43",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eaab9bdc-96d1-5cd7-a8b9-27d0962f1430",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1254,11 +1254,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc67f2bb-3831-539f-abca-7f3ca180d8d4",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "fec7e183-89c4-56b6-9b3e-a77011dc0654",
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
@@ -1267,44 +1267,44 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81914755-5735-5f12-bd6f-2e21764efc14",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "626bb283-e26d-5d5c-9d99-5ffcc2cbaaac",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fec7e183-89c4-56b6-9b3e-a77011dc0654"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4189d3-11ae-5901-9608-7abec4b356a5",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fec7e183-89c4-56b6-9b3e-a77011dc0654",
+        "edge_id": "7366033a-1488-5cc9-8df4-a8a233dbaa67"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da2dcc03-5885-5c58-938c-728bbb3ef4ba",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fec7e183-89c4-56b6-9b3e-a77011dc0654",
+        "edge_id": "7366033a-1488-5cc9-8df4-a8a233dbaa67"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b2b45877-8ae8-5ad8-bdc1-933b89c0af84",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1316,11 +1316,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ebb6362e-6e1d-5269-8fe6-270fd7ddc76c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "7e440f08-f96b-582a-99a3-698ba9233cb0",
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
@@ -1329,44 +1329,44 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1284d5d1-99db-59b9-95e6-c53213ecb89d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8fb62d9e-ca25-59dd-a7c0-cb6f9c603fcf",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "7e440f08-f96b-582a-99a3-698ba9233cb0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "58fa2eaf-5587-57b6-b87e-cc9f5d7a8a29",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "7e440f08-f96b-582a-99a3-698ba9233cb0",
+        "edge_id": "41546288-d5b1-53a3-9ac5-dd335e60b12d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "af041ec5-9548-527b-a2ef-182308f0f0f9",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "7e440f08-f96b-582a-99a3-698ba9233cb0",
+        "edge_id": "41546288-d5b1-53a3-9ac5-dd335e60b12d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc41a43f-982f-5e6b-b428-38ec613d9a10",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e1d52290-2e9c-50ce-8a87-e455736e4180",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1378,11 +1378,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95685bb1-e86f-5605-853d-71e4be2cc487",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b58f4d26-33b7-52df-b124-06c5aef2752e",
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
@@ -1391,44 +1391,44 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "525fc60a-c706-5d79-a770-47c553494589",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f13596c2-74dc-533f-834c-acf9e97157b2",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b58f4d26-33b7-52df-b124-06c5aef2752e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "415cef71-0b13-53e1-bf2e-3c4ccff092b7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b58f4d26-33b7-52df-b124-06c5aef2752e",
+        "edge_id": "aab96319-bcd9-5a3f-bd03-25e78ddde0e1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c25535bc-afcd-5cd9-9b5c-b03cfdffa24c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b58f4d26-33b7-52df-b124-06c5aef2752e",
+        "edge_id": "aab96319-bcd9-5a3f-bd03-25e78ddde0e1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d495adc3-e90b-5966-838f-819e393f5336",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fe4df66a-9a38-54ee-a1c3-c53441ecf11a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1440,11 +1440,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "788c71ec-663a-52f5-97d9-cefb272af5da",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "85d6b8dc-4222-5d2c-b48e-2fb6533ea84f",
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
@@ -1453,44 +1453,44 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b5aa79e-fe1d-5b03-a17b-31a05ffc4ccf",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a3d4ba5f-f1ad-5d32-a9e0-25063d59751a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "85d6b8dc-4222-5d2c-b48e-2fb6533ea84f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee4b2bb8-1b66-52d5-9eed-bc5fdc912253",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "85d6b8dc-4222-5d2c-b48e-2fb6533ea84f",
+        "edge_id": "1e9b26c5-0ef5-5e94-a132-5bf857f0eb38"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2a9083e6-1b4e-5b82-a8e2-03b19f26853a",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "85d6b8dc-4222-5d2c-b48e-2fb6533ea84f",
+        "edge_id": "1e9b26c5-0ef5-5e94-a132-5bf857f0eb38"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0ac61a09-fc89-5cde-b307-e6677209e5c8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "bfc72445-2a9b-5e11-8bd8-a55f8b73642a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1502,11 +1502,11 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e3b4629-e0ec-53fe-b507-42b864115d62",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2ebf2ae8-ff45-567a-a7ce-e2769c8e776c",
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
@@ -1515,36 +1515,36 @@ description: Artifact commands zoo-logo.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9a5182c1-608d-5cf2-9520-056e9927deb3",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90d24fc0-ada5-5087-a353-35fb9ef3b39f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2ebf2ae8-ff45-567a-a7ce-e2769c8e776c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7e581d5d-aebf-5721-b62b-ea397a7abdc5",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ebf2ae8-ff45-567a-a7ce-e2769c8e776c",
+        "edge_id": "5170661d-078a-5756-9b5d-42b1541c2fbd"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0475722a-dd5c-55e8-87ed-4f35874489d7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ebf2ae8-ff45-567a-a7ce-e2769c8e776c",
+        "edge_id": "5170661d-078a-5756-9b5d-42b1541c2fbd"
       }
     }
   ]
