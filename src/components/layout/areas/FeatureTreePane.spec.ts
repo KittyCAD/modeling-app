@@ -19,6 +19,7 @@ describe('FeatureTreePane', () => {
       liveSketchNoFace: boolean
       useSketchSolveMode?: boolean
     }) {
+      // Only the snapshot fields read by this helper are needed in the fixture.
       return {
         getSnapshot: () => ({
           matches: (state: 'Sketch no face') =>
@@ -32,7 +33,9 @@ describe('FeatureTreePane', () => {
             },
           },
         }),
-      }
+      } as Parameters<
+        typeof getFeatureTreeSketchSelectionContext
+      >[0]['modelingActor']
     }
 
     it('uses the live modeling state when a feature tree row render has not caught up to Start Sketch', () => {

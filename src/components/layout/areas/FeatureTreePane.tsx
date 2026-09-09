@@ -853,18 +853,7 @@ interface OperationProps {
 
 export function getFeatureTreeSketchSelectionContext({
   modelingActor,
-}: {
-  modelingActor: {
-    getSnapshot: () => {
-      matches: (state: 'Sketch no face') => boolean
-      context: {
-        store: {
-          useSketchSolveMode?: { current?: boolean }
-        }
-      }
-    }
-  }
-}) {
+}: Pick<OperationProps, 'modelingActor'>) {
   const modelingSnapshot = modelingActor.getSnapshot()
   return {
     sketchNoFace: modelingSnapshot.matches('Sketch no face'),
