@@ -1393,6 +1393,7 @@ description: Result of parsing subtract_with_pattern.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

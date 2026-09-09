@@ -3407,6 +3407,7 @@ description: Result of parsing pattern_into_union.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

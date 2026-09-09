@@ -15897,6 +15897,7 @@ description: Result of parsing mirror3d_and_boolean.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

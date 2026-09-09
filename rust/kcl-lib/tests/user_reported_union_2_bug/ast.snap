@@ -1518,7 +1518,8 @@ description: Result of parsing user_reported_union_2_bug.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -2673,6 +2674,7 @@ description: Result of parsing user_reported_union_2_bug.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
