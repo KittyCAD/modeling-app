@@ -197,6 +197,7 @@ export async function getBillingInfo(
 
   switch (tier) {
     case 'enterprise':
+    case 'enterprise-free':
     case 'team':
       balance = Number.POSITIVE_INFINITY
       hasSubscription = true
