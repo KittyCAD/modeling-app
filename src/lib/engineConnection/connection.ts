@@ -25,6 +25,7 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   PING_INTERVAL_MS,
+  WebSocketCloseCode,
   WebSocketStatusCodes,
 } from '@src/lib/engineConnection/utils'
 import {
@@ -102,6 +103,7 @@ export class Connection extends EventTarget {
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
+  private reconnectRequested = false
 
   constructor({
     url,
@@ -647,6 +649,20 @@ export class Connection extends EventTarget {
       },
       getCloudProjectId: this.getCloudProjectId,
       tearDownManager: this.tearDownManager.bind(this),
+      requestReconnect: () => {
+        if (
+          this.reconnectRequested ||
+          this.websocket?.readyState !== WebSocket.OPEN
+        ) {
+          return
+        }
+
+        this.reconnectRequested = true
+        this.websocket.close(
+          WebSocketCloseCode.NormalClosure,
+          'reconnect requested'
+        )
+      },
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -655,6 +671,7 @@ export class Connection extends EventTarget {
       onWebSocketMessage: onWebSocketMessage,
       tearDownManager: this.tearDownManager.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
+      getReconnectRequested: () => this.reconnectRequested,
     })
 
     // Meta close will remove all the internal events itself but then the this.websocket.close
