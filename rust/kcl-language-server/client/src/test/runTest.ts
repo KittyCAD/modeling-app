@@ -34,7 +34,13 @@ async function main() {
     console.error('Failed to run tests')
     process.exitCode = 1
   } finally {
-    fs.rmSync(vscodeProfileDir, { force: true, recursive: true })
+    // VS Code can briefly retain profile file locks after exiting on Windows.
+    await fs.promises.rm(vscodeProfileDir, {
+      force: true,
+      recursive: true,
+      maxRetries: 10,
+      retryDelay: 100,
+    })
   }
 }
 
