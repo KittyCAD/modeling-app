@@ -3,7 +3,7 @@ import { SessionExpiredDialogHost } from '@src/components/SessionExpiredDialog'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { getAppSettingsFilePath } from '@src/lib/desktop'
+import { getAppSettingsFilePath, isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
@@ -16,7 +16,8 @@ export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
-  const { settings, project } = useApp()
+  const app = useApp()
+  const { settings, project } = app
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useAuthNavigation()
@@ -119,7 +120,16 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // wish to change the behavior in case anything else uses it.
       // Go home.
       if (loadedProject?.path) {
-        if (!(await fsZds.stat(loadedProject.path))) {
+        try {
+          await fsZds.stat(loadedProject.path)
+        } catch (error) {
+          if (!isPathNotFoundError(error)) return Promise.reject(error)
+          if (
+            app.project !== project ||
+            app.project?.projectIORefSignal.value.path !== loadedProject.path
+          ) {
+            return
+          }
           void navigate(PATHS.HOME)
           return
         }
