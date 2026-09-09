@@ -74,6 +74,8 @@ export async function getAstAndArtifactGraph(
   kclManager: KclManager
 ) {
   const ast = assertParse(code, instance)
+  // A timed-out test can leave an execution running in a reused manager.
+  await kclManager.flushPendingEditorExecution()
   await kclManager.executeAst({ ast })
   const {
     artifactGraph,
