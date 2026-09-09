@@ -32,9 +32,6 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::log::logln;
 
-#[cfg(test)]
-mod tests;
-
 pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
 }

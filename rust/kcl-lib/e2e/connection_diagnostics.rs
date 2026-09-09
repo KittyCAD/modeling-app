@@ -1,20 +1,26 @@
-use super::*;
-use crate::engine::engine_manager::EngineManager;
+#![cfg(not(target_arch = "wasm32"))]
+
+use std::collections::HashMap;
+use std::time::Duration;
+
+use futures::StreamExt;
+use kcl_lib::ExecutorContext;
+use kcl_lib::ExecutorSettings;
+use kcl_lib::SourceRange;
+use kittycad_modeling_cmds::websocket::WebSocketRequest;
+use tokio_tungstenite::tungstenite::Message as WsMsg;
+use uuid::Uuid;
 
 const DIAGNOSTICS_ENV: &str = "ZOO_ENGINE_CONNECTION_DIAGNOSTICS";
 
 #[test]
 fn connection_diagnostics_capture_early_failure_and_teardown() {
-    // A subprocess verifies real stderr, including disable-println builds, without
-    // mutating the environment of other tests in this process.
+    // This integration test links kcl-lib as a normal dependency (without cfg(test)).
+    // Cargo requires disable-println for this target, matching the LSP's library build.
+    // Subprocesses capture stderr without changing other tests' environments.
     for enabled in [None, Some("0"), Some("1")] {
         let mut command = std::process::Command::new(std::env::current_exe().unwrap());
-        command.args([
-            "--exact",
-            "engine::engine_manager::ws_transport::tests::connection_diagnostics_fixture",
-            "--ignored",
-            "--nocapture",
-        ]);
+        command.args(["--exact", "connection_diagnostics_fixture", "--ignored", "--nocapture"]);
         command.env_remove(DIAGNOSTICS_ENV).env_remove("ZOO_LOG");
         if let Some(enabled) = enabled {
             command.env(DIAGNOSTICS_ENV, enabled);
@@ -44,7 +50,7 @@ fn connection_diagnostics_capture_early_failure_and_teardown() {
         let early_read = records
             .iter()
             .find(|r| r["request_id"] == "early-reset" && r["operation"] == "read")
-            .unwrap();
+            .expect("missing early read diagnostic from the non-test kcl-lib build");
         assert_eq!(early_read["local_close_requested"], false);
         assert!(
             early_read["error"]
@@ -72,7 +78,6 @@ async fn connection_diagnostics_fixture() {
     for local_close in [false, true] {
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let address = listener.local_addr().unwrap();
-        let (reset_tx, reset_rx) = oneshot::channel();
         let server =
             tokio::spawn(async move {
                 let (socket, _) = listener.accept().await.unwrap();
@@ -95,42 +100,44 @@ async fn connection_diagnostics_fixture() {
                     // Match an API that tears down TCP after receiving our Close frame.
                     assert!(matches!(websocket.next().await.unwrap().unwrap(), WsMsg::Close(_)));
                 } else {
-                    reset_rx.await.unwrap();
+                    // Let a request finish sending before dropping TCP, so its caller
+                    // observes the read failure before trying the subsequent send.
+                    assert!(matches!(websocket.next().await.unwrap().unwrap(), WsMsg::Text(_)));
                 }
                 // Drop without session data or a WebSocket close handshake.
             });
 
-        let response = reqwest::Client::builder()
-            .no_proxy()
-            .http1_only()
-            .timeout(Duration::from_secs(5))
-            .build()
-            .unwrap()
-            .get(format!("http://{address}/"))
-            .header("Connection", "Upgrade")
-            .header("Upgrade", "websocket")
-            .header("Sec-WebSocket-Version", "13")
-            .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
-            .send()
+        let http_client = || {
+            reqwest::Client::builder()
+                .no_proxy()
+                .http1_only()
+                .timeout(Duration::from_secs(5))
+        };
+        let mut client = kittycad::Client::new_from_reqwest("synthetic-test-token", http_client(), http_client());
+        client.set_base_url(format!("http://{address}"));
+        // Use the real executor upgrade path, including propagation of x-request-id.
+        let context = ExecutorContext::new(&client, ExecutorSettings::default())
             .await
             .unwrap();
-        assert_eq!(response.status(), reqwest::StatusCode::SWITCHING_PROTOCOLS);
-        let headers = response.headers().clone();
-        let manager =
-            EngineManager::new_websocket_transport_with_headers(response.upgrade().await.unwrap(), None, &headers)
-                .await;
+        let manager = &context.engine;
 
         if local_close {
-            assert!(manager.transport.close().await.is_ok());
+            tokio::time::timeout(Duration::from_secs(5), context.close())
+                .await
+                .unwrap();
         } else {
-            reset_tx.send(()).unwrap();
-            tokio::time::timeout(Duration::from_secs(5), async {
-                while *manager.socket_health.read().await != SocketHealth::Inactive {
-                    tokio::task::yield_now().await;
-                }
-            })
+            let result = tokio::time::timeout(
+                Duration::from_secs(5),
+                manager.transport.inner_send_modeling_cmd(
+                    Uuid::new_v4(),
+                    SourceRange::default(),
+                    WebSocketRequest::Ping {},
+                    HashMap::new(),
+                ),
+            )
             .await
             .unwrap();
+            assert!(result.unwrap_err().to_string().contains("websocket closed early"));
             let result = manager
                 .transport
                 .inner_fire_modeling_cmd(
@@ -142,7 +149,7 @@ async fn connection_diagnostics_fixture() {
                 .await;
             assert!(result.is_err());
         }
-        assert!(manager.session_data.read().await.is_none());
+        assert!(manager.get_session_data().await.is_none());
         server.await.unwrap();
     }
 }
