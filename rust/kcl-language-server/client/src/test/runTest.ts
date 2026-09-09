@@ -34,7 +34,13 @@ async function main() {
     console.error('Failed to run tests')
     process.exitCode = 1
   } finally {
-    fs.rmSync(vscodeProfileDir, { force: true, recursive: true })
+    // VS Code subprocesses can briefly retain profile file locks on Windows.
+    fs.rmSync(vscodeProfileDir, {
+      force: true,
+      recursive: true,
+      maxRetries: 10,
+      retryDelay: 200,
+    })
   }
 }
 
