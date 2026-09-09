@@ -38,7 +38,7 @@ export type MenuLabels =
   | 'Design.Apply modification feature.Fillet'
   | 'Design.Apply modification feature.Chamfer'
   | 'Design.Apply modification feature.Shell'
-  | 'Design.Insert from project file'
+  | 'Design.Import from project file'
   | 'View.Command Palette...'
   | 'View.Orthographic view'
   | 'View.Perspective view'
