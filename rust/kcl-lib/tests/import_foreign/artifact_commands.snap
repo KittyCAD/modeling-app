@@ -5,7 +5,7 @@ description: Artifact commands import_foreign.kcl
 {
   "rust/kcl-lib/tests/inputs/cube.gltf": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
       "range": [],
       "command": {
         "type": "import_files",

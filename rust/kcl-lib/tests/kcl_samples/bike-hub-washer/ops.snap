@@ -2670,11 +2670,11 @@ description: Operations executed bike-hub-washer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2704,7 +2704,7 @@ description: Operations executed bike-hub-washer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "907cac50-3701-5367-b35c-4ec2132c824f"
           }
         },
         "sourceRange": []
@@ -2730,7 +2730,7 @@ description: Operations executed bike-hub-washer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
           }
         },
         "sourceRange": []

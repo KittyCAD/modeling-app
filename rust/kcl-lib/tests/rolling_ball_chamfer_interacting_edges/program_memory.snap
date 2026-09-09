@@ -7,14 +7,14 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "topologyId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de06675a-22ea-58f0-8413-18c53d9c17f9",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": {
             "commentStart": 444,
@@ -27,8 +27,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+          "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
           "sourceRange": [],
           "tag": {
             "commentStart": 633,
@@ -50,11 +50,11 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "ccw": true,
@@ -85,8 +85,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -126,7 +126,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
@@ -140,17 +140,17 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
             "value": "shaftEnd"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "7ad5aaba-f48b-5c69-9ae4-5f1455b2fd8e",
+      "endCapId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
           "length": {
             "n": 0.0625,
             "ty": {
@@ -159,12 +159,12 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "6fe0649f-cdd5-50ea-ad12-53597d9acb63",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
           "length": {
             "n": 0.0625,
             "ty": {
@@ -173,7 +173,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "4c3c9d1b-e1d8-505b-954b-155e069e484d",
           "tag": null
         }
       ],
@@ -192,45 +192,45 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
   },
   "edge001": {
     "type": "Uuid",
-    "value": "[uuid]"
+    "value": "6fe0649f-cdd5-50ea-ad12-53597d9acb63"
   },
   "edge002": {
     "type": "Uuid",
-    "value": "[uuid]"
+    "value": "4c3c9d1b-e1d8-505b-954b-155e069e484d"
   },
   "keyway": {
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "topologyId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5f3e7b04-be81-5355-90cb-48b1535dbafd",
+          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a5abee26-993d-5079-aeaf-d20760b162b0",
+          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -239,11 +239,11 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "sourceRange": []
             },
             "from": [
@@ -260,7 +260,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
               "sourceRange": []
             },
             "from": [
@@ -277,7 +277,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
               "sourceRange": []
             },
             "from": [
@@ -294,7 +294,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
               "sourceRange": []
             },
             "from": [
@@ -312,8 +312,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+          "artifactId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
           "objectId": 1,
           "value": "shaftEnd",
           "xAxis": {
@@ -329,8 +329,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "in"
@@ -347,17 +347,17 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
             "sourceRange": []
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+        "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+      "endCapId": "1084cca5-0297-5dc3-92ac-287642feefac",
       "units": "in",
       "sectional": false
     }
@@ -375,11 +375,11 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7b681387-29ea-57f1-8713-d63280827139",
             "sourceRange": []
           },
           "from": [
@@ -396,7 +396,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           },
           "from": [
@@ -413,7 +413,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
             "sourceRange": []
           },
           "from": [
@@ -430,7 +430,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           },
           "from": [
@@ -448,8 +448,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+        "artifactId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
         "objectId": 1,
         "value": "shaftEnd",
         "xAxis": {
@@ -465,8 +465,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "in"
@@ -483,12 +483,12 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
           "sourceRange": []
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -506,14 +506,14 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de06675a-22ea-58f0-8413-18c53d9c17f9",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": {
             "commentStart": 444,
@@ -526,8 +526,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+          "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
           "sourceRange": [],
           "tag": {
             "commentStart": 633,
@@ -549,11 +549,11 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "ccw": true,
@@ -584,8 +584,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -625,7 +625,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
@@ -639,13 +639,13 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
             "value": "shaftEnd"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "7ad5aaba-f48b-5c69-9ae4-5f1455b2fd8e",
+      "endCapId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
       "units": "in",
       "sectional": false
     }
@@ -682,11 +682,11 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "ccw": true,
@@ -717,8 +717,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -758,7 +758,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
           "sourceRange": []
         }
       },
@@ -772,8 +772,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "value": "shaftEnd"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -781,8 +781,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
   "shaftSketch": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "objectId": 0,
       "kind": "XY",
       "origin": {
@@ -815,14 +815,14 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "topologyId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de06675a-22ea-58f0-8413-18c53d9c17f9",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": {
             "commentStart": 444,
@@ -835,8 +835,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+          "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
           "sourceRange": [],
           "tag": {
             "commentStart": 633,
@@ -858,11 +858,11 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "ccw": true,
@@ -893,8 +893,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -934,7 +934,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
@@ -948,13 +948,13 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
             "value": "shaftEnd"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "7ad5aaba-f48b-5c69-9ae4-5f1455b2fd8e",
+      "endCapId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
       "units": "in",
       "sectional": false
     }

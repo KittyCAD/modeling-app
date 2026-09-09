@@ -6,8 +6,8 @@ description: Variables in memory after executing m4-insert.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -53,11 +53,11 @@ description: Variables in memory after executing m4-insert.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -81,7 +81,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -105,7 +105,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -129,7 +129,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -153,7 +153,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -177,7 +177,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "sourceRange": []
           },
           "from": [
@@ -201,7 +201,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
             "sourceRange": []
           },
           "from": [
@@ -225,7 +225,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
             "sourceRange": []
           },
           "from": [
@@ -249,7 +249,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           },
           "from": [
@@ -273,7 +273,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
             "sourceRange": []
           },
           "from": [
@@ -290,7 +290,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           },
           "from": [
@@ -314,7 +314,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
             "sourceRange": []
           },
           "from": [
@@ -338,7 +338,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
             "sourceRange": []
           },
           "from": [
@@ -363,8 +363,8 @@ description: Variables in memory after executing m4-insert.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -404,7 +404,7 @@ description: Variables in memory after executing m4-insert.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1a0ade6f-d355-5121-9adb-351976a78284",
           "sourceRange": []
         }
       },
@@ -458,8 +458,8 @@ description: Variables in memory after executing m4-insert.kcl
           "value": "upperRib"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+      "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "units": "mm",
       "isClosed": "no"
     }
@@ -473,14 +473,14 @@ description: Variables in memory after executing m4-insert.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "topologyId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea776e7b-35a3-59e4-a84c-e5d610fca17c",
+          "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
           "sourceRange": [],
           "tag": {
             "commentStart": 623,
@@ -493,8 +493,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5e72780c-333e-5c6d-9bde-5de0f410319d",
+          "id": "3237419e-9267-511d-84b3-3cbd311ec113",
           "sourceRange": [],
           "tag": {
             "commentStart": 711,
@@ -507,8 +507,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ec79f8e5-cb0b-5956-a06b-309bcb97daa1",
+          "id": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
           "sourceRange": [],
           "tag": {
             "commentStart": 854,
@@ -521,8 +521,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a499d777-836d-5164-9776-3f6ad5466a18",
+          "id": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1000,
@@ -535,8 +535,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "68deb812-b19f-554f-8795-10a727557975",
+          "id": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1138,
@@ -549,8 +549,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f68ea3a8-4ca9-5607-8cd6-af792ed8dac6",
+          "id": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
           "sourceRange": [],
           "tag": {
             "commentStart": 1269,
@@ -563,8 +563,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83c7f4d1-f8ab-5b6d-81f8-adb646caac6c",
+          "id": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1405,
@@ -577,8 +577,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0a9098e6-ef24-54c8-87a5-16d4dbe43e92",
+          "id": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
           "sourceRange": [],
           "tag": {
             "commentStart": 1550,
@@ -591,8 +591,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6fad4938-97c7-5cef-9205-5d38b944649d",
+          "id": "f7dce085-f4da-5dd8-b353-dcc2149fa091",
           "sourceRange": [],
           "tag": {
             "commentStart": 1688,
@@ -605,8 +605,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9849260e-20c4-53bd-97c4-0dbfa6d9233e",
+          "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 1830,
@@ -619,8 +619,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fbc21371-db5d-5836-87c3-b61cba956a04",
+          "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
           "sourceRange": [],
           "tag": {
             "commentStart": 1911,
@@ -633,8 +633,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a90708c-e9a6-5828-9cc5-28a04affe8ad",
+          "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
           "sourceRange": [],
           "tag": {
             "commentStart": 2042,
@@ -650,11 +650,11 @@ description: Variables in memory after executing m4-insert.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d5eaf678-0440-563f-ac19-e473850b9270",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
               "sourceRange": []
             },
             "from": [
@@ -678,7 +678,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3237419e-9267-511d-84b3-3cbd311ec113",
               "sourceRange": []
             },
             "from": [
@@ -702,7 +702,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
               "sourceRange": []
             },
             "from": [
@@ -726,7 +726,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
               "sourceRange": []
             },
             "from": [
@@ -750,7 +750,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
               "sourceRange": []
             },
             "from": [
@@ -774,7 +774,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
               "sourceRange": []
             },
             "from": [
@@ -798,7 +798,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
               "sourceRange": []
             },
             "from": [
@@ -822,7 +822,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
               "sourceRange": []
             },
             "from": [
@@ -846,7 +846,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f7dce085-f4da-5dd8-b353-dcc2149fa091",
               "sourceRange": []
             },
             "from": [
@@ -870,7 +870,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
               "sourceRange": []
             },
             "from": [
@@ -894,7 +894,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
               "sourceRange": []
             },
             "from": [
@@ -918,7 +918,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
               "sourceRange": []
             },
             "from": [
@@ -943,8 +943,8 @@ description: Variables in memory after executing m4-insert.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -984,7 +984,7 @@ description: Variables in memory after executing m4-insert.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1a0ade6f-d355-5121-9adb-351976a78284",
             "sourceRange": []
           }
         },
@@ -1038,8 +1038,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "upperRib"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -1102,11 +1102,11 @@ description: Variables in memory after executing m4-insert.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d5eaf678-0440-563f-ac19-e473850b9270",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
             "sourceRange": []
           },
           "from": [
@@ -1130,7 +1130,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3237419e-9267-511d-84b3-3cbd311ec113",
             "sourceRange": []
           },
           "from": [
@@ -1154,7 +1154,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
             "sourceRange": []
           },
           "from": [
@@ -1178,7 +1178,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
             "sourceRange": []
           },
           "from": [
@@ -1202,7 +1202,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
             "sourceRange": []
           },
           "from": [
@@ -1226,7 +1226,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
             "sourceRange": []
           },
           "from": [
@@ -1250,7 +1250,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
             "sourceRange": []
           },
           "from": [
@@ -1274,7 +1274,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
             "sourceRange": []
           },
           "from": [
@@ -1298,7 +1298,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f7dce085-f4da-5dd8-b353-dcc2149fa091",
             "sourceRange": []
           },
           "from": [
@@ -1322,7 +1322,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
             "sourceRange": []
           },
           "from": [
@@ -1346,7 +1346,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
             "sourceRange": []
           },
           "from": [
@@ -1370,7 +1370,7 @@ description: Variables in memory after executing m4-insert.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
             "sourceRange": []
           },
           "from": [
@@ -1395,8 +1395,8 @@ description: Variables in memory after executing m4-insert.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1436,7 +1436,7 @@ description: Variables in memory after executing m4-insert.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1a0ade6f-d355-5121-9adb-351976a78284",
           "sourceRange": []
         }
       },
@@ -1490,8 +1490,8 @@ description: Variables in memory after executing m4-insert.kcl
           "value": "upperRib"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1505,7 +1505,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 46,
                 "kind": {
                   "line": {
@@ -1579,8 +1579,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1609,7 +1609,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomBridge"
@@ -1625,7 +1625,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 51,
                 "kind": {
                   "line": {
@@ -1700,8 +1700,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1730,7 +1730,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -1746,7 +1746,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -1820,8 +1820,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1850,7 +1850,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerWall"
@@ -1866,7 +1866,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -1940,8 +1940,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1970,7 +1970,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerBandWall"
@@ -1986,7 +1986,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -2060,8 +2060,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2090,7 +2090,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerNeckWall"
@@ -2106,7 +2106,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -2180,8 +2180,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2210,7 +2210,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerRib"
@@ -2227,11 +2227,11 @@ description: Variables in memory after executing m4-insert.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2255,7 +2255,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -2279,7 +2279,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -2303,7 +2303,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -2327,7 +2327,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -2351,7 +2351,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -2375,7 +2375,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -2399,7 +2399,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "from": [
@@ -2423,7 +2423,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -2447,7 +2447,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
                     "sourceRange": []
                   },
                   "from": [
@@ -2464,7 +2464,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -2488,7 +2488,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "from": [
@@ -2512,7 +2512,7 @@ description: Variables in memory after executing m4-insert.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "from": [
@@ -2537,8 +2537,8 @@ description: Variables in memory after executing m4-insert.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -2578,7 +2578,7 @@ description: Variables in memory after executing m4-insert.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1a0ade6f-d355-5121-9adb-351976a78284",
                   "sourceRange": []
                 }
               },
@@ -2632,8 +2632,8 @@ description: Variables in memory after executing m4-insert.kcl
                   "value": "upperRib"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+              "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2647,7 +2647,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -2721,8 +2721,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2751,7 +2751,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "midWall"
@@ -2767,7 +2767,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2841,8 +2841,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2871,7 +2871,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerTopWall"
@@ -2887,7 +2887,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -2961,8 +2961,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2991,7 +2991,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "taperFlank"
@@ -3007,7 +3007,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -3081,8 +3081,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3111,7 +3111,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topBridge"
@@ -3127,7 +3127,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -3201,8 +3201,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3231,7 +3231,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topShoulder"
@@ -3247,7 +3247,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -3321,8 +3321,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3351,7 +3351,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperNeckWall"
@@ -3367,7 +3367,7 @@ description: Variables in memory after executing m4-insert.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -3441,8 +3441,8 @@ description: Variables in memory after executing m4-insert.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3471,7 +3471,7 @@ description: Variables in memory after executing m4-insert.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperRib"
@@ -3540,14 +3540,14 @@ description: Variables in memory after executing m4-insert.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "topologyId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea776e7b-35a3-59e4-a84c-e5d610fca17c",
+          "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
           "sourceRange": [],
           "tag": {
             "commentStart": 623,
@@ -3560,8 +3560,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5e72780c-333e-5c6d-9bde-5de0f410319d",
+          "id": "3237419e-9267-511d-84b3-3cbd311ec113",
           "sourceRange": [],
           "tag": {
             "commentStart": 711,
@@ -3574,8 +3574,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ec79f8e5-cb0b-5956-a06b-309bcb97daa1",
+          "id": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
           "sourceRange": [],
           "tag": {
             "commentStart": 854,
@@ -3588,8 +3588,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a499d777-836d-5164-9776-3f6ad5466a18",
+          "id": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1000,
@@ -3602,8 +3602,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "68deb812-b19f-554f-8795-10a727557975",
+          "id": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1138,
@@ -3616,8 +3616,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f68ea3a8-4ca9-5607-8cd6-af792ed8dac6",
+          "id": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
           "sourceRange": [],
           "tag": {
             "commentStart": 1269,
@@ -3630,8 +3630,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83c7f4d1-f8ab-5b6d-81f8-adb646caac6c",
+          "id": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1405,
@@ -3644,8 +3644,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0a9098e6-ef24-54c8-87a5-16d4dbe43e92",
+          "id": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
           "sourceRange": [],
           "tag": {
             "commentStart": 1550,
@@ -3658,8 +3658,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6fad4938-97c7-5cef-9205-5d38b944649d",
+          "id": "f7dce085-f4da-5dd8-b353-dcc2149fa091",
           "sourceRange": [],
           "tag": {
             "commentStart": 1688,
@@ -3672,8 +3672,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9849260e-20c4-53bd-97c4-0dbfa6d9233e",
+          "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 1830,
@@ -3686,8 +3686,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fbc21371-db5d-5836-87c3-b61cba956a04",
+          "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
           "sourceRange": [],
           "tag": {
             "commentStart": 1911,
@@ -3700,8 +3700,8 @@ description: Variables in memory after executing m4-insert.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a90708c-e9a6-5828-9cc5-28a04affe8ad",
+          "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
           "sourceRange": [],
           "tag": {
             "commentStart": 2042,
@@ -3717,11 +3717,11 @@ description: Variables in memory after executing m4-insert.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d5eaf678-0440-563f-ac19-e473850b9270",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
               "sourceRange": []
             },
             "from": [
@@ -3745,7 +3745,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3237419e-9267-511d-84b3-3cbd311ec113",
               "sourceRange": []
             },
             "from": [
@@ -3769,7 +3769,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
               "sourceRange": []
             },
             "from": [
@@ -3793,7 +3793,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
               "sourceRange": []
             },
             "from": [
@@ -3817,7 +3817,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
               "sourceRange": []
             },
             "from": [
@@ -3841,7 +3841,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
               "sourceRange": []
             },
             "from": [
@@ -3865,7 +3865,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
               "sourceRange": []
             },
             "from": [
@@ -3889,7 +3889,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
               "sourceRange": []
             },
             "from": [
@@ -3913,7 +3913,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f7dce085-f4da-5dd8-b353-dcc2149fa091",
               "sourceRange": []
             },
             "from": [
@@ -3937,7 +3937,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
               "sourceRange": []
             },
             "from": [
@@ -3961,7 +3961,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
               "sourceRange": []
             },
             "from": [
@@ -3985,7 +3985,7 @@ description: Variables in memory after executing m4-insert.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
               "sourceRange": []
             },
             "from": [
@@ -4010,8 +4010,8 @@ description: Variables in memory after executing m4-insert.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4051,7 +4051,7 @@ description: Variables in memory after executing m4-insert.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1a0ade6f-d355-5121-9adb-351976a78284",
             "sourceRange": []
           }
         },
@@ -4105,8 +4105,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "upperRib"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+        "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
         "units": "mm",
         "isClosed": "explicitly"
       },
