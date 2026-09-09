@@ -117,6 +117,12 @@ export type CommandReviewValidationError = Error & {
   reviewDetails?: CommandReviewValidationDetails
 }
 
+export interface CommandRedirect {
+  name: string
+  groupId: string
+  argDefaultValues?: Record<string, unknown>
+}
+
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
@@ -127,6 +133,8 @@ export type Command<
   name: CommandName
   groupId: T['id']
   needsReview: boolean
+  /** Resolve a handoff before collecting or reviewing arguments. Must be pure. */
+  redirect?: (context: CommandBarContext) => CommandRedirect | undefined
   reviewMessage?:
     | ReactNode
     | ((commandBarContext: CommandBarContext) => ReactNode)
