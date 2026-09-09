@@ -6,12 +6,12 @@ description: Physical properties multi-axis-robot.kcl
   "bounding_box": {
     "center": {
       "x": 65.23753132580913,
-      "y": 434.213,
+      "y": 434.2129999999996,
       "z": 546.0364999999998
     },
     "dimensions": {
       "x": 807.0749130952256,
-      "y": 1147.826,
+      "y": 1147.8260000000007,
       "z": 1098.1689999999996
     },
     "unit": "mm"

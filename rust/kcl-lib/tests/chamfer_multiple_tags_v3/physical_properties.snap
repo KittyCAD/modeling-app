@@ -7,12 +7,12 @@ description: Physical properties chamfer_multiple_tags_v3.kcl
     "center": {
       "x": 0.0,
       "y": 0.0,
-      "z": 2.0
+      "z": 2.0000000000000004
     },
     "dimensions": {
       "x": 20.0,
       "y": 20.0,
-      "z": 4.0
+      "z": 4.800000000000002
     },
     "unit": "mm"
   },

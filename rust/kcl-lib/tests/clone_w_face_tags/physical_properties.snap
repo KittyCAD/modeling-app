@@ -5,14 +5,14 @@ description: Physical properties clone_w_face_tags.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 1.76,
+      "x": 4.26,
       "y": 2.635,
-      "z": 1.0
+      "z": 1.0000000000000002
     },
     "dimensions": {
-      "x": 2.68,
+      "x": 7.68,
       "y": 3.45,
-      "z": 2.0
+      "z": 2.0000000000000004
     },
     "unit": "mm"
   },

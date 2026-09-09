@@ -5,14 +5,14 @@ description: Physical properties named_views_hide_sweep_v1.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 14.0,
-      "y": 3.999999999999999,
-      "z": 7.5
+      "x": 25.0,
+      "y": 5.0,
+      "z": 5.0
     },
     "dimensions": {
-      "x": 34.0,
-      "y": 14.000000000000002,
-      "z": 15.0
+      "x": 12.0,
+      "y": 12.0,
+      "z": 10.0
     },
     "unit": "mm"
   },

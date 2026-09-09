@@ -5,14 +5,14 @@ description: Physical properties union_self.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
+      "x": 7.0710678118654755,
       "y": 0.0,
-      "z": 0.0
+      "z": 7.0710678118654755
     },
     "dimensions": {
-      "x": 20001.0,
-      "y": 20001.0,
-      "z": 1.0
+      "x": 28.284271247461906,
+      "y": 20.0,
+      "z": 28.284271247461906
     },
     "unit": "mm"
   },

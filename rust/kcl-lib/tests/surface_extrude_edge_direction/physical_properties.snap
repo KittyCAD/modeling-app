@@ -5,14 +5,14 @@ description: Physical properties surface_extrude_edge_direction.kcl
 {
   "bounding_box": {
     "center": {
-      "x": -0.5129318397204008,
+      "x": 0.8205580986887391,
       "y": -0.0509982826661286,
-      "z": 2.5
+      "z": 4.868807716974934
     },
     "dimensions": {
-      "x": 5.164495600268674,
+      "x": 7.831475477086954,
       "y": 5.880952178243334,
-      "z": 5.0
+      "z": 9.737615433949868
     },
     "unit": "mm"
   },

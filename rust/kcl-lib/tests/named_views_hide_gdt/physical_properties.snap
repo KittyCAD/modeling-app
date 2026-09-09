@@ -5,14 +5,14 @@ description: Physical properties named_views_hide_gdt.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 2.5,
+      "x": -18.375,
       "y": 2.5,
-      "z": 2.5
+      "z": -5.658749103546143
     },
     "dimensions": {
-      "x": 5.0,
-      "y": 5.0,
-      "z": 5.0
+      "x": 46.75,
+      "y": 21.0,
+      "z": 47.77249813079834
     },
     "unit": "mm"
   },

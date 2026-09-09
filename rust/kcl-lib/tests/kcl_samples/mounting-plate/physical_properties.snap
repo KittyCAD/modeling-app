@@ -7,11 +7,11 @@ description: Physical properties mounting-plate.kcl
     "center": {
       "x": 0.0,
       "y": 0.0,
-      "z": 6.35
+      "z": 6.3500000000000005
     },
     "dimensions": {
       "x": 152.39999999999998,
-      "y": 254.0,
+      "y": 254.00000000000003,
       "z": 12.7
     },
     "unit": "mm"

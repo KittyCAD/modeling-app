@@ -5,12 +5,12 @@ description: Physical properties clone_w_shell.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
+      "x": 24.999999999999996,
       "y": 0.0,
       "z": 3.125
     },
     "dimensions": {
-      "x": 28.2,
+      "x": 78.19999999999999,
       "y": 28.2,
       "z": 6.25
     },

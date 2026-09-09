@@ -6,12 +6,12 @@ description: Physical properties clone_a_pattern.kcl
   "bounding_box": {
     "center": {
       "x": -1.2787647962758033,
-      "y": -1.7799999999999998,
+      "y": 0.17123520372419643,
       "z": 0.25
     },
     "dimensions": {
       "x": 5.822470407448394,
-      "y": 1.42,
+      "y": 5.322470407448392,
       "z": 0.5
     },
     "unit": "mm"

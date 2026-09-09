@@ -5,12 +5,12 @@ description: Physical properties truss-structure.kcl
 {
   "bounding_box": {
     "center": {
-      "x": -1371.6000000000004,
+      "x": -2108.2000000000003,
       "y": 0.0,
       "z": -38.40776005091311
     },
     "dimensions": {
-      "x": 5791.200000000001,
+      "x": 4318.000000000001,
       "y": 3657.6,
       "z": 2361.584479898176
     },

@@ -18,7 +18,7 @@ description: Physical properties hand-trolley.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2721802.9303733455
+    "value": 2721802.930373346
   },
   "weight": {
     "material_density": 1000.0,

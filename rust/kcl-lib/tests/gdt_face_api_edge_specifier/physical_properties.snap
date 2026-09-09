@@ -5,14 +5,14 @@ description: Physical properties gdt_face_api_edge_specifier.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 5.0,
-      "y": 5.0,
-      "z": 5.0
+      "x": 34.96875,
+      "y": 0.0,
+      "z": 8.0
     },
     "dimensions": {
-      "x": 10.0,
-      "y": 10.0,
-      "z": 10.0
+      "x": 69.9375,
+      "y": 63.375,
+      "z": 63.375
     },
     "unit": "mm"
   },
