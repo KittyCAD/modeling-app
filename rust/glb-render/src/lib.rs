@@ -24,9 +24,15 @@ initialize Bevy's renderer or use a GPU."#;
 const BACKGROUND: Rgb<u8> = Rgb([255, 255, 255]);
 const EDGE_COLOR: Rgb<u8> = Rgb([0, 107, 184]);
 const LINE_WIDTH: f32 = 2.5;
-const OUTPUT_SIZE: u32 = 1024;
+const OUTPUT_SIZE: ImageSize = ImageSize { x: 1280, y: 720 };
 const EDGE_OUTPUT: &str = "edges.png";
 const FACE_OUTPUT: &str = "faces.png";
+
+#[derive(Debug)]
+struct ImageSize {
+    x: u32,
+    y: u32,
+}
 
 #[derive(Debug)]
 struct BatchRenderOptions {
@@ -40,7 +46,7 @@ struct BatchRenderOptions {
 /// or rendered.
 pub fn render(glb: &[u8]) -> Result<DynamicImage, String> {
     let edges = load_edges(glb)?;
-    let view = ViewProjection::from_edges(&edges, OUTPUT_SIZE, OUTPUT_SIZE)?;
+    let view = ViewProjection::from_edges(&edges, OUTPUT_SIZE.x, OUTPUT_SIZE.y)?;
     render_image(&glb, &edges, view)
 }
 
@@ -68,7 +74,7 @@ pub fn run(args: Vec<OsString>) -> Result<(), String> {
     let load_time = load_started.elapsed();
 
     let render_started = Instant::now();
-    let view = ViewProjection::from_edges(&edges, OUTPUT_SIZE, OUTPUT_SIZE)?;
+    let view = ViewProjection::from_edges(&edges, OUTPUT_SIZE.x, OUTPUT_SIZE.y)?;
     let edge_image = render_edges(&edges, view);
     edge_image
         .save_with_format(EDGE_OUTPUT, ImageFormat::Png)
@@ -445,7 +451,7 @@ mod tests {
     fn renders_glb_bytes() {
         let glb = fs::read(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/output.glb")).unwrap();
         let image = render(&glb).unwrap().into_rgb8();
-        assert_eq!(image.dimensions(), (OUTPUT_SIZE, OUTPUT_SIZE));
+        assert_eq!(image.dimensions(), (OUTPUT_SIZE.x, OUTPUT_SIZE.y));
         assert!(image.pixels().any(|pixel| *pixel != BACKGROUND));
     }
 
