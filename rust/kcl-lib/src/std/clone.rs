@@ -1530,7 +1530,7 @@ cube = baseCube
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
