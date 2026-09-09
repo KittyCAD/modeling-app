@@ -1,0 +1,2 @@
+# Engine-generated face and cap IDs vary between otherwise identical runs.
+redact_uuids = true
