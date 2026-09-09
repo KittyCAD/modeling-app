@@ -759,9 +759,14 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
         },
         { timeout: 15_000 }
       )
-      await toolbar.editSketch(1)
-      await toolbar.expectToolbarMode.toBe('sketching')
-      await legacySketchClientError
+      // Handle the request wait even if entering sketch mode fails.
+      await Promise.all([
+        legacySketchClientError,
+        (async () => {
+          await toolbar.editSketch(1)
+          await toolbar.expectToolbarMode.toBe('sketching')
+        })(),
+      ])
     })
 
     await test.step('Draw a circle and verify code', async () => {
