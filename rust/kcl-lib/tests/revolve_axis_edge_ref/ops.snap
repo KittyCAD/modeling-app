@@ -10,7 +10,7 @@ description: Operations executed revolve_axis_edge_ref.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed revolve_axis_edge_ref.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -86,7 +86,7 @@ description: Operations executed revolve_axis_edge_ref.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -114,7 +114,7 @@ description: Operations executed revolve_axis_edge_ref.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -142,12 +142,12 @@ description: Operations executed revolve_axis_edge_ref.kcl
                   {
                     "type": "TagIdentifier",
                     "value": "axisSide",
-                    "artifact_id": "[uuid]"
+                    "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
                   },
                   {
                     "type": "TagIdentifier",
                     "value": "axisStart",
-                    "artifact_id": "[uuid]"
+                    "artifact_id": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc"
                   }
                 ]
               }

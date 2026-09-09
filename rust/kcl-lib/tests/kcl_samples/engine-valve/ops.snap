@@ -5215,11 +5215,11 @@ description: Operations executed engine-valve.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -5249,7 +5249,7 @@ description: Operations executed engine-valve.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508"
           }
         },
         "sourceRange": []

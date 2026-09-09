@@ -2143,11 +2143,11 @@ description: Operations executed hammer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2177,7 +2177,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []
@@ -2206,7 +2206,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
           }
         },
         "sourceRange": []
@@ -2254,7 +2254,7 @@ description: Operations executed hammer.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3358,11 +3358,11 @@ description: Operations executed hammer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
               }
             ]
           },
@@ -3392,7 +3392,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
           }
         },
         "sourceRange": []
@@ -3421,7 +3421,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
           }
         },
         "sourceRange": []
@@ -4181,11 +4181,11 @@ description: Operations executed hammer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce"
               }
             ]
           },
@@ -4215,7 +4215,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
           }
         },
         "sourceRange": []
@@ -4244,7 +4244,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488"
           }
         },
         "sourceRange": []
@@ -5305,11 +5305,11 @@ description: Operations executed hammer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4ea8409b-834f-5214-b812-e276f2ff01f4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6"
               }
             ]
           },
@@ -5339,7 +5339,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966"
           }
         },
         "sourceRange": []
@@ -5368,7 +5368,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
           }
         },
         "sourceRange": []
@@ -5410,7 +5410,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
           }
         },
         "sourceRange": []
@@ -5423,19 +5423,19 @@ description: Operations executed hammer.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37"
                 }
               }
             ]
@@ -6761,11 +6761,11 @@ description: Operations executed hammer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
               }
             ]
           },
@@ -6795,7 +6795,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93fe6743-e0aa-5d65-834b-87a82208c703"
           }
         },
         "sourceRange": []
@@ -6824,7 +6824,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad"
           }
         },
         "sourceRange": []
@@ -6865,7 +6865,7 @@ description: Operations executed hammer.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -7025,7 +7025,7 @@ description: Operations executed hammer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             ]
           },
@@ -7055,7 +7055,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c91b9ebe-ef24-5090-8a15-d377717956bf"
           }
         },
         "sourceRange": []
@@ -7084,7 +7084,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92"
           }
         },
         "sourceRange": []
@@ -7136,13 +7136,13 @@ description: Operations executed hammer.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e3e760fc-c341-586d-9f2f-a9afbbddf645"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf"
               }
             }
           ]
@@ -7177,7 +7177,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "67d03316-0deb-5224-a7ce-b3394ba08db9"
           }
         },
         "sourceRange": []
@@ -7190,7 +7190,7 @@ description: Operations executed hammer.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
                 }
               }
             ]
@@ -8157,11 +8157,11 @@ description: Operations executed hammer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "edad1eb5-5562-5615-b23f-ee6623df14ee"
               }
             ]
           },
@@ -8191,7 +8191,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c"
           }
         },
         "sourceRange": []
@@ -8220,7 +8220,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc243886-5941-5a64-8a15-a0b50bb063cb"
           }
         },
         "sourceRange": []
@@ -8320,7 +8320,7 @@ description: Operations executed hammer.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "388597b8-4546-5655-b3a3-c3a0bba239ad"
           }
         },
         "sourceRange": []

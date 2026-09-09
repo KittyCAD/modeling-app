@@ -184,7 +184,7 @@ description: Operations executed rectangle-table.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -936,11 +936,11 @@ description: Operations executed rectangle-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -970,7 +970,7 @@ description: Operations executed rectangle-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           }
         },
         "sourceRange": []
@@ -1726,11 +1726,11 @@ description: Operations executed rectangle-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
               }
             ]
           },
@@ -1760,7 +1760,7 @@ description: Operations executed rectangle-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
           }
         },
         "sourceRange": []
@@ -1806,7 +1806,7 @@ description: Operations executed rectangle-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
           }
         },
         "sourceRange": []
@@ -1938,13 +1938,13 @@ description: Operations executed rectangle-table.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "41696963-7465-5326-96cf-d83705f95c35"
               }
             }
           ]

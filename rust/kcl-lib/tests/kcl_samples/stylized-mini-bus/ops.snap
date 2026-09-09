@@ -1806,7 +1806,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1836,7 +1836,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
           }
         },
         "sourceRange": []
@@ -1889,7 +1889,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -1930,7 +1930,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -3584,7 +3584,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
               }
             ]
           },
@@ -3614,7 +3614,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
           }
         },
         "sourceRange": []
@@ -3663,7 +3663,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -3689,7 +3689,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3722,7 +3722,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
           }
         },
         "sourceRange": []
@@ -3799,7 +3799,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3832,7 +3832,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
           }
         },
         "sourceRange": []
@@ -3909,7 +3909,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3942,7 +3942,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
           }
         },
         "sourceRange": []
@@ -4019,7 +4019,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -4096,7 +4096,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -4109,25 +4109,25 @@ description: Operations executed stylized-mini-bus.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
                 }
               }
             ]
@@ -4162,7 +4162,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62"
           }
         },
         "sourceRange": []
@@ -5128,7 +5128,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
               }
             ]
           },
@@ -5158,7 +5158,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5211,7 +5211,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
           }
         },
         "sourceRange": []
@@ -5252,7 +5252,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
           }
         },
         "sourceRange": []
@@ -6272,7 +6272,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               }
             ]
           },
@@ -6302,7 +6302,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83"
           }
         },
         "sourceRange": []
@@ -6355,7 +6355,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a"
           }
         },
         "sourceRange": []
@@ -6396,7 +6396,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86"
           }
         },
         "sourceRange": []
@@ -7347,7 +7347,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
               }
             ]
           },
@@ -7377,7 +7377,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322"
           }
         },
         "sourceRange": []
@@ -7430,7 +7430,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bd2c7879-5553-55c3-bc25-46df0c8081fc"
           }
         },
         "sourceRange": []
@@ -7471,7 +7471,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ab8a671-6218-5516-901a-d1a83480ded7"
           }
         },
         "sourceRange": []
@@ -8298,7 +8298,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44d94cee-dac7-5b9f-829d-112d277b8975"
               }
             ]
           },
@@ -8332,7 +8332,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "95d80984-dc84-541c-af31-df26752c9fd4"
               }
             ]
           },
@@ -8362,7 +8362,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
           }
         },
         "sourceRange": []
@@ -8408,7 +8408,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f"
           }
         },
         "sourceRange": []
@@ -8449,7 +8449,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070"
           }
         },
         "sourceRange": []
@@ -8495,7 +8495,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
           }
         },
         "sourceRange": []
@@ -8536,7 +8536,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "96b5306d-8365-5f19-adf7-7b3e844826ca"
           }
         },
         "sourceRange": []
@@ -8565,13 +8565,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             }
           ]
@@ -8609,13 +8609,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2d6c2537-3784-5667-8614-4423d6c6f752"
               }
             }
           ]
@@ -8697,13 +8697,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             }
           ]
@@ -8741,13 +8741,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "da427568-57f9-5fba-9ace-3a3e7be5bc36"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ca586750-6453-56e0-b4cf-8e561096e7ca"
               }
             }
           ]
@@ -8829,13 +8829,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             }
           ]
@@ -8873,13 +8873,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "349ba77a-8183-57f6-8580-b06227eac5bd"
               }
             }
           ]
@@ -8961,13 +8961,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "349ba77a-8183-57f6-8580-b06227eac5bd"
               }
             }
           ]
@@ -9049,13 +9049,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             }
           ]
@@ -9137,13 +9137,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             }
           ]
@@ -9221,7 +9221,7 @@ description: Operations executed stylized-mini-bus.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -9606,7 +9606,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5eed984f-8da1-571e-9576-dd247a4c55b3"
               }
             ]
           },
@@ -9643,13 +9643,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3322387d-5b58-56ea-8103-4d2112d432af"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "848ed7d7-05e7-5c25-9d3b-559ea56c3f0a"
               }
             }
           ]
@@ -9700,13 +9700,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "94cfcc75-120e-5336-b89b-66096a401da3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "08c45048-e16b-54e2-9691-c65127dfc3a8"
               }
             }
           ]
@@ -9749,7 +9749,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7"
           }
         },
         "sourceRange": []
@@ -9774,7 +9774,7 @@ description: Operations executed stylized-mini-bus.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -10740,7 +10740,7 @@ description: Operations executed stylized-mini-bus.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ce0f2476-67d7-5345-810e-e93bbaf612ef"
               }
             ]
           },
@@ -10777,13 +10777,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3ab72285-638e-584b-93ee-09ce363c6f80"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9e303d78-6036-56ae-bba6-92be834e4661"
               }
             }
           ]
@@ -10834,13 +10834,13 @@ description: Operations executed stylized-mini-bus.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b4079ec8-53e1-53e1-a48a-2e161d481653"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "585c0507-64ec-597f-addc-f52df0ac2e7f"
               }
             }
           ]
@@ -10883,7 +10883,7 @@ description: Operations executed stylized-mini-bus.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93084d86-3fba-5437-851f-9a4bb9523e0c"
           }
         },
         "sourceRange": []

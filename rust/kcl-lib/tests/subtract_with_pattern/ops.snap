@@ -10,7 +10,7 @@ description: Operations executed subtract_with_pattern.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed subtract_with_pattern.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -79,7 +79,7 @@ description: Operations executed subtract_with_pattern.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -107,7 +107,7 @@ description: Operations executed subtract_with_pattern.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
           }
         },
         "sourceRange": []
@@ -149,7 +149,7 @@ description: Operations executed subtract_with_pattern.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []
@@ -240,7 +240,7 @@ description: Operations executed subtract_with_pattern.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
               }
             }
           ]
@@ -255,61 +255,61 @@ description: Operations executed subtract_with_pattern.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9eee21ba-6c99-5df4-a742-d43a03ad5000"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "6cb1f6ba-f041-5f0f-82b5-9fc53b93b48b"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "70234578-22da-5570-b77f-9ab44bbf8710"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "25662764-9b8b-5d82-98e0-84ff503bf2cc"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e0e90311-f817-5383-bbb9-73bf2ceba624"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "7007d862-9d2a-5f79-99a3-6390bcf68412"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "86db84ac-4417-5d6d-94f9-5754ec394147"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "fc7fb0e2-498c-5d88-b923-2cb90df78883"
                 }
               }
             ]
@@ -341,7 +341,7 @@ description: Operations executed subtract_with_pattern.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []

@@ -444,13 +444,13 @@ description: Operations executed translate_helix.kcl
             {
               "type": "Helix",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55"
               }
             },
             {
               "type": "Helix",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             }
           ]
@@ -651,7 +651,7 @@ description: Operations executed translate_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5"
           }
         },
         "sourceRange": []

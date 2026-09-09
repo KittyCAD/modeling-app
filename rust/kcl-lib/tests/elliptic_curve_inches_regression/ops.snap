@@ -10,7 +10,7 @@ description: Operations executed elliptic_curve_inches_regression.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "f7696437-0c54-515c-9a57-315967ca9a9d"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed elliptic_curve_inches_regression.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03"
           }
         },
         "sourceRange": []

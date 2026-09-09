@@ -2019,7 +2019,7 @@ description: Operations executed bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -2049,7 +2049,7 @@ description: Operations executed bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
           }
         },
         "sourceRange": []
@@ -2075,7 +2075,7 @@ description: Operations executed bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
           }
         },
         "sourceRange": []
@@ -2138,7 +2138,7 @@ description: Operations executed bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -2159,7 +2159,7 @@ description: Operations executed bracket.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "00413e35-9bf5-5b61-952c-680df3ead9be"
           },
           "sourceRange": []
         }
@@ -2187,7 +2187,7 @@ description: Operations executed bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -2208,7 +2208,7 @@ description: Operations executed bracket.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194"
           },
           "sourceRange": []
         }
@@ -2236,7 +2236,7 @@ description: Operations executed bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -2260,19 +2260,19 @@ description: Operations executed bracket.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "71a72feb-bdc7-50b4-97fd-9fa2630226d6"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac"
               }
             ]
           },
@@ -2566,7 +2566,7 @@ description: Operations executed bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -2676,7 +2676,7 @@ description: Operations executed bracket.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "line5",
-            "artifact_id": "[uuid]"
+            "artifact_id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6"
           },
           "sourceRange": []
         },
@@ -2896,7 +2896,7 @@ description: Operations executed bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
           }
         },
         "sourceRange": []
@@ -2960,7 +2960,7 @@ description: Operations executed bracket.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "line6",
-            "artifact_id": "[uuid]"
+            "artifact_id": "1084cca5-0297-5dc3-92ac-287642feefac"
           },
           "sourceRange": []
         },

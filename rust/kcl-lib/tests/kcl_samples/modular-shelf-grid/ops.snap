@@ -1426,7 +1426,7 @@ description: Operations executed modular-shelf-grid.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1456,7 +1456,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []
@@ -1498,7 +1498,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
           }
         },
         "sourceRange": []
@@ -2682,7 +2682,7 @@ description: Operations executed modular-shelf-grid.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c4fac378-d3df-5505-98c1-308b81b0fd96"
               }
             ]
           },
@@ -2712,7 +2712,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
           }
         },
         "sourceRange": []
@@ -2754,7 +2754,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
           }
         },
         "sourceRange": []
@@ -2842,7 +2842,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []
@@ -2871,7 +2871,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
           }
         },
         "sourceRange": []
@@ -2903,25 +2903,25 @@ description: Operations executed modular-shelf-grid.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "24655609-c68c-5b76-9ccf-684a19064a93"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded"
               }
             }
           ]
@@ -3018,121 +3018,121 @@ description: Operations executed modular-shelf-grid.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a154debd-ab30-5f7f-b33f-a1e92a5e6409"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e9ce532e-4118-590e-9c4c-faf3bfe8f669"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2e50f57c-c068-5175-a0b0-37e0fa55e8db"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "24655609-c68c-5b76-9ccf-684a19064a93"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "eb3ae195-3112-581e-9eed-779b12aebc9a"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9f6b88a2-b9f0-592f-9433-a86866687938"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1c1e33ac-1956-59d0-8695-a98e42fe6941"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "85a9e2e6-6138-53a1-9d09-19eb560dc690"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5335ea08-ac1a-5bb0-90dd-7916ee5a204f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a9d7ad1e-c7b2-5769-8d3a-494dd872365e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7dee4578-aaf5-57f3-a610-7c15cb1af93e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "53129812-1f40-502c-b64b-84a6d84e5397"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "db482d7a-0d30-5907-89c1-d2126f60692d"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d47054a4-f872-511d-8b1f-4da30f60f214"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9bab41c1-3b25-5673-9547-1a70676b8b43"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5b94aa89-e71c-509e-acbb-151a3b7b56d7"
               }
             }
           ]

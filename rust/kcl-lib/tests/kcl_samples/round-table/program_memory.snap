@@ -6,8 +6,8 @@ description: Variables in memory after executing round-table.kcl
   "__sketch_13_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+      "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "objectId": 12,
       "kind": "Custom",
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing round-table.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -72,8 +72,8 @@ description: Variables in memory after executing round-table.kcl
   "__sketch_7_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -105,14 +105,14 @@ description: Variables in memory after executing round-table.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "topologyId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "858236f5-9969-54e7-a6ec-13d8139c4bfe",
+          "id": "5d46da7b-e30e-54df-b48a-63ad8a198ef5",
           "sourceRange": [],
           "tag": {
             "commentStart": 691,
@@ -128,11 +128,11 @@ description: Variables in memory after executing round-table.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5d46da7b-e30e-54df-b48a-63ad8a198ef5",
               "sourceRange": []
             },
             "ccw": true,
@@ -163,8 +163,8 @@ description: Variables in memory after executing round-table.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
           "objectId": 6,
           "kind": "Custom",
           "origin": {
@@ -204,7 +204,7 @@ description: Variables in memory after executing round-table.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
             "sourceRange": []
           }
         },
@@ -214,13 +214,13 @@ description: Variables in memory after executing round-table.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d102e79b-106f-5dea-9c64-58ecbfd9efaa",
+      "endCapId": "b320986c-4c5a-5020-a263-b7aa0fb2da89",
       "units": "mm",
       "sectional": false
     }
@@ -234,7 +234,7 @@ description: Variables in memory after executing round-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 10,
                 "kind": {
                   "circle": {
@@ -308,8 +308,8 @@ description: Variables in memory after executing round-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                  "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                   "kind": "Custom",
                   "objectId": 6,
                   "origin": {
@@ -338,7 +338,7 @@ description: Variables in memory after executing round-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -355,11 +355,11 @@ description: Variables in memory after executing round-table.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -390,8 +390,8 @@ description: Variables in memory after executing round-table.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 6,
                 "kind": "Custom",
                 "origin": {
@@ -431,7 +431,7 @@ description: Variables in memory after executing round-table.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                   "sourceRange": []
                 }
               },
@@ -441,8 +441,8 @@ description: Variables in memory after executing round-table.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+              "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
               "units": "mm",
               "isClosed": "no"
             }
@@ -475,14 +475,14 @@ description: Variables in memory after executing round-table.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "originalId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "topologyId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "61d22467-fc07-5bd8-8617-cc8cc7c6540a",
+          "id": "f5d99326-2ff2-5bbe-bf9c-00b962032a2d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1072,
@@ -498,11 +498,11 @@ description: Variables in memory after executing round-table.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f5d99326-2ff2-5bbe-bf9c-00b962032a2d",
               "sourceRange": []
             },
             "ccw": true,
@@ -533,8 +533,8 @@ description: Variables in memory after executing round-table.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "objectId": 12,
           "kind": "Custom",
           "origin": {
@@ -574,7 +574,7 @@ description: Variables in memory after executing round-table.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
             "sourceRange": []
           }
         },
@@ -584,13 +584,13 @@ description: Variables in memory after executing round-table.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+        "originalId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bb27c694-be03-54b4-af93-d106b1dd7335",
+      "endCapId": "71b752f1-381b-5716-bd8f-14d9d2db403d",
       "units": "mm",
       "sectional": false
     }
@@ -607,8 +607,8 @@ description: Variables in memory after executing round-table.kcl
   "legPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+      "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "objectId": 12,
       "kind": "Custom",
       "origin": {
@@ -646,7 +646,7 @@ description: Variables in memory after executing round-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "objectId": 16,
                 "kind": {
                   "circle": {
@@ -720,8 +720,8 @@ description: Variables in memory after executing round-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 12,
                   "origin": {
@@ -750,7 +750,7 @@ description: Variables in memory after executing round-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -767,11 +767,11 @@ description: Variables in memory after executing round-table.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -802,8 +802,8 @@ description: Variables in memory after executing round-table.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "objectId": 12,
                 "kind": "Custom",
                 "origin": {
@@ -843,7 +843,7 @@ description: Variables in memory after executing round-table.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                   "sourceRange": []
                 }
               },
@@ -853,8 +853,8 @@ description: Variables in memory after executing round-table.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+              "originalId": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "units": "mm",
               "isClosed": "no"
             }
@@ -878,11 +878,11 @@ description: Variables in memory after executing round-table.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
             "sourceRange": []
           },
           "ccw": true,
@@ -913,8 +913,8 @@ description: Variables in memory after executing round-table.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -954,7 +954,7 @@ description: Variables in memory after executing round-table.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": []
         }
       },
@@ -964,8 +964,8 @@ description: Variables in memory after executing round-table.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "originalId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -974,11 +974,11 @@ description: Variables in memory after executing round-table.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5d46da7b-e30e-54df-b48a-63ad8a198ef5",
             "sourceRange": []
           },
           "ccw": true,
@@ -1009,8 +1009,8 @@ description: Variables in memory after executing round-table.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
         "objectId": 6,
         "kind": "Custom",
         "origin": {
@@ -1050,7 +1050,7 @@ description: Variables in memory after executing round-table.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
           "sourceRange": []
         }
       },
@@ -1060,8 +1060,8 @@ description: Variables in memory after executing round-table.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1070,11 +1070,11 @@ description: Variables in memory after executing round-table.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f5d99326-2ff2-5bbe-bf9c-00b962032a2d",
             "sourceRange": []
           },
           "ccw": true,
@@ -1105,8 +1105,8 @@ description: Variables in memory after executing round-table.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "objectId": 12,
         "kind": "Custom",
         "origin": {
@@ -1146,7 +1146,7 @@ description: Variables in memory after executing round-table.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
           "sourceRange": []
         }
       },
@@ -1156,8 +1156,8 @@ description: Variables in memory after executing round-table.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "originalId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1166,14 +1166,14 @@ description: Variables in memory after executing round-table.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "originalId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "topologyId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
+          "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
           "sourceRange": [],
           "tag": {
             "commentStart": 411,
@@ -1189,11 +1189,11 @@ description: Variables in memory after executing round-table.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
               "sourceRange": []
             },
             "ccw": true,
@@ -1224,8 +1224,8 @@ description: Variables in memory after executing round-table.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -1265,7 +1265,7 @@ description: Variables in memory after executing round-table.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "sourceRange": []
           }
         },
@@ -1275,13 +1275,13 @@ description: Variables in memory after executing round-table.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+        "originalId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
+      "endCapId": "688fd424-1de4-51a2-b455-344b29542d3f",
       "units": "mm",
       "sectional": false
     }
@@ -1298,8 +1298,8 @@ description: Variables in memory after executing round-table.kcl
   "tableTopPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -1337,7 +1337,7 @@ description: Variables in memory after executing round-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -1411,8 +1411,8 @@ description: Variables in memory after executing round-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1441,7 +1441,7 @@ description: Variables in memory after executing round-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -1458,11 +1458,11 @@ description: Variables in memory after executing round-table.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1493,8 +1493,8 @@ description: Variables in memory after executing round-table.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1534,7 +1534,7 @@ description: Variables in memory after executing round-table.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                   "sourceRange": []
                 }
               },
@@ -1544,8 +1544,8 @@ description: Variables in memory after executing round-table.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "originalId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "units": "mm",
               "isClosed": "no"
             }

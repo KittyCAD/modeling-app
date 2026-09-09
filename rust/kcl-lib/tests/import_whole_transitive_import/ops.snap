@@ -25,7 +25,7 @@ description: Operations executed import_whole_transitive_import.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "070325e1-7989-54f2-9ed3-2540604376b8"
           }
         },
         "sourceRange": []
@@ -115,7 +115,7 @@ description: Operations executed import_whole_transitive_import.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
         },
         "sourceRange": []
       },
@@ -144,7 +144,7 @@ description: Operations executed import_whole_transitive_import.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d"
           }
         },
         "sourceRange": []

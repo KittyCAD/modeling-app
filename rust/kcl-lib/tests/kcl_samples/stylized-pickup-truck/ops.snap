@@ -1806,7 +1806,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1836,7 +1836,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
           }
         },
         "sourceRange": []
@@ -1889,7 +1889,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -1930,7 +1930,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -3584,7 +3584,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
               }
             ]
           },
@@ -3614,7 +3614,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
           }
         },
         "sourceRange": []
@@ -3663,7 +3663,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -3689,7 +3689,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3722,7 +3722,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
           }
         },
         "sourceRange": []
@@ -3799,7 +3799,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3832,7 +3832,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
           }
         },
         "sourceRange": []
@@ -3909,7 +3909,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3942,7 +3942,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
           }
         },
         "sourceRange": []
@@ -4019,7 +4019,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -4096,7 +4096,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -4109,25 +4109,25 @@ description: Operations executed stylized-pickup-truck.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
                 }
               }
             ]
@@ -4162,7 +4162,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62"
           }
         },
         "sourceRange": []
@@ -5128,7 +5128,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
               }
             ]
           },
@@ -5216,7 +5216,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5265,7 +5265,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
           }
         },
         "sourceRange": []
@@ -5290,7 +5290,7 @@ description: Operations executed stylized-pickup-truck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -6256,7 +6256,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               }
             ]
           },
@@ -6286,7 +6286,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511"
           }
         },
         "sourceRange": []
@@ -6328,7 +6328,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "acb6b8b6-e024-57d9-a856-353e5c4d001f"
           }
         },
         "sourceRange": []
@@ -6354,7 +6354,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
           }
         },
         "sourceRange": []
@@ -6367,7 +6367,7 @@ description: Operations executed stylized-pickup-truck.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83"
                 }
               }
             ]
@@ -6402,7 +6402,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194"
           }
         },
         "sourceRange": []
@@ -7437,7 +7437,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
               }
             ]
           },
@@ -7467,7 +7467,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bd2c7879-5553-55c3-bc25-46df0c8081fc"
           }
         },
         "sourceRange": []
@@ -7520,7 +7520,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93fe6743-e0aa-5d65-834b-87a82208c703"
           }
         },
         "sourceRange": []
@@ -7561,7 +7561,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
           }
         },
         "sourceRange": []
@@ -8512,7 +8512,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "95d80984-dc84-541c-af31-df26752c9fd4"
               }
             ]
           },
@@ -8542,7 +8542,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26"
           }
         },
         "sourceRange": []
@@ -8595,7 +8595,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b"
           }
         },
         "sourceRange": []
@@ -8636,7 +8636,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598"
           }
         },
         "sourceRange": []
@@ -9463,7 +9463,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cea75c17-0a18-5ab9-8495-1b1bb278e899"
               }
             ]
           },
@@ -9497,7 +9497,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92"
               }
             ]
           },
@@ -9527,7 +9527,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
           }
         },
         "sourceRange": []
@@ -9573,7 +9573,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
           }
         },
         "sourceRange": []
@@ -9614,7 +9614,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f3e5d974-3ee8-52ce-a294-da34987457f8"
           }
         },
         "sourceRange": []
@@ -9660,7 +9660,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
           }
         },
         "sourceRange": []
@@ -9701,7 +9701,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
           }
         },
         "sourceRange": []
@@ -9730,13 +9730,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
               }
             }
           ]
@@ -9774,13 +9774,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c9d8522f-60d2-513b-9c62-a4a3110e5970"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc243886-5941-5a64-8a15-a0b50bb063cb"
               }
             }
           ]
@@ -9862,13 +9862,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
               }
             }
           ]
@@ -9906,13 +9906,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "14466b86-e358-553e-8c66-6fd171fc4f2f"
               }
             }
           ]
@@ -9994,13 +9994,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
               }
             }
           ]
@@ -10038,13 +10038,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "08c45048-e16b-54e2-9691-c65127dfc3a8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d60ddbad-e06f-5b11-9ef8-b52ac282856c"
               }
             }
           ]
@@ -10126,13 +10126,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "08c45048-e16b-54e2-9691-c65127dfc3a8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d60ddbad-e06f-5b11-9ef8-b52ac282856c"
               }
             }
           ]
@@ -10214,13 +10214,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
               }
             }
           ]
@@ -10302,13 +10302,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
               }
             }
           ]
@@ -10386,7 +10386,7 @@ description: Operations executed stylized-pickup-truck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -10771,7 +10771,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366"
               }
             ]
           },
@@ -10808,13 +10808,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "13284012-5aa9-5cfb-8236-12f94ca6550e"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0c1b9e31-7422-50a2-b6ca-a3bbfaa094bf"
               }
             }
           ]
@@ -10865,13 +10865,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "616c4ab6-5370-5a38-b6c8-083a2f7c7cdc"
               }
             }
           ]
@@ -10914,7 +10914,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4636f241-62ef-5015-8685-79b861e20d6d"
           }
         },
         "sourceRange": []
@@ -10939,7 +10939,7 @@ description: Operations executed stylized-pickup-truck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -11905,7 +11905,7 @@ description: Operations executed stylized-pickup-truck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79"
               }
             ]
           },
@@ -11942,13 +11942,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a8a6268e-3ec6-5e37-880a-4915289c536b"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3ea0e31b-d2e8-5d43-8313-a382b63f10e2"
               }
             }
           ]
@@ -11999,13 +11999,13 @@ description: Operations executed stylized-pickup-truck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "59874362-d7ba-5294-b373-da6d62d08085"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e4bd49fb-f0b4-57f1-aa21-3c8ee7764cee"
               }
             }
           ]
@@ -12048,7 +12048,7 @@ description: Operations executed stylized-pickup-truck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf"
           }
         },
         "sourceRange": []

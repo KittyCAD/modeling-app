@@ -255,7 +255,7 @@ description: Operations executed sketch_block_circle_constants.kcl
         "point": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           },
           "sourceRange": []
         },
@@ -265,11 +265,11 @@ description: Operations executed sketch_block_circle_constants.kcl
             "value": {
               "c1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "c2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "meta": {
                 "type": "Object",
@@ -277,7 +277,7 @@ description: Operations executed sketch_block_circle_constants.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5"
                     }
                   }
                 }
@@ -313,7 +313,7 @@ description: Operations executed sketch_block_circle_constants.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
           }
         },
         "sourceRange": []
@@ -356,7 +356,7 @@ description: Operations executed sketch_block_circle_constants.kcl
         "point": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
           },
           "sourceRange": []
         },
@@ -366,11 +366,11 @@ description: Operations executed sketch_block_circle_constants.kcl
             "value": {
               "c1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "c2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "meta": {
                 "type": "Object",
@@ -378,7 +378,7 @@ description: Operations executed sketch_block_circle_constants.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5"
                     }
                   }
                 }
@@ -414,7 +414,7 @@ description: Operations executed sketch_block_circle_constants.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []

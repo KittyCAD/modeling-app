@@ -425,7 +425,7 @@ description: Operations executed surface_extrude_edge_specifier_input.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -484,15 +484,15 @@ description: Operations executed surface_extrude_edge_specifier_input.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               "meta": {
                 "type": "Object",
@@ -500,7 +500,7 @@ description: Operations executed surface_extrude_edge_specifier_input.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
                     }
                   }
                 }
@@ -533,7 +533,7 @@ description: Operations executed surface_extrude_edge_specifier_input.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []
@@ -588,12 +588,12 @@ description: Operations executed surface_extrude_edge_specifier_input.kcl
                 {
                   "type": "TagIdentifier",
                   "value": "line1",
-                  "artifact_id": "[uuid]"
+                  "artifact_id": "9bae9824-fc91-5745-8e9a-fc2839744e92"
                 },
                 {
                   "type": "TagIdentifier",
                   "value": "capEnd",
-                  "artifact_id": "[uuid]"
+                  "artifact_id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c"
                 }
               ]
             }

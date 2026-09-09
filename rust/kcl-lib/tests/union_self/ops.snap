@@ -74,7 +74,7 @@ description: Operations executed union_self.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -116,7 +116,7 @@ description: Operations executed union_self.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -178,13 +178,13 @@ description: Operations executed union_self.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
               }
             }
           ]
@@ -219,7 +219,7 @@ description: Operations executed union_self.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
           }
         },
         "sourceRange": []

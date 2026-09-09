@@ -39,7 +39,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -67,7 +67,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -122,7 +122,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -150,7 +150,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
           }
         },
         "sourceRange": []
@@ -192,7 +192,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
           }
         },
         "sourceRange": []
@@ -202,7 +202,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
             }
           },
           "sourceRange": []
@@ -231,7 +231,7 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
           }
         },
         "sourceRange": []
@@ -259,12 +259,12 @@ description: Operations executed face_api_fillet_edge_refs_variant_7.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "hi",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "yoyo",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
                       }
                     ]
                   }

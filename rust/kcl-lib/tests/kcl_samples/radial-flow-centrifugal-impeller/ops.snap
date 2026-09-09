@@ -1109,7 +1109,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -1904,13 +1904,13 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
               }
             }
           ]
@@ -1941,7 +1941,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
           }
         },
         "sourceRange": []
@@ -2007,7 +2007,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
           }
         },
         "sourceRange": []
@@ -2285,7 +2285,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
               }
             ]
           },
@@ -2315,7 +2315,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
           }
         },
         "sourceRange": []
@@ -2512,7 +2512,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ec50dfc5-8660-5f82-906a-6429c34099eb"
               }
             ]
           },
@@ -2542,7 +2542,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2583,7 +2583,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -2782,7 +2782,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0919e597-7112-50da-97bb-e5ba198e1dcd"
               }
             ]
           },
@@ -2812,7 +2812,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba"
           }
         },
         "sourceRange": []
@@ -2854,7 +2854,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf"
           }
         },
         "sourceRange": []
@@ -2867,7 +2867,7 @@ description: Operations executed radial-flow-centrifugal-impeller.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457"
                 }
               }
             ]

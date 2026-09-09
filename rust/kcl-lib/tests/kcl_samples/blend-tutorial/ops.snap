@@ -786,7 +786,7 @@ description: Operations executed blend-tutorial.kcl
       "unlabeledArg": {
         "value": {
           "type": "Segment",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
         },
         "sourceRange": []
       },
@@ -833,7 +833,7 @@ description: Operations executed blend-tutorial.kcl
       "unlabeledArg": {
         "value": {
           "type": "Segment",
-          "artifact_id": "[uuid]"
+          "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
         },
         "sourceRange": []
       },
@@ -881,7 +881,7 @@ description: Operations executed blend-tutorial.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -910,7 +910,7 @@ description: Operations executed blend-tutorial.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab"
           }
         },
         "sourceRange": []
@@ -1312,7 +1312,7 @@ description: Operations executed blend-tutorial.kcl
       "unlabeledArg": {
         "value": {
           "type": "Segment",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7d4c814d-f292-503d-a012-68ab58c77524"
         },
         "sourceRange": []
       },
@@ -1367,7 +1367,7 @@ description: Operations executed blend-tutorial.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []
@@ -1396,7 +1396,7 @@ description: Operations executed blend-tutorial.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -1413,7 +1413,7 @@ description: Operations executed blend-tutorial.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c"
             }
           },
           "sourceRange": []
@@ -1442,7 +1442,7 @@ description: Operations executed blend-tutorial.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b1b41d99-e783-5c4e-a832-8ca59dc25d14"
           }
         },
         "sourceRange": []
