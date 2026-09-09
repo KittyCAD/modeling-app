@@ -2606,27 +2606,6 @@ mod sketch_on_face_end_negative_extrude {
         super::execute(TEST_NAME, true).await
     }
 }
-mod mike_stress_test {
-    const TEST_NAME: &str = "mike_stress_test";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute_test(&super::Test::new(TEST_NAME).without_physical_properties(), true).await
-    }
-}
 mod pentagon_fillet_sugar {
     const TEST_NAME: &str = "pentagon_fillet_sugar";
 

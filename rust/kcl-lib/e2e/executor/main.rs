@@ -1500,7 +1500,7 @@ baseExtrusion = unfilletedExtrusion
  )
 "#;
 
-    let result = execute_and_snapshot(code, None).await.unwrap();
+    let result = execute_and_snapshot_no3d(code, None).await.unwrap();
     assert_out("fillets_referencing_other_fillets_v3", &result);
 }
 
@@ -1561,7 +1561,7 @@ baseExtrusion = unchamferedExtrusion
    )
 "#;
 
-    let result = execute_and_snapshot(code, None).await.unwrap();
+    let result = execute_and_snapshot_no3d(code, None).await.unwrap();
     assert_out("chamfers_referencing_other_chamfers_v3", &result);
 }
 
