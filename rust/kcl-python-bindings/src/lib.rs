@@ -48,6 +48,30 @@ use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 use crate::bridge::sketch_constraints::KclErrorInfo;
 use crate::bridge::sketch_constraints::SketchConstraintReport;
 
+/// Collect backend API call IDs across success, failure, and cancellation.
+/// Clones passed into Tokio tasks share storage with the Python caller.
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass(from_py_object, frozen)]
+#[derive(Clone, Debug, Default)]
+struct ApiCallTrace {
+    inner: kcl_lib::ApiCallTrace,
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
+#[pymethods]
+impl ApiCallTrace {
+    #[new]
+    fn new() -> Self {
+        Self::default()
+    }
+
+    /// Distinct IDs in observation order. Modifying this snapshot does not change the trace.
+    #[getter]
+    fn api_call_ids(&self) -> Vec<String> {
+        self.inner.api_call_ids()
+    }
+}
+
 const HEARTBEAT_INTERVAL_SECONDS: u64 = 5;
 
 mod bridge;
@@ -63,10 +87,15 @@ where
     T: Send + 'static,
     Fut: Future<Output = PyResult<T>> + Send + 'static,
 {
-    tokio()
-        .spawn(future)
-        .await
-        .map_err(|err| PyException::new_err(err.to_string()))?
+    struct AbortOnDrop(tokio::task::AbortHandle);
+    impl Drop for AbortOnDrop {
+        fn drop(&mut self) {
+            self.0.abort();
+        }
+    }
+    let task = tokio().spawn(future);
+    let _abort = AbortOnDrop(task.abort_handle());
+    task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
@@ -254,12 +283,13 @@ async fn new_context_state(
     current_file: Option<PathBuf>,
     mock: bool,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let settings = executor_settings(current_file, highlight_edges);
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None).await?
+        ExecutorContext::new_with_client_and_trace(settings, None, None, trace.map(|trace| trace.inner)).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -330,7 +360,12 @@ struct ExecutedKcl {
     filename: String,
 }
 
-async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
+async fn run_kcl(
+    input: KclInput,
+    mock: bool,
+    highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
+) -> PyResult<ExecutedKcl> {
     let KclProgram {
         code,
         program,
@@ -338,7 +373,7 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
+    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, trace)
         .await
         .map_err(to_py_exception)?;
     let (env_ref, _) = match ctx.run(&program, &mut state).await {
@@ -358,7 +393,7 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
     })
 }
 
-async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
+async fn execute_impl(input: KclInput, mock: bool, trace: Option<ApiCallTrace>) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
         state,
@@ -366,7 +401,7 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
         code,
         filename,
         ..
-    } = run_kcl(input, mock, None).await?;
+    } = run_kcl(input, mock, None, trace).await?;
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
         Ok(outcome) => outcome,
         Err(err) => {
@@ -382,7 +417,10 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
     })
 }
 
-async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
+async fn sketch_constraint_report_impl(
+    input: KclInput,
+    trace: Option<ApiCallTrace>,
+) -> PyResult<SketchConstraintReport> {
     let (code, path, filename) = match input {
         KclInput::Path(input_path) => {
             let (code, path) = get_code_and_file_path(&input_path).await.map_err(to_py_exception)?;
@@ -400,7 +438,9 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(path, false, None, trace)
+        .await
+        .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
@@ -437,8 +477,9 @@ async fn execute_and_snapshot_views_impl(
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, trace).await?;
     let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
@@ -447,8 +488,9 @@ async fn execute_and_snapshot_views_impl(
 async fn execute_and_measure_impl(
     input: KclInput,
     request: PhysicalPropertiesRequest,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None, trace).await?;
     let result = measure_model_properties(&ctx, request).await;
     ctx.close().await;
     result
@@ -466,22 +508,27 @@ async fn execute_and_bounding_box_impl(
     input: KclInput,
     entity_ids: Vec<String>,
     output_unit: Option<UnitLength>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = parse_entity_ids(entity_ids)?;
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None, trace).await?;
     let result = get_bounding_box(&ctx, entity_ids, output_unit).await;
     ctx.close().await;
     result
 }
 
-async fn execute_and_export_impl(input: KclInput, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
+async fn execute_and_export_impl(
+    input: KclInput,
+    export_format: FileExportFormat,
+    trace: Option<ApiCallTrace>,
+) -> PyResult<Vec<RawFile>> {
     let ExecutedKcl {
         ctx,
         program,
         code,
         filename,
         ..
-    } = run_kcl(input, false, None).await?;
+    } = run_kcl(input, false, None, trace).await?;
 
     let settings = match program.meta_settings() {
         Ok(x) => x.unwrap_or_default(),
@@ -577,59 +624,71 @@ fn parse_code(code: String) -> PyResult<bool> {
 
 /// Execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute(path: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Path(path), false).await }).await
+#[pyfunction(signature = (path, *, trace=None))]
+async fn execute(path: String, trace: Option<ApiCallTrace>) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Path(path), false, trace).await }).await
 }
 
 /// Execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code(code: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Code(code), false).await }).await
+#[pyfunction(signature = (code, *, trace=None))]
+async fn execute_code(code: String, trace: Option<ApiCallTrace>) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Code(code), false, trace).await }).await
 }
 
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn mock_execute_code(code: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Code(code), true).await }).await
+#[pyfunction(signature = (code, *, trace=None))]
+async fn mock_execute_code(code: String, trace: Option<ApiCallTrace>) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Code(code), true, trace).await }).await
 }
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn mock_execute(path: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Path(path), true).await }).await
+#[pyfunction(signature = (path, *, trace=None))]
+async fn mock_execute(path: String, trace: Option<ApiCallTrace>) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Path(path), true, trace).await }).await
 }
 
 /// Execute a kcl file and return a report of sketch constraint status.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn get_sketch_constraint_status(path: String) -> PyResult<SketchConstraintReport> {
-    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path)).await }).await
+#[pyfunction(signature = (path, *, trace=None))]
+async fn get_sketch_constraint_status(path: String, trace: Option<ApiCallTrace>) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path), trace).await }).await
 }
 
 /// Execute kcl code and return a report of sketch constraint status.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConstraintReport> {
-    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code)).await }).await
+#[pyfunction(signature = (code, *, trace=None))]
+async fn get_sketch_constraint_status_code(
+    code: String,
+    trace: Option<ApiCallTrace>,
+) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code), trace).await }).await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None, highlight_edges=None))]
+#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None, highlight_edges=None, trace=None))]
 async fn import_and_snapshot(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
     zoom: Option<bool>,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), Some(zoom), highlight_edges)
-        .await?
-        .pop();
+    let img = import_and_snapshot_views(
+        filepaths,
+        format,
+        image_format,
+        Vec::new(),
+        Some(zoom),
+        highlight_edges,
+        trace,
+    )
+    .await?
+    .pop();
     Ok(img.unwrap())
 }
 
@@ -648,7 +707,7 @@ fn relevant_file_extensions() -> PyResult<Vec<String>> {
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
+#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None, highlight_edges=None, trace=None))]
 async fn import_and_snapshot_views(
     filepaths: Vec<String>,
     format: InputFormat3d,
@@ -656,10 +715,11 @@ async fn import_and_snapshot_views(
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false, highlight_edges)
+        let (ctx, _state) = new_context_state(None, false, highlight_edges, trace)
             .await
             .map_err(to_py_exception)?;
         if let Err(e) = import(&ctx, filepaths, format).await {
@@ -719,28 +779,30 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 
 /// Execute a kcl file and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, *, zoom=None, highlight_edges=None))]
+#[pyfunction(signature = (path, image_format, *, zoom=None, highlight_edges=None, trace=None))]
 async fn execute_and_snapshot(
     path: String,
     image_format: ImageFormat,
     zoom: Option<bool>,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom), highlight_edges)
+    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom), highlight_edges, trace)
         .await?
         .pop();
     Ok(img.unwrap())
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
+#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None, highlight_edges=None, trace=None))]
 async fn execute_and_snapshot_views(
     path: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
@@ -750,6 +812,7 @@ async fn execute_and_snapshot_views(
             snapshot_options,
             zoom,
             highlight_edges,
+            trace,
         )
         .await
     })
@@ -758,58 +821,68 @@ async fn execute_and_snapshot_views(
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, *, zoom=None, highlight_edges=None))]
+#[pyfunction(signature = (code, image_format, *, zoom=None, highlight_edges=None, trace=None))]
 async fn execute_code_and_snapshot(
     code: String,
     image_format: ImageFormat,
     zoom: Option<bool>,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
     let mut snaps =
-        execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom), highlight_edges).await?;
+        execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom), highlight_edges, trace).await?;
     Ok(snaps.pop().unwrap())
 }
 
 /// Execute a kcl file and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_and_measure(path: String, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request).await }).await
+#[pyfunction(signature = (path, request, *, trace=None))]
+async fn execute_and_measure(
+    path: String,
+    request: PhysicalPropertiesRequest,
+    trace: Option<ApiCallTrace>,
+) -> PyResult<PhysicalPropertiesResponse> {
+    spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request, trace).await }).await
 }
 
 /// Execute the kcl code and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (code, request, *, trace=None))]
 async fn execute_code_and_measure(
     code: String,
     request: PhysicalPropertiesRequest,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request).await }).await
+    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request, trace).await }).await
 }
 
 /// Execute a kcl file and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, entity_ids=None, output_unit=None))]
+#[pyfunction(signature = (path, entity_ids=None, output_unit=None, *, trace=None))]
 async fn execute_and_bounding_box(
     path: String,
     entity_ids: Option<Vec<String>>,
     output_unit: Option<UnitLength>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit).await }).await
+    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit, trace).await })
+        .await
 }
 
 /// Execute the kcl code and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, entity_ids=None, output_unit=None))]
+#[pyfunction(signature = (code, entity_ids=None, output_unit=None, *, trace=None))]
 async fn execute_code_and_bounding_box(
     code: String,
     entity_ids: Option<Vec<String>>,
     output_unit: Option<UnitLength>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit).await }).await
+    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit, trace).await })
+        .await
 }
 
 /// Customize a snapshot.
@@ -846,13 +919,14 @@ impl SnapshotOptions {
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
+#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None, highlight_edges=None, trace=None))]
 async fn execute_code_and_snapshot_views(
     code: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
     highlight_edges: Option<bool>,
+    trace: Option<ApiCallTrace>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
@@ -862,6 +936,7 @@ async fn execute_code_and_snapshot_views(
             snapshot_options,
             zoom,
             highlight_edges,
+            trace,
         )
         .await
     })
@@ -1145,16 +1220,24 @@ async fn get_bounding_box(
 
 /// Execute a kcl file and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format).await }).await
+#[pyfunction(signature = (path, export_format, *, trace=None))]
+async fn execute_and_export(
+    path: String,
+    export_format: FileExportFormat,
+    trace: Option<ApiCallTrace>,
+) -> PyResult<Vec<RawFile>> {
+    spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format, trace).await }).await
 }
 
 /// Execute the kcl code and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format).await }).await
+#[pyfunction(signature = (code, export_format, *, trace=None))]
+async fn execute_code_and_export(
+    code: String,
+    export_format: FileExportFormat,
+    trace: Option<ApiCallTrace>,
+) -> PyResult<Vec<RawFile>> {
+    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format, trace).await }).await
 }
 
 /// Format the kcl code. This will return the formatted code.
@@ -1248,6 +1331,7 @@ fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> P
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
+    m.add_class::<ApiCallTrace>()?;
     m.add_class::<PyKclError>()?;
     m.add_class::<DefaultUnits>()?;
     m.add_class::<ImageFormat>()?;
@@ -1371,7 +1455,7 @@ result = subtract(cube, tools = [cylinder])
 
     #[tokio::test(flavor = "multi_thread")]
     async fn exec_outcome_report_renders_csg_no_overlap_warning() {
-        let outcome = execute_impl(KclInput::Code(NO_OVERLAP_SUBTRACT_KCL.to_string()), false)
+        let outcome = execute_impl(KclInput::Code(NO_OVERLAP_SUBTRACT_KCL.to_string()), false, None)
             .await
             .expect("execute_impl should succeed for valid non-overlapping subtract");
 
@@ -1412,7 +1496,7 @@ result = subtract(cube, tools = [cylinder])
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_exec_outcome_report_renders_imported_module_warning_against_imported_source() {
         let project_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/files/imported_warning");
-        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true)
+        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true, None)
             .await
             .expect("mock execute_impl should succeed for a project that only warns");
 

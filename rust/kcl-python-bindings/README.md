@@ -6,6 +6,33 @@ Python bindings to the rust kcl-lib crate.
 
 The [tests.py](tests/tests.py) file contains examples of how to use the library.
 
+Engine-backed functions accept a keyword-only `trace=None` argument to collect
+Zoo backend API call IDs without changing their return values or exceptions:
+
+```python
+import kcl
+
+trace = kcl.ApiCallTrace()
+try:
+    result = await kcl.execute_code("x = 1", trace=trace)
+finally:
+    print(trace.api_call_ids)
+```
+
+`api_call_ids` is a read-only property returning a new list of distinct IDs in
+observation order. The collector uses shared Rust storage, so IDs observed in
+background tasks survive execution errors, measurement/export failures, and
+cancellation. It records handshake headers (`X-Api-Call-Id`, falling back to
+`x-request-id`) and modeling session metadata without waiting for extra frames.
+Rejected HTTP handshakes retain available header IDs. Mock execution and failures
+before contacting Zoo leave the list empty.
+
+The option is supported by execution, measurements, bounding boxes, exports,
+snapshots (including imports and multiple views), and sketch constraint reports,
+for both code and path variants. A trace can be reused to accumulate IDs; use a
+fresh trace per attempt to correlate retries. It contains backend connection IDs,
+not per-command IDs.
+
 ## Development
 
 We use [maturin](https://github.com/PyO3/maturin) for this project.
