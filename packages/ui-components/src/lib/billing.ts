@@ -5,9 +5,7 @@
 import {
   type Client,
   type CustomerBalance,
-  type UserOrgInfo,
   type ZooProductSubscriptions,
-  orgs,
   payments,
 } from '@kittycad/lib'
 
@@ -162,51 +160,35 @@ export async function getBillingInfo(
     { client: Client }
   >(payments.get_user_subscription, { client })
 
-  const org = await fetchBilling<UserOrgInfo, { client: Client }>(
-    orgs.get_user_org,
-    { client }
-  )
-  const hasOrgError = BillingError.from(org)
-  const payAsYouGoApiCreditPrice = BillingError.from(subscriptions)
-    ? undefined
-    : subscriptions.modeling_app.pay_as_you_go_api_credit_price
-
-  if (!hasOrgError) {
-    return {
-      balance: Number.POSITIVE_INFINITY,
-      userPaymentBalance: billing,
-      payAsYouGoApiCreditPrice,
-      isOrg: true,
-      hasSubscription: true,
-    }
-  }
-
   if (BillingError.from(subscriptions)) {
     return subscriptions
   }
 
-  const tier = subscriptions.modeling_app.name
+  const isOrg = subscriptions.modeling_app.type.type === 'organization'
   const ratioSec = subscriptions.modeling_app.pay_as_you_go_api_credit_price
+
+  if (isOrg) {
+    return {
+      balance: Number.POSITIVE_INFINITY,
+      userPaymentBalance: billing,
+      payAsYouGoApiCreditPrice: ratioSec,
+      isOrg,
+      hasSubscription: true,
+    }
+  }
+
+  const tier = subscriptions.modeling_app.name
   const toMinutes = (value: number, ratioSec: number) => value / ratioSec / 60
   const computedAllowance =
     subscriptions.modeling_app.monthly_pay_as_you_go_api_credits_monetary_value
   let balance = 0
   let allowance: number | undefined
   let hasSubscription = false
-  let isOrg = false
 
   switch (tier) {
-    case 'enterprise':
-    case 'enterprise-free':
-    case 'team':
-      balance = Number.POSITIVE_INFINITY
-      hasSubscription = true
-      isOrg = true
-      break
     case 'pro':
       balance = Number.POSITIVE_INFINITY
       hasSubscription = true
-      isOrg = false
       break
     case 'plus':
       if (ratioSec === undefined || computedAllowance === undefined) {
@@ -220,7 +202,6 @@ export async function getBillingInfo(
           billing.stable_api_credits_remaining_monetary_value,
         ratioSec
       )
-      isOrg = false
       hasSubscription = true
       break
     case 'free':
@@ -235,7 +216,6 @@ export async function getBillingInfo(
           billing.stable_api_credits_remaining_monetary_value,
         ratioSec
       )
-      isOrg = false
       hasSubscription = false
       break
     default: {
