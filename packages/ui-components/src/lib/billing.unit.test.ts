@@ -260,7 +260,7 @@ test('Returns billing error for missing subscription credit data', async () => {
   })
 })
 
-test('Returns billing error for unsupported subscription tier', async () => {
+test('Finds the credits of a custom individual subscription', async () => {
   server.use(
     http.get('*/user/payment/balance', () => {
       return HttpResponse.json(
@@ -274,16 +274,17 @@ test('Returns billing error for unsupported subscription tier', async () => {
       return HttpResponse.json(
         createUserPaymentSubscriptionsResponse({
           monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 10,
-          name: 'unsupported',
+          name: 'custom-individual-plan',
         })
       )
     })
   )
 
   const billing = await getBillingInfo(client)
-  expect(billing).toBeInstanceOf(BillingError)
-  expect(BillingError.from(billing) && billing.error).toEqual({
-    type: EBillingError.InvalidData,
-    message: 'Unhandled subscription tier: unsupported',
-  })
+  if (BillingError.from(billing)) throw billing
+  expect(Math.floor(billing.balance)).toEqual(20)
+  expect(Math.floor(billing.allowance!)).toEqual(20)
+  expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
+  expect(billing.hasSubscription).toBe(true)
+  expect(billing.isOrg).toBe(false)
 })

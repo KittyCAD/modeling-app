@@ -178,10 +178,6 @@ export async function getBillingInfo(
     }
   }
 
-  if (tier !== 'free' && tier !== 'plus') {
-    return createInvalidBillingDataError(`Unhandled subscription tier: ${tier}`)
-  }
-
   const toMinutes = (value: number, ratioSec: number) => value / ratioSec / 60
   const computedAllowance =
     subscriptions.modeling_app.monthly_pay_as_you_go_api_credits_monetary_value
@@ -201,7 +197,7 @@ export async function getBillingInfo(
     allowance: toMinutes(computedAllowance, ratioSec),
     userPaymentBalance: billing,
     payAsYouGoApiCreditPrice: ratioSec,
-    hasSubscription: tier === 'plus',
+    hasSubscription: tier !== 'free',
     isOrg,
   }
 }
