@@ -6,8 +6,8 @@ description: Variables in memory after executing rotate_helix.kcl
   "helix001": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -18,8 +18,8 @@ description: Variables in memory after executing rotate_helix.kcl
   "helix002": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": true,
@@ -30,8 +30,8 @@ description: Variables in memory after executing rotate_helix.kcl
   "helix003": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "revolutions": 8.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -42,8 +42,8 @@ description: Variables in memory after executing rotate_helix.kcl
   "helix004": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -57,8 +57,8 @@ description: Variables in memory after executing rotate_helix.kcl
       {
         "type": "Helix",
         "value": {
-          "value": "[uuid]",
-          "artifactId": "[uuid]",
+          "value": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "revolutions": 5.0,
           "angleStart": 0.0,
           "ccw": true,
@@ -69,8 +69,8 @@ description: Variables in memory after executing rotate_helix.kcl
       {
         "type": "Helix",
         "value": {
-          "value": "[uuid]",
-          "artifactId": "[uuid]",
+          "value": "91226189-7e64-5690-9203-67ee33a6eb03",
+          "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03",
           "revolutions": 8.0,
           "angleStart": 0.0,
           "ccw": false,

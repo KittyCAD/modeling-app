@@ -6,8 +6,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
   "__sketch_73_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,14 +71,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "topologyId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d4fe3142-1ac6-5b02-8f05-7806be80f487",
+          "id": "c89d10da-b8d5-575a-80e5-9b0ad9c860ad",
           "sourceRange": [],
           "tag": {
             "commentStart": 3381,
@@ -91,8 +91,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e83237e5-a4dd-54ca-9ff7-67f2c0d3f33b",
+          "id": "6bb4544e-4f22-5a85-9779-c358a1276956",
           "sourceRange": [],
           "tag": {
             "commentStart": 3453,
@@ -105,8 +105,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "60c6ddb9-c144-51fa-85ef-590ecd9dc065",
+          "id": "bf0ea313-ef92-5d1f-ac41-490d182d2b3c",
           "sourceRange": [],
           "tag": {
             "commentStart": 3523,
@@ -119,8 +119,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2c926bf8-0dd0-598b-a6b5-118de9d61db5",
+          "id": "3bf7ba2b-2cbb-52e2-9956-30f560a22faa",
           "sourceRange": [],
           "tag": {
             "commentStart": 3593,
@@ -136,11 +136,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c89d10da-b8d5-575a-80e5-9b0ad9c860ad",
               "sourceRange": []
             },
             "from": [
@@ -164,7 +164,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6bb4544e-4f22-5a85-9779-c358a1276956",
               "sourceRange": []
             },
             "from": [
@@ -188,7 +188,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf0ea313-ef92-5d1f-ac41-490d182d2b3c",
               "sourceRange": []
             },
             "from": [
@@ -212,7 +212,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3bf7ba2b-2cbb-52e2-9956-30f560a22faa",
               "sourceRange": []
             },
             "from": [
@@ -237,8 +237,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
           "objectId": 72,
           "kind": "Custom",
           "origin": {
@@ -278,7 +278,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
             "sourceRange": []
           }
         },
@@ -300,13 +300,13 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ea8f363e-a3f9-54bd-9347-2a5bbe4ddcb1",
+      "endCapId": "6c3e9072-74f3-5fa2-ac33-3d5c76637211",
       "units": "in",
       "sectional": false
     }
@@ -315,14 +315,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "topologyId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d4fe3142-1ac6-5b02-8f05-7806be80f487",
+          "id": "c89d10da-b8d5-575a-80e5-9b0ad9c860ad",
           "sourceRange": [],
           "tag": {
             "commentStart": 3381,
@@ -335,8 +335,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e83237e5-a4dd-54ca-9ff7-67f2c0d3f33b",
+          "id": "6bb4544e-4f22-5a85-9779-c358a1276956",
           "sourceRange": [],
           "tag": {
             "commentStart": 3453,
@@ -349,8 +349,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "60c6ddb9-c144-51fa-85ef-590ecd9dc065",
+          "id": "bf0ea313-ef92-5d1f-ac41-490d182d2b3c",
           "sourceRange": [],
           "tag": {
             "commentStart": 3523,
@@ -363,8 +363,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2c926bf8-0dd0-598b-a6b5-118de9d61db5",
+          "id": "3bf7ba2b-2cbb-52e2-9956-30f560a22faa",
           "sourceRange": [],
           "tag": {
             "commentStart": 3593,
@@ -380,11 +380,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c89d10da-b8d5-575a-80e5-9b0ad9c860ad",
               "sourceRange": []
             },
             "from": [
@@ -408,7 +408,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6bb4544e-4f22-5a85-9779-c358a1276956",
               "sourceRange": []
             },
             "from": [
@@ -432,7 +432,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf0ea313-ef92-5d1f-ac41-490d182d2b3c",
               "sourceRange": []
             },
             "from": [
@@ -456,7 +456,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3bf7ba2b-2cbb-52e2-9956-30f560a22faa",
               "sourceRange": []
             },
             "from": [
@@ -481,8 +481,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
           "objectId": 72,
           "kind": "Custom",
           "origin": {
@@ -522,7 +522,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
             "sourceRange": []
           }
         },
@@ -544,17 +544,17 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ea8f363e-a3f9-54bd-9347-2a5bbe4ddcb1",
+      "endCapId": "6c3e9072-74f3-5fa2-ac33-3d5c76637211",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
           "radius": {
             "n": 3.0,
             "ty": {
@@ -563,12 +563,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "859e3f87-4031-5c80-b618-2714d1f8e1be",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
           "radius": {
             "n": 3.0,
             "ty": {
@@ -577,12 +577,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "ad4be036-72e8-5c1c-ae94-972f0bc019b0",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
           "radius": {
             "n": 3.0,
             "ty": {
@@ -591,12 +591,12 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "3fb40954-28e6-50db-b8d0-0fe19c096a83",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
           "radius": {
             "n": 3.0,
             "ty": {
@@ -605,7 +605,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               "type": "Length"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "f3f268a0-527c-5b6d-8951-6831cc778f58",
           "tag": null
         }
       ],
@@ -655,11 +655,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4320c3fb-8b82-52ba-80b9-9af0ed32e932",
             "sourceRange": []
           },
           "from": [
@@ -683,7 +683,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7e739592-39e0-5d0f-b35c-5e50f7f9f73a",
             "sourceRange": []
           },
           "from": [
@@ -707,7 +707,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b066aa4c-8ff3-56d0-b0ef-867d666d726f",
             "sourceRange": []
           },
           "from": [
@@ -731,7 +731,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9d07f1f8-34cf-5097-adf1-ae0d853bc49d",
             "sourceRange": []
           },
           "from": [
@@ -755,7 +755,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0674952c-793e-5ead-8b6c-c9d9cddbaf1c",
             "sourceRange": []
           },
           "ccw": true,
@@ -785,7 +785,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1d031dab-1246-58ea-9490-ae9bb4893f16",
             "sourceRange": []
           },
           "ccw": true,
@@ -815,7 +815,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "27ecbd06-09bf-5901-b6e0-c3892777695e",
             "sourceRange": []
           },
           "ccw": true,
@@ -845,7 +845,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "375cb0c7-e968-5000-8ac1-57d28e4913e9",
             "sourceRange": []
           },
           "ccw": true,
@@ -875,7 +875,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad4f6d65-889b-5348-98ea-ad6a8a445084",
             "sourceRange": []
           },
           "ccw": true,
@@ -905,7 +905,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b09003b9-0fdb-5835-9f75-e3dc3addbe2a",
             "sourceRange": []
           },
           "ccw": true,
@@ -935,7 +935,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8fe2625e-2355-569c-aca1-ca6577fe202e",
             "sourceRange": []
           },
           "ccw": true,
@@ -966,8 +966,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1007,7 +1007,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "sourceRange": []
         }
       },
@@ -1057,8 +1057,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+      "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -1067,11 +1067,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "33b7d1dc-cdf1-5a9b-a047-2a649ffe6ed8",
             "sourceRange": []
           },
           "ccw": true,
@@ -1101,7 +1101,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a97e6a48-39cd-504f-8123-f10133d08a0d",
             "sourceRange": []
           },
           "ccw": true,
@@ -1131,7 +1131,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b6597e04-36d3-5a9a-bd35-62a8b05a8e64",
             "sourceRange": []
           },
           "ccw": true,
@@ -1162,8 +1162,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1203,7 +1203,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "sourceRange": []
         }
       },
@@ -1253,8 +1253,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+      "originalId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -1263,11 +1263,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3191c3d4-89f5-574c-bb66-a9511add5b54",
             "sourceRange": []
           },
           "ccw": true,
@@ -1297,7 +1297,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "70f11768-a899-5ddc-a721-d0ebf11b2119",
             "sourceRange": []
           },
           "ccw": true,
@@ -1327,7 +1327,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d8ec1559-4cdc-580d-a21b-cb7d72781a29",
             "sourceRange": []
           },
           "ccw": true,
@@ -1357,7 +1357,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc2fe910-8ce8-5297-95e2-4c5c78a9a446",
             "sourceRange": []
           },
           "ccw": true,
@@ -1388,8 +1388,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1429,7 +1429,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "sourceRange": []
         }
       },
@@ -1479,8 +1479,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -1489,11 +1489,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "08430c46-beae-50e6-8e15-aed2f9dd19a5",
             "sourceRange": []
           },
           "ccw": true,
@@ -1523,7 +1523,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1e9c63aa-fd9e-59cb-833a-781571ed1890",
             "sourceRange": []
           },
           "ccw": true,
@@ -1553,7 +1553,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "22415806-c51e-51cb-ad34-2bc2ccef52b5",
             "sourceRange": []
           },
           "ccw": true,
@@ -1583,7 +1583,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3e50e3c6-1e97-5969-b28b-6885c7dfcc83",
             "sourceRange": []
           },
           "ccw": true,
@@ -1614,8 +1614,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1655,7 +1655,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "sourceRange": []
         }
       },
@@ -1705,8 +1705,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -1715,11 +1715,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "07d97a02-acf7-57ca-b5eb-aac88bf0421c",
             "sourceRange": []
           },
           "ccw": true,
@@ -1749,7 +1749,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "260f4234-6bbd-5e74-905f-4318ad2ffcd7",
             "sourceRange": []
           },
           "ccw": true,
@@ -1779,7 +1779,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e0ee899b-8ebd-5963-9edf-9f71bc9aca3b",
             "sourceRange": []
           },
           "ccw": true,
@@ -1809,7 +1809,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ebabfd2c-8f07-5207-a4ac-3b8c92c031fa",
             "sourceRange": []
           },
           "ccw": true,
@@ -1840,8 +1840,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1881,7 +1881,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "sourceRange": []
         }
       },
@@ -1931,8 +1931,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "originalId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -1941,11 +1941,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "47d5db07-a89f-5e9b-9f33-648e0dfa96fb",
             "sourceRange": []
           },
           "ccw": true,
@@ -1975,7 +1975,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "820e16e8-f016-5438-8fde-a44127a35a20",
             "sourceRange": []
           },
           "ccw": true,
@@ -2005,7 +2005,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbb20868-b56b-5932-94d6-d9cf633bba4c",
             "sourceRange": []
           },
           "ccw": true,
@@ -2036,8 +2036,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -2077,7 +2077,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "sourceRange": []
         }
       },
@@ -2127,8 +2127,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -2137,11 +2137,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c89d10da-b8d5-575a-80e5-9b0ad9c860ad",
             "sourceRange": []
           },
           "from": [
@@ -2165,7 +2165,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6bb4544e-4f22-5a85-9779-c358a1276956",
             "sourceRange": []
           },
           "from": [
@@ -2189,7 +2189,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bf0ea313-ef92-5d1f-ac41-490d182d2b3c",
             "sourceRange": []
           },
           "from": [
@@ -2213,7 +2213,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3bf7ba2b-2cbb-52e2-9956-30f560a22faa",
             "sourceRange": []
           },
           "from": [
@@ -2238,8 +2238,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+        "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "objectId": 72,
         "kind": "Custom",
         "origin": {
@@ -2279,7 +2279,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
           "sourceRange": []
         }
       },
@@ -2301,8 +2301,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -2311,14 +2311,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+      "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+      "topologyId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+      "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
+          "id": "7e739592-39e0-5d0f-b35c-5e50f7f9f73a",
           "sourceRange": [],
           "tag": {
             "commentStart": 487,
@@ -2331,8 +2331,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b18b6b31-f302-5a56-a35a-b0dbf38fffa3",
+          "id": "b066aa4c-8ff3-56d0-b0ef-867d666d726f",
           "sourceRange": [],
           "tag": {
             "commentStart": 669,
@@ -2345,8 +2345,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb9428a8-62cc-5c76-b93c-89d750eba2e9",
+          "id": "9d07f1f8-34cf-5097-adf1-ae0d853bc49d",
           "sourceRange": [],
           "tag": {
             "commentStart": 849,
@@ -2359,8 +2359,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "85f8527e-9b7b-5d1f-96da-0d9fa7201070",
+          "id": "0674952c-793e-5ead-8b6c-c9d9cddbaf1c",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -2373,8 +2373,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "18ce8ba2-10b0-5168-8d47-b2069af30fae",
+          "id": "1d031dab-1246-58ea-9490-ae9bb4893f16",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -2387,8 +2387,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1ed1ad84-4ae5-5d14-bbbd-56e48948a21e",
+          "id": "27ecbd06-09bf-5901-b6e0-c3892777695e",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -2401,8 +2401,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a35ed481-8ead-5e5a-b5bb-8df714eab35e",
+          "id": "375cb0c7-e968-5000-8ac1-57d28e4913e9",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -2415,8 +2415,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00515fba-a05e-5d64-b1e3-5897534cab0b",
+          "id": "ad4f6d65-889b-5348-98ea-ad6a8a445084",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -2429,8 +2429,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "93ddf403-9cf4-52ce-9819-9f8edafe3eeb",
+          "id": "b09003b9-0fdb-5835-9f75-e3dc3addbe2a",
           "sourceRange": [],
           "tag": {
             "commentStart": 998,
@@ -2443,8 +2443,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8dcab2c7-ec82-5dab-80f8-fdc4db41f92f",
+          "id": "8fe2625e-2355-569c-aca1-ca6577fe202e",
           "sourceRange": [],
           "tag": {
             "commentStart": 2090,
@@ -2460,11 +2460,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4320c3fb-8b82-52ba-80b9-9af0ed32e932",
               "sourceRange": []
             },
             "from": [
@@ -2488,7 +2488,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e739592-39e0-5d0f-b35c-5e50f7f9f73a",
               "sourceRange": []
             },
             "from": [
@@ -2512,7 +2512,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b066aa4c-8ff3-56d0-b0ef-867d666d726f",
               "sourceRange": []
             },
             "from": [
@@ -2536,7 +2536,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9d07f1f8-34cf-5097-adf1-ae0d853bc49d",
               "sourceRange": []
             },
             "from": [
@@ -2560,7 +2560,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0674952c-793e-5ead-8b6c-c9d9cddbaf1c",
               "sourceRange": []
             },
             "ccw": true,
@@ -2590,7 +2590,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d031dab-1246-58ea-9490-ae9bb4893f16",
               "sourceRange": []
             },
             "ccw": true,
@@ -2620,7 +2620,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "27ecbd06-09bf-5901-b6e0-c3892777695e",
               "sourceRange": []
             },
             "ccw": true,
@@ -2650,7 +2650,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "375cb0c7-e968-5000-8ac1-57d28e4913e9",
               "sourceRange": []
             },
             "ccw": true,
@@ -2680,7 +2680,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad4f6d65-889b-5348-98ea-ad6a8a445084",
               "sourceRange": []
             },
             "ccw": true,
@@ -2710,7 +2710,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b09003b9-0fdb-5835-9f75-e3dc3addbe2a",
               "sourceRange": []
             },
             "ccw": true,
@@ -2740,7 +2740,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8fe2625e-2355-569c-aca1-ca6577fe202e",
               "sourceRange": []
             },
             "ccw": true,
@@ -2771,8 +2771,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2812,7 +2812,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
             "sourceRange": []
           }
         },
@@ -2862,8 +2862,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -2877,14 +2877,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+      "originalId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+      "topologyId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+      "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6852ed63-2405-539c-9b94-6b6d9a2dbe65",
+          "id": "33b7d1dc-cdf1-5a9b-a047-2a649ffe6ed8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1186,
@@ -2897,8 +2897,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eecbdc0b-e508-57e8-86cf-8d7bdd6cd9cb",
+          "id": "a97e6a48-39cd-504f-8123-f10133d08a0d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1186,
@@ -2911,8 +2911,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bfb7c004-6f69-597b-8e83-f451067c4e83",
+          "id": "b6597e04-36d3-5a9a-bd35-62a8b05a8e64",
           "sourceRange": [],
           "tag": {
             "commentStart": 1186,
@@ -2928,11 +2928,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "33b7d1dc-cdf1-5a9b-a047-2a649ffe6ed8",
               "sourceRange": []
             },
             "ccw": true,
@@ -2962,7 +2962,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a97e6a48-39cd-504f-8123-f10133d08a0d",
               "sourceRange": []
             },
             "ccw": true,
@@ -2992,7 +2992,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b6597e04-36d3-5a9a-bd35-62a8b05a8e64",
               "sourceRange": []
             },
             "ccw": true,
@@ -3023,8 +3023,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
             "sourceRange": []
           }
         },
@@ -3114,8 +3114,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+        "originalId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -3129,14 +3129,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "topologyId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d9185aae-fd7a-5eeb-9352-11e628bde2ef",
+          "id": "3191c3d4-89f5-574c-bb66-a9511add5b54",
           "sourceRange": [],
           "tag": {
             "commentStart": 1303,
@@ -3149,8 +3149,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "64176853-639e-5419-922f-3da4e5ff53e0",
+          "id": "70f11768-a899-5ddc-a721-d0ebf11b2119",
           "sourceRange": [],
           "tag": {
             "commentStart": 1303,
@@ -3163,8 +3163,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5d40e5da-f60e-5d94-85ea-6a311cafec98",
+          "id": "d8ec1559-4cdc-580d-a21b-cb7d72781a29",
           "sourceRange": [],
           "tag": {
             "commentStart": 1303,
@@ -3177,8 +3177,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c1a4954-0361-5f5e-a071-70ec516c2c26",
+          "id": "fc2fe910-8ce8-5297-95e2-4c5c78a9a446",
           "sourceRange": [],
           "tag": {
             "commentStart": 1303,
@@ -3194,11 +3194,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3191c3d4-89f5-574c-bb66-a9511add5b54",
               "sourceRange": []
             },
             "ccw": true,
@@ -3228,7 +3228,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "70f11768-a899-5ddc-a721-d0ebf11b2119",
               "sourceRange": []
             },
             "ccw": true,
@@ -3258,7 +3258,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d8ec1559-4cdc-580d-a21b-cb7d72781a29",
               "sourceRange": []
             },
             "ccw": true,
@@ -3288,7 +3288,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fc2fe910-8ce8-5297-95e2-4c5c78a9a446",
               "sourceRange": []
             },
             "ccw": true,
@@ -3319,8 +3319,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3360,7 +3360,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
             "sourceRange": []
           }
         },
@@ -3410,8 +3410,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -3425,14 +3425,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "topologyId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "64d34ff8-719c-51e2-ac2d-7888d010527c",
+          "id": "08430c46-beae-50e6-8e15-aed2f9dd19a5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1423,
@@ -3445,8 +3445,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f51f58c2-1046-57b3-893a-b5fcaa8270f0",
+          "id": "1e9c63aa-fd9e-59cb-833a-781571ed1890",
           "sourceRange": [],
           "tag": {
             "commentStart": 1423,
@@ -3459,8 +3459,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f32d3dc0-ffc8-56f4-a7dd-217169a6ff29",
+          "id": "22415806-c51e-51cb-ad34-2bc2ccef52b5",
           "sourceRange": [],
           "tag": {
             "commentStart": 1423,
@@ -3473,8 +3473,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "672fbbd8-960c-51e4-8435-5b85fae3ba2c",
+          "id": "3e50e3c6-1e97-5969-b28b-6885c7dfcc83",
           "sourceRange": [],
           "tag": {
             "commentStart": 1423,
@@ -3490,11 +3490,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "08430c46-beae-50e6-8e15-aed2f9dd19a5",
               "sourceRange": []
             },
             "ccw": true,
@@ -3524,7 +3524,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1e9c63aa-fd9e-59cb-833a-781571ed1890",
               "sourceRange": []
             },
             "ccw": true,
@@ -3554,7 +3554,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "22415806-c51e-51cb-ad34-2bc2ccef52b5",
               "sourceRange": []
             },
             "ccw": true,
@@ -3584,7 +3584,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e50e3c6-1e97-5969-b28b-6885c7dfcc83",
               "sourceRange": []
             },
             "ccw": true,
@@ -3615,8 +3615,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3656,7 +3656,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
             "sourceRange": []
           }
         },
@@ -3706,8 +3706,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+        "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -3721,14 +3721,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "originalId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "topologyId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "686bd1d8-9852-5a20-b448-beaefa26caa0",
+          "id": "07d97a02-acf7-57ca-b5eb-aac88bf0421c",
           "sourceRange": [],
           "tag": {
             "commentStart": 1543,
@@ -3741,8 +3741,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c075ca4a-6843-548f-989c-f6902a1460fa",
+          "id": "260f4234-6bbd-5e74-905f-4318ad2ffcd7",
           "sourceRange": [],
           "tag": {
             "commentStart": 1543,
@@ -3755,8 +3755,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "444bdb3c-f1ba-5d4d-b828-b3c746ab22dc",
+          "id": "e0ee899b-8ebd-5963-9edf-9f71bc9aca3b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1543,
@@ -3769,8 +3769,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c108fc52-44ec-5a0e-b751-b28958411ed7",
+          "id": "ebabfd2c-8f07-5207-a4ac-3b8c92c031fa",
           "sourceRange": [],
           "tag": {
             "commentStart": 1543,
@@ -3786,11 +3786,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "07d97a02-acf7-57ca-b5eb-aac88bf0421c",
               "sourceRange": []
             },
             "ccw": true,
@@ -3820,7 +3820,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "260f4234-6bbd-5e74-905f-4318ad2ffcd7",
               "sourceRange": []
             },
             "ccw": true,
@@ -3850,7 +3850,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0ee899b-8ebd-5963-9edf-9f71bc9aca3b",
               "sourceRange": []
             },
             "ccw": true,
@@ -3880,7 +3880,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ebabfd2c-8f07-5207-a4ac-3b8c92c031fa",
               "sourceRange": []
             },
             "ccw": true,
@@ -3911,8 +3911,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3952,7 +3952,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
             "sourceRange": []
           }
         },
@@ -4002,8 +4002,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+        "originalId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -4017,14 +4017,14 @@ description: Variables in memory after executing fun-stacker-toy.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "topologyId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9aebab5b-e6a0-54cc-a3c3-6b66f110f261",
+          "id": "47d5db07-a89f-5e9b-9f33-648e0dfa96fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 1663,
@@ -4037,8 +4037,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bfc5f060-0bfb-5c61-a434-9b17320ff807",
+          "id": "820e16e8-f016-5438-8fde-a44127a35a20",
           "sourceRange": [],
           "tag": {
             "commentStart": 1663,
@@ -4051,8 +4051,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "adde89a7-159b-560a-baf6-5d088d528b50",
+          "id": "dbb20868-b56b-5932-94d6-d9cf633bba4c",
           "sourceRange": [],
           "tag": {
             "commentStart": 1663,
@@ -4068,11 +4068,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "47d5db07-a89f-5e9b-9f33-648e0dfa96fb",
               "sourceRange": []
             },
             "ccw": true,
@@ -4102,7 +4102,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "820e16e8-f016-5438-8fde-a44127a35a20",
               "sourceRange": []
             },
             "ccw": true,
@@ -4132,7 +4132,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dbb20868-b56b-5932-94d6-d9cf633bba4c",
               "sourceRange": []
             },
             "ccw": true,
@@ -4163,8 +4163,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4204,7 +4204,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
             "sourceRange": []
           }
         },
@@ -4254,8 +4254,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+        "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
         "units": "in",
         "isClosed": "explicitly"
       },
@@ -4283,7 +4283,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 28,
                 "kind": {
                   "arc": {
@@ -4389,8 +4389,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4419,7 +4419,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -4435,7 +4435,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "objectId": 65,
                 "kind": {
                   "arc": {
@@ -4541,8 +4541,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4571,7 +4571,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -4587,7 +4587,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 33,
                 "kind": {
                   "circle": {
@@ -4661,8 +4661,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4691,7 +4691,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -4707,7 +4707,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 37,
                 "kind": {
                   "circle": {
@@ -4781,8 +4781,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4811,7 +4811,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -4827,7 +4827,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                 "objectId": 41,
                 "kind": {
                   "circle": {
@@ -4901,8 +4901,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4931,7 +4931,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle3"
@@ -4947,7 +4947,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 45,
                 "kind": {
                   "circle": {
@@ -5021,8 +5021,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5051,7 +5051,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle4"
@@ -5067,7 +5067,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "objectId": 49,
                 "kind": {
                   "circle": {
@@ -5141,8 +5141,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5171,7 +5171,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle5"
@@ -5187,7 +5187,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -5261,8 +5261,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5291,7 +5291,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5307,7 +5307,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -5381,8 +5381,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5411,7 +5411,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5427,7 +5427,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41c630c9-9d44-581b-98af-caee575bea48",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -5501,8 +5501,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5531,7 +5531,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5547,7 +5547,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "objectId": 22,
                 "kind": {
                   "line": {
@@ -5621,8 +5621,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5651,7 +5651,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5668,11 +5668,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5696,7 +5696,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                     "sourceRange": []
                   },
                   "from": [
@@ -5713,7 +5713,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -5737,7 +5737,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                     "sourceRange": []
                   },
                   "from": [
@@ -5754,7 +5754,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
                     "sourceRange": []
                   },
                   "from": [
@@ -5778,7 +5778,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
                     "sourceRange": []
                   },
                   "from": [
@@ -5795,7 +5795,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                     "sourceRange": []
                   },
                   "from": [
@@ -5819,7 +5819,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5849,7 +5849,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
                     "sourceRange": []
                   },
                   "from": [
@@ -5866,7 +5866,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5896,7 +5896,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
                     "sourceRange": []
                   },
                   "from": [
@@ -5913,7 +5913,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5943,7 +5943,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -5960,7 +5960,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5990,7 +5990,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                     "sourceRange": []
                   },
                   "from": [
@@ -6007,7 +6007,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6037,7 +6037,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1a0ade6f-d355-5121-9adb-351976a78284",
                     "sourceRange": []
                   },
                   "from": [
@@ -6054,7 +6054,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6084,7 +6084,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                     "sourceRange": []
                   },
                   "from": [
@@ -6101,7 +6101,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6132,8 +6132,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -6173,7 +6173,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
                   "sourceRange": []
                 }
               },
@@ -6223,8 +6223,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+              "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
               "units": "in",
               "isClosed": "no"
             }
@@ -6244,7 +6244,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
                 "objectId": 76,
                 "kind": {
                   "line": {
@@ -6318,8 +6318,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -6348,7 +6348,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6364,7 +6364,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -6438,8 +6438,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -6468,7 +6468,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -6484,7 +6484,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                 "objectId": 82,
                 "kind": {
                   "line": {
@@ -6558,8 +6558,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -6588,7 +6588,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -6604,7 +6604,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
                 "objectId": 85,
                 "kind": {
                   "line": {
@@ -6678,8 +6678,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -6708,7 +6708,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -6724,7 +6724,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                 "objectId": 99,
                 "kind": {
                   "line": {
@@ -6799,8 +6799,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -6829,7 +6829,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -6845,7 +6845,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                 "objectId": 104,
                 "kind": {
                   "line": {
@@ -6920,8 +6920,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -6950,7 +6950,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -6967,11 +6967,11 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
                     "sourceRange": []
                   },
                   "from": [
@@ -6995,7 +6995,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                     "sourceRange": []
                   },
                   "from": [
@@ -7019,7 +7019,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "sourceRange": []
                   },
                   "from": [
@@ -7043,7 +7043,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
                     "sourceRange": []
                   },
                   "from": [
@@ -7068,8 +7068,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                 "objectId": 72,
                 "kind": "Custom",
                 "origin": {
@@ -7109,7 +7109,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
                   "sourceRange": []
                 }
               },
@@ -7131,8 +7131,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+              "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -7146,7 +7146,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
                 "objectId": 96,
                 "kind": {
                   "point": {
@@ -7186,8 +7186,8 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -7216,7 +7216,7 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "point1"

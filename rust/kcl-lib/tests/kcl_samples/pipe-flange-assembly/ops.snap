@@ -276,7 +276,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5a82876-56b8-5012-910a-c84983933af0"
               }
             ]
           },
@@ -306,7 +306,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eba47597-5e68-54db-ad83-474786d003ca"
           }
         },
         "sourceRange": []
@@ -349,7 +349,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "21af3cf8-1df1-59e7-806c-96d9205e4a7f"
           }
         },
         "sourceRange": []
@@ -684,7 +684,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -727,7 +727,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -781,7 +781,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -980,7 +980,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
               }
             ]
           },
@@ -1023,7 +1023,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -1082,7 +1082,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []
@@ -1266,7 +1266,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -1279,25 +1279,25 @@ description: Operations executed pipe-flange-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "0137f070-d130-5072-bf89-e07dc261babf"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c7c89202-0038-501d-ba21-800f36323579"
                 }
               }
             ]
@@ -1483,7 +1483,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               }
             ]
           },
@@ -1529,7 +1529,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -1583,7 +1583,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -1782,7 +1782,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448"
               }
             ]
           },
@@ -1828,7 +1828,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
           }
         },
         "sourceRange": []
@@ -1886,19 +1886,19 @@ description: Operations executed pipe-flange-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
               }
             }
           ]
@@ -1941,7 +1941,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -2140,7 +2140,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
               }
             ]
           },
@@ -2186,7 +2186,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
           }
         },
         "sourceRange": []
@@ -2241,7 +2241,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -2254,7 +2254,7 @@ description: Operations executed pipe-flange-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
                 }
               }
             ]
@@ -2302,7 +2302,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48"
           }
         },
         "sourceRange": []
@@ -2527,7 +2527,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d005938d-7477-557a-bef2-28dfc45d0fce"
               }
             ]
           },
@@ -2570,7 +2570,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
           }
         },
         "sourceRange": []
@@ -2624,7 +2624,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -2823,7 +2823,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
               }
             ]
           },
@@ -2866,7 +2866,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
           }
         },
         "sourceRange": []
@@ -2925,7 +2925,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544"
           }
         },
         "sourceRange": []
@@ -3109,7 +3109,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd"
           }
         },
         "sourceRange": []
@@ -3122,25 +3122,25 @@ description: Operations executed pipe-flange-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c318f272-36cb-5eea-a10e-a07dd8d70870"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9211e468-078d-51a2-a5fd-9670006f4753"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "639ee618-3eb8-5129-a62a-42ded4720037"
                 }
               }
             ]
@@ -3326,7 +3326,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
               }
             ]
           },
@@ -3372,7 +3372,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
           }
         },
         "sourceRange": []
@@ -3426,7 +3426,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -3625,7 +3625,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
               }
             ]
           },
@@ -3671,7 +3671,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "020035cf-ab88-50f3-91b0-886b7f399647"
           }
         },
         "sourceRange": []
@@ -3729,19 +3729,19 @@ description: Operations executed pipe-flange-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
               }
             }
           ]
@@ -3784,7 +3784,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -3983,7 +3983,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
               }
             ]
           },
@@ -4029,7 +4029,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488"
           }
         },
         "sourceRange": []
@@ -4084,7 +4084,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca431487-8e9a-59ce-a472-84fe45652fab"
           }
         },
         "sourceRange": []
@@ -4097,7 +4097,7 @@ description: Operations executed pipe-flange-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f"
                 }
               }
             ]
@@ -4145,7 +4145,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9"
           }
         },
         "sourceRange": []
@@ -4202,7 +4202,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9"
           }
         },
         "sourceRange": []
@@ -4280,7 +4280,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9"
           }
         },
         "sourceRange": []
@@ -4347,7 +4347,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "21af3cf8-1df1-59e7-806c-96d9205e4a7f"
           }
         },
         "sourceRange": []
@@ -4682,7 +4682,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               }
             ]
           },
@@ -4725,7 +4725,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bae7e631-b71d-5980-89ea-29b2140a8a32"
           }
         },
         "sourceRange": []
@@ -4784,7 +4784,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9"
           }
         },
         "sourceRange": []
@@ -4841,7 +4841,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9"
           }
         },
         "sourceRange": []
@@ -4908,7 +4908,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9"
           }
         },
         "sourceRange": []
@@ -5079,25 +5079,25 @@ description: Operations executed pipe-flange-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a9e9561a-5ce9-5945-8f3d-8b7d4de376dd"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d8305041-2751-5cd5-a233-4509c70123cb"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4706e407-4f62-5987-a88f-db68091ab67b"
               }
             }
           ]
@@ -5393,7 +5393,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "906a1f18-6a62-5deb-b39b-61d540081804"
               }
             ]
           },
@@ -5436,7 +5436,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0"
           }
         },
         "sourceRange": []
@@ -5509,7 +5509,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37"
           }
         },
         "sourceRange": []
@@ -5528,12 +5528,12 @@ description: Operations executed pipe-flange-assembly.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "headCircle",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "0e544dbb-9a38-57c7-8d85-bd8fbf246871"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "headStart",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "71a4a6f2-2f30-5257-99b0-38423589f101"
                       }
                     ]
                   }
@@ -5548,12 +5548,12 @@ description: Operations executed pipe-flange-assembly.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "headCircle",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "0e544dbb-9a38-57c7-8d85-bd8fbf246871"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "headEnd",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "4ce3f5c0-bb09-5b5a-b76b-06e03bf4043f"
                       }
                     ]
                   }
@@ -5615,7 +5615,7 @@ description: Operations executed pipe-flange-assembly.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7eeada42-2589-5f63-83f8-fa663afb46da"
         },
         "sourceRange": []
       },
@@ -6663,11 +6663,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b8cc464b-6248-5cb4-8c70-30f634da184c"
               }
             ]
           },
@@ -6710,7 +6710,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f"
           }
         },
         "sourceRange": []
@@ -6765,7 +6765,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37"
           }
         },
         "sourceRange": []
@@ -6778,7 +6778,7 @@ description: Operations executed pipe-flange-assembly.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69"
                 }
               }
             ]
@@ -6964,7 +6964,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4"
               }
             ]
           },
@@ -7010,7 +7010,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
           }
         },
         "sourceRange": []
@@ -7068,13 +7068,13 @@ description: Operations executed pipe-flange-assembly.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "43582f56-4d15-5082-9796-67d8e5ee6e44"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070"
               }
             }
           ]
@@ -7122,7 +7122,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b"
           }
         },
         "sourceRange": []
@@ -7201,7 +7201,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b"
           }
         },
         "sourceRange": []
@@ -7268,7 +7268,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b"
           }
         },
         "sourceRange": []
@@ -7335,7 +7335,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b"
           }
         },
         "sourceRange": []
@@ -8620,11 +8620,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "12610836-7dea-569b-a3df-ec2ff8b2c295"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0a92fa6-be55-5cfb-a650-710b68437549"
               }
             ]
           },
@@ -8667,7 +8667,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
           }
         },
         "sourceRange": []
@@ -8726,7 +8726,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f24ed84c-9623-59b6-bf31-be6202c5a133"
           }
         },
         "sourceRange": []
@@ -8783,7 +8783,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f24ed84c-9623-59b6-bf31-be6202c5a133"
           }
         },
         "sourceRange": []
@@ -8850,7 +8850,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f24ed84c-9623-59b6-bf31-be6202c5a133"
           }
         },
         "sourceRange": []
@@ -9286,7 +9286,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4"
               }
             ]
           },
@@ -9329,7 +9329,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d569b1e-3e41-5603-8816-9c625622a434"
           }
         },
         "sourceRange": []
@@ -9388,7 +9388,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb"
           }
         },
         "sourceRange": []
@@ -9445,7 +9445,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb"
           }
         },
         "sourceRange": []
@@ -9512,7 +9512,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb"
           }
         },
         "sourceRange": []
@@ -9854,7 +9854,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a04f1a36-b6ca-5465-bbe3-d98a909adffd"
               }
             ]
           },
@@ -9897,7 +9897,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1eb67267-23ae-55ad-a211-5f61fb90442f"
           }
         },
         "sourceRange": []
@@ -9956,7 +9956,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ce0f2476-67d7-5345-810e-e93bbaf612ef"
           }
         },
         "sourceRange": []
@@ -10013,7 +10013,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ce0f2476-67d7-5345-810e-e93bbaf612ef"
           }
         },
         "sourceRange": []
@@ -10080,7 +10080,7 @@ description: Operations executed pipe-flange-assembly.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ce0f2476-67d7-5345-810e-e93bbaf612ef"
           }
         },
         "sourceRange": []

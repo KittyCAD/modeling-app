@@ -971,7 +971,7 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1001,7 +1001,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30"
           }
         },
         "sourceRange": []
@@ -1101,7 +1101,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1178,7 +1178,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1219,7 +1219,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1252,7 +1252,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
           }
         },
         "sourceRange": []
@@ -1329,7 +1329,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1362,7 +1362,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -1439,7 +1439,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1472,7 +1472,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -2422,11 +2422,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
               }
             ]
           },
@@ -2456,7 +2456,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
           }
         },
         "sourceRange": []
@@ -2556,7 +2556,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2633,7 +2633,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2674,7 +2674,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2707,7 +2707,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
           }
         },
         "sourceRange": []
@@ -2784,7 +2784,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
           }
         },
         "sourceRange": []
@@ -2825,7 +2825,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2858,7 +2858,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
           }
         },
         "sourceRange": []
@@ -2935,7 +2935,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
           }
         },
         "sourceRange": []
@@ -2976,7 +2976,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -3009,7 +3009,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef"
           }
         },
         "sourceRange": []
@@ -3086,7 +3086,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef"
           }
         },
         "sourceRange": []
@@ -4063,11 +4063,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
               }
             ]
           },
@@ -4097,7 +4097,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
           }
         },
         "sourceRange": []
@@ -4143,7 +4143,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
           }
         },
         "sourceRange": []
@@ -4184,7 +4184,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
           }
         },
         "sourceRange": []
@@ -4217,7 +4217,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834"
           }
         },
         "sourceRange": []
@@ -4294,7 +4294,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
           }
         },
         "sourceRange": []
@@ -4327,7 +4327,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb"
           }
         },
         "sourceRange": []
@@ -4404,7 +4404,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
           }
         },
         "sourceRange": []
@@ -4437,7 +4437,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
           }
         },
         "sourceRange": []
@@ -4513,7 +4513,7 @@ description: Operations executed saturn-v.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -5054,11 +5054,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c444b134-67e1-507a-bb00-d4998ba97afb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               }
             ]
           },
@@ -5088,7 +5088,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83"
           }
         },
         "sourceRange": []
@@ -5134,7 +5134,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a"
           }
         },
         "sourceRange": []
@@ -5675,11 +5675,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               }
             ]
           },
@@ -5709,7 +5709,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
           }
         },
         "sourceRange": []
@@ -5755,7 +5755,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b8cc464b-6248-5cb4-8c70-30f634da184c"
           }
         },
         "sourceRange": []
@@ -5795,7 +5795,7 @@ description: Operations executed saturn-v.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -6055,7 +6055,7 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326"
               }
             ]
           },
@@ -6085,7 +6085,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4608674b-5141-508f-8ee7-95c7819212bb"
           }
         },
         "sourceRange": []
@@ -6131,7 +6131,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
           }
         },
         "sourceRange": []
@@ -6171,7 +6171,7 @@ description: Operations executed saturn-v.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -6712,11 +6712,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "96889f64-587b-51f2-b62f-b230408206cc"
               }
             ]
           },
@@ -6746,7 +6746,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
           }
         },
         "sourceRange": []
@@ -6792,7 +6792,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
           }
         },
         "sourceRange": []
@@ -7333,11 +7333,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             ]
           },
@@ -7367,7 +7367,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49"
           }
         },
         "sourceRange": []
@@ -7413,7 +7413,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ab87837d-7702-50ae-a973-1b474e1e48bf"
           }
         },
         "sourceRange": []
@@ -7453,7 +7453,7 @@ description: Operations executed saturn-v.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -7713,7 +7713,7 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "28f6e85f-5537-5013-ac4d-1b88aa312db5"
               }
             ]
           },
@@ -7743,7 +7743,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa"
           }
         },
         "sourceRange": []
@@ -7789,7 +7789,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
           }
         },
         "sourceRange": []
@@ -7829,7 +7829,7 @@ description: Operations executed saturn-v.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -8089,7 +8089,7 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             ]
           },
@@ -8119,7 +8119,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "388597b8-4546-5655-b3a3-c3a0bba239ad"
           }
         },
         "sourceRange": []
@@ -8165,7 +8165,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5584477d-a466-5baa-9972-325d4b097d17"
           }
         },
         "sourceRange": []
@@ -9142,11 +9142,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb172247-c469-54b8-920f-ca9ddc4fdbb3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0d85720f-31f4-5aac-90ae-672aa1715f9d"
               }
             ]
           },
@@ -9176,7 +9176,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380"
           }
         },
         "sourceRange": []
@@ -9276,7 +9276,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "27284bc1-5676-5b5a-baa2-003a7224d266"
           }
         },
         "sourceRange": []
@@ -10253,11 +10253,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93084d86-3fba-5437-851f-9a4bb9523e0c"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4636f241-62ef-5015-8685-79b861e20d6d"
               }
             ]
           },
@@ -10287,7 +10287,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0cae07ff-9f05-55d7-aa3b-48e0f7956432"
           }
         },
         "sourceRange": []
@@ -10387,7 +10387,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "22eefce0-f976-5e04-8aaa-0e0718baacdf"
           }
         },
         "sourceRange": []
@@ -11364,11 +11364,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "71136424-dffe-5ef9-9646-f40c0804ce04"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5"
               }
             ]
           },
@@ -11398,7 +11398,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "79e86604-4aa6-566d-9617-1f1721955eb2"
           }
         },
         "sourceRange": []
@@ -11498,7 +11498,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6aa5aed0-b871-5456-a13d-c13c223ba521"
           }
         },
         "sourceRange": []
@@ -12475,11 +12475,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f8675931-ab2b-5494-9fb8-5c9575d5cb1d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91e2b666-c0db-5d3c-875d-c0cfd8b5dd9e"
               }
             ]
           },
@@ -12509,7 +12509,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c399e30-11b0-54b4-ab2e-01904812cfa4"
           }
         },
         "sourceRange": []
@@ -12609,7 +12609,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "abe1c186-6e23-58cb-8ef3-aea74ac22ab8"
           }
         },
         "sourceRange": []
@@ -12649,7 +12649,7 @@ description: Operations executed saturn-v.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -12909,7 +12909,7 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f"
               }
             ]
           },
@@ -12939,7 +12939,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9794ca46-f9b1-580c-a79d-2169f4b5a877"
           }
         },
         "sourceRange": []
@@ -12985,7 +12985,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "abbeb3b2-3421-545a-b53f-5519bb63b75b"
           }
         },
         "sourceRange": []
@@ -13025,7 +13025,7 @@ description: Operations executed saturn-v.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -13285,7 +13285,7 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c61a6d01-a717-510e-a928-c067138ea03c"
               }
             ]
           },
@@ -13315,7 +13315,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33"
           }
         },
         "sourceRange": []
@@ -13361,7 +13361,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "85c1de4b-c94f-5542-b722-a1ace11221a5"
           }
         },
         "sourceRange": []
@@ -15049,11 +15049,11 @@ description: Operations executed saturn-v.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a284338f-93ca-5bd0-93ec-db71e311620e"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "190fcd82-dbf5-5b4c-8c91-69fd729ed3e6"
               }
             ]
           },
@@ -15083,7 +15083,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8282317b-7b33-5b29-a0b3-e7bdb56738b2"
           }
         },
         "sourceRange": []
@@ -15183,7 +15183,7 @@ description: Operations executed saturn-v.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "88dacb09-a1b7-5b29-9f59-88a39804e9c6"
           }
         },
         "sourceRange": []

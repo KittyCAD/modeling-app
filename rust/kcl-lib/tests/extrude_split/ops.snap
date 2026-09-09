@@ -2295,23 +2295,23 @@ description: Operations executed extrude_split.kcl
           "value": [
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             }
           ]
         },
@@ -9556,23 +9556,23 @@ description: Operations executed extrude_split.kcl
           "value": [
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "d005938d-7477-557a-bef2-28dfc45d0fce"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "f611456b-82df-55af-a95e-b0c5e1ba1457"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
             }
           ]
         },
@@ -9629,7 +9629,7 @@ description: Operations executed extrude_split.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
           }
         },
         "sourceRange": []
@@ -9646,7 +9646,7 @@ description: Operations executed extrude_split.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
             }
           },
           "sourceRange": []

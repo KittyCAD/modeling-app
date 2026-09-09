@@ -6,8 +6,8 @@ description: Variables in memory after executing gas-impeller.kcl
   "__sketch_103_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing gas-impeller.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -76,14 +76,14 @@ description: Variables in memory after executing gas-impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+      "originalId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+      "topologyId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+      "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "49cf5018-6944-57ed-9456-87736c534959",
+          "id": "eb06eb30-8326-55b7-8267-a7b6d99b4000",
           "sourceRange": [],
           "tag": {
             "commentStart": 6488,
@@ -96,8 +96,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ee94010b-ca07-53ae-893c-02637448814a",
+          "id": "2b1b2a7b-3f30-53f3-8187-c5b6bf58a13b",
           "sourceRange": [],
           "tag": {
             "commentStart": 6578,
@@ -110,8 +110,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2531882a-388a-560e-b29a-f2e515322815",
+          "id": "bae79e9b-478d-5e81-8b46-8ce6c5cd42f2",
           "sourceRange": [],
           "tag": {
             "commentStart": 6751,
@@ -124,8 +124,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a18cdd6f-4c19-5c57-bc0d-e3f20cca8e4b",
+          "id": "d0a4d966-f8cc-5473-bf97-696fca6c1735",
           "sourceRange": [],
           "tag": {
             "commentStart": 6918,
@@ -141,11 +141,11 @@ description: Variables in memory after executing gas-impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb06eb30-8326-55b7-8267-a7b6d99b4000",
               "sourceRange": []
             },
             "from": [
@@ -169,7 +169,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2b1b2a7b-3f30-53f3-8187-c5b6bf58a13b",
               "sourceRange": []
             },
             "from": [
@@ -193,7 +193,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bae79e9b-478d-5e81-8b46-8ce6c5cd42f2",
               "sourceRange": []
             },
             "from": [
@@ -217,7 +217,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d0a4d966-f8cc-5473-bf97-696fca6c1735",
               "sourceRange": []
             },
             "from": [
@@ -242,8 +242,8 @@ description: Variables in memory after executing gas-impeller.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+          "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
           "objectId": 102,
           "kind": "Custom",
           "origin": {
@@ -283,7 +283,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
             "sourceRange": []
           }
         },
@@ -305,13 +305,13 @@ description: Variables in memory after executing gas-impeller.kcl
             "value": "bladeCutterTopEdge"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+        "originalId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d3103008-69f7-5b47-9a2e-2209ed7ed2ff",
+      "endCapId": "4c4c7687-b002-56aa-9479-6f5e7174b95d",
       "units": "mm",
       "sectional": false
     }
@@ -335,11 +335,11 @@ description: Variables in memory after executing gas-impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb06eb30-8326-55b7-8267-a7b6d99b4000",
             "sourceRange": []
           },
           "from": [
@@ -363,7 +363,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2b1b2a7b-3f30-53f3-8187-c5b6bf58a13b",
             "sourceRange": []
           },
           "from": [
@@ -387,7 +387,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bae79e9b-478d-5e81-8b46-8ce6c5cd42f2",
             "sourceRange": []
           },
           "from": [
@@ -411,7 +411,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d0a4d966-f8cc-5473-bf97-696fca6c1735",
             "sourceRange": []
           },
           "from": [
@@ -436,8 +436,8 @@ description: Variables in memory after executing gas-impeller.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "objectId": 102,
         "kind": "Custom",
         "origin": {
@@ -477,7 +477,7 @@ description: Variables in memory after executing gas-impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
           "sourceRange": []
         }
       },
@@ -499,8 +499,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "value": "bladeCutterTopEdge"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+      "originalId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -514,7 +514,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                 "objectId": 106,
                 "kind": {
                   "line": {
@@ -588,8 +588,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 102,
                   "origin": {
@@ -618,7 +618,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeCutterBottomEdge"
@@ -634,7 +634,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
                 "objectId": 117,
                 "kind": {
                   "line": {
@@ -708,8 +708,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 102,
                   "origin": {
@@ -738,7 +738,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeCutterInnerEdge"
@@ -754,7 +754,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
                 "objectId": 122,
                 "kind": {
                   "line": {
@@ -829,8 +829,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 102,
                   "origin": {
@@ -859,7 +859,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeCutterInnerRadiusGuide"
@@ -875,7 +875,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                 "objectId": 109,
                 "kind": {
                   "line": {
@@ -949,8 +949,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 102,
                   "origin": {
@@ -979,7 +979,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeCutterOuterEdge"
@@ -995,7 +995,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                 "objectId": 113,
                 "kind": {
                   "line": {
@@ -1069,8 +1069,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                  "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                   "kind": "Custom",
                   "objectId": 102,
                   "origin": {
@@ -1099,7 +1099,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeCutterTopEdge"
@@ -1116,11 +1116,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                     "sourceRange": []
                   },
                   "from": [
@@ -1144,7 +1144,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                     "sourceRange": []
                   },
                   "from": [
@@ -1168,7 +1168,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                     "sourceRange": []
                   },
                   "from": [
@@ -1192,7 +1192,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
                     "sourceRange": []
                   },
                   "from": [
@@ -1217,8 +1217,8 @@ description: Variables in memory after executing gas-impeller.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
                 "objectId": 102,
                 "kind": "Custom",
                 "origin": {
@@ -1258,7 +1258,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
                   "sourceRange": []
                 }
               },
@@ -1280,8 +1280,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "value": "bladeCutterTopEdge"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+              "originalId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1301,14 +1301,14 @@ description: Variables in memory after executing gas-impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "topologyId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+          "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
           "sourceRange": [],
           "tag": {
             "commentStart": 995,
@@ -1321,8 +1321,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+          "id": "1f22b379-6881-55f1-a62d-5daec0080269",
           "sourceRange": [],
           "tag": {
             "commentStart": 2203,
@@ -1335,8 +1335,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+          "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
           "sourceRange": [],
           "tag": {
             "commentStart": 3995,
@@ -1349,8 +1349,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+          "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4157,
@@ -1363,8 +1363,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+          "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
           "sourceRange": [],
           "tag": {
             "commentStart": 4338,
@@ -1380,11 +1380,11 @@ description: Variables in memory after executing gas-impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": []
             },
             "ccw": false,
@@ -1414,7 +1414,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": []
             },
             "ccw": true,
@@ -1444,7 +1444,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": []
             },
             "from": [
@@ -1468,7 +1468,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": []
             },
             "from": [
@@ -1492,7 +1492,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": []
             },
             "ccw": true,
@@ -1523,8 +1523,8 @@ description: Variables in memory after executing gas-impeller.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -1564,7 +1564,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
             "sourceRange": []
           }
         },
@@ -1610,8 +1610,8 @@ description: Variables in memory after executing gas-impeller.kcl
             "value": "shaftWall"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -1630,11 +1630,11 @@ description: Variables in memory after executing gas-impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
             "sourceRange": []
           },
           "ccw": false,
@@ -1664,7 +1664,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1f22b379-6881-55f1-a62d-5daec0080269",
             "sourceRange": []
           },
           "ccw": true,
@@ -1694,7 +1694,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
             "sourceRange": []
           },
           "from": [
@@ -1718,7 +1718,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
             "sourceRange": []
           },
           "from": [
@@ -1742,7 +1742,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
             "sourceRange": []
           },
           "ccw": true,
@@ -1773,8 +1773,8 @@ description: Variables in memory after executing gas-impeller.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1814,7 +1814,7 @@ description: Variables in memory after executing gas-impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
           "sourceRange": []
         }
       },
@@ -1860,8 +1860,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "value": "shaftWall"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1910,14 +1910,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -1930,8 +1930,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -1944,8 +1944,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -1958,8 +1958,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -1972,8 +1972,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -1989,11 +1989,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -2023,7 +2023,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2053,7 +2053,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -2077,7 +2077,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -2101,7 +2101,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2132,8 +2132,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -2173,7 +2173,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -2219,8 +2219,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -2234,14 +2234,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "aecfce41-7602-5b52-bfa6-3410cf5af4ef",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "aecfce41-7602-5b52-bfa6-3410cf5af4ef",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -2254,8 +2254,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -2268,8 +2268,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -2282,8 +2282,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -2296,8 +2296,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -2313,11 +2313,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "aecfce41-7602-5b52-bfa6-3410cf5af4ef",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -2347,7 +2347,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2377,7 +2377,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -2401,7 +2401,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -2425,7 +2425,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2456,8 +2456,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -2497,7 +2497,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -2543,8 +2543,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -2558,14 +2558,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9051e097-c62f-542b-b99c-d7aeb172820e",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "9051e097-c62f-542b-b99c-d7aeb172820e",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -2578,8 +2578,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -2592,8 +2592,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -2606,8 +2606,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -2620,8 +2620,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -2637,11 +2637,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9051e097-c62f-542b-b99c-d7aeb172820e",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -2671,7 +2671,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2701,7 +2701,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -2725,7 +2725,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -2749,7 +2749,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2780,8 +2780,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -2821,7 +2821,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -2867,8 +2867,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -2882,14 +2882,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "1e80ae03-1d25-58ae-a06d-aa7215229bd4",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "1e80ae03-1d25-58ae-a06d-aa7215229bd4",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -2902,8 +2902,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -2916,8 +2916,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -2930,8 +2930,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -2944,8 +2944,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -2961,11 +2961,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "1e80ae03-1d25-58ae-a06d-aa7215229bd4",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -2995,7 +2995,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3025,7 +3025,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -3049,7 +3049,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -3073,7 +3073,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3104,8 +3104,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -3145,7 +3145,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -3191,8 +3191,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -3206,14 +3206,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "1aa07ab4-e7b1-502b-bc69-382b726a46e1",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "1aa07ab4-e7b1-502b-bc69-382b726a46e1",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -3226,8 +3226,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -3240,8 +3240,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -3254,8 +3254,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -3268,8 +3268,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -3285,11 +3285,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "1aa07ab4-e7b1-502b-bc69-382b726a46e1",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -3319,7 +3319,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3349,7 +3349,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -3373,7 +3373,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -3397,7 +3397,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3428,8 +3428,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -3469,7 +3469,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -3515,8 +3515,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -3530,14 +3530,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "66f735c2-de2e-5301-a325-08ea59e8af0f",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "66f735c2-de2e-5301-a325-08ea59e8af0f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -3550,8 +3550,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -3564,8 +3564,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -3578,8 +3578,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -3592,8 +3592,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -3609,11 +3609,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "66f735c2-de2e-5301-a325-08ea59e8af0f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -3643,7 +3643,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3673,7 +3673,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -3697,7 +3697,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -3721,7 +3721,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3752,8 +3752,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -3793,7 +3793,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -3839,8 +3839,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -3854,14 +3854,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "ab0b87ed-a23c-5564-825e-07c380f861f9",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "ab0b87ed-a23c-5564-825e-07c380f861f9",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -3874,8 +3874,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -3888,8 +3888,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -3902,8 +3902,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -3916,8 +3916,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -3933,11 +3933,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "ab0b87ed-a23c-5564-825e-07c380f861f9",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -3967,7 +3967,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3997,7 +3997,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -4021,7 +4021,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -4045,7 +4045,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4076,8 +4076,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -4117,7 +4117,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -4163,8 +4163,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -4178,14 +4178,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "07e23003-cff0-5216-ac02-707b280d9bce",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "07e23003-cff0-5216-ac02-707b280d9bce",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -4198,8 +4198,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -4212,8 +4212,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -4226,8 +4226,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -4240,8 +4240,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -4257,11 +4257,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "07e23003-cff0-5216-ac02-707b280d9bce",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -4291,7 +4291,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4321,7 +4321,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -4345,7 +4345,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -4369,7 +4369,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4400,8 +4400,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -4441,7 +4441,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -4487,8 +4487,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -4502,14 +4502,14 @@ description: Variables in memory after executing gas-impeller.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "23381280-7696-557a-aa93-07e242e0c39b",
+          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "topologyId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "artifactId": "23381280-7696-557a-aa93-07e242e0c39b",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+              "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
               "sourceRange": [],
               "tag": {
                 "commentStart": 995,
@@ -4522,8 +4522,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ea6446c8-ab04-5fb1-8195-29a4734d4d51",
+              "id": "1f22b379-6881-55f1-a62d-5daec0080269",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2203,
@@ -4536,8 +4536,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "d9778433-77d0-5969-a400-6cc704125d95",
+              "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3995,
@@ -4550,8 +4550,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "6517b38c-5562-579e-ab3a-0d2274989f7a",
+              "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4157,
@@ -4564,8 +4564,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
+              "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4338,
@@ -4581,11 +4581,11 @@ description: Variables in memory after executing gas-impeller.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "23381280-7696-557a-aa93-07e242e0c39b",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1544c92c-dbad-5422-a81a-e909ccdff6ed",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -4615,7 +4615,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1f22b379-6881-55f1-a62d-5daec0080269",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4645,7 +4645,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "42163c7a-fe24-5d47-9bf4-dfbc6cbc9440",
                   "sourceRange": []
                 },
                 "from": [
@@ -4669,7 +4669,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "87b2617f-cd14-5d00-90a6-6e2906cbd3d9",
                   "sourceRange": []
                 },
                 "from": [
@@ -4693,7 +4693,7 @@ description: Variables in memory after executing gas-impeller.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9356ae54-d6b5-503d-9a0a-f6f55ff85b2f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4724,8 +4724,8 @@ description: Variables in memory after executing gas-impeller.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -4765,7 +4765,7 @@ description: Variables in memory after executing gas-impeller.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "sourceRange": []
               }
             },
@@ -4811,8 +4811,8 @@ description: Variables in memory after executing gas-impeller.kcl
                 "value": "shaftWall"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
             "units": "mm",
             "isClosed": "explicitly"
           },
@@ -4833,7 +4833,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -4907,8 +4907,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4937,7 +4937,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseFloor"
@@ -4953,7 +4953,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "objectId": 72,
                 "kind": {
                   "line": {
@@ -5027,8 +5027,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5057,7 +5057,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeEnvelopeOuterWall"
@@ -5073,7 +5073,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                 "objectId": 77,
                 "kind": {
                   "arc": {
@@ -5179,8 +5179,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5209,7 +5209,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeEnvelopeTipArc"
@@ -5225,7 +5225,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
                 "objectId": 90,
                 "kind": {
                   "line": {
@@ -5300,8 +5300,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5330,7 +5330,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeEnvelopeTipCenterlineGuide"
@@ -5346,7 +5346,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "objectId": 85,
                 "kind": {
                   "line": {
@@ -5421,8 +5421,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5451,7 +5451,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeEnvelopeTipRadiusGuide"
@@ -5467,7 +5467,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "objectId": 68,
                 "kind": {
                   "line": {
@@ -5541,8 +5541,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5571,7 +5571,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeEnvelopeTopEdge"
@@ -5587,7 +5587,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 12,
                 "kind": {
                   "arc": {
@@ -5693,8 +5693,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5723,7 +5723,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hubShoulderBlendArc"
@@ -5739,7 +5739,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "objectId": 98,
                 "kind": {
                   "line": {
@@ -5813,8 +5813,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5843,7 +5843,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hubShoulderRadiusGuide"
@@ -5859,7 +5859,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -5933,8 +5933,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5963,7 +5963,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hubTopLand"
@@ -5980,11 +5980,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -6008,7 +6008,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -6032,7 +6032,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -6062,7 +6062,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
                     "sourceRange": []
                   },
                   "from": [
@@ -6079,7 +6079,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -6103,7 +6103,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "from": [
@@ -6127,7 +6127,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
                     "sourceRange": []
                   },
                   "from": [
@@ -6144,7 +6144,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6174,7 +6174,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
                     "sourceRange": []
                   },
                   "from": [
@@ -6191,7 +6191,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                     "sourceRange": []
                   },
                   "from": [
@@ -6215,7 +6215,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
                     "sourceRange": []
                   },
                   "from": [
@@ -6232,7 +6232,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                     "sourceRange": []
                   },
                   "from": [
@@ -6256,7 +6256,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6286,7 +6286,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
                     "sourceRange": []
                   },
                   "from": [
@@ -6303,7 +6303,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                     "sourceRange": []
                   },
                   "from": [
@@ -6328,8 +6328,8 @@ description: Variables in memory after executing gas-impeller.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -6369,7 +6369,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                   "sourceRange": []
                 }
               },
@@ -6415,8 +6415,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "value": "shaftWall"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+              "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -6430,7 +6430,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 39,
                 "kind": {
                   "arc": {
@@ -6536,8 +6536,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6566,7 +6566,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerEnvelopeArc"
@@ -6582,7 +6582,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 53,
                 "kind": {
                   "line": {
@@ -6657,8 +6657,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6687,7 +6687,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerEnvelopeCenterDropGuide"
@@ -6703,7 +6703,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -6778,8 +6778,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6808,7 +6808,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerEnvelopeChordGuide"
@@ -6824,7 +6824,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                 "objectId": 58,
                 "kind": {
                   "line": {
@@ -6899,8 +6899,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6929,7 +6929,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerEnvelopePerpendicularGuide"
@@ -6945,7 +6945,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -7020,8 +7020,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7050,7 +7050,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerEnvelopeRadiusGuide"
@@ -7066,7 +7066,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -7140,8 +7140,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7170,7 +7170,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerLipDrop"
@@ -7186,7 +7186,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -7261,8 +7261,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7291,7 +7291,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "shaftRadiusGuide"
@@ -7307,7 +7307,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -7381,8 +7381,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7411,7 +7411,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "shaftWall"
@@ -7428,11 +7428,11 @@ description: Variables in memory after executing gas-impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "87167001-77b4-58b5-8964-640f2433e9fa",
             "sourceRange": []
           },
           "from": [
@@ -7456,7 +7456,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
             "sourceRange": []
           },
           "from": [
@@ -7480,7 +7480,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2d9167c2-7836-5743-929e-ec927badb4a1",
             "sourceRange": []
           },
           "ccw": false,
@@ -7510,7 +7510,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1586d7cf-11d3-551f-953c-624a11292123",
             "sourceRange": []
           },
           "from": [
@@ -7534,7 +7534,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "076117e2-5fab-5adf-a38e-862ae0ad0a9c",
             "sourceRange": []
           },
           "from": [
@@ -7558,7 +7558,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "26d03a0d-feab-51d3-be15-a5e88dcde77a",
             "sourceRange": []
           },
           "ccw": true,
@@ -7588,7 +7588,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4461e5d3-1f93-5b83-96fc-ce868a004e78",
             "sourceRange": []
           },
           "from": [
@@ -7612,7 +7612,7 @@ description: Variables in memory after executing gas-impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5105dfa6-e7e1-50b0-9fb0-7d216db3a379",
             "sourceRange": []
           },
           "from": [
@@ -7637,8 +7637,8 @@ description: Variables in memory after executing gas-impeller.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -7678,7 +7678,7 @@ description: Variables in memory after executing gas-impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
           "sourceRange": []
         }
       },
@@ -7724,8 +7724,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "value": "shaftWall"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "originalId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -7767,14 +7767,14 @@ description: Variables in memory after executing gas-impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "originalId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "topologyId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8bef909b-8803-54cb-a195-92e48deeb229",
+          "id": "87167001-77b4-58b5-8964-640f2433e9fa",
           "sourceRange": [],
           "tag": {
             "commentStart": 787,
@@ -7787,8 +7787,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "441c7422-3069-569e-b6dd-e598e677d2a6",
+          "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
           "sourceRange": [],
           "tag": {
             "commentStart": 865,
@@ -7801,8 +7801,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "276ac36e-47bc-5578-94a8-61d5b27a21ca",
+          "id": "2d9167c2-7836-5743-929e-ec927badb4a1",
           "sourceRange": [],
           "tag": {
             "commentStart": 995,
@@ -7815,8 +7815,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "028d808b-c19b-585e-8b20-eaa66c4e3b64",
+          "id": "1586d7cf-11d3-551f-953c-624a11292123",
           "sourceRange": [],
           "tag": {
             "commentStart": 1190,
@@ -7829,8 +7829,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "25692156-4efd-5a62-af46-28c69994c286",
+          "id": "076117e2-5fab-5adf-a38e-862ae0ad0a9c",
           "sourceRange": [],
           "tag": {
             "commentStart": 1268,
@@ -7843,8 +7843,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "494be28d-bf78-591b-9098-08e2ce9f581d",
+          "id": "26d03a0d-feab-51d3-be15-a5e88dcde77a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2203,
@@ -7857,8 +7857,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ba9d9fa0-6a88-5f98-8158-391612fa9514",
+          "id": "4461e5d3-1f93-5b83-96fc-ce868a004e78",
           "sourceRange": [],
           "tag": {
             "commentStart": 5521,
@@ -7871,8 +7871,8 @@ description: Variables in memory after executing gas-impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0c3d19a9-84e9-50dc-8839-03bdbd55b1c0",
+          "id": "5105dfa6-e7e1-50b0-9fb0-7d216db3a379",
           "sourceRange": [],
           "tag": {
             "commentStart": 5521,
@@ -7888,11 +7888,11 @@ description: Variables in memory after executing gas-impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87167001-77b4-58b5-8964-640f2433e9fa",
               "sourceRange": []
             },
             "from": [
@@ -7916,7 +7916,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e407b73b-eeea-5b6a-824e-025f86f73bbc",
               "sourceRange": []
             },
             "from": [
@@ -7940,7 +7940,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2d9167c2-7836-5743-929e-ec927badb4a1",
               "sourceRange": []
             },
             "ccw": false,
@@ -7970,7 +7970,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1586d7cf-11d3-551f-953c-624a11292123",
               "sourceRange": []
             },
             "from": [
@@ -7994,7 +7994,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "076117e2-5fab-5adf-a38e-862ae0ad0a9c",
               "sourceRange": []
             },
             "from": [
@@ -8018,7 +8018,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "26d03a0d-feab-51d3-be15-a5e88dcde77a",
               "sourceRange": []
             },
             "ccw": true,
@@ -8048,7 +8048,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4461e5d3-1f93-5b83-96fc-ce868a004e78",
               "sourceRange": []
             },
             "from": [
@@ -8072,7 +8072,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5105dfa6-e7e1-50b0-9fb0-7d216db3a379",
               "sourceRange": []
             },
             "from": [
@@ -8097,8 +8097,8 @@ description: Variables in memory after executing gas-impeller.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -8138,7 +8138,7 @@ description: Variables in memory after executing gas-impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
             "sourceRange": []
           }
         },
@@ -8184,8 +8184,8 @@ description: Variables in memory after executing gas-impeller.kcl
             "value": "shaftWall"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "originalId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
         "units": "mm",
         "isClosed": "explicitly"
       },

@@ -5,7 +5,7 @@ description: Artifact commands i-beam.kcl
 {
   "public/kcl-samples/i-beam/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": -33.82009999999999,
           "y": 50.8,
@@ -75,18 +75,18 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": 2.4510999999999994,
           "y": 31.750000000000032,
@@ -146,11 +146,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -163,11 +163,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": 14.057510944258622,
           "y": -43.35780000000001,
@@ -176,11 +176,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -193,11 +193,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -210,11 +210,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -227,11 +227,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -244,11 +244,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -261,11 +261,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": -33.82009999999999,
           "y": 50.8,
@@ -274,11 +274,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -291,11 +291,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -308,11 +308,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": -2.4511,
           "y": 31.750000000397822,
@@ -321,11 +321,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "line",
           "end": {
@@ -338,11 +338,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": 14.05751094435017,
           "y": 43.35779999999999,
@@ -351,11 +351,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "arc",
           "center": {
@@ -376,11 +376,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": 2.4511,
           "y": -31.75000000082552,
@@ -389,11 +389,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "arc",
           "center": {
@@ -414,11 +414,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": -2.4511000000000003,
           "y": 31.750000000397822,
@@ -427,11 +427,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "arc",
           "center": {
@@ -452,11 +452,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "to": {
           "x": -14.057510944251359,
           "y": -43.35779999999999,
@@ -465,11 +465,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "segment": {
           "type": "arc",
           "center": {
@@ -490,11 +490,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "create_region_from_query_point",
-        "object_id": "[uuid]",
+        "object_id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "query_point": {
           "x": 0.0,
           "y": 0.0
@@ -503,20 +503,20 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -528,11 +528,11 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "76d81d0d-ef16-5794-bc58-3132468566e9",
         "distance": 1828.8,
         "faces": null,
         "opposite": "Symmetric",
@@ -541,36 +541,36 @@ description: Artifact commands i-beam.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "76d81d0d-ef16-5794-bc58-3132468566e9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "edge_id": "085eca26-4d64-51c6-b620-a59119c62846"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "edge_id": "085eca26-4d64-51c6-b620-a59119c62846"
       }
     }
   ]

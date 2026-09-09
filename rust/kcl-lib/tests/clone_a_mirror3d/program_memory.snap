@@ -6,8 +6,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
   "__sketch_2_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,14 +44,14 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c2fd5dab-eb42-56be-9370-1645ea7502a0",
+      "originalId": "c2fd5dab-eb42-56be-9370-1645ea7502a0",
+      "topologyId": "c2fd5dab-eb42-56be-9370-1645ea7502a0",
+      "artifactId": "c2fd5dab-eb42-56be-9370-1645ea7502a0",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "126498f1-2635-5500-bf0d-757df8fb0e18",
+          "id": "d32d2839-ebf9-5d59-863a-8608a0b7334a",
           "sourceRange": [],
           "tag": {
             "commentStart": 101,
@@ -67,11 +67,11 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c2fd5dab-eb42-56be-9370-1645ea7502a0",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d32d2839-ebf9-5d59-863a-8608a0b7334a",
               "sourceRange": []
             },
             "ccw": true,
@@ -102,8 +102,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
           "objectId": 1,
           "kind": "Custom",
           "origin": {
@@ -143,7 +143,7 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
             "sourceRange": []
           }
         },
@@ -153,13 +153,13 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "c2fd5dab-eb42-56be-9370-1645ea7502a0",
+        "originalId": "c2fd5dab-eb42-56be-9370-1645ea7502a0",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
+      "endCapId": "2df777f3-9d1a-57aa-bab0-2c12c3121490",
       "units": "mm",
       "sectional": false
     }
@@ -168,14 +168,14 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "topologyId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "10f3437b-85ad-5c3d-8561-1c59d73078a9",
+          "id": "14d66640-7eba-52be-8b44-4ec661a48fe4",
           "sourceRange": [],
           "tag": {
             "commentStart": 101,
@@ -191,11 +191,11 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "14d66640-7eba-52be-8b44-4ec661a48fe4",
               "sourceRange": []
             },
             "ccw": true,
@@ -226,8 +226,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
           "objectId": 1,
           "kind": "Custom",
           "origin": {
@@ -267,7 +267,7 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
             "sourceRange": []
           }
         },
@@ -277,13 +277,13 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
+      "endCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
       "units": "mm",
       "sectional": false
     }
@@ -292,11 +292,11 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "ccw": true,
@@ -327,8 +327,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "objectId": 1,
         "kind": "Custom",
         "origin": {
@@ -368,7 +368,7 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
           "sourceRange": []
         }
       },
@@ -378,8 +378,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "originalId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "units": "mm",
       "isClosed": "no"
     }
@@ -387,8 +387,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
   "midPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -421,11 +421,11 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "14d66640-7eba-52be-8b44-4ec661a48fe4",
             "sourceRange": []
           },
           "ccw": true,
@@ -456,8 +456,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "objectId": 1,
         "kind": "Custom",
         "origin": {
@@ -497,7 +497,7 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
           "sourceRange": []
         }
       },
@@ -507,8 +507,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -522,7 +522,7 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 5,
                 "kind": {
                   "circle": {
@@ -596,8 +596,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                  "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                   "kind": "Custom",
                   "objectId": 1,
                   "origin": {
@@ -626,7 +626,7 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -643,11 +643,11 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -678,8 +678,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 1,
                 "kind": "Custom",
                 "origin": {
@@ -719,7 +719,7 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                   "sourceRange": []
                 }
               },
@@ -729,8 +729,8 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "originalId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "units": "mm",
               "isClosed": "no"
             }

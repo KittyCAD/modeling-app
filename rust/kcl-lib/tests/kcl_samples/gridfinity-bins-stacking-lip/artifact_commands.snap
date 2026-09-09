@@ -5,7 +5,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
 {
   "public/kcl-samples/gridfinity-bins-stacking-lip/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -44,20 +44,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -69,18 +69,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "to": {
           "x": 3.2,
           "y": 0.0,
@@ -89,18 +89,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "segment": {
           "type": "line",
           "end": {
@@ -113,11 +113,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "segment": {
           "type": "line",
           "end": {
@@ -130,11 +130,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "segment": {
           "type": "line",
           "end": {
@@ -147,11 +147,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "segment": {
           "type": "line",
           "end": {
@@ -164,11 +164,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "segment": {
           "type": "line",
           "end": {
@@ -181,24 +181,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+        "segment": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+        "intersection_segment": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -210,11 +210,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "distance": 34.0,
         "faces": null,
         "opposite": "None",
@@ -223,44 +223,44 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "edge_id": "a1a26952-28d2-5b84-8af9-1de0ec7d3177"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "edge_id": "a1a26952-28d2-5b84-8af9-1de0ec7d3177"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -277,24 +277,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+        "segment": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+        "intersection_segment": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "origin": {
           "x": 4.0,
           "y": 4.0,
@@ -316,46 +316,46 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+        "edge_id": "a00b2ac4-76a6-535b-aed2-b2e6e98aa7c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+        "edge_id": "a00b2ac4-76a6-535b-aed2-b2e6e98aa7c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -372,7 +372,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -397,20 +397,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -422,18 +422,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "to": {
           "x": 4.0,
           "y": 3.2,
@@ -442,18 +442,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "line",
           "end": {
@@ -466,11 +466,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "arc",
           "center": {
@@ -491,11 +491,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "line",
           "end": {
@@ -508,11 +508,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "arc",
           "center": {
@@ -533,11 +533,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "line",
           "end": {
@@ -550,11 +550,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "arc",
           "center": {
@@ -575,11 +575,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "line",
           "end": {
@@ -592,11 +592,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "segment": {
           "type": "arc",
           "center": {
@@ -617,24 +617,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+        "segment": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "intersection_segment": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -646,11 +646,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
         "distance": 4.75,
         "faces": null,
         "opposite": "None",
@@ -659,70 +659,70 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+        "edge_id": "ba5794a4-648d-56c1-8333-4ae9d1ee8464"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+        "edge_id": "ba5794a4-648d-56c1-8333-4ae9d1ee8464"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "[uuid]"
+        "object_id": "e3b5d3d1-7ba9-57cd-81dd-bf9b9d55d088"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -734,18 +734,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "to": {
           "x": -4.75,
           "y": 8.0,
@@ -754,18 +754,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -786,24 +786,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "19107e89-bf40-5541-88a5-5106b6de636d",
+        "segment": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "intersection_segment": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -820,11 +820,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -836,11 +836,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
@@ -849,44 +849,44 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8c56779b-80ab-5d86-a257-cec4629e2413"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -898,11 +898,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "a341ee75-88a7-519a-9b43-be77ea4cdecc",
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
@@ -911,44 +911,44 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "a341ee75-88a7-519a-9b43-be77ea4cdecc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a341ee75-88a7-519a-9b43-be77ea4cdecc",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a341ee75-88a7-519a-9b43-be77ea4cdecc",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -960,11 +960,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "75f5e119-fb50-532e-aeeb-abac260eeaec",
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
@@ -973,44 +973,44 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "75f5e119-fb50-532e-aeeb-abac260eeaec"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "75f5e119-fb50-532e-aeeb-abac260eeaec",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "75f5e119-fb50-532e-aeeb-abac260eeaec",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1022,11 +1022,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "6537364c-037d-5cb8-82e3-fa9079d98380",
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
@@ -1035,71 +1035,71 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "6537364c-037d-5cb8-82e3-fa9079d98380"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6537364c-037d-5cb8-82e3-fa9079d98380",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6537364c-037d-5cb8-82e3-fa9079d98380",
+        "edge_id": "8683c4fc-15a6-5382-bab2-40b87dc73a40"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "19107e89-bf40-5541-88a5-5106b6de636d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "8c56779b-80ab-5d86-a257-cec4629e2413",
+          "a341ee75-88a7-519a-9b43-be77ea4cdecc",
+          "75f5e119-fb50-532e-aeeb-abac260eeaec",
+          "6537364c-037d-5cb8-82e3-fa9079d98380"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "transform": [],
         "transforms": [
           [
@@ -1135,11 +1135,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8",
         "transform": [],
         "transforms": [
           [
@@ -1175,11 +1175,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "46c1c873-adde-54a9-8c92-5f163decf204",
         "transform": [],
         "transforms": [
           [
@@ -1215,11 +1215,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bf2569f4-8303-5a9a-817c-062b9a00a926",
         "transform": [],
         "transforms": [
           [
@@ -1255,11 +1255,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "transform": [],
         "transforms": [
           [
@@ -1324,11 +1324,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "2befdae3-edef-598e-a5ae-a3ffbff417c6",
         "transform": [],
         "transforms": [
           [
@@ -1393,11 +1393,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8",
         "transform": [],
         "transforms": [
           [
@@ -1462,11 +1462,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "df1dd75c-0d42-57a8-9c10-424d3bf50477",
         "transform": [],
         "transforms": [
           [
@@ -1531,11 +1531,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "46c1c873-adde-54a9-8c92-5f163decf204",
         "transform": [],
         "transforms": [
           [
@@ -1600,11 +1600,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "ba469631-95d6-5264-9080-1d0365011d45",
         "transform": [],
         "transforms": [
           [
@@ -1669,11 +1669,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bf2569f4-8303-5a9a-817c-062b9a00a926",
         "transform": [],
         "transforms": [
           [
@@ -1738,11 +1738,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "5b89a7a6-189f-5664-b693-079a92dc7566",
         "transform": [],
         "transforms": [
           [
@@ -1807,11 +1807,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "transform": [],
         "transforms": [
           [
@@ -1847,11 +1847,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "6489eeeb-3652-50fa-9d8e-723c2c670f39",
         "transform": [],
         "transforms": [
           [
@@ -1887,11 +1887,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "813463c6-1c89-5251-84d8-6159121dd7b3",
         "transform": [],
         "transforms": [
           [
@@ -1927,11 +1927,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "229b0da4-30f2-58ab-a274-0ad55ebca336",
         "transform": [],
         "transforms": [
           [
@@ -1967,11 +1967,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "transform": [],
         "transforms": [
           [
@@ -2036,11 +2036,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "ecf33e4f-768c-5f29-b638-fd5cc61b7ef3",
         "transform": [],
         "transforms": [
           [
@@ -2105,11 +2105,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "6489eeeb-3652-50fa-9d8e-723c2c670f39",
         "transform": [],
         "transforms": [
           [
@@ -2174,11 +2174,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "ba805213-248c-5000-88c2-4d98560d8b68",
         "transform": [],
         "transforms": [
           [
@@ -2243,11 +2243,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "813463c6-1c89-5251-84d8-6159121dd7b3",
         "transform": [],
         "transforms": [
           [
@@ -2312,11 +2312,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bfbe1a70-ef30-55a6-9f8b-e9ec99788f6c",
         "transform": [],
         "transforms": [
           [
@@ -2381,11 +2381,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "229b0da4-30f2-58ab-a274-0ad55ebca336",
         "transform": [],
         "transforms": [
           [
@@ -2450,11 +2450,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "fcb06d80-2d35-5a76-93e9-20e700c09459",
         "transform": [],
         "transforms": [
           [
@@ -2519,11 +2519,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "a0df0eb6-009b-594d-815d-31646979be80",
         "transform": [],
         "transforms": [
           [
@@ -2559,11 +2559,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "a0df0eb6-009b-594d-815d-31646979be80",
         "transform": [],
         "transforms": [
           [
@@ -2628,11 +2628,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "09a6c1c9-288c-5d8f-9a38-a6a5262a2096",
         "transform": [],
         "transforms": [
           [
@@ -2697,7 +2697,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2722,11 +2722,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "08138142-a558-56a4-a23f-2f334e02b011",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2736,20 +2736,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1583b450-a578-582f-8d23-686bccf95d8b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "08138142-a558-56a4-a23f-2f334e02b011",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7faa0516-2581-52ca-b80e-97150bf2f040",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "08138142-a558-56a4-a23f-2f334e02b011",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2761,18 +2761,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "to": {
           "x": 3.75,
           "y": 0.0,
@@ -2781,18 +2781,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "line",
           "end": {
@@ -2805,11 +2805,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2830,11 +2830,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "line",
           "end": {
@@ -2847,11 +2847,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2872,11 +2872,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "line",
           "end": {
@@ -2889,11 +2889,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2914,11 +2914,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "line",
           "end": {
@@ -2931,11 +2931,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2956,24 +2956,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+        "segment": "44b2dfb0-0721-57cd-a796-4401a664e194",
+        "intersection_segment": "44b2dfb0-0721-57cd-a796-4401a664e194",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "08138142-a558-56a4-a23f-2f334e02b011",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2985,11 +2985,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
         "distance": 7.0,
         "faces": null,
         "opposite": "None",
@@ -2998,62 +2998,62 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0a7732a-2f75-5407-b203-7382d01c3918",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+        "edge_id": "df9065bf-b0a8-5d38-ba9b-3fc199750278"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+        "edge_id": "df9065bf-b0a8-5d38-ba9b-3fc199750278"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
       "range": [],
       "command": {
         "type": "solid3d_shell_face",
-        "object_id": "[uuid]",
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
         "face_ids": [
-          "[uuid]"
+          "a6fa5edd-d61b-5f6b-80e3-6aabfee5c0bf"
         ],
         "shell_thickness": 1.2,
         "hollow": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3078,20 +3078,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa91dc3c-d764-5550-a1d4-5f081872a206",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3103,18 +3103,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08c45048-e16b-54e2-9691-c65127dfc3a8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "to": {
           "x": -0.000000000000000003147429574235216,
           "y": -0.0000000000000000045539236725099626,
@@ -3123,18 +3123,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8b4e335-6a37-5df4-9658-e96f62cfa1e8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "line",
           "end": {
@@ -3147,11 +3147,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a8c96c1-87c0-5d35-b412-deb67d5b0712",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "to": {
           "x": 0.853553,
           "y": 6.146446,
@@ -3160,11 +3160,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94906884-1803-5336-93e6-0aca938f73f1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "line",
           "end": {
@@ -3177,11 +3177,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "line",
           "end": {
@@ -3194,11 +3194,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0a92fa6-be55-5cfb-a650-710b68437549",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "line",
           "end": {
@@ -3211,11 +3211,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "line",
           "end": {
@@ -3228,11 +3228,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "af94b4da-da53-5386-a65f-ed75c251c9ff",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "line",
           "end": {
@@ -3245,11 +3245,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "line",
           "end": {
@@ -3262,11 +3262,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "to": {
           "x": 0.853553,
           "y": 6.146446,
@@ -3275,11 +3275,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "segment": {
           "type": "arc",
           "center": {
@@ -3300,24 +3300,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f24ed84c-9623-59b6-bf31-be6202c5a133",
+        "segment": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
+        "intersection_segment": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3329,11 +3329,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa6d2791-9aa8-5817-aa05-d99d3e67163d",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
         "distance": 76.5,
         "faces": null,
         "opposite": "None",
@@ -3342,40 +3342,40 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d60ddbad-e06f-5b11-9ef8-b52ac282856c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1ebd4bb2-74ae-5a2f-a7a7-a778232f13a4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5c95ab49-a18e-5d8b-a77b-13603dc90286"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "855fafc2-5621-5264-953e-1be6964b7a16",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
+        "edge_id": "49fe98e3-0e69-5c4b-aa78-723a0a196210"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa0e2533-e8d9-5b33-ac82-b003e1e03207",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
+        "edge_id": "49fe98e3-0e69-5c4b-aa78-723a0a196210"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3400,20 +3400,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6c3d1d7-94c4-5d7c-90c2-2a09a1f36ced",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3389e24-1221-5b7e-bf3a-8befd6d8e80f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3425,18 +3425,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a96966c-8df1-5353-a0a1-c191f9108448",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e64869-6726-5766-8485-52757d4e212a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "to": {
           "x": -0.0000000000000000023987356306458905,
           "y": 0.000000000000000007751455997811905,
@@ -3445,18 +3445,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23ae09dd-bfd8-58fb-a4a4-49da191174fe",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3160ffad-2e46-5554-be76-1b632140926c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "line",
           "end": {
@@ -3469,11 +3469,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "810ee821-abbc-5cea-a7de-e079dbe0c1de",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "to": {
           "x": 0.853553,
           "y": 6.146446,
@@ -3482,11 +3482,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "line",
           "end": {
@@ -3499,11 +3499,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "line",
           "end": {
@@ -3516,11 +3516,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "line",
           "end": {
@@ -3533,11 +3533,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "line",
           "end": {
@@ -3550,11 +3550,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "line",
           "end": {
@@ -3567,11 +3567,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "line",
           "end": {
@@ -3584,11 +3584,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e4bd49fb-f0b4-57f1-aa21-3c8ee7764cee",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "to": {
           "x": 0.853553,
           "y": 6.146446,
@@ -3597,11 +3597,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe9dcb80-3187-5ea7-ba83-fe14f1a75891",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "segment": {
           "type": "arc",
           "center": {
@@ -3622,24 +3622,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "79e86604-4aa6-566d-9617-1f1721955eb2",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "7a96966c-8df1-5353-a0a1-c191f9108448",
+        "segment": "3160ffad-2e46-5554-be76-1b632140926c",
+        "intersection_segment": "3160ffad-2e46-5554-be76-1b632140926c",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc339cd1-ef80-56b6-8a39-06e7e7c74e72",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3651,11 +3651,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6aa5aed0-b871-5456-a13d-c13c223ba521",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "79e86604-4aa6-566d-9617-1f1721955eb2",
         "distance": 118.5,
         "faces": null,
         "opposite": "None",
@@ -3664,53 +3664,53 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0b663ab0-47c0-55a6-9515-92d93b2b9ae6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "231fdc8e-7db8-57be-817d-bb786c4edc0b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "79e86604-4aa6-566d-9617-1f1721955eb2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6e62a43-bd44-5278-ba8a-920293303adb",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "79e86604-4aa6-566d-9617-1f1721955eb2",
+        "edge_id": "19f48145-d4d1-53e4-95a2-16b8076e85b8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8a4f959-6a67-573d-a52e-b915999bcc80",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "79e86604-4aa6-566d-9617-1f1721955eb2",
+        "edge_id": "19f48145-d4d1-53e4-95a2-16b8076e85b8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4765855-7134-5064-a88e-19f1cd4e84de",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7a96966c-8df1-5353-a0a1-c191f9108448",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8675931-ab2b-5494-9fb8-5c9575d5cb1d",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -3727,11 +3727,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91e2b666-c0db-5d3c-875d-c0cfd8b5dd9e",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "79e86604-4aa6-566d-9617-1f1721955eb2",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -3748,24 +3748,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f24ed84c-9623-59b6-bf31-be6202c5a133",
+        "segment": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
+        "intersection_segment": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "57441093-dfdf-5e5c-b0eb-9525e256fd63",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
         "origin": {
           "x": 3.75,
           "y": 3.75,
@@ -3787,42 +3787,42 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eab0138f-4d34-5ad1-be64-4c06e431cd98",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+        "edge_id": "6628bc00-1443-5804-ac0b-11ab858d2985"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a191b91a-b1f1-5715-bc25-25a1f106866e",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+        "edge_id": "6628bc00-1443-5804-ac0b-11ab858d2985"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6fec3912-fa52-5513-b3f5-b608fd2bcfc1",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f24ed84c-9623-59b6-bf31-be6202c5a133",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ae875a8-ae57-5b6a-ae5d-65f2501893ad",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3847,20 +3847,20 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3fa61102-cd56-5477-94bb-ce5e89d9e222",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7ae875a8-ae57-5b6a-ae5d-65f2501893ad",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb7fe19d-d3c9-5d32-9874-193084f5a579",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7ae875a8-ae57-5b6a-ae5d-65f2501893ad",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3872,18 +3872,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83cd7212-1ada-558a-a1fa-c007b98d2d6d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "to": {
           "x": -0.0000000000000004632619153507145,
           "y": 0.0,
@@ -3892,18 +3892,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d90de2c-e90a-555e-8e4b-8feb0fc81637",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "line",
           "end": {
@@ -3916,11 +3916,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "09bc7d66-414a-560e-9855-7a04ab7b5e7e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "arc",
           "center": {
@@ -3941,11 +3941,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9091619d-ebc5-5e38-b770-c9cad323ebc4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "line",
           "end": {
@@ -3958,11 +3958,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "line",
           "end": {
@@ -3975,11 +3975,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d46dcf7a-3c8b-5383-b783-931fc579f81e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "line",
           "end": {
@@ -3992,11 +3992,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8238d09-49b4-5a16-b778-a2635b129032",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "line",
           "end": {
@@ -4009,11 +4009,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1e5164-57c8-5b3a-8eb6-d5bc84ae6119",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "line",
           "end": {
@@ -4026,11 +4026,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3f57863-47a5-53b5-9e66-0894898f9785",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "segment": {
           "type": "line",
           "end": {
@@ -4043,24 +4043,24 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21f4265c-f137-5d70-bd15-fef61fa118ad",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
+        "segment": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
+        "intersection_segment": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "21f4265c-f137-5d70-bd15-fef61fa118ad",
         "origin": {
           "x": 3.75,
           "y": 3.75,
@@ -4082,46 +4082,46 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "54856312-89c1-5f60-a671-1f47b4a401c8",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "21f4265c-f137-5d70-bd15-fef61fa118ad"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5931419-54d0-5270-81d7-b3235d3b9d95",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "21f4265c-f137-5d70-bd15-fef61fa118ad",
+        "edge_id": "f8d9505b-6b48-5e47-9cfb-a2396936d3b6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6de2ace-61d0-5f36-81da-c9b97fe5f521",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "21f4265c-f137-5d70-bd15-fef61fa118ad",
+        "edge_id": "f8d9505b-6b48-5e47-9cfb-a2396936d3b6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd375147-3e72-51bd-b4ae-e1898cd8385a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "35e57bb8-6aa7-5307-a4bb-9c4b6e3dceb9",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -4138,11 +4138,11 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca9f7fb6-5abb-5987-897e-dbbe2429ca8c",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "21f4265c-f137-5d70-bd15-fef61fa118ad",
         "axis": {
           "x": 0.0,
           "y": 0.0,
