@@ -744,7 +744,7 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
     const [circleCenterClick] = scene.makeMouseHelpers(650, 300)
     const [circleRadiusClick] = scene.makeMouseHelpers(800, 320)
 
-    await page.waitForTimeout(100)
+    await scene.settled()
     await test.step('Enter the seeded washer-face sketch', async () => {
       // Helper to verify that use of legacy sketch mode is logged
       const legacySketchClientError = page.waitForRequest(
@@ -759,9 +759,14 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
         },
         { timeout: 15_000 }
       )
-      await toolbar.editSketch(1)
-      await toolbar.expectToolbarMode.toBe('sketching')
-      await legacySketchClientError
+      // Attach both rejection handlers before editing can fail or close the page.
+      await Promise.all([
+        legacySketchClientError,
+        (async () => {
+          await toolbar.editSketch(1)
+          await toolbar.expectToolbarMode.toBe('sketching')
+        })(),
+      ])
     })
 
     await test.step('Draw a circle and verify code', async () => {
