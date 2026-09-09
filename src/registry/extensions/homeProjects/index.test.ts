@@ -25,7 +25,10 @@ import type {
   CloudProjectRelationship,
   CloudSyncRegistryService,
 } from '@src/registry/contracts/cloudSync'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import {
+  cloudProjectRelationshipsService,
+  cloudSyncService,
+} from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectEntry,
   homeProjectActionsService,
@@ -508,6 +511,31 @@ describe('home project actions', () => {
     registry?.[Symbol.dispose]()
     registry = undefined
     vi.restoreAllMocks()
+  })
+
+  it('delegates visible thumbnail demand and cleanup to cloud relationships', () => {
+    const stopWatching = vi.fn()
+    const watchRemoteThumbnail = vi.fn(() => stopWatching)
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.cloud-relationships',
+        providesServices: [
+          provideService(cloudProjectRelationshipsService, {
+            relationships: signal([]),
+            watchRemoteThumbnail,
+          }),
+        ],
+      }),
+      homeProjectsExtension,
+    ])
+
+    const cleanup = registry
+      .get(homeProjectActionsService)
+      .watchRemoteThumbnail('remote-123')
+    expect(watchRemoteThumbnail).toHaveBeenCalledExactlyOnceWith('remote-123')
+    cleanup?.()
+    expect(stopWatching).toHaveBeenCalledTimes(1)
   })
 
   it('discovers default directory entries through project library scanning', async () => {

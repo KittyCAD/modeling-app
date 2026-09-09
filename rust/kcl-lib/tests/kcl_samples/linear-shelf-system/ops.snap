@@ -1609,11 +1609,11 @@ description: Operations executed linear-shelf-system.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1643,7 +1643,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []
@@ -1685,7 +1685,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []
@@ -1711,7 +1711,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
           }
         },
         "sourceRange": []
@@ -2875,11 +2875,11 @@ description: Operations executed linear-shelf-system.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "149e62f8-f213-51a7-9a7f-ea3dc117615d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead"
               }
             ]
           },
@@ -2909,7 +2909,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
           }
         },
         "sourceRange": []
@@ -2951,7 +2951,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
           }
         },
         "sourceRange": []
@@ -2976,7 +2976,7 @@ description: Operations executed linear-shelf-system.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -4093,11 +4093,11 @@ description: Operations executed linear-shelf-system.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
               }
             ]
           },
@@ -4127,7 +4127,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f65c8713-a1f8-5ea9-a702-cab0411afc85"
           }
         },
         "sourceRange": []
@@ -4169,7 +4169,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457"
           }
         },
         "sourceRange": []
@@ -4195,7 +4195,7 @@ description: Operations executed linear-shelf-system.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
           }
         },
         "sourceRange": []
@@ -4286,55 +4286,55 @@ description: Operations executed linear-shelf-system.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "24655609-c68c-5b76-9ccf-684a19064a93"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "596470ab-316b-5569-92ba-64c1e0a93873"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1ca88202-28a4-5453-86b2-137341ba3b82"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c9ae8cf7-b03a-5e79-82fc-26f027419f85"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3e8aceef-4be9-502e-add8-3fb63b4b4761"
               }
             }
           ]

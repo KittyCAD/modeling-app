@@ -7,12 +7,12 @@ description: Physical properties bench-for-kids.kcl
     "center": {
       "x": 0.0,
       "y": 100.0,
-      "z": 230.7592344560256
+      "z": 232.41923445602555
     },
     "dimensions": {
       "x": 480.0,
       "y": 1000.0,
-      "z": 561.5184689120512
+      "z": 558.1984689120511
     },
     "unit": "mm"
   },

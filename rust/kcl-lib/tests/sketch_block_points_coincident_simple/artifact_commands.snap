@@ -5,7 +5,7 @@ description: Artifact commands sketch_block_points_coincident_simple.kcl
 {
   "rust/kcl-lib/tests/sketch_block_points_coincident_simple/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",

@@ -4138,83 +4138,83 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "19fe8534-2bed-5e2a-afe9-63f57b621004"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "53a9149e-1246-5c44-9e3c-558201ff438c"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "907cac50-3701-5367-b35c-4ec2132c824f"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e383621f-755a-5f2e-ada3-608aff393dab"
               }
             ]
           },
@@ -4244,7 +4244,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
           }
         },
         "sourceRange": []
@@ -4290,7 +4290,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
           }
         },
         "sourceRange": []
@@ -4331,7 +4331,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
           }
         },
         "sourceRange": []
@@ -4356,7 +4356,7 @@ description: Operations executed gingerbread-man.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -5560,19 +5560,19 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1e31790b-7616-51eb-9bbe-0d46f611d053"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "020035cf-ab88-50f3-91b0-886b7f399647"
               }
             ]
           },
@@ -5602,7 +5602,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
           }
         },
         "sourceRange": []
@@ -5648,7 +5648,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
           }
         },
         "sourceRange": []
@@ -5713,7 +5713,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
           }
         },
         "sourceRange": []
@@ -5778,7 +5778,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca431487-8e9a-59ce-a472-84fe45652fab"
           }
         },
         "sourceRange": []
@@ -6967,19 +6967,19 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b6048962-8de8-56e0-bd4c-204ee5451b34"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "30efa5e2-105e-56b9-85d8-16e0935167b0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511"
               }
             ]
           },
@@ -7009,7 +7009,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8eada7d4-6cff-576e-9660-4b58911de9a7"
           }
         },
         "sourceRange": []
@@ -7054,7 +7054,7 @@ description: Operations executed gingerbread-man.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d"
               }
             }
           ]
@@ -7069,7 +7069,7 @@ description: Operations executed gingerbread-man.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
                 }
               }
             ]
@@ -7104,7 +7104,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326"
           }
         },
         "sourceRange": []
@@ -7145,7 +7145,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa"
           }
         },
         "sourceRange": []
@@ -7840,7 +7840,7 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93fe6743-e0aa-5d65-834b-87a82208c703"
               }
             ]
           },
@@ -7870,7 +7870,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7"
           }
         },
         "sourceRange": []
@@ -7916,7 +7916,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7"
           }
         },
         "sourceRange": []
@@ -7957,7 +7957,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7"
           }
         },
         "sourceRange": []
@@ -8049,7 +8049,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "44d94cee-dac7-5b9f-829d-112d277b8975"
           }
         },
         "sourceRange": []
@@ -8523,7 +8523,7 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad"
               }
             ]
           },
@@ -8553,7 +8553,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c0a92fa6-be55-5cfb-a650-710b68437549"
           }
         },
         "sourceRange": []
@@ -8599,7 +8599,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f296bd37-495b-5038-81a3-eade3812cc2e"
           }
         },
         "sourceRange": []
@@ -8640,7 +8640,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f296bd37-495b-5038-81a3-eade3812cc2e"
           }
         },
         "sourceRange": []
@@ -8732,7 +8732,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918"
           }
         },
         "sourceRange": []
@@ -10016,11 +10016,11 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9e7bf977-5ef0-5034-a49f-a9e7744d4434"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "da427568-57f9-5fba-9ace-3a3e7be5bc36"
               }
             ]
           },
@@ -10050,7 +10050,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5584477d-a466-5baa-9972-325d4b097d17"
           }
         },
         "sourceRange": []
@@ -10096,7 +10096,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3"
           }
         },
         "sourceRange": []
@@ -10137,7 +10137,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3"
           }
         },
         "sourceRange": []
@@ -10271,7 +10271,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
           }
         },
         "sourceRange": []
@@ -12236,43 +12236,43 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9f531517-960e-5389-a7ca-a71161457c8a"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a04f1a36-b6ca-5465-bbe3-d98a909adffd"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c8b4e335-6a37-5df4-9658-e96f62cfa1e8"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f50bec22-83af-5ac9-9f90-8e8d9796a811"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa6d2791-9aa8-5817-aa05-d99d3e67163d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d60ddbad-e06f-5b11-9ef8-b52ac282856c"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "855fafc2-5621-5264-953e-1be6964b7a16"
               }
             ]
           },
@@ -12302,7 +12302,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f492218-88c4-58fb-b433-2edbfe64d7db"
           }
         },
         "sourceRange": []
@@ -12348,7 +12348,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5e4e756-f536-5058-ac08-88b61ffce4e3"
           }
         },
         "sourceRange": []
@@ -12389,7 +12389,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5e4e756-f536-5058-ac08-88b61ffce4e3"
           }
         },
         "sourceRange": []
@@ -12523,7 +12523,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f"
           }
         },
         "sourceRange": []
@@ -14077,11 +14077,11 @@ description: Operations executed gingerbread-man.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b3497540-ae83-5eca-a51f-eae165d8cf92"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a861a602-02d2-5837-8c84-f8454301adec"
               }
             ]
           },
@@ -14111,7 +14111,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f8238d09-49b4-5a16-b778-a2635b129032"
           }
         },
         "sourceRange": []
@@ -14157,7 +14157,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b21c7da8-b024-547d-a50c-bcfbf2cac9b5"
           }
         },
         "sourceRange": []
@@ -14198,7 +14198,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b21c7da8-b024-547d-a50c-bcfbf2cac9b5"
           }
         },
         "sourceRange": []
@@ -14332,7 +14332,7 @@ description: Operations executed gingerbread-man.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59874362-d7ba-5294-b373-da6d62d08085"
           }
         },
         "sourceRange": []

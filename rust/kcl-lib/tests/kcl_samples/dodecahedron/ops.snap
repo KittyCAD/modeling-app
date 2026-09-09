@@ -1110,11 +1110,11 @@ description: Operations executed dodecahedron.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1144,7 +1144,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -1173,7 +1173,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1219,7 +1219,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -1289,7 +1289,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -1322,7 +1322,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
           }
         },
         "sourceRange": []
@@ -1389,7 +1389,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
           }
         },
         "sourceRange": []
@@ -1435,7 +1435,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
           }
         },
         "sourceRange": []
@@ -1512,7 +1512,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -1545,7 +1545,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
           }
         },
         "sourceRange": []
@@ -1612,7 +1612,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
           }
         },
         "sourceRange": []
@@ -1689,7 +1689,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -1722,7 +1722,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []
@@ -1789,7 +1789,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []
@@ -1866,7 +1866,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -1899,7 +1899,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
           }
         },
         "sourceRange": []
@@ -1966,7 +1966,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
           }
         },
         "sourceRange": []
@@ -2043,7 +2043,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -2076,7 +2076,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
           }
         },
         "sourceRange": []
@@ -2143,7 +2143,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
           }
         },
         "sourceRange": []
@@ -2220,7 +2220,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -2253,7 +2253,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
           }
         },
         "sourceRange": []
@@ -2320,7 +2320,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
           }
         },
         "sourceRange": []
@@ -2397,7 +2397,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -2430,7 +2430,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2497,7 +2497,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2574,7 +2574,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -2607,7 +2607,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
           }
         },
         "sourceRange": []
@@ -2674,7 +2674,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
           }
         },
         "sourceRange": []
@@ -2751,7 +2751,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -2784,7 +2784,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c"
           }
         },
         "sourceRange": []
@@ -2851,7 +2851,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c"
           }
         },
         "sourceRange": []
@@ -2928,7 +2928,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -2961,7 +2961,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
           }
         },
         "sourceRange": []
@@ -3028,7 +3028,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
           }
         },
         "sourceRange": []
@@ -3105,7 +3105,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
           }
         },
         "sourceRange": []
@@ -3138,7 +3138,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
           }
         },
         "sourceRange": []
@@ -3205,7 +3205,7 @@ description: Operations executed dodecahedron.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
           }
         },
         "sourceRange": []
@@ -3285,13 +3285,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
               }
             }
           ]
@@ -3325,13 +3325,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9"
               }
             }
           ]
@@ -3365,13 +3365,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
               }
             }
           ]
@@ -3405,13 +3405,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
               }
             }
           ]
@@ -3445,13 +3445,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
               }
             }
           ]
@@ -3485,13 +3485,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
               }
             }
           ]
@@ -3525,13 +3525,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd"
               }
             }
           ]
@@ -3565,13 +3565,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6"
               }
             }
           ]
@@ -3605,13 +3605,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4b789d9f-4de7-52cb-ab04-7565c5456f13"
               }
             }
           ]
@@ -3645,13 +3645,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375"
               }
             }
           ]
@@ -3685,13 +3685,13 @@ description: Operations executed dodecahedron.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
               }
             }
           ]

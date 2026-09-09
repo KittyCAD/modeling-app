@@ -417,7 +417,7 @@ const writeFileUnlocked = async (
   const writableMethod = (
     fileHandle as FileSystemFileHandle & {
       createWritable?: () => Promise<{
-        write: (data: Blob) => Promise<void>
+        write: (data: Uint8Array<ArrayBuffer>) => Promise<void>
         close: () => Promise<void>
       }>
     }
@@ -425,7 +425,7 @@ const writeFileUnlocked = async (
 
   if (typeof writableMethod === 'function') {
     const writer = await writableMethod.call(fileHandle)
-    await writer.write(new Blob([data], { type: 'application/octet-stream' }))
+    await writer.write(data)
     await writer.close()
   } else {
     void reportClientError({
