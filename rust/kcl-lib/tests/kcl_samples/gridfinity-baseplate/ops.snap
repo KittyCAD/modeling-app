@@ -242,7 +242,7 @@ description: Operations executed gridfinity-baseplate.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -2166,7 +2166,7 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2196,7 +2196,7 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
           }
         },
         "sourceRange": []
@@ -2238,7 +2238,7 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
           }
         },
         "sourceRange": []
@@ -2372,7 +2372,7 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2402,7 +2402,7 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -2498,7 +2498,7 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
           }
         },
         "sourceRange": []
@@ -2524,7 +2524,7 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
           }
         },
         "sourceRange": []
@@ -2657,25 +2657,25 @@ description: Operations executed gridfinity-baseplate.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "46c1c873-adde-54a9-8c92-5f163decf204"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bf2569f4-8303-5a9a-817c-062b9a00a926"
               }
             }
           ]
@@ -2772,49 +2772,49 @@ description: Operations executed gridfinity-baseplate.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f7dce085-f4da-5dd8-b353-dcc2149fa091"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1ca88202-28a4-5453-86b2-137341ba3b82"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "46c1c873-adde-54a9-8c92-5f163decf204"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0c0fc85f-b896-5ad8-93ba-3ab0696db8c2"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bf2569f4-8303-5a9a-817c-062b9a00a926"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5aef7c6e-34c0-55cd-954d-2cc03a99a2ac"
               }
             }
           ]
@@ -2911,25 +2911,25 @@ description: Operations executed gridfinity-baseplate.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6489eeeb-3652-50fa-9d8e-723c2c670f39"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "813463c6-1c89-5251-84d8-6159121dd7b3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "229b0da4-30f2-58ab-a274-0ad55ebca336"
               }
             }
           ]
@@ -3026,49 +3026,49 @@ description: Operations executed gridfinity-baseplate.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f80c3690-fdcb-530e-af33-3e641f2497c4"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6489eeeb-3652-50fa-9d8e-723c2c670f39"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "646813a2-6477-57f4-a8d3-5a8baa359e14"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "813463c6-1c89-5251-84d8-6159121dd7b3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "163894bb-abcd-5c32-80eb-82564a57fe78"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "229b0da4-30f2-58ab-a274-0ad55ebca336"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "31154c89-6d38-5b0c-9b74-6095b3164530"
               }
             }
           ]

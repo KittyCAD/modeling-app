@@ -1604,7 +1604,7 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1634,7 +1634,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []
@@ -1676,7 +1676,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
           }
         },
         "sourceRange": []
@@ -2381,11 +2381,11 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c4fac378-d3df-5505-98c1-308b81b0fd96"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "149e62f8-f213-51a7-9a7f-ea3dc117615d"
               }
             ]
           },
@@ -2415,7 +2415,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -2456,7 +2456,7 @@ description: Operations executed parametric-shelf-unit.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3114,11 +3114,11 @@ description: Operations executed parametric-shelf-unit.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
               }
             ]
           },
@@ -3148,7 +3148,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
           }
         },
         "sourceRange": []
@@ -3190,7 +3190,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
           }
         },
         "sourceRange": []
@@ -3278,7 +3278,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
           }
         },
         "sourceRange": []
@@ -3307,7 +3307,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270"
           }
         },
         "sourceRange": []
@@ -3336,7 +3336,7 @@ description: Operations executed parametric-shelf-unit.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []

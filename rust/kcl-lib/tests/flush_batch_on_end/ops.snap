@@ -97,7 +97,7 @@ description: Operations executed flush_batch_on_end.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -125,7 +125,7 @@ description: Operations executed flush_batch_on_end.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -135,7 +135,7 @@ description: Operations executed flush_batch_on_end.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
             }
           },
           "sourceRange": []
@@ -168,7 +168,7 @@ description: Operations executed flush_batch_on_end.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []

@@ -13008,7 +13008,7 @@ description: Operations executed sprocket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -13038,7 +13038,7 @@ description: Operations executed sprocket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3ba5b88a-6ca4-5923-9f3c-edc551a4a985"
           }
         },
         "sourceRange": []
@@ -13544,7 +13544,7 @@ description: Operations executed sprocket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "282dc081-a078-528a-95d9-02b6d2d8ecf4"
               }
             ]
           },
@@ -13578,7 +13578,7 @@ description: Operations executed sprocket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "06f49a1d-38a5-52f0-8130-53b876a0b6b2"
               }
             ]
           },
@@ -13612,7 +13612,7 @@ description: Operations executed sprocket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "51255b9e-a0bc-52ca-95d8-c6f7ac19b7d8"
               }
             ]
           },
@@ -13646,7 +13646,7 @@ description: Operations executed sprocket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c536245f-25d8-57ce-8330-97cd01a5b2f8"
               }
             ]
           },
@@ -13680,7 +13680,7 @@ description: Operations executed sprocket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1725a319-af7a-5d7b-a79e-db1f2a041811"
               }
             ]
           },
@@ -13713,31 +13713,31 @@ description: Operations executed sprocket.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cb7fe19d-d3c9-5d32-9874-193084f5a579"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "83cd7212-1ada-558a-a1fa-c007b98d2d6d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9d90de2c-e90a-555e-8e4b-8feb0fc81637"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "21f4265c-f137-5d70-bd15-fef61fa118ad"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03"
               }
             }
           ]
@@ -13781,7 +13781,7 @@ description: Operations executed sprocket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d6377ba4-817c-5a60-be28-c49b95411e3d"
           }
         },
         "sourceRange": []
@@ -13794,31 +13794,31 @@ description: Operations executed sprocket.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "54856312-89c1-5f60-a671-1f47b4a401c8"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "a8ac0e58-76bd-5a31-b964-a1d8ac18222d"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f9244d17-299c-533f-be70-72f81dd1f0fe"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "a22c4a21-1c83-5c79-a4a1-14a7840c1f4f"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "48948c29-adc8-5bb6-8e6e-ca30d9e99f42"
                 }
               }
             ]
@@ -13849,7 +13849,7 @@ description: Operations executed sprocket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ecc3b38b-6a2d-558e-b786-f4e0d2cea27a"
           }
         },
         "sourceRange": []
@@ -13895,7 +13895,7 @@ description: Operations executed sprocket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
           }
         },
         "sourceRange": []
@@ -13921,7 +13921,7 @@ description: Operations executed sprocket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "49cdc46d-54c0-5095-a8fe-101623c0e351"
           }
         },
         "sourceRange": []

@@ -10,7 +10,7 @@ description: Operations executed plane_of.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed plane_of.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -87,7 +87,7 @@ description: Operations executed plane_of.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
         },
         "sourceRange": []
       },
@@ -131,7 +131,7 @@ description: Operations executed plane_of.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
         },
         "sourceRange": []
       },

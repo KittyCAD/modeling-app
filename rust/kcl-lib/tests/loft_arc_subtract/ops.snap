@@ -811,7 +811,7 @@ description: Operations executed loft_arc_subtract.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -1683,19 +1683,19 @@ description: Operations executed loft_arc_subtract.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
               },
               "meta": {
                 "type": "Object",
@@ -1703,7 +1703,7 @@ description: Operations executed loft_arc_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
                     }
                   }
                 }
@@ -1766,19 +1766,19 @@ description: Operations executed loft_arc_subtract.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "907cac50-3701-5367-b35c-4ec2132c824f"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f481fd4-203e-57d7-b5d6-b16289577621"
               },
               "meta": {
                 "type": "Object",
@@ -1786,7 +1786,7 @@ description: Operations executed loft_arc_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
                     }
                   }
                 }
@@ -1822,13 +1822,13 @@ description: Operations executed loft_arc_subtract.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
               }
             }
           ]
@@ -1858,7 +1858,7 @@ description: Operations executed loft_arc_subtract.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -2616,7 +2616,7 @@ description: Operations executed loft_arc_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
           }
         },
         "sourceRange": []
@@ -2675,19 +2675,19 @@ description: Operations executed loft_arc_subtract.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "226ae769-fcaa-56af-ac65-5807ed297dad"
               },
               "meta": {
                 "type": "Object",
@@ -2695,7 +2695,7 @@ description: Operations executed loft_arc_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
                     }
                   }
                 }
@@ -2728,7 +2728,7 @@ description: Operations executed loft_arc_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc"
           }
         },
         "sourceRange": []
@@ -2773,7 +2773,7 @@ description: Operations executed loft_arc_subtract.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
               }
             }
           ]
@@ -2788,7 +2788,7 @@ description: Operations executed loft_arc_subtract.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596"
                 }
               }
             ]
@@ -2816,7 +2816,7 @@ description: Operations executed loft_arc_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []

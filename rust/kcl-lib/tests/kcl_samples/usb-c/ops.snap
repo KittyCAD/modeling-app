@@ -1100,11 +1100,11 @@ description: Operations executed usb-c.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1134,7 +1134,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
           }
         },
         "sourceRange": []
@@ -1194,7 +1194,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           }
         },
         "sourceRange": []
@@ -1218,19 +1218,19 @@ description: Operations executed usb-c.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "db427524-76a6-553d-bb6b-6ac873083b95"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "d5187f6e-f4ca-53c7-bdee-80c0ba5cbb59"
               }
             ]
           },
@@ -1264,7 +1264,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           }
         },
         "sourceRange": []
@@ -1277,12 +1277,12 @@ description: Operations executed usb-c.kcl
               {
                 "type": "TagIdentifier",
                 "value": "capEnd001",
-                "artifact_id": "[uuid]"
+                "artifact_id": "36ddadba-7da4-56f0-bc1f-59abaa29211e"
               },
               {
                 "type": "TagIdentifier",
                 "value": "capStart001",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9"
               }
             ]
           },
@@ -1328,7 +1328,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           }
         },
         "sourceRange": []
@@ -1390,7 +1390,7 @@ description: Operations executed usb-c.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -1943,11 +1943,11 @@ description: Operations executed usb-c.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c4fac378-d3df-5505-98c1-308b81b0fd96"
               }
             ]
           },
@@ -1977,7 +1977,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
           }
         },
         "sourceRange": []
@@ -2023,7 +2023,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
           }
         },
         "sourceRange": []
@@ -4403,11 +4403,11 @@ description: Operations executed usb-c.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
               }
             ]
           },
@@ -4437,7 +4437,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
           }
         },
         "sourceRange": []
@@ -4483,7 +4483,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
           }
         },
         "sourceRange": []
@@ -4945,7 +4945,7 @@ description: Operations executed usb-c.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -5105,7 +5105,7 @@ description: Operations executed usb-c.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4ea8409b-834f-5214-b812-e276f2ff01f4"
               }
             ]
           },
@@ -5135,7 +5135,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "acb6b8b6-e024-57d9-a856-353e5c4d001f"
           }
         },
         "sourceRange": []
@@ -5145,7 +5145,7 @@ description: Operations executed usb-c.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
             }
           },
           "sourceRange": []
@@ -5178,7 +5178,7 @@ description: Operations executed usb-c.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86"
           }
         },
         "sourceRange": []

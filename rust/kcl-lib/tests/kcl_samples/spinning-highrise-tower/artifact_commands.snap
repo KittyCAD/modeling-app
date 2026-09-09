@@ -5,7 +5,7 @@ description: Artifact commands spinning-highrise-tower.kcl
 {
   "public/kcl-samples/spinning-highrise-tower/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7b681387-29ea-57f1-8713-d63280827139",
         "to": {
           "x": -15000.0,
           "y": -15000.0,
@@ -75,18 +75,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7b681387-29ea-57f1-8713-d63280827139",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7b681387-29ea-57f1-8713-d63280827139",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7b681387-29ea-57f1-8713-d63280827139",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7b681387-29ea-57f1-8713-d63280827139",
         "segment": {
           "type": "line",
           "end": {
@@ -150,24 +150,24 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "7b681387-29ea-57f1-8713-d63280827139",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -179,11 +179,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
         "distance": -200.0,
         "faces": null,
         "opposite": "None",
@@ -192,44 +192,44 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "edge_id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "edge_id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
         "color": {
           "r": 0.85882354,
           "g": 0.84313726,
@@ -242,16 +242,16 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7b681387-29ea-57f1-8713-d63280827139",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -276,11 +276,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -290,20 +290,20 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -315,18 +315,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc312d38-2fa6-5583-a605-44880f646499",
         "to": {
           "x": -25000.0,
           "y": -25000.0,
@@ -335,18 +335,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc312d38-2fa6-5583-a605-44880f646499",
         "segment": {
           "type": "line",
           "end": {
@@ -359,11 +359,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc312d38-2fa6-5583-a605-44880f646499",
         "segment": {
           "type": "line",
           "end": {
@@ -376,11 +376,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc312d38-2fa6-5583-a605-44880f646499",
         "segment": {
           "type": "line",
           "end": {
@@ -393,11 +393,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc312d38-2fa6-5583-a605-44880f646499",
         "segment": {
           "type": "line",
           "end": {
@@ -410,24 +410,24 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "cc312d38-2fa6-5583-a605-44880f646499",
+        "segment": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "intersection_segment": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e342814e-d7c1-537b-959c-f7fd92c90294",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -439,11 +439,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "distance": -5000.0,
         "faces": null,
         "opposite": "None",
@@ -452,44 +452,44 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "edge_id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "edge_id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "color": {
           "r": 0.22745098,
           "g": 0.21176471,
@@ -502,16 +502,16 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cc312d38-2fa6-5583-a605-44880f646499",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -536,20 +536,20 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -561,18 +561,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "to": {
           "x": -5000.0,
           "y": -4000.0,
@@ -581,18 +581,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "segment": {
           "type": "line",
           "end": {
@@ -605,11 +605,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "segment": {
           "type": "line",
           "end": {
@@ -622,11 +622,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "segment": {
           "type": "line",
           "end": {
@@ -639,11 +639,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "segment": {
           "type": "line",
           "end": {
@@ -656,24 +656,24 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "segment": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "intersection_segment": "4593843c-7d41-5ede-b7fa-ab9201f55957",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -685,11 +685,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "distance": 84500.0,
         "faces": null,
         "opposite": "None",
@@ -698,44 +698,44 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "edge_id": "70deff78-0823-5499-bfbd-803f4646608d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "edge_id": "70deff78-0823-5499-bfbd-803f4646608d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "color": {
           "r": 0.4862745,
           "g": 0.5058824,
@@ -748,16 +748,16 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -782,11 +782,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -796,20 +796,20 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -821,18 +821,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "to": {
           "x": -15000.0,
           "y": -15000.0,
@@ -841,18 +841,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "segment": {
           "type": "line",
           "end": {
@@ -865,11 +865,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "segment": {
           "type": "line",
           "end": {
@@ -882,11 +882,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "segment": {
           "type": "line",
           "end": {
@@ -899,11 +899,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "segment": {
           "type": "line",
           "end": {
@@ -916,24 +916,24 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+        "segment": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "intersection_segment": "40d8c462-7810-5666-bb09-1db7308cf666",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -945,11 +945,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
         "distance": 1700.0,
         "faces": null,
         "opposite": "None",
@@ -958,53 +958,53 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+        "edge_id": "b85a8d32-0360-58aa-a9db-5318a1787848"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+        "edge_id": "b85a8d32-0360-58aa-a9db-5318a1787848"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cd7dc725-7d30-5016-abf1-3b6be615621d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1012,18 +1012,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "to": {
           "x": -14700.0,
           "y": -14700.0,
@@ -1032,18 +1032,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "segment": {
           "type": "line",
           "end": {
@@ -1056,11 +1056,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "segment": {
           "type": "line",
           "end": {
@@ -1073,11 +1073,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "segment": {
           "type": "line",
           "end": {
@@ -1090,11 +1090,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "segment": {
           "type": "line",
           "end": {
@@ -1107,24 +1107,24 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
+        "segment": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "intersection_segment": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cd7dc725-7d30-5016-abf1-3b6be615621d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1132,11 +1132,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "f2e3fae3-4069-58be-a5a5-17ae327df966",
         "distance": -1200.0,
         "faces": null,
         "opposite": "None",
@@ -1145,44 +1145,44 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f2e3fae3-4069-58be-a5a5-17ae327df966"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+        "edge_id": "6ee2e643-b28e-5ca9-b91b-50a0b58ad55b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+        "edge_id": "6ee2e643-b28e-5ca9-b91b-50a0b58ad55b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
         "color": {
           "r": 0.85882354,
           "g": 0.84313726,
@@ -1195,16 +1195,16 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1229,20 +1229,20 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1254,18 +1254,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
         "to": {
           "x": -12000.0,
           "y": -12000.0,
@@ -1274,18 +1274,18 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
         "segment": {
           "type": "line",
           "end": {
@@ -1298,11 +1298,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
         "segment": {
           "type": "line",
           "end": {
@@ -1315,11 +1315,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
         "segment": {
           "type": "line",
           "end": {
@@ -1332,11 +1332,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
         "segment": {
           "type": "line",
           "end": {
@@ -1349,24 +1349,24 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "segment": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+        "intersection_segment": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1378,11 +1378,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
         "distance": 4500.0,
         "faces": null,
         "opposite": "None",
@@ -1391,44 +1391,44 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
+        "edge_id": "7974a7d5-b66d-56ab-8d89-970de2e8abb7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
+        "edge_id": "7974a7d5-b66d-56ab-8d89-970de2e8abb7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
         "color": {
           "r": 0.08235294,
           "g": 0.09411765,
@@ -1441,20 +1441,20 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
         "transform": [],
         "transforms": [
           [
@@ -1925,11 +1925,11 @@ description: Artifact commands spinning-highrise-tower.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
         "transform": [],
         "transforms": [
           [

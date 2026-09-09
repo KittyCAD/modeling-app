@@ -6,8 +6,8 @@ description: Variables in memory after executing router-template-slate.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing router-template-slate.kcl
   "__sketch_59_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+      "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
       "objectId": 58,
       "value": "start",
       "xAxis": {
@@ -55,8 +55,8 @@ description: Variables in memory after executing router-template-slate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+        "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -65,8 +65,8 @@ description: Variables in memory after executing router-template-slate.kcl
   "__sketch_79_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+      "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
       "objectId": 78,
       "value": "start",
       "xAxis": {
@@ -82,8 +82,8 @@ description: Variables in memory after executing router-template-slate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+        "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -111,14 +111,14 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "originalId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "topologyId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f8b2be5e-76f7-59b5-8b7f-44a71502a5b1",
+          "id": "2790b4c1-3234-5285-a95e-a4e7d760632b",
           "sourceRange": [],
           "tag": {
             "commentStart": 593,
@@ -131,8 +131,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "166b1157-464b-5ea9-b0e3-2216c1116b2e",
+          "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
           "sourceRange": [],
           "tag": {
             "commentStart": 674,
@@ -145,8 +145,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "202895e4-5598-57ec-be7a-5089f4c89e1c",
+          "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
           "sourceRange": [],
           "tag": {
             "commentStart": 824,
@@ -159,8 +159,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "db4604fe-b24e-5624-aa6b-4a3e1c2cdc30",
+          "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
           "sourceRange": [],
           "tag": {
             "commentStart": 947,
@@ -173,8 +173,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "89fdbbc6-fe4b-5229-af6b-ade0a675147c",
+          "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1073,
@@ -187,8 +187,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f9b6d3cc-e047-52a9-a885-52d4ec71185e",
+          "id": "d0ce9a2b-6b49-57fe-8a24-6e3c412ca87b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1200,
@@ -201,8 +201,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "39740fdb-9049-5d1e-b75e-4ea0ac9d5452",
+          "id": "54cd3647-d17f-58b1-839f-62dc1cab740d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1324,
@@ -215,8 +215,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2",
+          "id": "0300e78a-aec7-5ca4-a2f8-7e1d316ff279",
           "sourceRange": [],
           "tag": {
             "commentStart": 1449,
@@ -229,8 +229,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ae9817d-cbb2-5c59-907c-b4b2e4d5321b",
+          "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
           "sourceRange": [],
           "tag": {
             "commentStart": 1578,
@@ -243,8 +243,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "11fe3d3c-e97c-50e6-ac95-b6493350d6f9",
+          "id": "5d6417b1-90c1-5e69-9987-5739671e3170",
           "sourceRange": [],
           "tag": {
             "commentStart": 1706,
@@ -257,8 +257,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "018bd47f-1cec-5462-ae8c-6ada78e24bad",
+          "id": "3400a0cc-e251-5ae2-9bb1-3c5f11f8a20f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1832,
@@ -271,8 +271,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "698a6121-6648-5c3c-aacb-ac6e3e90b3dd",
+          "id": "9f6b88a2-b9f0-592f-9433-a86866687938",
           "sourceRange": [],
           "tag": {
             "commentStart": 1988,
@@ -288,11 +288,11 @@ description: Variables in memory after executing router-template-slate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2790b4c1-3234-5285-a95e-a4e7d760632b",
               "sourceRange": []
             },
             "from": [
@@ -316,7 +316,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
               "sourceRange": []
             },
             "ccw": false,
@@ -346,7 +346,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
               "sourceRange": []
             },
             "from": [
@@ -370,7 +370,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
               "sourceRange": []
             },
             "from": [
@@ -394,7 +394,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
               "sourceRange": []
             },
             "from": [
@@ -418,7 +418,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d0ce9a2b-6b49-57fe-8a24-6e3c412ca87b",
               "sourceRange": []
             },
             "from": [
@@ -442,7 +442,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "54cd3647-d17f-58b1-839f-62dc1cab740d",
               "sourceRange": []
             },
             "from": [
@@ -466,7 +466,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0300e78a-aec7-5ca4-a2f8-7e1d316ff279",
               "sourceRange": []
             },
             "from": [
@@ -490,7 +490,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
               "sourceRange": []
             },
             "from": [
@@ -514,7 +514,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5d6417b1-90c1-5e69-9987-5739671e3170",
               "sourceRange": []
             },
             "from": [
@@ -538,7 +538,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3400a0cc-e251-5ae2-9bb1-3c5f11f8a20f",
               "sourceRange": []
             },
             "ccw": false,
@@ -568,7 +568,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f6b88a2-b9f0-592f-9433-a86866687938",
               "sourceRange": []
             },
             "from": [
@@ -593,8 +593,8 @@ description: Variables in memory after executing router-template-slate.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -634,7 +634,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
             "sourceRange": []
           }
         },
@@ -688,13 +688,13 @@ description: Variables in memory after executing router-template-slate.kcl
             "value": "line9"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+        "originalId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+      "endCapId": "0b66315f-0011-5de9-9ef1-3903f33d7b0d",
       "units": "mm",
       "sectional": false
     }
@@ -703,14 +703,14 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "topologyId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ffb367e9-813a-5e8b-805f-6e31ade555c7",
+          "id": "49c6c931-9d65-5dea-ae77-487df9fe286c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2717,
@@ -723,8 +723,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4dce0a1d-0057-50c1-8b89-4fdea8fdb175",
+          "id": "325de0a9-faa2-5f51-8b71-c2281f212505",
           "sourceRange": [],
           "tag": {
             "commentStart": 2806,
@@ -737,8 +737,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "663b138f-2840-59f7-9343-7030d259f21f",
+          "id": "579b893a-5c30-5d86-b620-b818bca8ef85",
           "sourceRange": [],
           "tag": {
             "commentStart": 2934,
@@ -751,8 +751,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4de601f3-ddb6-51f7-9421-5e10bb79be86",
+          "id": "e7608ccc-f1e1-5657-a637-13d55d6441ca",
           "sourceRange": [],
           "tag": {
             "commentStart": 3062,
@@ -768,11 +768,11 @@ description: Variables in memory after executing router-template-slate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "49c6c931-9d65-5dea-ae77-487df9fe286c",
               "sourceRange": []
             },
             "from": [
@@ -796,7 +796,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "325de0a9-faa2-5f51-8b71-c2281f212505",
               "sourceRange": []
             },
             "from": [
@@ -820,7 +820,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "579b893a-5c30-5d86-b620-b818bca8ef85",
               "sourceRange": []
             },
             "from": [
@@ -844,7 +844,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e7608ccc-f1e1-5657-a637-13d55d6441ca",
               "sourceRange": []
             },
             "from": [
@@ -869,8 +869,8 @@ description: Variables in memory after executing router-template-slate.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+          "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
           "objectId": 58,
           "value": "start",
           "xAxis": {
@@ -886,8 +886,8 @@ description: Variables in memory after executing router-template-slate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+            "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -904,7 +904,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
             "sourceRange": []
           }
         },
@@ -926,13 +926,13 @@ description: Variables in memory after executing router-template-slate.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "612dd905-3244-5750-9d68-7a3c6dd61abb",
+      "endCapId": "769d022e-b2e4-5add-a763-a3bfa8de164c",
       "units": "mm",
       "sectional": false
     }
@@ -941,14 +941,14 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "originalId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "topologyId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ad9f3727-4540-5037-b79a-755bedbcb72f",
+          "id": "2d6211ae-5abc-5b07-86f9-824cd0f3cc81",
           "sourceRange": [],
           "tag": {
             "commentStart": 3585,
@@ -961,8 +961,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cccbaf94-3601-507e-a198-0f24dd969a01",
+          "id": "13adc042-fe79-56eb-a3a2-7df421cd5f20",
           "sourceRange": [],
           "tag": {
             "commentStart": 3672,
@@ -975,8 +975,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f8077136-15ac-5cb8-826e-efaf341e7d3f",
+          "id": "447ca031-0efc-584a-8040-53d25c9dff42",
           "sourceRange": [],
           "tag": {
             "commentStart": 3798,
@@ -989,8 +989,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6bcea75f-e100-5117-80e8-b7ad6c9ddf26",
+          "id": "ca8168ed-e253-5651-9719-4fb4fba5c08d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3924,
@@ -1006,11 +1006,11 @@ description: Variables in memory after executing router-template-slate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2d6211ae-5abc-5b07-86f9-824cd0f3cc81",
               "sourceRange": []
             },
             "from": [
@@ -1034,7 +1034,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "13adc042-fe79-56eb-a3a2-7df421cd5f20",
               "sourceRange": []
             },
             "from": [
@@ -1058,7 +1058,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "447ca031-0efc-584a-8040-53d25c9dff42",
               "sourceRange": []
             },
             "from": [
@@ -1082,7 +1082,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ca8168ed-e253-5651-9719-4fb4fba5c08d",
               "sourceRange": []
             },
             "from": [
@@ -1107,8 +1107,8 @@ description: Variables in memory after executing router-template-slate.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+          "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
           "objectId": 78,
           "value": "start",
           "xAxis": {
@@ -1124,8 +1124,8 @@ description: Variables in memory after executing router-template-slate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+            "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -1142,7 +1142,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
             "sourceRange": []
           }
         },
@@ -1164,13 +1164,13 @@ description: Variables in memory after executing router-template-slate.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+        "originalId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "cb61edf8-8dd9-52dd-be1d-c5e6a898268a",
+      "endCapId": "654e9b6a-74fc-5400-a4bc-4fb5ed92b90a",
       "units": "mm",
       "sectional": false
     }
@@ -1206,11 +1206,11 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2790b4c1-3234-5285-a95e-a4e7d760632b",
             "sourceRange": []
           },
           "from": [
@@ -1234,7 +1234,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
             "sourceRange": []
           },
           "ccw": false,
@@ -1264,7 +1264,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb3e1fa7-6c8f-5306-a571-b99f0c8b71d7",
             "sourceRange": []
           },
           "from": [
@@ -1288,7 +1288,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a70a507d-29ba-5c7b-93e9-023347d1f3d9",
             "sourceRange": []
           },
           "from": [
@@ -1312,7 +1312,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "84eb93dd-35af-548e-90d2-432e4ce43ea8",
             "sourceRange": []
           },
           "from": [
@@ -1336,7 +1336,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d0ce9a2b-6b49-57fe-8a24-6e3c412ca87b",
             "sourceRange": []
           },
           "from": [
@@ -1360,7 +1360,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "54cd3647-d17f-58b1-839f-62dc1cab740d",
             "sourceRange": []
           },
           "from": [
@@ -1384,7 +1384,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0300e78a-aec7-5ca4-a2f8-7e1d316ff279",
             "sourceRange": []
           },
           "from": [
@@ -1408,7 +1408,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8149ba-3ed5-54b0-bca6-9180b4839fce",
             "sourceRange": []
           },
           "from": [
@@ -1432,7 +1432,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5d6417b1-90c1-5e69-9987-5739671e3170",
             "sourceRange": []
           },
           "from": [
@@ -1456,7 +1456,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3400a0cc-e251-5ae2-9bb1-3c5f11f8a20f",
             "sourceRange": []
           },
           "ccw": false,
@@ -1486,7 +1486,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9f6b88a2-b9f0-592f-9433-a86866687938",
             "sourceRange": []
           },
           "from": [
@@ -1511,8 +1511,8 @@ description: Variables in memory after executing router-template-slate.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1552,7 +1552,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
           "sourceRange": []
         }
       },
@@ -1606,8 +1606,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "value": "line9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "originalId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1616,11 +1616,11 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "49c6c931-9d65-5dea-ae77-487df9fe286c",
             "sourceRange": []
           },
           "from": [
@@ -1644,7 +1644,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "325de0a9-faa2-5f51-8b71-c2281f212505",
             "sourceRange": []
           },
           "from": [
@@ -1668,7 +1668,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "579b893a-5c30-5d86-b620-b818bca8ef85",
             "sourceRange": []
           },
           "from": [
@@ -1692,7 +1692,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e7608ccc-f1e1-5657-a637-13d55d6441ca",
             "sourceRange": []
           },
           "from": [
@@ -1717,8 +1717,8 @@ description: Variables in memory after executing router-template-slate.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+        "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
         "objectId": 58,
         "value": "start",
         "xAxis": {
@@ -1734,8 +1734,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -1752,7 +1752,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
           "sourceRange": []
         }
       },
@@ -1774,8 +1774,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1784,11 +1784,11 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2d6211ae-5abc-5b07-86f9-824cd0f3cc81",
             "sourceRange": []
           },
           "from": [
@@ -1812,7 +1812,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "13adc042-fe79-56eb-a3a2-7df421cd5f20",
             "sourceRange": []
           },
           "from": [
@@ -1836,7 +1836,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "447ca031-0efc-584a-8040-53d25c9dff42",
             "sourceRange": []
           },
           "from": [
@@ -1860,7 +1860,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ca8168ed-e253-5651-9719-4fb4fba5c08d",
             "sourceRange": []
           },
           "from": [
@@ -1885,8 +1885,8 @@ description: Variables in memory after executing router-template-slate.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+        "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
         "objectId": 78,
         "value": "start",
         "xAxis": {
@@ -1902,8 +1902,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
           "sourceRange": []
         }
       },
@@ -1942,8 +1942,8 @@ description: Variables in memory after executing router-template-slate.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "originalId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1966,7 +1966,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 45,
                 "kind": {
                   "arc": {
@@ -2072,8 +2072,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2102,7 +2102,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc11"
@@ -2118,7 +2118,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -2224,8 +2224,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2254,7 +2254,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -2270,7 +2270,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2344,8 +2344,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2374,7 +2374,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2390,7 +2390,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -2464,8 +2464,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2494,7 +2494,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -2510,7 +2510,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -2584,8 +2584,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2614,7 +2614,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -2630,7 +2630,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -2704,8 +2704,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2734,7 +2734,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2750,7 +2750,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -2824,8 +2824,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2854,7 +2854,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2870,7 +2870,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -2944,8 +2944,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2974,7 +2974,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -2990,7 +2990,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -3064,8 +3064,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3094,7 +3094,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -3110,7 +3110,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -3184,8 +3184,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3214,7 +3214,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -3230,7 +3230,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -3304,8 +3304,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3334,7 +3334,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -3350,7 +3350,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 36,
                 "kind": {
                   "line": {
@@ -3424,8 +3424,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3454,7 +3454,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -3471,11 +3471,11 @@ description: Variables in memory after executing router-template-slate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -3499,7 +3499,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -3529,7 +3529,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -3553,7 +3553,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -3577,7 +3577,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -3601,7 +3601,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -3625,7 +3625,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -3649,7 +3649,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "from": [
@@ -3673,7 +3673,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -3697,7 +3697,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -3721,7 +3721,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -3751,7 +3751,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -3776,8 +3776,8 @@ description: Variables in memory after executing router-template-slate.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -3817,7 +3817,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                   "sourceRange": []
                 }
               },
@@ -3871,8 +3871,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+              "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -3892,7 +3892,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -3967,8 +3967,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 58,
                   "value": "start",
                   "xAxis": {
@@ -3984,13 +3984,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4006,7 +4006,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                 "objectId": 65,
                 "kind": {
                   "line": {
@@ -4081,8 +4081,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 58,
                   "value": "start",
                   "xAxis": {
@@ -4098,13 +4098,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4120,7 +4120,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
                 "objectId": 69,
                 "kind": {
                   "line": {
@@ -4195,8 +4195,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 58,
                   "value": "start",
                   "xAxis": {
@@ -4212,13 +4212,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4234,7 +4234,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                 "objectId": 73,
                 "kind": {
                   "line": {
@@ -4309,8 +4309,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 58,
                   "value": "start",
                   "xAxis": {
@@ -4326,13 +4326,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4349,11 +4349,11 @@ description: Variables in memory after executing router-template-slate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
                     "sourceRange": []
                   },
                   "from": [
@@ -4377,7 +4377,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                     "sourceRange": []
                   },
                   "from": [
@@ -4401,7 +4401,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
                     "sourceRange": []
                   },
                   "from": [
@@ -4425,7 +4425,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                     "sourceRange": []
                   },
                   "from": [
@@ -4450,8 +4450,8 @@ description: Variables in memory after executing router-template-slate.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                 "objectId": 58,
                 "value": "start",
                 "xAxis": {
@@ -4467,8 +4467,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                  "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -4485,7 +4485,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
                   "sourceRange": []
                 }
               },
@@ -4507,8 +4507,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -4528,7 +4528,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
                 "objectId": 82,
                 "kind": {
                   "line": {
@@ -4603,8 +4603,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 78,
                   "value": "start",
                   "xAxis": {
@@ -4620,13 +4620,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4642,7 +4642,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
                 "objectId": 85,
                 "kind": {
                   "line": {
@@ -4717,8 +4717,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 78,
                   "value": "start",
                   "xAxis": {
@@ -4734,13 +4734,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4756,7 +4756,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                 "objectId": 89,
                 "kind": {
                   "line": {
@@ -4831,8 +4831,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 78,
                   "value": "start",
                   "xAxis": {
@@ -4848,13 +4848,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4870,7 +4870,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "objectId": 93,
                 "kind": {
                   "line": {
@@ -4945,8 +4945,8 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                  "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                   "objectId": 78,
                   "value": "start",
                   "xAxis": {
@@ -4962,13 +4962,13 @@ description: Variables in memory after executing router-template-slate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4985,11 +4985,11 @@ description: Variables in memory after executing router-template-slate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -5013,7 +5013,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
                     "sourceRange": []
                   },
                   "from": [
@@ -5037,7 +5037,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                     "sourceRange": []
                   },
                   "from": [
@@ -5061,7 +5061,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                     "sourceRange": []
                   },
                   "from": [
@@ -5086,8 +5086,8 @@ description: Variables in memory after executing router-template-slate.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
+                "artifactId": "da3f74e0-a67f-5c1a-946f-71475e68ba1a",
                 "objectId": 78,
                 "value": "start",
                 "xAxis": {
@@ -5103,8 +5103,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                  "creatorSketchId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -5121,7 +5121,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                   "sourceRange": []
                 }
               },
@@ -5143,8 +5143,8 @@ description: Variables in memory after executing router-template-slate.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+              "originalId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
               "units": "mm",
               "isClosed": "implicitly"
             }
