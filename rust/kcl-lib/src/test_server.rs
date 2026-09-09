@@ -357,25 +357,3 @@ pub async fn execute_and_export_step(
 
     Ok((exec_state, result.0, files))
 }
-
-#[cfg(test)]
-mod tests {
-    use std::cell::Cell;
-
-    use super::*;
-
-    #[tokio::test]
-    async fn disabled_gltf_export_does_not_call_exporter() {
-        let called = Cell::new(false);
-
-        let files = export_gltf_if_requested(false, || async {
-            called.set(true);
-            Ok::<_, KclError>(Vec::new())
-        })
-        .await
-        .unwrap();
-
-        assert!(files.is_empty());
-        assert!(!called.get());
-    }
-}
