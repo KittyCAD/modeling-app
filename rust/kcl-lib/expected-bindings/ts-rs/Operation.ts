@@ -95,7 +95,13 @@ stdlibEntrySourceRange?: SourceRange | null,
 /**
  * True if the operation resulted in an error.
  */
-isError?: boolean, } | { "type": "VariableDeclaration", 
+isError?: boolean, 
+/**
+ * The artifact produced by the operation, when another feature-tree
+ * operation needs to refer to it. Currently populated for `region()`
+ * so a consuming sweep can own the region in the feature tree.
+ */
+resultArtifactId?: ArtifactId | null, } | { "type": "VariableDeclaration", 
 /**
  * The variable name.
  */

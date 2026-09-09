@@ -487,7 +487,8 @@ description: Operations executed sketch_block_tags_do_not_leak_to_parent_from_ex
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

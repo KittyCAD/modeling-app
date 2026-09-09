@@ -640,7 +640,8 @@ description: Operations executed chamfer_multiple_auto_hole_region_face_api.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

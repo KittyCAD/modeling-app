@@ -634,7 +634,8 @@ description: Operations executed named_views_except_a_sketch_block.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

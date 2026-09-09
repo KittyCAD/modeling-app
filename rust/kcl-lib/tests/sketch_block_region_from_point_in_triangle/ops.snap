@@ -590,7 +590,8 @@ description: Operations executed sketch_block_region_from_point_in_triangle.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     }
   ],
   "std::math": [

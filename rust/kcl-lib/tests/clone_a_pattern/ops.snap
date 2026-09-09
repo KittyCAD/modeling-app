@@ -148,7 +148,8 @@ description: Operations executed clone_a_pattern.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

@@ -673,7 +673,8 @@ description: Operations executed clone_an_import.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -2942,7 +2943,8 @@ description: Operations executed clone_an_import.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -4102,7 +4104,8 @@ description: Operations executed clone_an_import.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -4573,7 +4576,8 @@ description: Operations executed clone_an_import.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

@@ -524,7 +524,8 @@ description: Operations executed surface_extrude_edge_merge_error.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

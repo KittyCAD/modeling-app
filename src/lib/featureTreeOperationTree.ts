@@ -1,10 +1,11 @@
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
-import { type OperationsByModule, getOperationsForModule } from '@src/lang/wasm'
+import { getOperationsForModule, type OperationsByModule } from '@src/lang/wasm'
 import {
   filterOperations,
   groupNestedOperations,
   groupOperationTypeStreaks,
+  type NestedOpList,
 } from '@src/lib/operationGrouping'
 import { getModuleId, isArray } from '@src/lib/utils'
 
@@ -12,7 +13,7 @@ type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
 type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
 
 export type OperationTreeBranch = {
-  parent: ModuleInstanceOperation
+  parent: ModuleInstanceOperation | StdLibCallOperation
   children: OperationTreeNode[]
 }
 
@@ -36,7 +37,9 @@ export function getOperationTreeNodeKey(node: OperationTreeNode): string {
   }
 
   if (isOperationTreeBranch(node)) {
-    return `module-${getModuleInstanceKey(node.parent)}`
+    return node.parent.type === 'ModuleInstance'
+      ? `module-${getModuleInstanceKey(node.parent)}`
+      : `operation-${getOperationKey(node.parent)}`
   }
 
   return getOperationKey(node)
@@ -133,14 +136,109 @@ function isSameSourceOperation(left: Operation, right: Operation): boolean {
   )
 }
 
+const REGION_CONSUMING_SWEEPS = new Set(['extrude', 'revolve', 'sweep'])
+
+function collectSketchArtifactIds(value: OpKclValue, artifactIds: Set<string>) {
+  if (value.type === 'Sketch') {
+    artifactIds.add(value.value.artifactId)
+    return
+  }
+
+  if (value.type === 'Array') {
+    for (const item of value.value) {
+      collectSketchArtifactIds(item, artifactIds)
+    }
+    return
+  }
+
+  if (value.type === 'Object') {
+    for (const item of Object.values(value.value)) {
+      collectSketchArtifactIds(item, artifactIds)
+    }
+  }
+}
+
+function groupConsumedRegions(opList: NestedOpList): OperationTreeNode[] {
+  const regionsByArtifactId = new Map<string, StdLibCallOperation>()
+  for (const item of opList) {
+    if (
+      !isArray(item) &&
+      item.type === 'StdLibCall' &&
+      item.name === 'region' &&
+      item.resultArtifactId
+    ) {
+      regionsByArtifactId.set(item.resultArtifactId, item)
+    }
+  }
+
+  const regionsByConsumer = new Map<
+    StdLibCallOperation,
+    StdLibCallOperation[]
+  >()
+  const consumedRegions = new Set<StdLibCallOperation>()
+
+  for (const item of opList) {
+    if (
+      isArray(item) ||
+      item.type !== 'StdLibCall' ||
+      item.isError ||
+      !REGION_CONSUMING_SWEEPS.has(item.name) ||
+      !item.unlabeledArg
+    ) {
+      continue
+    }
+
+    const artifactIds = new Set<string>()
+    collectSketchArtifactIds(item.unlabeledArg.value, artifactIds)
+    const regions = [...artifactIds]
+      .map((artifactId) => regionsByArtifactId.get(artifactId))
+      .filter(
+        (region): region is StdLibCallOperation =>
+          region !== undefined && !consumedRegions.has(region)
+      )
+
+    if (regions.length > 0) {
+      regionsByConsumer.set(item, regions)
+      for (const region of regions) {
+        consumedRegions.add(region)
+      }
+    }
+  }
+
+  const result: OperationTreeNode[] = []
+  for (const item of opList) {
+    if (
+      !isArray(item) &&
+      item.type === 'StdLibCall' &&
+      consumedRegions.has(item)
+    ) {
+      continue
+    }
+
+    if (!isArray(item) && item.type === 'StdLibCall') {
+      const regions = regionsByConsumer.get(item)
+      if (regions) {
+        result.push({ parent: item, children: regions })
+        continue
+      }
+    }
+
+    result.push(item)
+  }
+
+  return result
+}
+
 function buildModuleOperationList(operations: Operation[]) {
-  return groupNestedOperations(
+  const groupedOperations = groupNestedOperations(
     groupOperationTypeStreaks(filterOperations(operations), [
       'VariableDeclaration',
     ]),
     operations,
     (groupBegin) => groupBegin.group.type === 'SketchBlock'
   )
+
+  return groupConsumedRegions(groupedOperations)
 }
 
 export function buildOperationTree(
@@ -209,7 +307,9 @@ function collectModuleInstanceKeys(
     }
 
     if (isOperationTreeBranch(node)) {
-      keys.add(getModuleInstanceKey(node.parent))
+      if (node.parent.type === 'ModuleInstance') {
+        keys.add(getModuleInstanceKey(node.parent))
+      }
       collectModuleInstanceKeys(node.children, keys)
       continue
     }
@@ -236,7 +336,11 @@ function buildModuleOperationTree(
   return buildModuleOperationList(
     getOperationsForModule(operationsByModule, moduleId)
   ).map((item) => {
-    if (isArray(item) || item.type !== 'ModuleInstance') {
+    if (
+      isArray(item) ||
+      isOperationTreeBranch(item) ||
+      item.type !== 'ModuleInstance'
+    ) {
       return item
     }
 

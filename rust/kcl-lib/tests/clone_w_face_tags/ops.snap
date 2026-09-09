@@ -786,7 +786,8 @@ description: Operations executed clone_w_face_tags.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

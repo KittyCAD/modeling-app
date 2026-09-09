@@ -538,7 +538,8 @@ description: Operations executed sketch_block_region_triangle.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     }
   ],
   "std::math": [

@@ -634,7 +634,8 @@ description: Operations executed sketch_block_get_common_edge_fillet.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

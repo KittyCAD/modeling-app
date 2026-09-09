@@ -802,7 +802,8 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1644,7 +1645,8 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -3250,7 +3252,8 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -3333,7 +3336,8 @@ description: Operations executed sketch_on_face_loft_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

@@ -769,7 +769,8 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1612,7 +1613,8 @@ description: Operations executed join_surfaces_single_input_does_not_consume.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

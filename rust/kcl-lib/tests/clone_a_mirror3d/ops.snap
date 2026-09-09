@@ -318,7 +318,8 @@ description: Operations executed clone_a_mirror3d.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

@@ -36,6 +36,11 @@ pub enum Operation {
         /// True if the operation resulted in an error.
         #[serde(default, skip_serializing_if = "is_false")]
         is_error: bool,
+        /// The artifact produced by the operation, when another feature-tree
+        /// operation needs to refer to it. Currently populated for `region()`
+        /// so a consuming sweep can own the region in the feature tree.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        result_artifact_id: Option<ArtifactId>,
     },
     #[serde(rename_all = "camelCase")]
     VariableDeclaration {
@@ -86,6 +91,13 @@ impl Operation {
             | Self::GroupBegin { .. }
             | Self::ModuleInstance { .. }
             | Self::GroupEnd => {}
+        }
+    }
+
+    /// If this is a standard library call, record the artifact it produced.
+    pub fn set_std_lib_call_result_artifact_id(&mut self, artifact_id: ArtifactId) {
+        if let Self::StdLibCall { result_artifact_id, .. } = self {
+            *result_artifact_id = Some(artifact_id);
         }
     }
 }

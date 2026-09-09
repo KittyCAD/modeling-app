@@ -637,7 +637,8 @@ description: Operations executed consumed_solid_binary_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1314,7 +1315,8 @@ description: Operations executed consumed_solid_binary_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1991,7 +1993,8 @@ description: Operations executed consumed_solid_binary_subtract.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

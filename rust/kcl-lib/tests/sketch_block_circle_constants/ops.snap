@@ -304,7 +304,8 @@ description: Operations executed sketch_block_circle_constants.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -405,7 +406,8 @@ description: Operations executed sketch_block_circle_constants.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

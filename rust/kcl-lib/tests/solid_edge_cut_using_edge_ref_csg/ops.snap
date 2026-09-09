@@ -831,7 +831,8 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1329,7 +1330,8 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
