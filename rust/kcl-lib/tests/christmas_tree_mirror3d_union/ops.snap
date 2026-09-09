@@ -1587,7 +1587,7 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
           }
         },
         "sourceRange": []
@@ -1646,31 +1646,31 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
               },
               "meta": {
                 "type": "Object",
@@ -1678,7 +1678,7 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
                     }
                   }
                 }
@@ -1711,7 +1711,7 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c"
           }
         },
         "sourceRange": []
@@ -1753,7 +1753,7 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
           }
         },
         "sourceRange": []
@@ -1777,15 +1777,15 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "760cc82f-86e1-519e-8024-b4672b5540ed"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "36129089-746e-51c1-bb05-6e0b9902480f"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "722f5dcc-4e20-57a6-83e8-fde41fc11236"
               }
             ]
           },
@@ -1815,7 +1815,7 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
           }
         },
         "sourceRange": []
@@ -1824,7 +1824,7 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
         "across": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
           },
           "sourceRange": []
         }
@@ -1855,13 +1855,13 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1e863501-0b4f-5edc-9654-2da123096255"
               }
             }
           ]

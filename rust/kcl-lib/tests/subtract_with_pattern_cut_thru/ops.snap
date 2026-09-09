@@ -10,7 +10,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -79,7 +79,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -107,7 +107,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
           }
         },
         "sourceRange": []
@@ -153,7 +153,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []
@@ -199,7 +199,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []
@@ -290,7 +290,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
               }
             }
           ]
@@ -305,31 +305,31 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3b5741e8-8910-5c21-86f1-4e6222666311"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d0b2ae9c-6174-5964-89c4-7ef6c64c0e98"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "de17f863-4a68-5b60-b8cb-5d5d71fee1a2"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9eee21ba-6c99-5df4-a742-d43a03ad5000"
                 }
               }
             ]
@@ -364,7 +364,7 @@ description: Operations executed subtract_with_pattern_cut_thru.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           }
         },
         "sourceRange": []

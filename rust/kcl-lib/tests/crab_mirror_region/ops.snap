@@ -3348,7 +3348,7 @@ description: Operations executed crab_mirror_region.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
           }
         },
         "sourceRange": []
@@ -3460,7 +3460,7 @@ description: Operations executed crab_mirror_region.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96"
             }
           },
           "sourceRange": []
@@ -3489,7 +3489,7 @@ description: Operations executed crab_mirror_region.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
           }
         },
         "sourceRange": []

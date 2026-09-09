@@ -799,7 +799,7 @@ description: Operations executed lattice-cubic.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -829,7 +829,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
           }
         },
         "sourceRange": []
@@ -925,7 +925,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -951,7 +951,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []
@@ -985,7 +985,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []
@@ -1113,19 +1113,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c34209f0-8881-53da-b534-19b7c3937d6e"
               }
             }
           ]
@@ -1255,55 +1255,55 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9f5b043b-5dec-5fbe-b0df-bc3afad40d8f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e9732a7f-13dd-57b9-ac68-6205d9543084"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "46781404-ca48-5e2f-815f-819b6959e96b"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c34209f0-8881-53da-b534-19b7c3937d6e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "af0d1b83-c69d-5750-97d2-6152b91de821"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9"
               }
             }
           ]
@@ -1458,7 +1458,7 @@ description: Operations executed lattice-cubic.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -1726,7 +1726,7 @@ description: Operations executed lattice-cubic.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f481fd4-203e-57d7-b5d6-b16289577621"
               }
             ]
           },
@@ -1756,7 +1756,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
           }
         },
         "sourceRange": []
@@ -1802,7 +1802,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -1855,7 +1855,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
           }
         },
         "sourceRange": []
@@ -1881,7 +1881,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -1915,7 +1915,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -2043,19 +2043,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "01b5817a-95ba-559a-a207-ea6e6693a367"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9a397f2a-9e8a-53e5-8c19-5cdb08492c95"
               }
             }
           ]
@@ -2182,7 +2182,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -2215,7 +2215,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
           }
         },
         "sourceRange": []
@@ -2333,7 +2333,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
           }
         },
         "sourceRange": []
@@ -2386,7 +2386,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
           }
         },
         "sourceRange": []
@@ -2514,19 +2514,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8c6f97e9-3bd7-5c17-80e6-fe637f7b9347"
               }
             }
           ]
@@ -2653,7 +2653,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -2686,7 +2686,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
           }
         },
         "sourceRange": []
@@ -2811,7 +2811,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
           }
         },
         "sourceRange": []
@@ -2864,7 +2864,7 @@ description: Operations executed lattice-cubic.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
           }
         },
         "sourceRange": []
@@ -2992,19 +2992,19 @@ description: Operations executed lattice-cubic.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ba4d3870-e78f-5720-8d12-e815392abae6"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "51236f2f-6829-520a-a0ab-48922f881682"
               }
             }
           ]

@@ -6,8 +6,8 @@ description: Variables in memory after executing rectangle-table.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing rectangle-table.kcl
   "__sketch_23_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -75,14 +75,14 @@ description: Variables in memory after executing rectangle-table.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "topologyId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1244,
@@ -95,8 +95,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1314,
@@ -109,8 +109,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1425,
@@ -123,8 +123,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1536,
@@ -140,11 +140,11 @@ description: Variables in memory after executing rectangle-table.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
                   "sourceRange": []
                 },
                 "from": [
@@ -168,7 +168,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
                   "sourceRange": []
                 },
                 "from": [
@@ -192,7 +192,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
                   "sourceRange": []
                 },
                 "from": [
@@ -216,7 +216,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
                   "sourceRange": []
                 },
                 "from": [
@@ -241,8 +241,8 @@ description: Variables in memory after executing rectangle-table.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "objectId": 22,
               "kind": "Custom",
               "origin": {
@@ -282,7 +282,7 @@ description: Variables in memory after executing rectangle-table.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "sourceRange": []
               }
             },
@@ -304,13 +304,13 @@ description: Variables in memory after executing rectangle-table.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+            "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+          "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
           "units": "mm",
           "sectional": false
         }
@@ -319,14 +319,14 @@ description: Variables in memory after executing rectangle-table.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+          "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "topologyId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "artifactId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1244,
@@ -339,8 +339,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1314,
@@ -353,8 +353,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1425,
@@ -367,8 +367,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1536,
@@ -384,11 +384,11 @@ description: Variables in memory after executing rectangle-table.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
                   "sourceRange": []
                 },
                 "from": [
@@ -412,7 +412,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
                   "sourceRange": []
                 },
                 "from": [
@@ -436,7 +436,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
                   "sourceRange": []
                 },
                 "from": [
@@ -460,7 +460,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
                   "sourceRange": []
                 },
                 "from": [
@@ -485,8 +485,8 @@ description: Variables in memory after executing rectangle-table.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "objectId": 22,
               "kind": "Custom",
               "origin": {
@@ -526,7 +526,7 @@ description: Variables in memory after executing rectangle-table.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "sourceRange": []
               }
             },
@@ -548,13 +548,13 @@ description: Variables in memory after executing rectangle-table.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+            "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+          "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
           "units": "mm",
           "sectional": false
         }
@@ -563,14 +563,14 @@ description: Variables in memory after executing rectangle-table.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "41696963-7465-5326-96cf-d83705f95c35",
+          "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "topologyId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "artifactId": "41696963-7465-5326-96cf-d83705f95c35",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1244,
@@ -583,8 +583,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1314,
@@ -597,8 +597,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1425,
@@ -611,8 +611,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1536,
@@ -628,11 +628,11 @@ description: Variables in memory after executing rectangle-table.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "41696963-7465-5326-96cf-d83705f95c35",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
                   "sourceRange": []
                 },
                 "from": [
@@ -656,7 +656,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
                   "sourceRange": []
                 },
                 "from": [
@@ -680,7 +680,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
                   "sourceRange": []
                 },
                 "from": [
@@ -704,7 +704,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
                   "sourceRange": []
                 },
                 "from": [
@@ -729,8 +729,8 @@ description: Variables in memory after executing rectangle-table.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "objectId": 22,
               "kind": "Custom",
               "origin": {
@@ -770,7 +770,7 @@ description: Variables in memory after executing rectangle-table.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "sourceRange": []
               }
             },
@@ -792,13 +792,13 @@ description: Variables in memory after executing rectangle-table.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+            "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+          "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
           "units": "mm",
           "sectional": false
         }
@@ -807,14 +807,14 @@ description: Variables in memory after executing rectangle-table.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "originalId": "[uuid]",
-          "topologyId": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "cb656b5e-eede-5e21-bf4a-f1c96e9c0172",
+          "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "topologyId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+          "artifactId": "cb656b5e-eede-5e21-bf4a-f1c96e9c0172",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1244,
@@ -827,8 +827,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1314,
@@ -841,8 +841,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1425,
@@ -855,8 +855,8 @@ description: Variables in memory after executing rectangle-table.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1536,
@@ -872,11 +872,11 @@ description: Variables in memory after executing rectangle-table.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "cb656b5e-eede-5e21-bf4a-f1c96e9c0172",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
                   "sourceRange": []
                 },
                 "from": [
@@ -900,7 +900,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
                   "sourceRange": []
                 },
                 "from": [
@@ -924,7 +924,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
                   "sourceRange": []
                 },
                 "from": [
@@ -948,7 +948,7 @@ description: Variables in memory after executing rectangle-table.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
                   "sourceRange": []
                 },
                 "from": [
@@ -973,8 +973,8 @@ description: Variables in memory after executing rectangle-table.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "objectId": 22,
               "kind": "Custom",
               "origin": {
@@ -1014,7 +1014,7 @@ description: Variables in memory after executing rectangle-table.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "sourceRange": []
               }
             },
@@ -1036,13 +1036,13 @@ description: Variables in memory after executing rectangle-table.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+            "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+          "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
           "units": "mm",
           "sectional": false
         }
@@ -1067,7 +1067,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -1141,8 +1141,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1171,7 +1171,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1187,7 +1187,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -1261,8 +1261,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1291,7 +1291,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1307,7 +1307,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -1381,8 +1381,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1411,7 +1411,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1427,7 +1427,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                 "objectId": 37,
                 "kind": {
                   "line": {
@@ -1501,8 +1501,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1531,7 +1531,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1548,11 +1548,11 @@ description: Variables in memory after executing rectangle-table.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                     "sourceRange": []
                   },
                   "from": [
@@ -1576,7 +1576,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                     "sourceRange": []
                   },
                   "from": [
@@ -1600,7 +1600,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                     "sourceRange": []
                   },
                   "from": [
@@ -1624,7 +1624,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                     "sourceRange": []
                   },
                   "from": [
@@ -1649,8 +1649,8 @@ description: Variables in memory after executing rectangle-table.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "objectId": 22,
                 "kind": "Custom",
                 "origin": {
@@ -1690,7 +1690,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                   "sourceRange": []
                 }
               },
@@ -1712,8 +1712,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+              "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1737,11 +1737,11 @@ description: Variables in memory after executing rectangle-table.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -1765,7 +1765,7 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -1789,7 +1789,7 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -1813,7 +1813,7 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -1838,8 +1838,8 @@ description: Variables in memory after executing rectangle-table.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1879,7 +1879,7 @@ description: Variables in memory after executing rectangle-table.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
           "sourceRange": []
         }
       },
@@ -1901,8 +1901,8 @@ description: Variables in memory after executing rectangle-table.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1911,11 +1911,11 @@ description: Variables in memory after executing rectangle-table.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
             "sourceRange": []
           },
           "from": [
@@ -1939,7 +1939,7 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
             "sourceRange": []
           },
           "from": [
@@ -1963,7 +1963,7 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
             "sourceRange": []
           },
           "from": [
@@ -1987,7 +1987,7 @@ description: Variables in memory after executing rectangle-table.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
             "sourceRange": []
           },
           "from": [
@@ -2012,8 +2012,8 @@ description: Variables in memory after executing rectangle-table.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "objectId": 22,
         "kind": "Custom",
         "origin": {
@@ -2053,7 +2053,7 @@ description: Variables in memory after executing rectangle-table.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
           "sourceRange": []
         }
       },
@@ -2075,8 +2075,8 @@ description: Variables in memory after executing rectangle-table.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+      "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2103,14 +2103,14 @@ description: Variables in memory after executing rectangle-table.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "topologyId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 481,
@@ -2123,8 +2123,8 @@ description: Variables in memory after executing rectangle-table.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 553,
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing rectangle-table.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 669,
@@ -2151,8 +2151,8 @@ description: Variables in memory after executing rectangle-table.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 784,
@@ -2168,11 +2168,11 @@ description: Variables in memory after executing rectangle-table.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -2196,7 +2196,7 @@ description: Variables in memory after executing rectangle-table.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -2220,7 +2220,7 @@ description: Variables in memory after executing rectangle-table.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -2244,7 +2244,7 @@ description: Variables in memory after executing rectangle-table.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -2269,8 +2269,8 @@ description: Variables in memory after executing rectangle-table.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2310,7 +2310,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
             "sourceRange": []
           }
         },
@@ -2332,13 +2332,13 @@ description: Variables in memory after executing rectangle-table.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "mm",
       "sectional": false
     }
@@ -2346,8 +2346,8 @@ description: Variables in memory after executing rectangle-table.kcl
   "tableTopPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -2385,7 +2385,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2459,8 +2459,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2489,7 +2489,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2505,7 +2505,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -2579,8 +2579,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2609,7 +2609,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2625,7 +2625,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -2699,8 +2699,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2729,7 +2729,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2745,7 +2745,7 @@ description: Variables in memory after executing rectangle-table.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -2819,8 +2819,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2849,7 +2849,7 @@ description: Variables in memory after executing rectangle-table.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2866,11 +2866,11 @@ description: Variables in memory after executing rectangle-table.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -2894,7 +2894,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -2918,7 +2918,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -2942,7 +2942,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "from": [
@@ -2967,8 +2967,8 @@ description: Variables in memory after executing rectangle-table.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -3008,7 +3008,7 @@ description: Variables in memory after executing rectangle-table.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                   "sourceRange": []
                 }
               },
@@ -3030,8 +3030,8 @@ description: Variables in memory after executing rectangle-table.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+              "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
               "units": "mm",
               "isClosed": "implicitly"
             }

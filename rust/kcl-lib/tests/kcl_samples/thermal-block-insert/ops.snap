@@ -10494,7 +10494,7 @@ description: Operations executed thermal-block-insert.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -10528,7 +10528,7 @@ description: Operations executed thermal-block-insert.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
               }
             ]
           },
@@ -10561,13 +10561,13 @@ description: Operations executed thermal-block-insert.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b7074da6-ba4d-5c11-9954-823a94aa7064"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c"
               }
             }
           ]
@@ -10611,7 +10611,7 @@ description: Operations executed thermal-block-insert.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
           }
         },
         "sourceRange": []
@@ -10640,7 +10640,7 @@ description: Operations executed thermal-block-insert.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525"
           }
         },
         "sourceRange": []

@@ -571,7 +571,7 @@ description: Operations executed sketch_block_region_from_point_in_triangle.kcl
         "point": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
           },
           "sourceRange": []
         }

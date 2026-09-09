@@ -13,6 +13,7 @@ use serde::Serialize;
 use walkdir::WalkDir;
 
 use super::Test;
+use crate::simulation_tests::TestConfig;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 
 const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
@@ -184,6 +185,8 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
     let relative_path = parent.strip_prefix(inputs_dir).unwrap();
     let output_dir = std::fs::canonicalize(OUTPUTS_DIR.as_path()).unwrap();
+    let test_config = TestConfig::from_file(&output_dir.join(test_name)).unwrap_or_default();
+    let TestConfig { redact_uuids } = test_config;
     let relative_output_dir = output_dir.join(relative_path);
 
     // Ensure the output directory exists.
@@ -191,6 +194,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         std::fs::create_dir_all(&relative_output_dir).unwrap();
     }
     Test {
+        redact_uuids,
         name: test_name.to_owned(),
         entry_point,
         input_dir: parent.to_path_buf(),

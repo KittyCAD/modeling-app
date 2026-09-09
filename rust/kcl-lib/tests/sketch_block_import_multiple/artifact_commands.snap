@@ -5,7 +5,7 @@ description: Artifact commands sketch_block_import_multiple.kcl
 {
   "rust/kcl-lib/tests/sketch_block_import_multiple/rectangle1.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a5021b3-b301-5049-8de0-1434be0c2714",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee34aa8-390c-5dcc-8779-9fa05c1c15e1",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8035f8e4-4ea5-51d3-a095-0dce55fa7584",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a784bc99-9c06-5812-bd9f-e6f763802b26",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "8035f8e4-4ea5-51d3-a095-0dce55fa7584",
         "to": {
           "x": 1.36,
           "y": 1.07,
@@ -75,18 +75,18 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "599406fe-8fa8-5dc3-9929-a581de301b08",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8035f8e4-4ea5-51d3-a095-0dce55fa7584",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8035f8e4-4ea5-51d3-a095-0dce55fa7584",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a2c8378e-e4d1-5286-9240-29dabf6bd44d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8035f8e4-4ea5-51d3-a095-0dce55fa7584",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63baedff-9c3f-5a6b-8a94-11cf90ee8228",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8035f8e4-4ea5-51d3-a095-0dce55fa7584",
         "segment": {
           "type": "line",
           "end": {
@@ -152,7 +152,7 @@ description: Artifact commands sketch_block_import_multiple.kcl
   ],
   "rust/kcl-lib/tests/sketch_block_import_multiple/rectangle2.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -177,20 +177,20 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3552bce-740f-5d25-b5c8-dc7373b771e4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7afd9142-4986-5642-903b-b79c4d488db6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -202,18 +202,18 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c9c647a-25a7-5d9d-ba1f-dc4a869deed2",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
         "to": {
           "x": 0.86,
           "y": 1.27,
@@ -222,18 +222,18 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1d48cca8-b31f-531b-9cf2-2cc47dbfa095",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a82876-56b8-5012-910a-c84983933af0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
         "segment": {
           "type": "line",
           "end": {
@@ -246,11 +246,11 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
         "segment": {
           "type": "line",
           "end": {
@@ -263,11 +263,11 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a93807f2-bb75-552f-8f69-73c95b73e483",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
         "segment": {
           "type": "line",
           "end": {
@@ -280,11 +280,11 @@ description: Artifact commands sketch_block_import_multiple.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1bf790e2-f95c-55fb-b54e-5f935605e3c6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
         "segment": {
           "type": "line",
           "end": {

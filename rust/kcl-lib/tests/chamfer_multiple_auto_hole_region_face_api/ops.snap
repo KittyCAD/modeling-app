@@ -588,15 +588,15 @@ description: Operations executed chamfer_multiple_auto_hole_region_face_api.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "leftHole": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               "meta": {
                 "type": "Object",
@@ -604,22 +604,22 @@ description: Operations executed chamfer_multiple_auto_hole_region_face_api.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "rightHole": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             }
           },
@@ -649,7 +649,7 @@ description: Operations executed chamfer_multiple_auto_hole_region_face_api.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
           }
         },
         "sourceRange": []
@@ -698,7 +698,7 @@ description: Operations executed chamfer_multiple_auto_hole_region_face_api.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30"
           }
         },
         "sourceRange": []
@@ -717,12 +717,12 @@ description: Operations executed chamfer_multiple_auto_hole_region_face_api.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "topCap",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "40fae2ca-5dc2-51a1-a209-64ed04b31124"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "leftHole",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "161cfaf1-02b0-5dfd-99a4-725242202b74"
                       }
                     ]
                   }
@@ -737,12 +737,12 @@ description: Operations executed chamfer_multiple_auto_hole_region_face_api.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "topCap",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "40fae2ca-5dc2-51a1-a209-64ed04b31124"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "rightHole",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "1e19ba57-81ec-5a0d-8d8d-1dd6aa0f4e55"
                       }
                     ]
                   }

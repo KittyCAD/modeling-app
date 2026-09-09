@@ -85,7 +85,7 @@ description: Operations executed assembly_non_default_units.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3339ca35-9b8d-5b6a-8d00-1c7541ff8f02"
         },
         "sourceRange": []
       },
@@ -115,7 +115,7 @@ description: Operations executed assembly_non_default_units.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3339ca35-9b8d-5b6a-8d00-1c7541ff8f02"
         },
         "sourceRange": []
       },
