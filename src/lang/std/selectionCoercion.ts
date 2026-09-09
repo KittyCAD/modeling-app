@@ -37,7 +37,7 @@ export function coerceSelectionsToBody(
     const topologyFallback = getEngineTopologyFallbackNormalized(selV2)
     if (topologyFallback) {
       const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-        topologyFallback.parentId,
+        topologyFallback.kclBodyId ?? topologyFallback.parentId,
         artifactGraph
       )
       if (
@@ -189,10 +189,10 @@ export function coerceSelectionsToBody(
   for (const selection of selections.otherSelections) {
     if (
       isEnginePrimitiveSelection(selection) &&
-      selection.parentEntityId != null
+      (selection.kclBodyId ?? selection.parentEntityId) != null
     ) {
       const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-        selection.parentEntityId,
+        selection.kclBodyId ?? selection.parentEntityId!,
         artifactGraph
       )
       if (
@@ -213,17 +213,11 @@ export function coerceSelectionsToBody(
   }
 
   const graphSelections: Selection[] = [
-    ...bodySelections
-      .map((s) => ({
-        entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
-        codeRef: s.codeRef,
-      }))
-      .filter(
-        (
-          v2
-        ): v2 is typeof v2 & { entityRef: NonNullable<typeof v2.entityRef> } =>
-          v2.entityRef != null
-      ),
+    ...bodySelections.map((s) => ({
+      entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
+      artifact: s.artifact,
+      codeRef: s.codeRef,
+    })),
     ...passthroughSelections,
     ...codeRefOnlyV2,
   ]

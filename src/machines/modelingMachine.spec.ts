@@ -1580,6 +1580,7 @@ p3 = [342.51, 216.38],
           graphSelections: [
             {
               entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+              selectionOrder: 0,
               codeRef: {
                 range: [0, code.length, 0],
                 pathToNode: [],
