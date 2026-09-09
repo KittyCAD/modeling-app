@@ -19,8 +19,49 @@ import { mark } from '@src/lib/performance'
 import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 
-const MODELING_BACKEND_DISCONNECTED_MESSAGE =
-  'modeling connection interrupted; please reconnect and retry'
+// TODO: Replace these compatibility types with the generated SDK types after
+// KittyCAD/api#4472 is released in @kittycad/lib.
+type ModelingConnectionErrorCode =
+  | 'auth_token_invalid'
+  | 'insufficient_scope'
+  | 'missing_payment_method'
+  | 'payment_method_failed'
+  | 'billing_threshold_reached'
+  | 'pay_as_you_go_disabled'
+  | 'upgrade_downgrade_abuse'
+  | 'admin'
+  | 'too_many_connections'
+  | 'backend_disconnected'
+
+type ConnectionErrorWebSocketResponse = {
+  success: false
+  request_id?: string | null
+  connection_error: {
+    code: ModelingConnectionErrorCode
+    detail: string
+    retryable: boolean
+  }
+}
+
+type ModelingWebSocketResponse =
+  | WebSocketResponse
+  | ConnectionErrorWebSocketResponse
+
+const CONNECTION_ERROR_KINDS: Record<
+  ModelingConnectionErrorCode,
+  EngineConnectionErrorKind
+> = {
+  auth_token_invalid: EngineConnectionErrorKind.AuthTokenInvalid,
+  insufficient_scope: EngineConnectionErrorKind.InsufficientScope,
+  missing_payment_method: EngineConnectionErrorKind.AccessDenied,
+  payment_method_failed: EngineConnectionErrorKind.AccessDenied,
+  billing_threshold_reached: EngineConnectionErrorKind.AccessDenied,
+  pay_as_you_go_disabled: EngineConnectionErrorKind.AccessDenied,
+  upgrade_downgrade_abuse: EngineConnectionErrorKind.AccessDenied,
+  admin: EngineConnectionErrorKind.AccessDenied,
+  too_many_connections: EngineConnectionErrorKind.TooManyConnections,
+  backend_disconnected: EngineConnectionErrorKind.BackendDisconnect,
+}
 
 /**
  * 4 different event listeners to clean up
@@ -136,33 +177,42 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-    const message: WebSocketResponse = JSON.parse(event.data)
+    const message: ModelingWebSocketResponse = JSON.parse(event.data)
 
-    if (!message.success && 'errors' in message) {
-      const backendDisconnectError = message.errors.find(
-        (error) => error.message === MODELING_BACKEND_DISCONNECTED_MESSAGE
-      )
+    if (!message.success && 'connection_error' in message) {
+      const { code, detail, retryable } = message.connection_error
+      const connectionError: EngineConnectionError = {
+        kind: CONNECTION_ERROR_KINDS[code],
+        message: detail,
+        terminal: !retryable,
+      }
 
-      if (backendDisconnectError) {
-        const connectionError: EngineConnectionError = {
-          kind: EngineConnectionErrorKind.BackendDisconnect,
-          message: backendDisconnectError.message,
-          terminal: true,
-        }
-        tearDownManager({ websocketClosed: true, connectionError })
+      if (code === 'backend_disconnected') {
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
           code: ClientErrorCode.EngineBackendDisconnect,
-          message: backendDisconnectError.message,
+          message: detail,
           extra: {
             source: 'EngineWebSocket',
-            errorCode: backendDisconnectError.error_code,
+            errorCode: code,
             requestId: message.request_id,
             ...(cloudProjectId ? { cloudProjectId } : {}),
           },
         })
+      } else if (code === 'auth_token_invalid') {
+        notifySessionExpired('engine-websocket')
       }
 
+      if (!retryable) {
+        tearDownManager({
+          websocketClosed: true,
+          connectionError,
+        })
+      }
+      return
+    }
+
+    if (!message.success && 'errors' in message) {
       const errorsString = message?.errors
         ?.map((error) => {
           return `  - ${error.error_code}: ${error.message}`
@@ -183,11 +233,6 @@ export const createOnWebSocketMessage = ({
       }
 
       const firstError = message.errors[0]
-      if (firstError?.error_code === 'auth_token_invalid') {
-        notifySessionExpired('engine-websocket')
-        disconnectAll()
-      }
-
       if (firstError?.error_code === 'internal_api') {
         console.warn(
           'internal_api from server consider calling the request again'
