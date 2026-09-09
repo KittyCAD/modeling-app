@@ -78,6 +78,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SURFACE: 'surface',
   EDGE: 'edge',
   FACE: 'face',
+  BODY: 'body',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`

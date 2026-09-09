@@ -1274,6 +1274,23 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    const importAlias = findImportNodeAndAlias(
+      ast,
+      s.codeRef.pathToNode,
+      wasmInstance
+    )?.alias
+    const addImportAliasExpr = () => {
+      if (!importAlias) {
+        return false
+      }
+
+      if (!pushedNames[importAlias]) {
+        exprs.push(createLocalName(importAlias))
+        pushedNames[importAlias] = true
+      }
+      return true
+    }
+
     const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
     if (patternExpr) {
       const key = outputExprKey(patternExpr)
@@ -1428,6 +1445,7 @@ export function getVariableExprsFromSelection(
           nodeToEdit
         )
         if (!lastChildVariable) {
+          addImportAliasExpr()
           continue
         }
         variable = lastChildVariable.variableDeclaration
@@ -1440,6 +1458,7 @@ export function getVariableExprsFromSelection(
         'VariableDeclaration'
       )
       if (err(directLookup)) {
+        addImportAliasExpr()
         continue
       }
 
@@ -1481,14 +1500,7 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    // import case
-    const importNodeAndAlias = findImportNodeAndAlias(
-      ast,
-      s.codeRef.pathToNode,
-      wasmInstance
-    )
-    if (importNodeAndAlias) {
-      exprs.push(createLocalName(importNodeAndAlias.alias))
+    if (addImportAliasExpr()) {
       continue
     }
 

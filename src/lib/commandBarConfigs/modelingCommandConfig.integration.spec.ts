@@ -96,6 +96,29 @@ gdt::datum(face = capEnd001, name = "A")`
 })
 
 describe('GDT tolerance defaults', () => {
+  it('keeps GD&T available for coded primitive faces and edges', () => {
+    const flatness = modelingMachineCommandConfig['GDT Flatness']
+    const straightness = modelingMachineCommandConfig['GDT Straightness']
+    if (
+      !flatness ||
+      isArray(flatness) ||
+      !straightness ||
+      isArray(straightness)
+    ) {
+      throw new Error('Expected single GD&T command configs')
+    }
+
+    expect(flatness.args?.faces).toMatchObject({
+      selectionTypes: expect.arrayContaining(['primitiveFace']),
+    })
+    expect(straightness.args?.objects).toMatchObject({
+      selectionTypes: expect.arrayContaining([
+        'primitiveFace',
+        'primitiveEdge',
+      ]),
+    })
+  })
+
   it('uses the current file unit for the tolerance input default', () => {
     const modelingContext = {
       kclManager: {
@@ -509,6 +532,70 @@ describe('Transform arguments', () => {
         throw new Error(`${commandName}.${argName} should select solids`)
       }
       expect(selectionTypes).not.toContain('importedGeometry')
+    }
+  })
+
+  it('offers imported BREP topology to supported command paths', () => {
+    const selectionTypesFor = (
+      commandName: keyof ModelingCommandSchema,
+      argName: string
+    ) => {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+      const selectionTypes = (
+        commandConfig.args as unknown as Record<
+          string,
+          { selectionTypes?: string[] } | undefined
+        >
+      )?.[argName]?.selectionTypes
+      if (!selectionTypes) {
+        throw new Error(`${commandName}.${argName} should select geometry`)
+      }
+      return selectionTypes
+    }
+
+    for (const [commandName, argName] of [
+      ['Offset plane', 'plane'],
+      ['Mirror 3D', 'across'],
+      ['Delete Face', 'faces'],
+    ] as const) {
+      expect(selectionTypesFor(commandName, argName)).toContain(
+        'enginePrimitiveFace'
+      )
+    }
+
+    for (const commandName of ['GDT Flatness', 'GDT Datum'] as const) {
+      const selectionTypes = selectionTypesFor(commandName, 'faces')
+      expect(selectionTypes).toContain('enginePrimitiveFace')
+      expect(selectionTypes).not.toContain('enginePrimitiveEdge')
+    }
+
+    for (const commandName of [
+      'GDT Straightness',
+      'GDT Circularity',
+      'GDT Cylindricity',
+      'GDT Position',
+      'GDT Profile',
+      'GDT Distance',
+      'GDT Perpendicularity',
+      'GDT Angularity',
+      'GDT Concentricity',
+      'GDT Symmetry',
+      'GDT Runout',
+      'GDT Parallelism',
+      'GDT Annotation',
+    ] as const) {
+      const selectionTypes = selectionTypesFor(commandName, 'objects')
+      expect(selectionTypes).toContain('enginePrimitiveFace')
+      expect(selectionTypes).toContain('enginePrimitiveEdge')
+    }
+
+    for (const commandName of ['Fillet', 'Chamfer'] as const) {
+      expect(selectionTypesFor(commandName, 'selection')).toContain(
+        'enginePrimitiveEdge'
+      )
     }
   })
 })

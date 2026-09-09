@@ -35,6 +35,7 @@ import {
   getSketchVariableNameForSegment,
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
+  isCallExprWithName,
   locateVariableWithCallOrPipe,
   traverse,
   valueOrVariable,
@@ -55,6 +56,7 @@ import type {
   EdgeRefactorMeta,
   Expr,
   ExpressionStatement,
+  LabeledArg,
   MemberExpression,
   PathToNode,
   Program,
@@ -66,8 +68,14 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
+  getKclBodyIdFromEnginePrimitiveSelection,
   isEnginePrimitiveSelection,
+  TOPOLOGY_BODY_ARTIFACT_TYPES,
 } from '@src/lib/selections'
+import {
+  createPrimitiveIndexCallExpression,
+  insertBodyOfVariableAndOffsetPathToNode,
+} from '@src/lang/modifyAst/enginePrimitiveReference'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -137,14 +145,17 @@ export function addFillet({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const nonSelectionArgs = [
+  const nonVersionArgs = [
     createLabeledArg('radius', valueOrVariable(radius)),
     ...(tolerance
       ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
       : []),
     ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+  ]
+  const versionArgs = [
     ...(version ? [createLabeledArg('version', valueOrVariable(version))] : []),
   ]
+  const nonSelectionArgs = [...nonVersionArgs, ...versionArgs]
 
   if (mNodeToEdit) {
     insertKclVariables([radius, version, tolerance], modifiedAst, mNodeToEdit)
@@ -185,6 +196,7 @@ export function addFillet({
         modifiedAst,
         artifactGraph,
         wasmInstance,
+        bodyArtifactTypes: EDGE_CUT_BODY_ARTIFACT_TYPES,
       }
     )
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
@@ -195,7 +207,14 @@ export function addFillet({
   }
 
   // Insert variables for labeled arguments if provided
-  insertKclVariables([radius, version, tolerance], modifiedAst, mNodeToEdit)
+  const needsRequestedVersion = [...bodies.values()].some(
+    (body) => body.bodyArtifactType !== 'importedGeometry'
+  )
+  insertKclVariables(
+    [radius, needsRequestedVersion ? version : undefined, tolerance],
+    modifiedAst,
+    mNodeToEdit
+  )
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
@@ -205,7 +224,8 @@ export function addFillet({
       data.solidsExpr,
       [
         createLabeledArg('tags', data.tagsExpr),
-        ...structuredClone(nonSelectionArgs),
+        ...structuredClone(nonVersionArgs),
+        ...edgeCutVersionArgs(data, versionArgs),
       ]
     )
 
@@ -257,15 +277,18 @@ export function addChamfer({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const nonSelectionArgs = [
+  const nonVersionArgs = [
     createLabeledArg('length', valueOrVariable(length)),
     ...(secondLength
       ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
       : []),
     ...(angle ? [createLabeledArg('angle', valueOrVariable(angle))] : []),
     ...(tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []),
+  ]
+  const versionArgs = [
     ...(version ? [createLabeledArg('version', valueOrVariable(version))] : []),
   ]
+  const nonSelectionArgs = [...nonVersionArgs, ...versionArgs]
 
   if (mNodeToEdit) {
     insertKclVariables(
@@ -310,6 +333,7 @@ export function addChamfer({
         modifiedAst,
         artifactGraph,
         wasmInstance,
+        bodyArtifactTypes: EDGE_CUT_BODY_ARTIFACT_TYPES,
       }
     )
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
@@ -320,7 +344,13 @@ export function addChamfer({
   }
 
   // Insert variables for labeled arguments if provided
-  insertKclVariables([length, secondLength, angle, version], modifiedAst)
+  const needsRequestedVersion = [...bodies.values()].some(
+    (body) => body.bodyArtifactType !== 'importedGeometry'
+  )
+  insertKclVariables(
+    [length, secondLength, angle, needsRequestedVersion ? version : undefined],
+    modifiedAst
+  )
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
@@ -330,7 +360,8 @@ export function addChamfer({
       data.solidsExpr,
       [
         createLabeledArg('tags', data.tagsExpr),
-        ...structuredClone(nonSelectionArgs),
+        ...structuredClone(nonVersionArgs),
+        ...edgeCutVersionArgs(data, versionArgs),
       ]
     )
 
@@ -410,6 +441,26 @@ type BodySelectionData = {
   solidsExpr: Expr | null
   tagsExpr: Expr
   pathIfPipe?: PathToNode
+  bodyArtifactType?: Artifact['type']
+}
+
+const EDGE_CUT_BODY_ARTIFACT_TYPES: Artifact['type'][] = [
+  'compositeSolid',
+  'sweep',
+  'importedGeometry',
+]
+const BLEND_BODY_ARTIFACT_TYPES: Artifact['type'][] = [
+  'compositeSolid',
+  'sweep',
+]
+
+function edgeCutVersionArgs(
+  body: BodySelectionData,
+  requestedVersionArgs: LabeledArg[]
+): LabeledArg[] {
+  return body.bodyArtifactType === 'importedGeometry'
+    ? []
+    : structuredClone(requestedVersionArgs)
 }
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
@@ -427,7 +478,7 @@ function buildEdgeExpr(
     'type' in edgeSelection &&
     edgeSelection.type === 'enginePrimitive'
   ) {
-    if (!edgeSelection.parentEntityId) {
+    if (!getKclBodyIdFromEnginePrimitiveSelection(edgeSelection)) {
       return new Error(
         'Blend primitive edge selections must include a parent entity.'
       )
@@ -440,6 +491,7 @@ function buildEdgeExpr(
         modifiedAst: ast,
         artifactGraph,
         wasmInstance,
+        bodyArtifactTypes: BLEND_BODY_ARTIFACT_TYPES,
       }
     )
     if (err(primitiveEdgeResult)) return primitiveEdgeResult
@@ -646,6 +698,50 @@ export function groupSelectionsByBodyAndAddTags(
       ]),
       tagsExpr,
       pathIfPipe: edgeContext.pathIfPipe,
+      bodyArtifactType: edgeContext.selectedBody.type,
+    })
+  }
+
+  for (const selection of selections.graphSelections) {
+    if (selection.artifact?.type !== 'primitiveEdge') continue
+
+    const variable = locateVariableWithCallOrPipe(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance
+    )
+    if (err(variable)) return variable
+
+    const edgeIdCall = variable.variableDeclarator.init
+    if (!isCallExprWithName(edgeIdCall, 'edgeId') || !edgeIdCall.unlabeled) {
+      return new Error(
+        'Could not resolve the selected primitive edge body in code.'
+      )
+    }
+
+    const solidsExpr =
+      edgeIdCall.unlabeled.type === 'Name'
+        ? createLocalName(edgeIdCall.unlabeled.name.name)
+        : structuredClone(edgeIdCall.unlabeled)
+    const bodyKey = getEdgeBodyKey(solidsExpr)
+    const bodyData = bodies.get(bodyKey)
+    const tagsExprs: Expr[] = bodyData
+      ? bodyData.tagsExpr.type === 'ArrayExpression'
+        ? [...bodyData.tagsExpr.elements]
+        : [bodyData.tagsExpr]
+      : []
+    tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
+
+    const tagsExpr = createVariableExpressionsArray(tagsExprs)
+    if (!tagsExpr) return new Error('No edges found in the selection')
+
+    bodies.set(bodyKey, {
+      solidsExpr: bodyData?.solidsExpr ?? solidsExpr,
+      tagsExpr,
+      pathIfPipe: bodyData?.pathIfPipe,
+      bodyArtifactType:
+        bodyData?.bodyArtifactType ??
+        artifactGraph.get(selection.artifact.solidId)?.type,
     })
   }
 
@@ -670,6 +766,8 @@ function groupSelectionsByBody(
   const bodyToSelections = new Map<string, Selection[]>()
 
   for (const selection of selections.graphSelections) {
+    if (selection.artifact?.type === 'primitiveEdge') continue
+
     const edgeContext = resolveEdgeSelectionContext(
       ast,
       selection,
@@ -773,6 +871,7 @@ function getTagsExprsFromSelection(
       )
       if (err(variable)) continue
       tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
+      continue
     }
 
     const result = modifyAstWithTagsForSelection(
@@ -2615,6 +2714,7 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   artifactGraph,
   wasmInstance,
   nodeToEdit,
+  bodyArtifactTypes = TOPOLOGY_BODY_ARTIFACT_TYPES,
 }: {
   primitiveEdgeSelections: EnginePrimitiveSelection[]
   bodies: Map<string, BodySelectionData>
@@ -2622,54 +2722,84 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
-}): Error | { bodies: Map<string, BodySelectionData> } {
+  bodyArtifactTypes?: Artifact['type'][]
+}):
+  | Error
+  | {
+      bodies: Map<string, BodySelectionData>
+      primitiveEdgeExprs: Map<EnginePrimitiveSelection, Expr>
+    } {
+  const primitiveEdgeExprs = new Map<EnginePrimitiveSelection, Expr>()
   if (primitiveEdgeSelections.length === 0) {
-    return { bodies }
+    return { bodies, primitiveEdgeExprs }
   }
 
   const primitiveSelectionsByBody = new Map<
     string,
     {
       bodySelection: Selection
-      primitiveIndices: number[]
+      primitiveSelections: EnginePrimitiveSelection[]
     }
   >()
 
   // Step 1. Gather all the indices by body
   for (const selection of primitiveEdgeSelections) {
-    if (!selection.parentEntityId) {
+    const kclBodyId = getKclBodyIdFromEnginePrimitiveSelection(selection)
+    if (!kclBodyId) {
       continue
     }
 
     const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-      selection.parentEntityId,
-      artifactGraph
+      kclBodyId,
+      artifactGraph,
+      { bodyArtifactTypes }
     )
-    if (!bodySelection?.artifact) {
+    if (
+      !bodySelection?.artifact ||
+      !bodyArtifactTypes.includes(bodySelection.artifact.type)
+    ) {
       continue
     }
 
-    const bodyKey = JSON.stringify(bodySelection.codeRef.pathToNode)
+    const bodyKey = JSON.stringify([
+      bodySelection.codeRef.pathToNode,
+      selection.bodyPath ?? [],
+    ])
     const byBody = primitiveSelectionsByBody.get(bodyKey)
     if (byBody) {
-      if (!byBody.primitiveIndices.includes(selection.primitiveIndex)) {
-        byBody.primitiveIndices.push(selection.primitiveIndex)
+      const primitiveKey = JSON.stringify([
+        selection.bodyPath ?? [],
+        selection.primitiveIndex,
+      ])
+      if (
+        !byBody.primitiveSelections.some(
+          (existing) =>
+            JSON.stringify([
+              existing.bodyPath ?? [],
+              existing.primitiveIndex,
+            ]) === primitiveKey
+        )
+      ) {
+        byBody.primitiveSelections.push(selection)
       }
     } else {
       primitiveSelectionsByBody.set(bodyKey, {
         bodySelection,
-        primitiveIndices: [selection.primitiveIndex],
+        primitiveSelections: [selection],
       })
     }
   }
 
   if (primitiveSelectionsByBody.size === 0) {
-    return { bodies }
+    return { bodies, primitiveEdgeExprs }
   }
 
   // Step 2. Create an array of variable references to bodies
   const updatedBodies = new Map(bodies)
-  let insertIndex = modifiedAst.body.length
+  let insertIndex =
+    nodeToEdit && typeof nodeToEdit[1]?.[0] === 'number'
+      ? nodeToEdit[1][0]
+      : modifiedAst.body.length
   for (const primitiveData of primitiveSelectionsByBody.values()) {
     const vars = getVariableExprsFromSelection(
       {
@@ -2682,16 +2812,30 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       nodeToEdit,
       {
         lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
+        artifactTypeFilter: bodyArtifactTypes,
       }
     )
     if (err(vars)) return vars
-    const resolvedSolidsExpr = createVariableExpressionsArray(vars.exprs)
-    if (!resolvedSolidsExpr) {
+    const rootBodyExpr = createVariableExpressionsArray(vars.exprs)
+    if (!rootBodyExpr) {
       return new Error(
         'Could not resolve selected primitive edge bodies in code.'
       )
     }
+
+    const bodyPath = primitiveData.primitiveSelections[0]?.bodyPath
+    const bodyOfResult = insertBodyOfVariableAndOffsetPathToNode({
+      bodyExpr: rootBodyExpr,
+      bodyPath,
+      modifiedAst,
+      wasmInstance,
+      insertIndex,
+      pathToNode: nodeToEdit,
+    })
+    if (bodyOfResult.inserted) {
+      insertIndex++
+    }
+    const resolvedSolidsExpr = bodyOfResult.bodyExpr
 
     // Graph-backed and engine-primitive edges arrive through separate
     // selection collections. Resolve both to the same body identity before
@@ -2713,11 +2857,12 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
     }
 
     // Step 3. Insert variable declarations for edgeId calls
-    for (const primitiveIndex of primitiveData.primitiveIndices) {
-      const edgeIdExpr = createCallExpressionStdLibKw(
+    for (const primitiveSelection of primitiveData.primitiveSelections) {
+      const edgeIdExpr = createPrimitiveIndexCallExpression(
         'edgeId',
         structuredClone(solidsExpr),
-        [createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance))]
+        primitiveSelection.primitiveIndex,
+        wasmInstance
       )
       const edgeVariableName = findUniqueName(
         modifiedAst,
@@ -2737,10 +2882,12 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
           variableIdentifierAst,
           insertIndex,
         },
-        modifiedAst
+        modifiedAst,
+        nodeToEdit
       )
       insertIndex++
       tagsExprs.push(variableIdentifierAst)
+      primitiveEdgeExprs.set(primitiveSelection, variableIdentifierAst)
     }
 
     const tagsExpr = createVariableExpressionsArray(tagsExprs)
@@ -2752,9 +2899,12 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       solidsExpr,
       tagsExpr,
       pathIfPipe,
+      bodyArtifactType:
+        bodyData?.bodyArtifactType ??
+        primitiveData.bodySelection.artifact?.type,
     }
     updatedBodies.set(resolvedBodyKey, updatedBodyData)
   }
 
-  return { bodies: updatedBodies }
+  return { bodies: updatedBodies, primitiveEdgeExprs }
 }
