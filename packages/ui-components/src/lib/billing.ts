@@ -165,9 +165,10 @@ export async function getBillingInfo(
   }
 
   const isOrg = subscriptions.modeling_app.type.type === 'organization'
+  const tier = subscriptions.modeling_app.name
   const ratioSec = subscriptions.modeling_app.pay_as_you_go_api_credit_price
 
-  if (isOrg) {
+  if (isOrg || tier === 'pro') {
     return {
       balance: Number.POSITIVE_INFINITY,
       userPaymentBalance: billing,
@@ -177,60 +178,30 @@ export async function getBillingInfo(
     }
   }
 
-  const tier = subscriptions.modeling_app.name
+  if (tier !== 'free' && tier !== 'plus') {
+    return createInvalidBillingDataError(`Unhandled subscription tier: ${tier}`)
+  }
+
   const toMinutes = (value: number, ratioSec: number) => value / ratioSec / 60
   const computedAllowance =
     subscriptions.modeling_app.monthly_pay_as_you_go_api_credits_monetary_value
-  let balance = 0
-  let allowance: number | undefined
-  let hasSubscription = false
 
-  switch (tier) {
-    case 'pro':
-      balance = Number.POSITIVE_INFINITY
-      hasSubscription = true
-      break
-    case 'plus':
-      if (ratioSec === undefined || computedAllowance === undefined) {
-        return createInvalidBillingDataError(
-          'Missing ratioSec or computedAllowance for plus tier'
-        )
-      }
-      allowance = toMinutes(computedAllowance, ratioSec)
-      balance = toMinutes(
-        billing.monthly_api_credits_remaining_monetary_value +
-          billing.stable_api_credits_remaining_monetary_value,
-        ratioSec
-      )
-      hasSubscription = true
-      break
-    case 'free':
-      if (ratioSec === undefined || computedAllowance === undefined) {
-        return createInvalidBillingDataError(
-          'Missing ratioSec or computedAllowance for free tier'
-        )
-      }
-      allowance = toMinutes(computedAllowance, ratioSec)
-      balance = toMinutes(
-        billing.monthly_api_credits_remaining_monetary_value +
-          billing.stable_api_credits_remaining_monetary_value,
-        ratioSec
-      )
-      hasSubscription = false
-      break
-    default: {
-      return createInvalidBillingDataError(
-        `Unhandled subscription tier: ${tier}`
-      )
-    }
+  if (ratioSec === undefined || computedAllowance === undefined) {
+    return createInvalidBillingDataError(
+      `Missing ratioSec or computedAllowance for ${tier} tier`
+    )
   }
 
   return {
-    balance,
-    allowance,
+    balance: toMinutes(
+      billing.monthly_api_credits_remaining_monetary_value +
+        billing.stable_api_credits_remaining_monetary_value,
+      ratioSec
+    ),
+    allowance: toMinutes(computedAllowance, ratioSec),
     userPaymentBalance: billing,
     payAsYouGoApiCreditPrice: ratioSec,
-    hasSubscription,
+    hasSubscription: tier === 'plus',
     isOrg,
   }
 }
