@@ -100,9 +100,9 @@ export const modelingDesignRole = (
       },
       { type: 'separator' },
       {
-        label: 'Insert from Project File',
-        id: 'Design.Insert from project file',
-        click: sendMenuAction(mainWindow, 'Design.Insert from project file'),
+        label: 'Import from Project File',
+        id: 'Design.Import from project file',
+        click: sendMenuAction(mainWindow, 'Design.Import from project file'),
       },
     ],
   }
