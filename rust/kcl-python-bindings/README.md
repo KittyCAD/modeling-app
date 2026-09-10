@@ -29,6 +29,20 @@ There are four main commands:
 `pyo3` bindings are automatically detected. 
 `maturin` doesn't need extra configuration files and doesn't clash with an existing setuptools-rust or milksnake configuration.
 
+### How to run tests
+
+Starting from scratch to run a single test
+
+```shell
+export ZOO_API_TOKEN=<Token from zoo.dev aka production token>
+cd modeling-app/rust/kcl-python-bindings
+uv venv
+just dev-install
+uv run pytest tests/tests.py -k "tests and test_import_and_snapshots_single"
+```
+
+If you do not use a `ZOO_API_TOKEN` from the production environment of `zoo.dev` it will not work.
+
 ### Releasing a new version
 
 1. Make sure the `Cargo.toml` has the new version you want to release.
