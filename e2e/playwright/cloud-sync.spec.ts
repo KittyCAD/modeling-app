@@ -1,5 +1,7 @@
+import { expect, test } from '@e2e/playwright/base-test'
 import {
   type CloudProject,
+  cloudProjectResponse,
   createRemoteListGate,
   opfsPathExists,
   PROJECT_DIR,
@@ -16,7 +18,7 @@ import {
   mockClientErrorReports,
   setup,
 } from '@e2e/playwright/test-utils'
-import { expect, type Page, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
@@ -43,81 +45,62 @@ async function expectCloudSyncHomeReady(page: Page) {
 }
 
 test(
-  'creates a fresh blank Personal Cloud project for every Zookeeper deep link',
+  'creates a multi-file sample in Personal Cloud from Home',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
-    const createdProjects: CloudProject[] = [
-      {
-        id: '12945000-0000-4000-8000-000000000001',
-        title: 'demo-project',
-        revision: 'demo-project-rev-1',
-        files: {},
-      },
-      {
-        id: '12945000-0000-4000-8000-000000000002',
-        title: 'demo-project-1',
-        revision: 'demo-project-1-rev-1',
-        files: {},
-      },
-    ]
-    let createIndex = 0
+    const createdProject: CloudProject = {
+      id: 'created-sample-project',
+      title: 'Artificial Heart',
+      revision: 'created-sample-rev-1',
+      files: {},
+    }
     const remoteProjects: CloudProject[] = []
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects,
       createProject: () => {
-        const project = createdProjects[createIndex++]
-        if (!project) {
-          throw new Error('Unexpected extra demo project creation.')
+        remoteProjects.push(createdProject)
+        return createdProject
+      },
+      updateProject: ({ projectId }) => {
+        if (projectId !== createdProject.id) {
+          return undefined
         }
-        remoteProjects.push(project)
-        return project
+
+        createdProject.revision = 'created-sample-rev-2'
+        return { status: 200, body: cloudProjectResponse(createdProject) }
       },
     })
-    const prompt = 'Design a spur gear'
-    const deepLink =
-      `/?cmd=set-layout&groupId=application&layoutId=zookeeper` +
-      `&ttc-prompt=${encodeURIComponent(prompt)}`
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
     await expectCloudFeatureEnabled(page)
+    await expectCloudSyncHomeReady(page)
 
-    for (const [index, projectName] of [
-      'demo-project',
-      'demo-project-1',
-    ].entries()) {
-      await page.goto(deepLink)
+    await page.getByTestId('home-create-from-sample').click()
+    await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('sample')
+    await page
+      .getByRole('option', { name: 'Artificial Heart', exact: true })
+      .click()
 
-      await expectProjectFileRoute(page)
-      await expect(page).toHaveURL(new RegExp(`${projectName}%2Fmain\\.kcl`))
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const layout = window.app.layout.get()
-            return 'sizes' in layout ? layout.sizes : []
-          })
-        )
-        .toEqual([0, 50, 50])
-      await expect(page.getByTestId('command-bar-wrapper')).not.toBeVisible()
-      await expect(
-        page.getByTestId('ml-ephant-conversation-input')
-      ).toHaveValue(prompt)
-      await expect
-        .poll(() => new URL(page.url()).searchParams.has('cmd'))
-        .toBe(false)
-      await expect
-        .poll(() => new URL(page.url()).searchParams.has('ttc-prompt'))
-        .toBe(false)
-      await expect.poll(() => apiCalls.creates.length).toBe(index + 1)
-      await expect
-        .poll(() =>
-          opfsPathExists(page, `${PROJECT_DIR}/${projectName}/main.kcl`)
-        )
-        .toBe(true)
-      const files = await readOpfsTextFiles(page, {
-        main: `${PROJECT_DIR}/${projectName}/main.kcl`,
+    await expect(page).toHaveURL(/artificial-heart%2Fmain\.kcl$/, {
+      timeout: CLOUD_SYNC_E2E_TIMEOUT,
+    })
+    await expect
+      .poll(() => apiCalls.creates.length, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
       })
-      expect(files.main.trim()).toBe('@settings(kclVersion = 2.0)')
-    }
+      .toBe(1)
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/artificial-heart/housing.kcl`)
+      )
+      .toBe(true)
+    const files = await readOpfsTextFiles(page, {
+      main: `${PROJECT_DIR}/artificial-heart/main.kcl`,
+    })
+    expect(files.main).toContain('import "housing.kcl" as housing')
+    await expect(
+      page.getByText('Unable to determine the project directory.')
+    ).toHaveCount(0)
   }
 )
 
@@ -180,7 +163,9 @@ test(
       brokenArchiveProjectIds: ['remote-empty-broken'],
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
     await expect(
@@ -320,8 +305,11 @@ test(
       createProject: () => personalCloudProject,
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
-    await expectCloudFeatureEnabled(page)
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
+    // Open the shared link directly. Visiting Home first interrupts its pending
+    // cloud requests and lazy imports when WebKit navigates to the shared link.
     await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
     await page.getByTestId('continue-to-web-app-button').click()
 
@@ -470,7 +458,9 @@ test(
       )
 
     await mockClientErrorReports(context)
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
 

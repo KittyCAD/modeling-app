@@ -29,9 +29,11 @@
 //! byte-for-byte -- including evaluation order (ids and engine commands are
 //! order-dependent), the operations log, ambient-state save/restore, error
 //! paths (including their historical asymmetries), and the version-gated
-//! `return` semantics (write-and-continue before KCL 3.0; early return under
-//! it). The simulation-test suite runs under both executors and requires
-//! identical snapshots.
+//! semantics: `return` (write-and-continue before KCL 3.0; early return under
+//! it), if-arm scoping (KCL 3.0 only), and member-expression evaluation order
+//! (object before property under KCL 3.0; property first before it). The
+//! simulation-test suite runs under both executors and requires identical
+//! snapshots.
 //!
 //! Bounded native re-entry still exists in two places, by design:
 //! - Module execution (imports, module-value results) runs the module body in
@@ -42,6 +44,115 @@
 //!   `call_kw`, which fresh-roots a machine run per callback, adding O(1)
 //!   native frames per callback nesting level (bounded by the recursive
 //!   executor's call-stack cap, which still guards that path).
+//!
+//! # State transitions under KCL 3.0
+//!
+//! In the notation of the CEK/CESK literature (Felleisen and Friedman's
+//! original CEK machine; the presentation in Van Horn and Might's
+//! "Abstracting Abstract Machines"), a state is a triple ⟨C, ρ, κ⟩: control,
+//! environment, continuation. Here ρ is the current `EnvironmentRef`, and the
+//! arena of environments doubles as the store σ (environments are heap
+//! entries addressed by refs); both are ambient in `ExecState` rather than
+//! copied into the state tuple, so ρ is only written below where it changes
+//! (▷ pushes a frame or scope, and the matching pop happens in the rule that
+//! consumes the frame). κ is the `Vec<Kont>`; the innermost frame is written
+//! leftmost (`f :: κ`), which is the end of the vector in code. Apply-mode
+//! states are written ⟨v, κ⟩. The machine is in exactly one of five modes:
+//!
+//! ```text
+//! ⟨e, ρ, κ⟩     eval mode        Control::Eval    dispatch on the expression e
+//! ⟨v, κ⟩        apply mode       Control::Apply   dispatch on the innermost frame
+//! R⟨v, κ⟩       return unwind    Control::Return  KCL 3.0 only
+//! X⟨v, κ⟩       exit unwind      Control::Exit
+//! E⟨err, κ⟩     error unwind     (the Err return path through run_loop)
+//! ```
+//!
+//! Core transitions. The long tail of evaluation frames (Unary, ArrayElems,
+//! ObjectProps, RangeStartDone/RangeEndDone, AscribeDone, LabelDone,
+//! CallArgs, SketchArgs) follows the same left-to-right pattern as the
+//! binary-operator rules and is omitted. Member access is spelled out because
+//! its evaluation order is version-gated.
+//!
+//! ```text
+//! Atoms and names
+//!   ⟨lit, ρ, κ⟩                       ↦  ⟨value(lit), κ⟩
+//!   ⟨x, ρ, κ⟩                         ↦  ⟨ρ(x), κ⟩            lookup via parent refs
+//!
+//! Binary operators (representative of the boilerplate family)
+//!   ⟨e₁ ⊕ e₂, ρ, κ⟩                   ↦  ⟨e₁, ρ, BinaryLhsDone(⊕, e₂) :: κ⟩
+//!   ⟨v₁, BinaryLhsDone(⊕, e₂) :: κ⟩   ↦  ⟨e₂, ρ, BinaryRhsDone(⊕, v₁) :: κ⟩
+//!   ⟨v₂, BinaryRhsDone(⊕, v₁) :: κ⟩   ↦  ⟨v₁ ⊕ v₂, κ⟩
+//!
+//! Member access (source order: the object before the property)
+//!   ⟨e₁[e₂], ρ, κ⟩                    ↦  ⟨e₁, ρ, MemberObjDone([e₂]) :: κ⟩
+//!   ⟨v₁, MemberObjDone([e₂]) :: κ⟩    ↦  ⟨e₂, ρ, MemberPropDone(v₁) :: κ⟩
+//!   ⟨v₂, MemberPropDone(v₁) :: κ⟩     ↦  ⟨v₁[v₂], κ⟩
+//!   ⟨e₁.x, ρ, κ⟩                      ↦  ⟨e₁, ρ, MemberObjDone(.x) :: κ⟩
+//!   ⟨v₁, MemberObjDone(.x) :: κ⟩      ↦  ⟨v₁.x, κ⟩   x is a name, never evaluated
+//!                                        pre-KCL-3.0: e₂ is evaluated before e₁
+//!                                        (LegacyMemberPropDone, then
+//!                                        LegacyMemberObjDone(v₂) evaluates e₁);
+//!                                        kept for old programs because ids and
+//!                                        engine commands depend on the order
+//!
+//! Blocks (statement sequencing; `last` is the trailing expression value)
+//!   ⟨{s₁ … sₙ}, ρ, κ⟩                 ↦  ⟨s₁, ρ, BlockSeq₁ :: κ⟩
+//!   ⟨v, BlockSeqᵢ :: κ⟩               ↦  ⟨sᵢ₊₁, ρ, BlockSeqᵢ₊₁ :: κ⟩
+//!   ⟨v, BlockSeqₙ :: κ⟩               ↦  ⟨Block(last), κ⟩
+//!
+//! Function calls (user-defined KCL functions)
+//!   ⟨f(args…), ρ, κ⟩                  ↦  ⟨args…, ρ, CallArgs :: κ⟩
+//!   ⟨vargs, CallArgs :: κ⟩            ↦  ⟨body, ρf ▷ frame, CallBoundary :: κ⟩
+//!                                        where ρf is the closure's captured env
+//!   ⟨Block(last), CallBoundary :: κ⟩  ↦  ⟨v, κ⟩    call_finish pops the frame; the
+//!                                        result is a Return absorbed at the boundary
+//!                                        (KCL 3.0) or `__return` read from the frame
+//!                                        (pre-KCL-3.0); `last` itself is ignored
+//!
+//! If-expressions (conditions evaluate in the enclosing ρ)
+//!   ⟨if e₀ {b₀} …, ρ, κ⟩              ↦  ⟨e₀, ρ, IfCondDone₀ :: κ⟩
+//!   ⟨false, IfCondDoneᵢ :: κ⟩         ↦  ⟨eᵢ₊₁, ρ, IfCondDoneᵢ₊₁ :: κ⟩   the next
+//!                                        cond, or the final else body via the
+//!                                        true-rule below when conds are exhausted
+//!   ⟨true, IfCondDoneᵢ :: κ⟩          ↦  ⟨bᵢ, ρ ▷ arm, IfArmDone :: κ⟩
+//!                                        KCL 3.0: the arm body gets its own scope
+//!                                        env (pre-KCL-3.0: bᵢ runs directly in ρ)
+//!   ⟨Block(v), IfArmDone :: κ⟩        ↦  ⟨v, κ⟩    KCL 3.0: pop the arm env; values
+//!                                        escaping the arm stay valid because
+//!                                        referenced envs survive the pop
+//!
+//! return (KCL 3.0: genuine control flow)
+//!   ⟨return e, ρ, κ⟩                  ↦  ⟨e, ρ, BlockSeq{Return} :: κ⟩
+//!   ⟨v, BlockSeq{Return} :: κ⟩        ↦  R⟨v, κ⟩   the rest of the block is dropped
+//!                                        (pre-KCL-3.0: bind `__return` in ρ and
+//!                                        continue with the next statement instead)
+//!   R⟨v, f :: κ⟩                      ↦  R⟨v, κ⟩   non-boundary f runs cleanup(f):
+//!                                        IfArmDone pops its arm env, PipeSeq
+//!                                        restores the pipe value, …
+//!   R⟨v, SketchBody :: κ⟩             ↦  R⟨v, κ⟩   sketch cleanup; finalization
+//!                                        skipped
+//!   R⟨v, CallBoundary :: κ⟩           ↦  ⟨v′, κ⟩   absorbed: call_finish pops the
+//!                                        frame, applies tag updates and return-type
+//!                                        coercion, and the machine resumes
+//!   R⟨v, ∅⟩                           ↦  the fresh root hands the Return upward (a
+//!                                        callback's native frame absorbs it; a Root
+//!                                        block rejects it: "Cannot return from
+//!                                        outside a function")
+//!
+//! exit() (never absorbed at a boundary)
+//!   X⟨v, f :: κ⟩                      ↦  X⟨v, κ⟩   cleanup(f); at CallBoundary the
+//!                                        exit flavor of call_finish (skips tags and
+//!                                        coercion); at SketchBody sketch cleanup
+//!   X⟨v, ∅⟩                           ↦  the program result
+//!
+//! Errors (mirrors X, plus call_finish(Err) and per-boundary backtrace
+//! decoration via add_unwind_location)
+//!   E⟨err, f :: κ⟩                    ↦  E⟨err′, κ⟩
+//! ```
+//!
+//! Pipes thread `%` through ambient state rather than κ: PipeFirstDone and
+//! PipeSeq save and restore `pipe_value` around each element, which is why
+//! the unwind rules must run cleanup on them.
 
 use std::env;
 use std::sync::Arc;
@@ -444,14 +555,29 @@ enum Kont {
     },
 
     // ---- access / control / pipes ----
-    /// Computed member property evaluated next (property before object,
-    /// replicating the recursive executor's evaluation order).
-    MemberPropDone {
+    /// Pre-KCL-3.0 member access order: a computed property is evaluated
+    /// before the object, replicating the recursive executor's historical
+    /// evaluation order.
+    LegacyMemberPropDone {
         node: Arc<Node<MemberExpression>>,
     },
-    MemberObjDone {
+    /// Pre-KCL-3.0 member access order: the object is evaluated after the
+    /// property; apply the access.
+    LegacyMemberObjDone {
         node: Arc<Node<MemberExpression>>,
         property: Property,
+    },
+    /// KCL 3.0 member access in source order: the object is evaluated
+    /// first. A computed property is evaluated next; a static property name
+    /// (`obj.name`) applies immediately.
+    MemberObjDone {
+        node: Arc<Node<MemberExpression>>,
+    },
+    /// KCL 3.0 member access in source order: the computed property is
+    /// evaluated after the object; apply the access.
+    MemberPropDone {
+        node: Arc<Node<MemberExpression>>,
+        object: KclValue,
     },
     IfCondDone {
         node: Arc<Node<IfExpression>>,
@@ -963,8 +1089,10 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
         | Kont::ObjectProps { .. }
         | Kont::RangeStartDone { .. }
         | Kont::RangeEndDone { .. }
-        | Kont::MemberPropDone { .. }
+        | Kont::LegacyMemberPropDone { .. }
+        | Kont::LegacyMemberObjDone { .. }
         | Kont::MemberObjDone { .. }
+        | Kont::MemberPropDone { .. }
         | Kont::IfCondDone { .. }
         | Kont::AscribeDone { .. }
         | Kont::LabelDone { .. }
@@ -1156,23 +1284,24 @@ async fn step_eval(
         // ---- access / control ----
         Expr::MemberExpression(node) => {
             let node = node.arc();
-            if node.computed {
+            if exec_state.entry_point_version_is_v3_or_higher() {
+                // KCL 3.0: evaluate in source order, the object before the
+                // property.
+                let object = EvalRequest::expr(&node.object);
+                konts.push(Kont::MemberObjDone { node });
+                Ok(Control::Eval(Box::new(object)))
+            } else if node.computed {
+                // Pre-KCL-3.0: the property is evaluated before the object.
+                // Preserved because ids and engine commands are
+                // order-dependent.
                 let prop = EvalRequest::expr(&node.property);
-                konts.push(Kont::MemberPropDone { node });
+                konts.push(Kont::LegacyMemberPropDone { node });
                 Ok(Control::Eval(Box::new(prop)))
             } else {
                 // Non-computed properties are identifier names, not evaluated.
-                let Expr::Name(identifier) = &node.property else {
-                    // Should actually be impossible because the parser would reject it.
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
-                            .to_owned(),
-                        vec![SourceRange::from(node.as_ref())],
-                    )));
-                };
-                let property = Property::String(identifier.to_string());
+                let property = Property::from_static_name(&node.property, SourceRange::from(node.as_ref()))?;
                 let object = EvalRequest::expr(&node.object);
-                konts.push(Kont::MemberObjDone { node, property });
+                konts.push(Kont::LegacyMemberObjDone { node, property });
                 Ok(Control::Eval(Box::new(object)))
             }
         }
@@ -1330,15 +1459,35 @@ async fn step_apply(
             Ok(Control::Apply(Applied::Value(value)))
         }
 
-        Kont::MemberPropDone { node } => {
+        Kont::LegacyMemberPropDone { node } => {
             let prop_value = applied.expect_value()?;
             let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
             let object = EvalRequest::expr(&node.object);
-            konts.push(Kont::MemberObjDone { node, property });
+            konts.push(Kont::LegacyMemberObjDone { node, property });
             Ok(Control::Eval(Box::new(object)))
         }
-        Kont::MemberObjDone { node, property } => {
+        Kont::LegacyMemberObjDone { node, property } => {
             let object = applied.expect_value()?;
+            let cf = node.apply_member(object, property, exec_state, ctx).await?;
+            // apply_member only ever produces Continue values.
+            Ok(Control::Apply(Applied::Value(cf.into_value())))
+        }
+        Kont::MemberObjDone { node } => {
+            let object = applied.expect_value()?;
+            if node.computed {
+                let prop = EvalRequest::expr(&node.property);
+                konts.push(Kont::MemberPropDone { node, object });
+                Ok(Control::Eval(Box::new(prop)))
+            } else {
+                // Non-computed properties are identifier names, not evaluated.
+                let property = Property::from_static_name(&node.property, SourceRange::from(node.as_ref()))?;
+                let cf = node.apply_member(object, property, exec_state, ctx).await?;
+                Ok(Control::Apply(Applied::Value(cf.into_value())))
+            }
+        }
+        Kont::MemberPropDone { node, object } => {
+            let prop_value = applied.expect_value()?;
+            let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
             let cf = node.apply_member(object, property, exec_state, ctx).await?;
             // apply_member only ever produces Continue values.
             Ok(Control::Apply(Applied::Value(cf.into_value())))

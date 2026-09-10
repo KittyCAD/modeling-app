@@ -511,6 +511,7 @@ description: Result of parsing implicit_close.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

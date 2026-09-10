@@ -301,7 +301,7 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -331,7 +331,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -384,7 +384,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -405,7 +405,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "33ae0bc2-00e1-5e02-8c77-f9ad01d6f068"
           },
           "sourceRange": []
         }
@@ -1208,11 +1208,11 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
               }
             ]
           },
@@ -1242,7 +1242,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
           }
         },
         "sourceRange": []
@@ -1400,7 +1400,7 @@ description: Operations executed socket-head-cap-screw.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc312d38-2fa6-5583-a605-44880f646499"
               }
             ]
           },
@@ -1430,7 +1430,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
           }
         },
         "sourceRange": []
@@ -1476,7 +1476,7 @@ description: Operations executed socket-head-cap-screw.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
           }
         },
         "sourceRange": []

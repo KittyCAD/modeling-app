@@ -5,7 +5,7 @@ description: Artifact commands import_transform.kcl
 {
   "rust/kcl-lib/tests/import_transform/2-5-long-m8-chc-screw.stl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
       "range": [],
       "command": {
         "type": "import_files",
@@ -34,11 +34,11 @@ description: Artifact commands import_transform.kcl
   ],
   "rust/kcl-lib/tests/import_transform/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
         "transforms": [
           {
             "translate": null,
@@ -60,11 +60,11 @@ description: Artifact commands import_transform.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
         "transforms": [
           {
             "translate": {
@@ -86,11 +86,11 @@ description: Artifact commands import_transform.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
         "transforms": [
           {
             "translate": null,

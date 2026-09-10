@@ -34461,6 +34461,7 @@ description: Result of parsing saturn-v.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

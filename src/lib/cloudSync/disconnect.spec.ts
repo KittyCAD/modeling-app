@@ -4,6 +4,7 @@ import {
   cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
   notifyCloudSyncWriteLikeMutation,
@@ -75,21 +76,25 @@ async function seedLinkedProject() {
   })
 }
 
+function configureTestCloudSync(enabled: boolean) {
+  configureCloudSyncEngine({
+    enabled,
+    baseUrl: 'https://example.test',
+    environmentName: 'dev.zoo.dev',
+    cloudProjectDirectoryPaths: ['/documents/Projects'],
+  })
+}
+
 describe('disconnectCloudSyncProject', () => {
   beforeEach(async () => {
     await deleteCloudSyncTestDatabase()
     installFetchMock()
     cloudSyncRemoteProjects.value = [{ id: remoteProjectId }]
-    configureCloudSyncEngine({
-      enabled: true,
-      baseUrl: 'https://example.test',
-      environmentName: 'dev.zoo.dev',
-      cloudProjectDirectoryPaths: ['/documents/Projects'],
-    })
+    configureTestCloudSync(false)
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })
@@ -99,6 +104,7 @@ describe('disconnectCloudSyncProject', () => {
     configureCloudSyncLocalFileSystem(
       createCloudSyncTestFs(new Map(), { projectDirectory })
     )
+    configureTestCloudSync(true)
 
     await notifyCloudSyncWriteLikeMutation(
       `${temporaryProjectPath}/project.toml`
@@ -139,6 +145,7 @@ describe('disconnectCloudSyncProject', () => {
         })
     })
 
+    configureTestCloudSync(true)
     const disconnect = disconnectCloudSyncProject(projectPath)
     await deleteStarted
 
@@ -188,6 +195,12 @@ describe('disconnectCloudSyncProject', () => {
       createCloudSyncTestFs(files, { projectDirectory })
     )
     await seedLinkedProject()
+    await appendOutboxEntry({
+      projectPath,
+      kind: 'upsert',
+      targetPath: `${projectPath}/main.kcl`,
+      createdAt: '2026-07-08T12:00:00.000Z',
+    })
     deleteProjectFetch = async () =>
       new Response(JSON.stringify({ message: 'Remote delete failed.' }), {
         status: 500,
@@ -197,6 +210,7 @@ describe('disconnectCloudSyncProject', () => {
         },
       })
 
+    configureTestCloudSync(true)
     await expect(disconnectCloudSyncProject(projectPath)).rejects.toThrow(
       'Remote delete failed.'
     )
@@ -216,6 +230,7 @@ describe('disconnectCloudSyncProject', () => {
     expect(files.get(projectTomlPath)).toContain(
       `project_id = "${remoteProjectId}"`
     )
+    expect(await getAllOutboxEntries()).toHaveLength(1)
   })
 })
 
@@ -227,7 +242,7 @@ describe('cloud sync upload failures', () => {
 
   afterEach(async () => {
     setCloudSyncOpenedProject(undefined)
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })

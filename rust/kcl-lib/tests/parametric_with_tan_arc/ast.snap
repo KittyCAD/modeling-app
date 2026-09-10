@@ -1472,6 +1472,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

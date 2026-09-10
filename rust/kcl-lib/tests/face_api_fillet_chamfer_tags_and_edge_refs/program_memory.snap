@@ -6,10 +6,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
   "body": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
+      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "objectId": 0,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,

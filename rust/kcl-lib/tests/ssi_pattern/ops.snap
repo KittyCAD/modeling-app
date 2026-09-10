@@ -10,7 +10,7 @@ description: Operations executed ssi_pattern.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed ssi_pattern.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -84,7 +84,7 @@ description: Operations executed ssi_pattern.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -94,7 +94,7 @@ description: Operations executed ssi_pattern.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "seg01",
-            "artifact_id": "[uuid]"
+            "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
           },
           "sourceRange": []
         }
@@ -129,181 +129,181 @@ description: Operations executed ssi_pattern.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0d096139-0eb1-527f-9185-26f880a097b5"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a0db11d9-0fde-594a-b905-3da436eef237"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a313d6e0-980f-5019-9385-54d91456a312"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "997407b6-c34d-53a9-b417-758aff870eb4"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "87e48d27-2273-5b60-aacc-6fd19758c6bb"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3e98618f-a001-5dc6-b941-71f5b7eef024"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5229a18e-d275-52c2-97d1-81e9b176217a"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3ca84a29-cc00-5d4c-a526-f041ddf9ab89"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "64d7ee6a-7bae-53bb-b23b-18e5ebc64855"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ef746fbb-809a-585e-aae3-33596f02f034"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f10c331a-4b27-5b97-a0ea-19a91c7930d1"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d5296c0e-f8f2-5da2-9982-75eb1ff8fe2a"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "113b0178-1c9a-55b0-b338-d2e7d5055ce9"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cbe90f4a-c759-5545-8204-b412439e7041"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c5fc57f8-c6e9-503e-95f8-e736caeb7710"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5e3a4301-f9f1-5831-9b8e-8d290292b81d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "03e0304d-28d5-5776-a25c-d35ffc1c9609"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ee68bdb4-ed2d-58bc-b386-975eb389fd1b"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "93f68c64-7576-51c4-8b06-4ea4727f7815"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0ef283cd-ca1e-59ff-b253-7396de2e39b3"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cd184e52-3904-5159-a0a2-5cf565d9f783"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e399799a-9d34-57d8-aaf4-123081b7efda"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9dabc57a-01b4-5905-9d53-a90ea1b9ff74"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7831e5ab-0bf8-59f9-9402-95f460f33600"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9c34a194-5bd3-503f-9705-d06e1c9db66c"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "78d19375-4a6f-5ed0-8d37-592375e0a0cd"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "94d3ba3a-357d-573d-b676-504d26a4f43f"
               }
             }
           ]

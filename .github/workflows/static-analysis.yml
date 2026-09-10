@@ -16,6 +16,15 @@ permissions:
   actions: read
 
 jobs:
+  playwright-run-checks:
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: node --test scripts/check-playwright-run.test.mjs
+
   npm-fmt-check:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:

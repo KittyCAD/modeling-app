@@ -41,6 +41,7 @@ import {
   keymapValueSpec,
   matchKeymapKeystrokes,
   normalizeEventKey,
+  normalizePersistedKeymap,
   resolveKeymapItems,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
@@ -354,9 +355,10 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     getCurrentScopes: scopeServiceImpl.getCurrentScopes,
     savePersistedKeymap: async (keymap) => {
       await initialPersistedKeymapLoad
+      const normalizedKeymap = normalizePersistedKeymap(keymap)
       persistedKeymapRevision += 1
-      persistedKeymap.value = keymap
-      await writeUserKeymapFile(keymap)
+      persistedKeymap.value = normalizedKeymap
+      await writeUserKeymapFile(normalizedKeymap)
     },
     addUserBinding: async (binding) => {
       await serviceImpl.savePersistedKeymap({

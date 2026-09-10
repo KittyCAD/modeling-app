@@ -474,7 +474,7 @@ description: Operations executed fillet-and-shell.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -505,7 +505,7 @@ description: Operations executed fillet-and-shell.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -537,7 +537,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -583,7 +583,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
           }
         },
         "sourceRange": []
@@ -607,19 +607,19 @@ description: Operations executed fillet-and-shell.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "dc700ece-abf1-5d4d-b57d-8fa8eecf901d"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "0bcc35a7-9852-5856-882a-1b89c7df4b6a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "20b30aa4-67cc-51f8-a59d-6551fddaae57"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "57dcebaf-f488-5f18-a3d0-8a7c5e588523"
               }
             ]
           },
@@ -711,7 +711,7 @@ description: Operations executed fillet-and-shell.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -756,7 +756,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294"
           }
         },
         "sourceRange": []
@@ -766,7 +766,7 @@ description: Operations executed fillet-and-shell.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
             }
           },
           "sourceRange": []
@@ -812,7 +812,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294"
           }
         },
         "sourceRange": []
@@ -932,7 +932,7 @@ description: Operations executed fillet-and-shell.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -977,7 +977,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
           }
         },
         "sourceRange": []
@@ -987,7 +987,7 @@ description: Operations executed fillet-and-shell.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
             }
           },
           "sourceRange": []
@@ -1033,7 +1033,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
           }
         },
         "sourceRange": []
@@ -1153,7 +1153,7 @@ description: Operations executed fillet-and-shell.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -1198,7 +1198,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
           }
         },
         "sourceRange": []
@@ -1208,7 +1208,7 @@ description: Operations executed fillet-and-shell.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13"
             }
           },
           "sourceRange": []
@@ -1254,7 +1254,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
           }
         },
         "sourceRange": []
@@ -1374,7 +1374,7 @@ description: Operations executed fillet-and-shell.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -1419,7 +1419,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
           }
         },
         "sourceRange": []
@@ -1429,7 +1429,7 @@ description: Operations executed fillet-and-shell.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457"
             }
           },
           "sourceRange": []
@@ -1475,7 +1475,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
           }
         },
         "sourceRange": []
@@ -1537,7 +1537,7 @@ description: Operations executed fillet-and-shell.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
           }
         },
         "sourceRange": []

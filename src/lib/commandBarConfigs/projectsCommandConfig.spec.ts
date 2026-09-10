@@ -89,12 +89,14 @@ function createHomeProjectActions(
   overrides: Partial<HomeProjectActionsService> = {}
 ): HomeProjectActionsService {
   return {
+    watchRemoteThumbnail: vi.fn(() => vi.fn()),
     canOpen: vi.fn(() => true),
     canDuplicate: vi.fn(() => true),
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
     canMoveToLibrary: vi.fn(() => false),
     canReviewDuplicateRealizations: vi.fn(() => false),
+    canSeparateProjectCopies: vi.fn(() => false),
     open: vi.fn(async (project) => ({
       defaultFile: project.defaultFile ?? '',
     })),
@@ -104,6 +106,7 @@ function createHomeProjectActions(
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn(async () => undefined),
     deleteDuplicateRealizations: vi.fn(async () => undefined),
+    separateProjectCopies: vi.fn(async () => undefined),
     ...overrides,
   }
 }

@@ -32,6 +32,7 @@ This file applies to Rust development under `rust/`. It supplements the repo roo
   - `export ZOO_API_TOKEN=your-token-here`
   - `TWENTY_TWENTY=update cargo nextest run --workspace --no-fail-fast`
 - Generate stdlib markdown docs (from `rust/`): `just redo-kcl-stdlib-docs-no-imgs`
+- Run `npm run bindings:update` before pushing.
 
 ## Simulation tests
 

@@ -31,7 +31,11 @@ use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
+pub use kcl_value_view::EdgeCutViewExt;
+pub use kcl_value_view::ExtrudeSurfaceViewExt;
 pub use kcl_value_view::KclValueView;
+pub use kcl_value_view::PathViewExt;
+pub use kcl_value_view::SolidViewExt;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -346,6 +350,11 @@ impl PreserveMem {
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
     pub variables: IndexMap<String, KclValueView>,
+    /// Runtime memory retained only for tests that need to verify internal behavior.
+    #[cfg(test)]
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) test_program_memory: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.
     pub operations: OperationsByModule,
@@ -4928,6 +4937,82 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_warns_in_legacy_kcl() {
+        for version in ["", "kclVersion = 1.0, ", "kclVersion = 2.0, "] {
+            for unit in ["deg", "rad"] {
+                let code = format!("@settings({version}defaultAngleUnit = {unit})\nx = 1\n");
+                let result = parse_execute(&code).await.unwrap();
+                let issues = result.issues();
+                assert_eq!(issues.len(), 1, "code={code}");
+                assert_eq!(issues[0].severity, Severity::Warning, "code={code}");
+                assert_eq!(
+                    issues[0].message,
+                    "The `defaultAngleUnit` setting is deprecated; use explicit units for angles"
+                );
+                assert_eq!(variable_f64(&result, "x"), 1.0);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_errors_in_kcl_v3() {
+        for settings in [
+            "@settings(kclVersion = \"3.0-preview\", defaultAngleUnit = deg)",
+            "@settings(defaultAngleUnit = rad, kclVersion = \"3.0-preview\")",
+            "@settings(defaultAngleUnit = deg)\n@settings(kclVersion = \"3.0-preview\")",
+            "@settings(kclVersion = \"3.0-preview\")\n@settings(defaultAngleUnit = rad)",
+        ] {
+            let code = format!("{settings}\nx = 1\n");
+            let Err(error) = parse_execute(&code).await else {
+                panic!("defaultAngleUnit must fail in KCL 3.0: {code}");
+            };
+            assert_eq!(
+                error.message(),
+                "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles",
+                "code={code}"
+            );
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 1);
+            assert!(code[ranges[0].start()..ranges[0].end()].contains("defaultAngleUnit"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_error_cannot_be_suppressed() {
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let code = format!(
+                "@warnings(allow = angleUnits)\n@settings(kclVersion = {version}, defaultAngleUnit = deg)\nx = 1\n"
+            );
+            let result = parse_execute(&code).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(
+                    result.unwrap_err().message(),
+                    "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                );
+            } else {
+                assert!(result.unwrap().issues().is_empty(), "code={code}");
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_angle_unit_in_import_uses_effective_kcl_version() {
+        let dep = "@settings(kclVersion = 2.0, defaultAngleUnit = deg)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(
+                    result.unwrap_err().message(),
+                    "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                );
+            } else {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0);
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn entry_point_kcl_version_recorded_only_for_v3() {
         let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
             .await
@@ -6182,6 +6267,79 @@ leaked = a
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_evaluates_object_before_property_in_v3() {
+        // Both operands are undefined, so the error names whichever one is
+        // evaluated first. KCL 3.0 evaluates in source order: `a` before `b`.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = a[b]
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert_eq!(err.message(), "`a` is not defined");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_evaluates_property_before_object_without_v3() {
+        // Pre-KCL-3.0 order, preserved for compatibility: the computed
+        // property is evaluated before the object.
+        let code = r#"@settings(kclVersion = 2.0)
+x = a[b]
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert_eq!(err.message(), "`b` is not defined");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_undefined_object_with_static_property_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = a.b
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert_eq!(err.message(), "`a` is not defined");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_expression_values_in_v3() {
+        // The source-order path handles computed, non-computed, chained, and
+        // call-result access.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn xs() {
+  return [10, 20, 30]
+}
+fn one() {
+  return 1
+}
+obj = { inner = { xs = xs() } }
+objs = [obj, obj]
+a = obj.inner.xs[one()]
+b = xs()[one() + 1]
+c = objs[0].inner.xs[0]
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "a"), 20.0);
+        assert_eq!(variable_f64(&result, "b"), 30.0);
+        assert_eq!(variable_f64(&result, "c"), 10.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_member_expression_in_v3() {
+        // exit() propagates out of either half of a member expression and
+        // terminates the program before the assert runs.
+        for code in [
+            r#"@settings(kclVersion = "3.0-preview")
+x = exit()[0]
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#,
+            r#"@settings(kclVersion = "3.0-preview")
+arr = [1]
+x = arr[exit()]
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#,
+        ] {
+            parse_execute(code).await.unwrap();
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
 fn inc(@x, @(experimental = true) amount? = 1) {
@@ -6715,41 +6873,42 @@ type Color { | Red | Green | Red }
         // A diagnostic raised while evaluating a member expression's object
         // (here, the imported module's missing-return warning) points at the
         // object's own span, not the whole member expression.
-        let main = "import \"m.kcl\" as m
-x = m.field
-";
-        let issues = issues_with_empty_module(main).await;
-        let warning = issues
-            .iter()
-            .find(|issue| issue.message.contains("no return value"))
-            .expect("missing-return warning should be recorded");
-        let object_start = main.rfind("m.field").unwrap();
-        assert_eq!(
-            (warning.source_range.start(), warning.source_range.end()),
-            (object_start, object_start + 1),
-            "warning should point at the object's span"
-        );
+        // Both member evaluation orders (pre-KCL-3.0 and KCL 3.0) must
+        // attribute the diagnostic the same way.
+        for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
+            let main = format!("{header}import \"m.kcl\" as m\nx = m.field\n");
+            let issues = issues_with_empty_module(&main).await;
+            let warning = issues
+                .iter()
+                .find(|issue| issue.message.contains("no return value"))
+                .expect("missing-return warning should be recorded");
+            let object_start = main.rfind("m.field").unwrap();
+            assert_eq!(
+                (warning.source_range.start(), warning.source_range.end()),
+                (object_start, object_start + 1),
+                "warning should point at the object's span (header={header:?})"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn member_property_diagnostics_use_property_range() {
         // Same for the computed property: the warning points at the index
         // expression's span inside the brackets.
-        let main = "import \"m.kcl\" as m
-arr = [1]
-x = arr[m]
-";
-        let issues = issues_with_empty_module(main).await;
-        let warning = issues
-            .iter()
-            .find(|issue| issue.message.contains("no return value"))
-            .expect("missing-return warning should be recorded");
-        let prop_start = main.rfind("[m]").unwrap() + 1;
-        assert_eq!(
-            (warning.source_range.start(), warning.source_range.end()),
-            (prop_start, prop_start + 1),
-            "warning should point at the property's span"
-        );
+        for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
+            let main = format!("{header}import \"m.kcl\" as m\narr = [1]\nx = arr[m]\n");
+            let issues = issues_with_empty_module(&main).await;
+            let warning = issues
+                .iter()
+                .find(|issue| issue.message.contains("no return value"))
+                .expect("missing-return warning should be recorded");
+            let prop_start = main.rfind("[m]").unwrap() + 1;
+            assert_eq!(
+                (warning.source_range.start(), warning.source_range.end()),
+                (prop_start, prop_start + 1),
+                "warning should point at the property's span (header={header:?})"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

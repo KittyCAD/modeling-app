@@ -31969,6 +31969,7 @@ description: Result of parsing exhaust-manifold.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
