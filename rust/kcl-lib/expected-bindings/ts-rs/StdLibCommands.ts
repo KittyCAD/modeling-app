@@ -6651,7 +6651,7 @@ export default {
         "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
-        "removedSince": null
+        "removedIn": null
       },
       {
         "name": "toolDiameter",
@@ -6663,7 +6663,7 @@ export default {
         "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
-        "removedSince": null
+        "removedIn": null
       },
       {
         "name": "stepOver",
@@ -6675,7 +6675,7 @@ export default {
         "addedIn": null,
         "deprecated": false,
         "deprecatedSince": null,
-        "removedSince": null
+        "removedIn": null
       }
     ]
   },
