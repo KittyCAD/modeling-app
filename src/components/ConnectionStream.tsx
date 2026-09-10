@@ -33,7 +33,6 @@ import {
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
-import { isUnsupportedEngineVideoCodecError } from '@src/lib/engineConnection/videoCodecSupport'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
@@ -79,9 +78,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
-  const [terminalConnectionError, setTerminalConnectionError] = useState<
-    Error | undefined
-  >()
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
@@ -101,13 +97,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
     useTryConnect()
-  const handleConnectionFailure = useCallback((error: unknown) => {
-    console.warn(error)
-    setTerminalConnectionError(
-      isUnsupportedEngineVideoCodecError(error) ? error : undefined
-    )
-    setShowManualConnect(true)
-  }, [])
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -331,7 +320,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
               })
             }
           })
-          .catch(handleConnectionFailure)
+          .catch((e) => {
+            console.warn(e)
+            setShowManualConnect(true)
+          })
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -395,7 +387,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       setShowManualConnect,
       sceneInfra,
       settingsActor: settings.actor,
-    }).catch(handleConnectionFailure)
+    }).catch((e) => {
+      console.warn(e)
+      setShowManualConnect(true)
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnecting, numberOfConnectionAttempts, props.authToken, settings])
 
@@ -429,7 +424,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
-        }).catch(handleConnectionFailure)
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
+        })
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
         reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
@@ -470,7 +468,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
-        }).catch(handleConnectionFailure)
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
+        })
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -495,7 +496,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
-        }).catch(handleConnectionFailure)
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
+        })
       },
       engineCommandManager,
     }),
@@ -535,7 +539,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect,
           sceneInfra,
           settingsActor: settings.actor,
-        }).catch(handleConnectionFailure)
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
+        })
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -638,9 +645,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
           manualConnectTitle={
-            terminalConnectionError ? 'Unsupported video codec' : undefined
+            engineCommandManager.lastConnectionError?.terminal
+              ? engineCommandManager.lastConnectionError.message
+              : undefined
           }
-          manualConnectDescription={terminalConnectionError?.message}
           callback={() => {
             setShowManualConnect(false)
             tryConnecting({
@@ -655,7 +663,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
               setShowManualConnect,
               sceneInfra,
               settingsActor: settings.actor,
-            }).catch(handleConnectionFailure)
+            }).catch((e) => {
+              console.warn(e)
+              setShowManualConnect(true)
+            })
           }}
         >
           Connecting and setting up scene...

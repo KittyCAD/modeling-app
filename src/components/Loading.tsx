@@ -21,7 +21,6 @@ interface LoadingProps extends React.PropsWithChildren {
   isRetrying?: boolean
   showManualConnect?: boolean
   manualConnectTitle?: ReactNode
-  manualConnectDescription?: ReactNode
   callback?: () => void
 }
 
@@ -79,7 +78,6 @@ const Loading = ({
   isRetrying,
   showManualConnect,
   manualConnectTitle,
-  manualConnectDescription,
   callback,
 }: LoadingProps) => {
   const [error, setError] = useState<IErrorType>({
@@ -160,7 +158,6 @@ const Loading = ({
         className={`body-bg ${className ?? ''}`}
         dataTestId={dataTestId ? dataTestId : 'loading'}
         title={manualConnectTitle}
-        description={manualConnectDescription}
         onReconnect={() => callback?.()}
       />
     )
