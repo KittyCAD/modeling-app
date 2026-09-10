@@ -155,8 +155,12 @@ struct TestConfig {
     /// Replace UUIDs with the string "[uuid]", because otherwise the tests
     /// would constantly be changing the UUID. This is a stopgap measure
     /// until we make the engine more deterministic.
-    #[serde(default)]
+    #[serde(default = "its_true")]
     redact_uuids: bool,
+}
+
+fn its_true() -> bool {
+    true
 }
 
 impl TestConfig {
