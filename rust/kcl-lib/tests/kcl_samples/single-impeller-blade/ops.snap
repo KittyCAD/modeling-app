@@ -739,7 +739,7 @@ description: Operations executed single-impeller-blade.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -1396,13 +1396,13 @@ description: Operations executed single-impeller-blade.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
               }
             }
           ]

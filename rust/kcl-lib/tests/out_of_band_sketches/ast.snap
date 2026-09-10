@@ -1383,6 +1383,7 @@ description: Result of parsing out_of_band_sketches.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

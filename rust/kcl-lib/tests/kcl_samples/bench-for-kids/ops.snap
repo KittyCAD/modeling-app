@@ -885,11 +885,11 @@ description: Operations executed bench-for-kids.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -919,7 +919,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
           }
         },
         "sourceRange": []
@@ -968,7 +968,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []
@@ -1497,7 +1497,7 @@ description: Operations executed bench-for-kids.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
               }
             ]
           },
@@ -1527,7 +1527,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
           }
         },
         "sourceRange": []
@@ -1605,7 +1605,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -1626,7 +1626,7 @@ description: Operations executed bench-for-kids.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "cf1165d3-ff10-5a2a-a907-7481ce9614bf"
           },
           "sourceRange": []
         }
@@ -1654,7 +1654,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621"
           }
         },
         "sourceRange": []
@@ -1738,7 +1738,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -1804,7 +1804,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []
@@ -1899,13 +1899,13 @@ description: Operations executed bench-for-kids.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c"
               }
             }
           ]
@@ -2201,7 +2201,7 @@ description: Operations executed bench-for-kids.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -2358,7 +2358,7 @@ description: Operations executed bench-for-kids.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
               }
             ]
           },
@@ -2388,7 +2388,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -2414,7 +2414,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
           }
         },
         "sourceRange": []
@@ -2467,7 +2467,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
           }
         },
         "sourceRange": []
@@ -2488,7 +2488,7 @@ description: Operations executed bench-for-kids.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "7bb71fb8-4bd3-53e5-8704-2454fe405154"
           },
           "sourceRange": []
         }
@@ -2520,7 +2520,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
           }
         },
         "sourceRange": []
@@ -2590,7 +2590,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
           }
         },
         "sourceRange": []
@@ -2667,7 +2667,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
           }
         },
         "sourceRange": []
@@ -2789,7 +2789,7 @@ description: Operations executed bench-for-kids.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -3062,7 +3062,7 @@ description: Operations executed bench-for-kids.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf"
               }
             ]
           },
@@ -3092,7 +3092,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
           }
         },
         "sourceRange": []
@@ -3118,7 +3118,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd"
           }
         },
         "sourceRange": []
@@ -3171,7 +3171,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc"
           }
         },
         "sourceRange": []
@@ -3192,7 +3192,7 @@ description: Operations executed bench-for-kids.kcl
         "tags": {
           "value": {
             "type": "Uuid",
-            "value": "[uuid]"
+            "value": "333112bb-4a0c-5c5e-90f4-f1bd428c0211"
           },
           "sourceRange": []
         }
@@ -3224,7 +3224,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc"
           }
         },
         "sourceRange": []
@@ -3294,7 +3294,7 @@ description: Operations executed bench-for-kids.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc"
           }
         },
         "sourceRange": []

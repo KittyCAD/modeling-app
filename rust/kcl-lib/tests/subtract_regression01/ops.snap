@@ -10,7 +10,7 @@ description: Operations executed subtract_regression01.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed subtract_regression01.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -91,7 +91,7 @@ description: Operations executed subtract_regression01.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -134,7 +134,7 @@ description: Operations executed subtract_regression01.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "19fe8534-2bed-5e2a-afe9-63f57b621004"
         },
         "sourceRange": []
       },
@@ -165,7 +165,7 @@ description: Operations executed subtract_regression01.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab"
               }
             }
           ]
@@ -209,7 +209,7 @@ description: Operations executed subtract_regression01.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
           }
         },
         "sourceRange": []
@@ -219,7 +219,7 @@ description: Operations executed subtract_regression01.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
             }
           },
           "sourceRange": []

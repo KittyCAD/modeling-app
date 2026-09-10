@@ -5,7 +5,7 @@ description: Artifact commands counterdrilled-weldment.kcl
 {
   "public/kcl-samples/counterdrilled-weldment/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "to": {
           "x": -82.55,
           "y": -57.15,
@@ -75,18 +75,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "to": {
           "x": 15.875000000380998,
           "y": 0.0,
@@ -163,11 +163,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -188,24 +188,24 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "segment": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+        "intersection_segment": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -217,11 +217,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
@@ -230,135 +230,135 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "5a7287ed-4a2e-53da-b55e-3536552c87d6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "5a7287ed-4a2e-53da-b55e-3536552c87d6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+        "face_id": "45c86744-f72c-5399-b733-e4de8fd466eb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+        "face_id": "86db84ac-4417-5d6d-94f9-5754ec394147"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+        "face_id": "4f90ab43-f1b1-5530-bc2c-cc346e10fe9a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+        "face_id": "2aed78e6-b228-597d-9803-a7a8225fa6b6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "5983fe0d-ad46-595e-9b48-dfabc7824ea6"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "de815b4c-817e-5265-b7b5-30ae92f19673"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "acf4900d-8e16-5c01-911d-bb2445b5f458"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "edge_ids": [
-          "[uuid]"
+          "5983fe0d-ad46-595e-9b48-dfabc7824ea6"
         ],
         "cut_type": {
           "chamfer": {
@@ -374,13 +374,13 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "edge_ids": [
-          "[uuid]"
+          "de815b4c-817e-5265-b7b5-30ae92f19673"
         ],
         "cut_type": {
           "chamfer": {
@@ -396,13 +396,13 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "edge_ids": [
-          "[uuid]"
+          "acf4900d-8e16-5c01-911d-bb2445b5f458"
         ],
         "cut_type": {
           "chamfer": {
@@ -418,13 +418,13 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "edge_ids": [
-          "[uuid]"
+          "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b"
         ],
         "cut_type": {
           "chamfer": {
@@ -440,7 +440,7 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -465,11 +465,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -479,20 +479,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -504,18 +504,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
         "to": {
           "x": -60.324999999999996,
           "y": -38.099999999999994,
@@ -524,18 +524,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
         "segment": {
           "type": "arc",
           "center": {
@@ -556,24 +556,24 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+        "segment": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+        "intersection_segment": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -585,11 +585,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
         "distance": -13.208,
         "faces": null,
         "opposite": "None",
@@ -598,53 +598,53 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+        "edge_id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+        "edge_id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
         "transform": [],
         "transforms": [
           [
@@ -680,11 +680,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
         "transform": [],
         "transforms": [
           [
@@ -720,11 +720,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "d7578b21-5a90-58ec-b05d-a2d675031806",
         "transform": [],
         "transforms": [
           [
@@ -760,20 +760,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -785,18 +785,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "to": {
           "x": -57.943749999999994,
           "y": -38.099999999999994,
@@ -805,18 +805,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "segment": {
           "type": "arc",
           "center": {
@@ -837,24 +837,24 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "segment": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "intersection_segment": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -866,11 +866,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
         "distance": -5.270499999999999,
         "faces": null,
         "opposite": "None",
@@ -879,53 +879,53 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "edge_id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "edge_id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
         "transform": [],
         "transforms": [
           [
@@ -961,11 +961,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
         "transform": [],
         "transforms": [
           [
@@ -1001,11 +1001,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
         "transform": [],
         "transforms": [
           [
@@ -1041,43 +1041,43 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "c1954abb-c80b-5092-851b-2b15c2dcba25"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+          "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+          "d7578b21-5a90-58ec-b05d-a2d675031806",
+          "5b010224-2823-5bc8-b783-67a1d63cd2d0"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "20f09319-bab0-5dd8-8c40-ce90cd688483"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+          "3a64a61f-1518-5c74-8fe4-362eb7daddf4",
+          "cfa59c6c-63ae-562e-9e17-7889254a83f8",
+          "44e7bf43-6dbb-5264-8125-14d3f772a317"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1102,20 +1102,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1127,18 +1127,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "to": {
           "x": 3.175,
           "y": 55.88,
@@ -1147,18 +1147,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "segment": {
           "type": "arc",
           "center": {
@@ -1179,24 +1179,24 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "segment": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "intersection_segment": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1208,11 +1208,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "5a7368ed-12c7-59b9-88f4-186289245e86",
         "distance": -254.0,
         "faces": null,
         "opposite": "None",
@@ -1221,49 +1221,49 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5a7368ed-12c7-59b9-88f4-186289245e86"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5a7368ed-12c7-59b9-88f4-186289245e86",
+        "edge_id": "989da03c-09fa-5ef3-8080-019420d17879"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5a7368ed-12c7-59b9-88f4-186289245e86",
+        "edge_id": "989da03c-09fa-5ef3-8080-019420d17879"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1288,11 +1288,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1302,20 +1302,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1327,18 +1327,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d22753f-e63a-506c-bc84-6006343b9a0b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "to": {
           "x": 18.796,
           "y": 0.0,
@@ -1347,18 +1347,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "segment": {
           "type": "arc",
           "center": {
@@ -1379,11 +1379,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "to": {
           "x": 15.875,
           "y": 0.0,
@@ -1392,11 +1392,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "segment": {
           "type": "arc",
           "center": {
@@ -1417,24 +1417,24 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+        "segment": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+        "intersection_segment": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1446,11 +1446,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
         "distance": 50.8,
         "faces": null,
         "opposite": "None",
@@ -1459,64 +1459,64 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+        "edge_id": "1c428132-0b7d-5131-8bef-0c168acae00d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+        "edge_id": "1c428132-0b7d-5131-8bef-0c168acae00d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
         ],
         "tool_ids": [
-          "[uuid]"
+          "5a7368ed-12c7-59b9-88f4-186289245e86"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1541,20 +1541,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1566,18 +1566,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96889f64-587b-51f2-b62f-b230408206cc",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "96889f64-587b-51f2-b62f-b230408206cc",
         "to": {
           "x": 18.79600000061693,
           "y": 12.7,
@@ -1586,18 +1586,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "96889f64-587b-51f2-b62f-b230408206cc",
         "segment": {
           "type": "line",
           "end": {
@@ -1610,11 +1610,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "662e081e-0c36-5b97-b2b8-ea0464220525",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "96889f64-587b-51f2-b62f-b230408206cc",
         "segment": {
           "type": "line",
           "end": {
@@ -1627,11 +1627,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "96889f64-587b-51f2-b62f-b230408206cc",
         "segment": {
           "type": "line",
           "end": {
@@ -1644,11 +1644,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "96889f64-587b-51f2-b62f-b230408206cc",
         "segment": {
           "type": "line",
           "end": {
@@ -1661,11 +1661,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "96889f64-587b-51f2-b62f-b230408206cc",
         "segment": {
           "type": "line",
           "end": {
@@ -1678,24 +1678,24 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "96889f64-587b-51f2-b62f-b230408206cc",
+        "segment": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+        "intersection_segment": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1707,11 +1707,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0a7732a-2f75-5407-b203-7382d01c3918",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
         "distance": 2.921,
         "faces": null,
         "opposite": "Symmetric",
@@ -1720,53 +1720,53 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+        "edge_id": "caf96e54-1138-574b-9a32-2fb7baff5822"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+        "edge_id": "caf96e54-1138-574b-9a32-2fb7baff5822"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "96889f64-587b-51f2-b62f-b230408206cc",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -1783,7 +1783,7 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1808,20 +1808,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "349ba77a-8183-57f6-8580-b06227eac5bd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1833,18 +1833,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6ae8c147-090c-5277-8840-6daa34bb4685",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84468ff1-4b26-5c88-8618-6cea09661aac",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "to": {
           "x": 18.79600000061693,
           "y": 12.7,
@@ -1853,18 +1853,18 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f296bd37-495b-5038-81a3-eade3812cc2e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "segment": {
           "type": "line",
           "end": {
@@ -1877,11 +1877,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "segment": {
           "type": "line",
           "end": {
@@ -1894,11 +1894,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "segment": {
           "type": "line",
           "end": {
@@ -1911,11 +1911,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "af94b4da-da53-5386-a65f-ed75c251c9ff",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "segment": {
           "type": "line",
           "end": {
@@ -1928,11 +1928,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "segment": {
           "type": "line",
           "end": {
@@ -1945,24 +1945,24 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "6ae8c147-090c-5277-8840-6daa34bb4685",
+        "segment": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
+        "intersection_segment": "af94b4da-da53-5386-a65f-ed75c251c9ff",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1974,11 +1974,11 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
         "distance": 2.921,
         "faces": null,
         "opposite": "Symmetric",
@@ -1987,53 +1987,53 @@ description: Artifact commands counterdrilled-weldment.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "edge_id": "bee1e072-94c0-5229-8797-cd2da477f8f1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "edge_id": "bee1e072-94c0-5229-8797-cd2da477f8f1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77202593-ebf9-50c7-b715-41557309d9ab",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
         "axis": {
           "x": 0.0,
           "y": 0.0,

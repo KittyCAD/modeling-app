@@ -5,7 +5,7 @@ description: Artifact commands food-service-spatula.kcl
 {
   "public/kcl-samples/food-service-spatula/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "to": {
           "x": -70.0,
           "y": -32.0,
@@ -75,18 +75,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -158,11 +158,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "to": {
           "x": -25.0,
           "y": 5.0,
@@ -171,11 +171,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -188,11 +188,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -213,11 +213,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -230,11 +230,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -255,11 +255,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "to": {
           "x": -24.833425849,
           "y": 22.997224535,
@@ -268,11 +268,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -285,11 +285,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -310,11 +310,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -327,11 +327,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -352,11 +352,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "to": {
           "x": -25.166574151,
           "y": -13.002775465,
@@ -365,11 +365,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -382,11 +382,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -407,11 +407,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "line",
           "end": {
@@ -424,11 +424,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "segment": {
           "type": "arc",
           "center": {
@@ -449,24 +449,24 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -478,11 +478,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "distance": 3.5,
         "faces": null,
         "opposite": "None",
@@ -491,91 +491,91 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "edge_id": "feb83338-f9ef-5ff2-867b-b4c05a0bc3c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "edge_id": "feb83338-f9ef-5ff2-867b-b4c05a0bc3c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "363124dc-e9ab-52fc-9de3-0830ce3f961e",
+          "05c93606-d84a-50fa-b88a-827cfa41ba82"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "05c93606-d84a-50fa-b88a-827cfa41ba82",
+          "dd19a5dc-8fce-5458-8cb7-fcf6d8b7c93e"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "edge_id": "7e739592-39e0-5d0f-b35c-5e50f7f9f73a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "edge_id": "0674952c-793e-5ead-8b6c-c9d9cddbaf1c"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "edge_ids": [
-          "[uuid]",
-          "[uuid]"
+          "7e739592-39e0-5d0f-b35c-5e50f7f9f73a",
+          "0674952c-793e-5ead-8b6c-c9d9cddbaf1c"
         ],
         "cut_type": {
           "fillet": {
@@ -586,12 +586,12 @@ description: Artifact commands food-service-spatula.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]"
+          "e8637a6d-00c2-5b87-831e-2db8c2223948"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -616,11 +616,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -630,20 +630,20 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -655,18 +655,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "to": {
           "x": 0.0,
           "y": 3.5,
@@ -675,18 +675,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "segment": {
           "type": "line",
           "end": {
@@ -699,11 +699,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "segment": {
           "type": "line",
           "end": {
@@ -716,11 +716,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "segment": {
           "type": "line",
           "end": {
@@ -733,11 +733,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "segment": {
           "type": "line",
           "end": {
@@ -750,11 +750,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "segment": {
           "type": "line",
           "end": {
@@ -767,11 +767,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "segment": {
           "type": "line",
           "end": {
@@ -784,24 +784,24 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "segment": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "intersection_segment": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -813,11 +813,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "distance": 15.0,
         "faces": null,
         "opposite": "None",
@@ -826,91 +826,91 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "edge_id": "97a3d752-dbb1-5c42-9e11-a975ca47f788"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "edge_id": "97a3d752-dbb1-5c42-9e11-a975ca47f788"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "54a2ca32-d33c-561b-8537-8465cd21a9e8",
+          "dc3c5e09-168a-5685-ae5b-e5fa6f2a1299"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "4addd1bb-54a9-50d2-bf08-c3879aaf7dcb",
+          "01e76c6e-fc58-5e57-abe1-e5681abb4a02"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "edge_id": "84ad88b6-5e6f-5805-9feb-89e1adfc557a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "edge_id": "a019d5ab-10b9-5413-b771-d7a5c8dd65eb"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "edge_ids": [
-          "[uuid]",
-          "[uuid]"
+          "84ad88b6-5e6f-5805-9feb-89e1adfc557a",
+          "a019d5ab-10b9-5413-b771-d7a5c8dd65eb"
         ],
         "cut_type": {
           "fillet": {
@@ -921,12 +921,12 @@ description: Artifact commands food-service-spatula.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]"
+          "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -951,20 +951,20 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -976,18 +976,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "to": {
           "x": -26.806746,
           "y": -10.0,
@@ -996,18 +996,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "line",
           "end": {
@@ -1020,11 +1020,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "arc",
           "center": {
@@ -1045,11 +1045,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "line",
           "end": {
@@ -1062,11 +1062,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "arc",
           "center": {
@@ -1087,11 +1087,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "line",
           "end": {
@@ -1104,11 +1104,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "arc",
           "center": {
@@ -1129,11 +1129,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "line",
           "end": {
@@ -1146,11 +1146,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "segment": {
           "type": "arc",
           "center": {
@@ -1171,24 +1171,24 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+        "segment": "19107e89-bf40-5541-88a5-5106b6de636d",
+        "intersection_segment": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1200,11 +1200,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
         "distance": -150.0,
         "faces": null,
         "opposite": "None",
@@ -1213,40 +1213,40 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "edge_id": "b9cf551c-f4ec-51a1-9c43-af16b77ecdf7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "edge_id": "b9cf551c-f4ec-51a1-9c43-af16b77ecdf7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1271,20 +1271,20 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1296,18 +1296,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d22753f-e63a-506c-bc84-6006343b9a0b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "906a1f18-6a62-5deb-b39b-61d540081804",
         "to": {
           "x": 0.0,
           "y": 4.0,
@@ -1316,18 +1316,18 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "906a1f18-6a62-5deb-b39b-61d540081804",
         "segment": {
           "type": "line",
           "end": {
@@ -1340,11 +1340,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "906a1f18-6a62-5deb-b39b-61d540081804",
         "segment": {
           "type": "arc",
           "center": {
@@ -1365,11 +1365,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "906a1f18-6a62-5deb-b39b-61d540081804",
         "segment": {
           "type": "line",
           "end": {
@@ -1382,11 +1382,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "906a1f18-6a62-5deb-b39b-61d540081804",
         "segment": {
           "type": "arc",
           "center": {
@@ -1407,24 +1407,24 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "906a1f18-6a62-5deb-b39b-61d540081804",
+        "segment": "6f85cbad-5e6d-549c-850d-909283a25e83",
+        "intersection_segment": "035728b5-01db-5e9b-b285-181bc5693d5a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1436,11 +1436,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -1449,59 +1449,59 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "690f4081-0088-59ad-a56f-4e4bf4445f49"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "690f4081-0088-59ad-a56f-4e4bf4445f49"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "ee265ae4-d91c-58e8-93b9-3612710e3ae7"
         ],
         "tool_ids": [
-          "[uuid]"
+          "2ab8a671-6218-5516-901a-d1a83480ded7"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
         "color": {
           "r": 0.7490196,
           "g": 0.7607843,
@@ -1514,11 +1514,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "color": {
           "r": 0.7490196,
           "g": 0.7607843,
@@ -1531,11 +1531,11 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "fc66f518-029e-5b30-8772-13859f39ce6d",
         "color": {
           "r": 0.1254902,
           "g": 0.1254902,
@@ -1548,38 +1548,38 @@ description: Artifact commands food-service-spatula.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "906a1f18-6a62-5deb-b39b-61d540081804",
         "hidden": true
       }
     }

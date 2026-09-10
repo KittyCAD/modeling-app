@@ -1217,6 +1217,7 @@ description: Result of parsing sphere.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

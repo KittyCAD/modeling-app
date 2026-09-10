@@ -439,7 +439,7 @@ pub trait CodeBlock {
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct Program {
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]

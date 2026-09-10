@@ -5,7 +5,7 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
 {
   "rust/kcl-lib/tests/sketch_block_arc_using_center_coincident/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "to": {
           "x": 0.999999998500001,
           "y": 0.00000000000000020496113533874826,
@@ -75,18 +75,18 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "to": {
           "x": -0.0000000000000004730735827169105,
           "y": 0.0000000000000003080339896148469,
@@ -120,11 +120,11 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -137,11 +137,11 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "to": {
           "x": -0.0000000000000004502312466586139,
           "y": 0.0000000000000004099988893485268,
@@ -150,11 +150,11 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {

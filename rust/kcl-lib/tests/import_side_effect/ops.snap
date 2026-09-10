@@ -10,7 +10,7 @@ description: Operations executed import_side_effect.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
         },
         "sourceRange": []
       },

@@ -5,7 +5,7 @@ description: Artifact commands pipe-flange-assembly.kcl
 {
   "public/kcl-samples/pipe-flange-assembly/9472k188-gasket.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "32f560bf-124a-56ed-8c5c-afd71882216e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5edbd3f-c4de-5298-9d0a-daaf0c116390",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a93807f2-bb75-552f-8f69-73c95b73e483",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da4c800a-c441-5ed7-810d-83a1b29705dd",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a93807f2-bb75-552f-8f69-73c95b73e483",
         "to": {
           "x": 52.387499999999996,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a82876-56b8-5012-910a-c84983933af0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a93807f2-bb75-552f-8f69-73c95b73e483",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e77cd6-284a-5393-8426-ce794ee2bbeb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a93807f2-bb75-552f-8f69-73c95b73e483",
         "to": {
           "x": 30.162499999999998,
           "y": 0.0,
@@ -120,11 +120,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a93807f2-bb75-552f-8f69-73c95b73e483",
         "segment": {
           "type": "arc",
           "center": {
@@ -145,24 +145,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eba47597-5e68-54db-ad83-474786d003ca",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a93807f2-bb75-552f-8f69-73c95b73e483",
+        "segment": "b5a82876-56b8-5012-910a-c84983933af0",
+        "intersection_segment": "b5a82876-56b8-5012-910a-c84983933af0",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b104d16-efec-521a-b275-43ab461a46f7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -174,11 +174,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21af3cf8-1df1-59e7-806c-96d9205e4a7f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "eba47597-5e68-54db-ad83-474786d003ca",
         "distance": 0.7874,
         "faces": null,
         "opposite": "None",
@@ -187,44 +187,44 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5c756ffc-2dc8-514e-b14b-2aae9db7f650",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "eba47597-5e68-54db-ad83-474786d003ca"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4406885d-65f3-5dd4-808b-a175b3d8319f",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eba47597-5e68-54db-ad83-474786d003ca",
+        "edge_id": "251f560c-b259-57fa-851b-8025171c5586"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e03f3e97-c883-51b4-bb9d-ecf1eb14e8e6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eba47597-5e68-54db-ad83-474786d003ca",
+        "edge_id": "251f560c-b259-57fa-851b-8025171c5586"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28006c95-3b9c-5732-a899-10c8e6ab53bc",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "eba47597-5e68-54db-ad83-474786d003ca",
         "color": {
           "r": 0.8156863,
           "g": 0.79607844,
@@ -239,7 +239,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   ],
   "public/kcl-samples/pipe-flange-assembly/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -264,20 +264,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -289,18 +289,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "91226189-7e64-5690-9203-67ee33a6eb03",
         "to": {
           "x": 76.19999999999999,
           "y": 0.0,
@@ -309,18 +309,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "91226189-7e64-5690-9203-67ee33a6eb03",
         "segment": {
           "type": "arc",
           "center": {
@@ -341,24 +341,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -370,11 +370,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "distance": 17.525999999999996,
         "faces": null,
         "opposite": "None",
@@ -383,40 +383,40 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "edge_id": "71b752f1-381b-5716-bd8f-14d9d2db403d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "edge_id": "71b752f1-381b-5716-bd8f-14d9d2db403d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -441,11 +441,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "7b681387-29ea-57f1-8713-d63280827139",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -455,20 +455,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7b681387-29ea-57f1-8713-d63280827139",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b681387-29ea-57f1-8713-d63280827139",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -480,18 +480,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f084ad07-5777-5607-a544-c69f455c2aab",
         "to": {
           "x": 9.524999999999999,
           "y": 60.324999999999996,
@@ -500,18 +500,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f084ad07-5777-5607-a544-c69f455c2aab",
         "segment": {
           "type": "arc",
           "center": {
@@ -532,24 +532,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f084ad07-5777-5607-a544-c69f455c2aab",
+        "segment": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+        "intersection_segment": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b681387-29ea-57f1-8713-d63280827139",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -561,11 +561,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -574,44 +574,44 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "edge_id": "4f90ab43-f1b1-5530-bc2c-cc346e10fe9a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+        "edge_id": "4f90ab43-f1b1-5530-bc2c-cc346e10fe9a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -628,25 +628,25 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+          "0137f070-d130-5072-bf89-e07dc261babf",
+          "c7c89202-0038-501d-ba21-800f36323579"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -671,20 +671,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -696,18 +696,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "to": {
           "x": 45.974,
           "y": 0.0,
@@ -716,18 +716,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "segment": {
           "type": "arc",
           "center": {
@@ -748,24 +748,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "segment": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "intersection_segment": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -777,11 +777,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "distance": -1.5239999999999998,
         "faces": null,
         "opposite": "None",
@@ -790,40 +790,40 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "edge_id": "1ed30abd-d55e-5bd4-8d0e-0de183448b68"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "edge_id": "1ed30abd-d55e-5bd4-8d0e-0de183448b68"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -848,11 +848,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -862,20 +862,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -887,18 +887,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "to": {
           "x": 38.862,
           "y": 0.0,
@@ -907,18 +907,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "segment": {
           "type": "arc",
           "center": {
@@ -939,24 +939,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+        "segment": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+        "intersection_segment": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -968,11 +968,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
@@ -981,54 +981,54 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+        "edge_id": "2643272c-6a71-55b7-b765-a61c5ae428bf"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+        "edge_id": "2643272c-6a71-55b7-b765-a61c5ae428bf"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "2c522d90-5fef-5750-b489-b008732bd2c3",
+          "eedabccb-e42b-5224-a499-7c2981b239e5",
+          "372890e3-2e6c-58b4-9c42-35f8d38804dc"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1053,11 +1053,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1067,20 +1067,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1092,18 +1092,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "468f6520-a683-5392-9492-de009fdcddef",
         "to": {
           "x": 30.987999999999996,
           "y": 0.0,
@@ -1112,18 +1112,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "468f6520-a683-5392-9492-de009fdcddef",
         "segment": {
           "type": "arc",
           "center": {
@@ -1144,24 +1144,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "468f6520-a683-5392-9492-de009fdcddef",
+        "segment": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "intersection_segment": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1173,11 +1173,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -1186,59 +1186,59 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+        "edge_id": "27cb1c9a-4a55-5148-bf58-4cf0c4fe9a62"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+        "edge_id": "27cb1c9a-4a55-5148-bf58-4cf0c4fe9a62"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
         ],
         "tool_ids": [
-          "[uuid]"
+          "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
         "color": {
           "r": 0.7294118,
           "g": 0.6901961,
@@ -1251,7 +1251,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1276,20 +1276,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d5eaf678-0440-563f-ac19-e473850b9270",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d5eaf678-0440-563f-ac19-e473850b9270",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1301,18 +1301,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "to": {
           "x": 76.19999999999999,
           "y": 0.0,
@@ -1321,18 +1321,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "arc",
           "center": {
@@ -1353,24 +1353,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+        "segment": "d005938d-7477-557a-bef2-28dfc45d0fce",
+        "intersection_segment": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d5eaf678-0440-563f-ac19-e473850b9270",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1382,11 +1382,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "distance": 17.525999999999996,
         "faces": null,
         "opposite": "None",
@@ -1395,40 +1395,40 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e8637a6d-00c2-5b87-831e-2db8c2223948"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "edge_id": "85c3104c-2964-5cca-8706-8f5569b441ef"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "edge_id": "85c3104c-2964-5cca-8706-8f5569b441ef"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1453,11 +1453,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1467,20 +1467,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1492,18 +1492,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
         "to": {
           "x": 9.524999999999999,
           "y": 60.324999999999996,
@@ -1512,18 +1512,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
         "segment": {
           "type": "arc",
           "center": {
@@ -1544,24 +1544,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+        "segment": "724b87fd-c709-5232-b7a1-547c15affb9b",
+        "intersection_segment": "724b87fd-c709-5232-b7a1-547c15affb9b",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1573,11 +1573,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -1586,44 +1586,44 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+        "edge_id": "6d08d94e-78f1-57cd-b7e6-cf5b51604c9a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+        "edge_id": "6d08d94e-78f1-57cd-b7e6-cf5b51604c9a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -1640,25 +1640,25 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "e8637a6d-00c2-5b87-831e-2db8c2223948"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+          "c318f272-36cb-5eea-a10e-a07dd8d70870",
+          "9211e468-078d-51a2-a5fd-9670006f4753",
+          "639ee618-3eb8-5129-a62a-42ded4720037"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1683,20 +1683,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1708,18 +1708,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
         "to": {
           "x": 45.974,
           "y": 0.0,
@@ -1728,18 +1728,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
         "segment": {
           "type": "arc",
           "center": {
@@ -1760,24 +1760,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+        "segment": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "intersection_segment": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1789,11 +1789,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "distance": -1.5239999999999998,
         "faces": null,
         "opposite": "None",
@@ -1802,40 +1802,40 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "edge_id": "8f6defbe-f14c-562e-9d16-48fda6d28850"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "edge_id": "8f6defbe-f14c-562e-9d16-48fda6d28850"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1860,11 +1860,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1874,20 +1874,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1899,18 +1899,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "to": {
           "x": 38.862,
           "y": 0.0,
@@ -1919,18 +1919,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "segment": {
           "type": "arc",
           "center": {
@@ -1951,24 +1951,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+        "segment": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+        "intersection_segment": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1980,11 +1980,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "020035cf-ab88-50f3-91b0-886b7f399647",
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
@@ -1993,54 +1993,54 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "020035cf-ab88-50f3-91b0-886b7f399647"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "020035cf-ab88-50f3-91b0-886b7f399647",
+        "edge_id": "82c2e2df-2b08-5e9b-9acb-9626255f07eb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "020035cf-ab88-50f3-91b0-886b7f399647",
+        "edge_id": "82c2e2df-2b08-5e9b-9acb-9626255f07eb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+          "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+          "020035cf-ab88-50f3-91b0-886b7f399647"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2065,11 +2065,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "93954f29-a246-54bd-ac2a-62572f26d508",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2079,20 +2079,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "93954f29-a246-54bd-ac2a-62572f26d508",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "93954f29-a246-54bd-ac2a-62572f26d508",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2104,18 +2104,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
         "to": {
           "x": 30.987999999999996,
           "y": 0.0,
@@ -2124,18 +2124,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
         "segment": {
           "type": "arc",
           "center": {
@@ -2156,24 +2156,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+        "segment": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "intersection_segment": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "93954f29-a246-54bd-ac2a-62572f26d508",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2185,11 +2185,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2e4398f0-3503-52f1-9fb1-caadee14f488",
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
@@ -2198,59 +2198,59 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+        "edge_id": "36c0ddec-ec54-5a7b-a79c-c16b38e6f6e1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+        "edge_id": "36c0ddec-ec54-5a7b-a79c-c16b38e6f6e1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "ca431487-8e9a-59ce-a472-84fe45652fab"
         ],
         "tool_ids": [
-          "[uuid]"
+          "2e4398f0-3503-52f1-9fb1-caadee14f488"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "color": {
           "r": 0.7294118,
           "g": 0.6901961,
@@ -2263,11 +2263,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "transforms": [
           {
             "translate": null,
@@ -2290,11 +2290,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
         "transforms": [
           {
             "translate": {
@@ -2316,11 +2316,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "eba47597-5e68-54db-ad83-474786d003ca",
         "transforms": [
           {
             "translate": {
@@ -2342,7 +2342,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2367,20 +2367,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a0df0eb6-009b-594d-815d-31646979be80",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a0df0eb6-009b-594d-815d-31646979be80",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2392,18 +2392,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c444b134-67e1-507a-bb00-d4998ba97afb",
         "to": {
           "x": 15.087599999999998,
           "y": 0.0,
@@ -2412,18 +2412,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c444b134-67e1-507a-bb00-d4998ba97afb",
         "segment": {
           "type": "arc",
           "center": {
@@ -2444,11 +2444,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c444b134-67e1-507a-bb00-d4998ba97afb",
         "to": {
           "x": 8.128,
           "y": 0.0,
@@ -2457,11 +2457,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c444b134-67e1-507a-bb00-d4998ba97afb",
         "segment": {
           "type": "arc",
           "center": {
@@ -2482,24 +2482,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c444b134-67e1-507a-bb00-d4998ba97afb",
+        "segment": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+        "intersection_segment": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a0df0eb6-009b-594d-815d-31646979be80",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2511,11 +2511,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "bae7e631-b71d-5980-89ea-29b2140a8a32",
         "distance": 0.8128,
         "faces": null,
         "opposite": "None",
@@ -2524,44 +2524,44 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+        "edge_id": "de600c5b-6330-5534-814d-96da4420ba55"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+        "edge_id": "de600c5b-6330-5534-814d-96da4420ba55"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
         "color": {
           "r": 0.93333334,
           "g": 0.30980393,
@@ -2574,11 +2574,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
         "transforms": [
           {
             "translate": {
@@ -2600,11 +2600,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -2621,11 +2621,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
         "transform": [],
         "transforms": [
           [
@@ -2661,11 +2661,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "a9e9561a-5ce9-5945-8f3d-8b7d4de376dd",
         "transform": [],
         "transforms": [
           [
@@ -2701,11 +2701,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "d8305041-2751-5cd5-a233-4509c70123cb",
         "transform": [],
         "transforms": [
           [
@@ -2741,11 +2741,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "4706e407-4f62-5987-a88f-db68091ab67b",
         "transform": [],
         "transforms": [
           [
@@ -2781,7 +2781,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2806,20 +2806,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2831,18 +2831,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
         "to": {
           "x": 11.9126,
           "y": 0.0,
@@ -2851,18 +2851,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
         "segment": {
           "type": "arc",
           "center": {
@@ -2883,24 +2883,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+        "segment": "906a1f18-6a62-5deb-b39b-61d540081804",
+        "intersection_segment": "906a1f18-6a62-5deb-b39b-61d540081804",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2912,11 +2912,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "distance": -15.875,
         "faces": null,
         "opposite": "None",
@@ -2925,55 +2925,55 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+        "edge_id": "0e544dbb-9a38-57c7-8d85-bd8fbf246871"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+        "edge_id": "0e544dbb-9a38-57c7-8d85-bd8fbf246871"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
       "range": [],
       "command": {
         "type": "solid3d_cut_edge_references",
-        "object_id": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "edges_references": [
           {
             "side_faces": [
-              "[uuid]",
-              "[uuid]"
+              "9deeab4e-f2ec-5b21-a9fb-990a47d46306",
+              "71a4a6f2-2f30-5257-99b0-38423589f101"
             ]
           },
           {
             "side_faces": [
-              "[uuid]",
-              "[uuid]"
+              "9deeab4e-f2ec-5b21-a9fb-990a47d46306",
+              "4ce3f5c0-bb09-5b5a-b76b-06e03bf4043f"
             ]
           }
         ],
@@ -2986,12 +2986,12 @@ description: Artifact commands pipe-flange-assembly.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]"
+          "2d22753f-e63a-506c-bc84-6006343b9a0b"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3016,11 +3016,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3030,20 +3030,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8f72543d-c84d-5018-865e-36a2fd66854c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3055,18 +3055,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ff863943-02de-5b48-baf7-471ff32b980f",
         "to": {
           "x": 6.35,
           "y": 3.66617420942,
@@ -3075,18 +3075,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96889f64-587b-51f2-b62f-b230408206cc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ff863943-02de-5b48-baf7-471ff32b980f",
         "segment": {
           "type": "line",
           "end": {
@@ -3099,11 +3099,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ff863943-02de-5b48-baf7-471ff32b980f",
         "segment": {
           "type": "line",
           "end": {
@@ -3116,11 +3116,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ff863943-02de-5b48-baf7-471ff32b980f",
         "segment": {
           "type": "line",
           "end": {
@@ -3133,11 +3133,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ff863943-02de-5b48-baf7-471ff32b980f",
         "segment": {
           "type": "line",
           "end": {
@@ -3150,11 +3150,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ff863943-02de-5b48-baf7-471ff32b980f",
         "segment": {
           "type": "line",
           "end": {
@@ -3167,11 +3167,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ff863943-02de-5b48-baf7-471ff32b980f",
         "segment": {
           "type": "line",
           "end": {
@@ -3184,24 +3184,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "segment": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "intersection_segment": "b8cc464b-6248-5cb4-8c70-30f634da184c",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05ce46e4-9f5d-5320-8c0f-7d8e93e6940e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3213,11 +3213,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
         "distance": 11.90625,
         "faces": null,
         "opposite": "None",
@@ -3226,55 +3226,55 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "985c5da4-4467-570a-8e44-4d58a9c442ba",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
+        "edge_id": "8f296bc2-412e-5198-bbb5-8d33f1d3eb95"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
+        "edge_id": "8f296bc2-412e-5198-bbb5-8d33f1d3eb95"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43582f56-4d15-5082-9796-67d8e5ee6e44",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0"
         ],
         "tool_ids": [
-          "[uuid]"
+          "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3299,20 +3299,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7faa0516-2581-52ca-b80e-97150bf2f040",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3324,18 +3324,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
         "to": {
           "x": 7.9375,
           "y": 0.0,
@@ -3344,18 +3344,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
         "segment": {
           "type": "arc",
           "center": {
@@ -3376,24 +3376,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
+        "segment": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
+        "intersection_segment": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3405,11 +3405,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
         "distance": 63.5,
         "faces": null,
         "opposite": "None",
@@ -3418,57 +3418,57 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0a7732a-2f75-5407-b203-7382d01c3918",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+        "edge_id": "57e6fc41-8f0b-5e46-bda2-d23f4c88f91d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+        "edge_id": "57e6fc41-8f0b-5e46-bda2-d23f4c88f91d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]"
+          "43582f56-4d15-5082-9796-67d8e5ee6e44",
+          "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "065d6e6f-62af-500d-aae0-fe097d5f952b",
         "color": {
           "r": 0.3019608,
           "g": 0.8156863,
@@ -3481,11 +3481,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "065d6e6f-62af-500d-aae0-fe097d5f952b",
         "transforms": [
           {
             "translate": {
@@ -3507,11 +3507,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "065d6e6f-62af-500d-aae0-fe097d5f952b",
         "transforms": [
           {
             "translate": null,
@@ -3533,11 +3533,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "065d6e6f-62af-500d-aae0-fe097d5f952b",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -3554,7 +3554,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94906884-1803-5336-93e6-0aca938f73f1",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3579,20 +3579,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "94906884-1803-5336-93e6-0aca938f73f1",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "94906884-1803-5336-93e6-0aca938f73f1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3604,18 +3604,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "to": {
           "x": 11.90625,
           "y": 6.8740766429799995,
@@ -3624,18 +3624,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e54f67fd-5312-580f-b00e-e78b0877011e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "segment": {
           "type": "line",
           "end": {
@@ -3648,11 +3648,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0a92fa6-be55-5cfb-a650-710b68437549",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "segment": {
           "type": "line",
           "end": {
@@ -3665,11 +3665,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "segment": {
           "type": "line",
           "end": {
@@ -3682,11 +3682,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "af94b4da-da53-5386-a65f-ed75c251c9ff",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "segment": {
           "type": "line",
           "end": {
@@ -3699,11 +3699,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "segment": {
           "type": "line",
           "end": {
@@ -3716,11 +3716,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "segment": {
           "type": "line",
           "end": {
@@ -3733,11 +3733,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "to": {
           "x": 7.9375,
           "y": 0.0,
@@ -3746,11 +3746,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "segment": {
           "type": "arc",
           "center": {
@@ -3771,24 +3771,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+        "segment": "12610836-7dea-569b-a3df-ec2ff8b2c295",
+        "intersection_segment": "c0a92fa6-be55-5cfb-a650-710b68437549",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "94906884-1803-5336-93e6-0aca938f73f1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3800,11 +3800,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b5fd1215-9080-56e3-9845-e939e4245bdb",
         "distance": 13.890625,
         "faces": null,
         "opposite": "None",
@@ -3813,44 +3813,44 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "349ba77a-8183-57f6-8580-b06227eac5bd",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b5fd1215-9080-56e3-9845-e939e4245bdb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84468ff1-4b26-5c88-8618-6cea09661aac",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b5fd1215-9080-56e3-9845-e939e4245bdb",
+        "edge_id": "a3f0e3d6-22c2-5a74-b90a-2f64c00a8dc7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b5fd1215-9080-56e3-9845-e939e4245bdb",
+        "edge_id": "a3f0e3d6-22c2-5a74-b90a-2f64c00a8dc7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "b5fd1215-9080-56e3-9845-e939e4245bdb",
         "color": {
           "r": 0.30588236,
           "g": 0.8745098,
@@ -3863,11 +3863,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "b5fd1215-9080-56e3-9845-e939e4245bdb",
         "transforms": [
           {
             "translate": {
@@ -3889,11 +3889,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "b5fd1215-9080-56e3-9845-e939e4245bdb",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -3910,7 +3910,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3935,20 +3935,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5d2a2786-5258-5364-b1b2-b28334229017",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "5d2a2786-5258-5364-b1b2-b28334229017",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3960,18 +3960,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77202593-ebf9-50c7-b715-41557309d9ab",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "77202593-ebf9-50c7-b715-41557309d9ab",
         "to": {
           "x": 30.162499999999998,
           "y": 0.0,
@@ -3980,18 +3980,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cdb4d69-ec09-5ed8-9866-b9b01a5bad3e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "77202593-ebf9-50c7-b715-41557309d9ab",
         "segment": {
           "type": "arc",
           "center": {
@@ -4012,11 +4012,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "77202593-ebf9-50c7-b715-41557309d9ab",
         "to": {
           "x": 25.4,
           "y": 0.0,
@@ -4025,11 +4025,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "77202593-ebf9-50c7-b715-41557309d9ab",
         "segment": {
           "type": "arc",
           "center": {
@@ -4050,24 +4050,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d569b1e-3e41-5603-8816-9c625622a434",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "77202593-ebf9-50c7-b715-41557309d9ab",
+        "segment": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
+        "intersection_segment": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb172247-c469-54b8-920f-ca9ddc4fdbb3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "5d2a2786-5258-5364-b1b2-b28334229017",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4079,11 +4079,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9d569b1e-3e41-5603-8816-9c625622a434",
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
@@ -4092,44 +4092,44 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9d569b1e-3e41-5603-8816-9c625622a434"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f531517-960e-5389-a7ca-a71161457c8a",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9d569b1e-3e41-5603-8816-9c625622a434",
+        "edge_id": "9931a342-74e8-53d7-a316-4f42cf3d5c0d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14466b86-e358-553e-8c66-6fd171fc4f2f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9d569b1e-3e41-5603-8816-9c625622a434",
+        "edge_id": "9931a342-74e8-53d7-a316-4f42cf3d5c0d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3322387d-5b58-56ea-8103-4d2112d432af",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9d569b1e-3e41-5603-8816-9c625622a434",
         "color": {
           "r": 0.63529414,
           "g": 0.30588236,
@@ -4142,11 +4142,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "9d569b1e-3e41-5603-8816-9c625622a434",
         "transforms": [
           {
             "translate": null,
@@ -4168,11 +4168,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94cfcc75-120e-5336-b89b-66096a401da3",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "9d569b1e-3e41-5603-8816-9c625622a434",
         "transforms": [
           {
             "translate": {
@@ -4194,7 +4194,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4219,20 +4219,20 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d60ddbad-e06f-5b11-9ef8-b52ac282856c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4244,18 +4244,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1ebd4bb2-74ae-5a2f-a7a7-a778232f13a4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
         "to": {
           "x": 30.162499999999998,
           "y": 0.0,
@@ -4264,18 +4264,18 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "855fafc2-5621-5264-953e-1be6964b7a16",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a04f1a36-b6ca-5465-bbe3-d98a909adffd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
         "segment": {
           "type": "arc",
           "center": {
@@ -4296,11 +4296,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa0e2533-e8d9-5b33-ac82-b003e1e03207",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
         "to": {
           "x": 25.4,
           "y": 0.0,
@@ -4309,11 +4309,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa91dc3c-d764-5550-a1d4-5f081872a206",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
         "segment": {
           "type": "arc",
           "center": {
@@ -4334,24 +4334,24 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1eb67267-23ae-55ad-a211-5f61fb90442f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
+        "segment": "a04f1a36-b6ca-5465-bbe3-d98a909adffd",
+        "intersection_segment": "a04f1a36-b6ca-5465-bbe3-d98a909adffd",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4363,11 +4363,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "1eb67267-23ae-55ad-a211-5f61fb90442f",
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
@@ -4376,44 +4376,44 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3160ffad-2e46-5554-be76-1b632140926c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f",
+        "edge_id": "757c1d9a-5f74-5707-8e2c-c97365971da8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f",
+        "edge_id": "757c1d9a-5f74-5707-8e2c-c97365971da8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f",
         "color": {
           "r": 0.63529414,
           "g": 0.30588236,
@@ -4426,11 +4426,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f",
         "transforms": [
           {
             "translate": null,
@@ -4452,11 +4452,11 @@ description: Artifact commands pipe-flange-assembly.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f",
         "transforms": [
           {
             "translate": {
